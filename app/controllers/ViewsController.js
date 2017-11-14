@@ -6,13 +6,14 @@ var path = require('path'),
 var sampleHtmlMaster = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/master.ejs'), 'utf-8');
 
 class ViewsController {
-    constructor(){
+    constructor() {
         // this binding maintains the value of this
         // inside these methods during future calls .
         this.footer = this.footer.bind(this)
         // this.bar = this.bar.bind(this)
         // this.baz = this.baz.bind(this)
     }
+
     nav(sampleHtmlMaster) {
         var sampleHtmlNav = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/nav.ejs'), 'utf-8');
         return sampleHtmlMaster.replace('{DEFINE_NAV}', sampleHtmlNav);

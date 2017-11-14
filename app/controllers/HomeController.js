@@ -1,6 +1,7 @@
 'use strict';
 var path = require('path'),
     fs = require('fs');
+
 var ViewsController = require('./ViewsController.js');
 var BaseController = require('./BaseController.js');
 

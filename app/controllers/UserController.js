@@ -8,7 +8,6 @@ var HomeController = require('./HomeController.js');
 var ViewsController = require('./ViewsController.js');
 
 
-
 class UserController {
     constructor() {
         console.log('constructor  brfore index user');

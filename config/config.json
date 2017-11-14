@@ -1,7 +1,7 @@
 {
-  "domain_config": {
+  "domain": {
     "port": 1230,
-    "domain": "localhost"
+    "host": "localhost"
   },
   "DB_CONNECTION": "mysql",
   "APP_ENV": "local",

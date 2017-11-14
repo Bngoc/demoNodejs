@@ -1,9 +1,16 @@
-'use strict';
-var User = require("../models/User.js");
-var Product = require("../models/Product.js");
+'use strict'
+
+var path = require('path');
+
+var User = require("./../models/User.js");
+var Product = require("./../models/Product.js");
+
+// var BaseController = require('./BaseController.js');
 var UserController = require('./UserController.js');
 var ViewsController = require('./ViewsController.js');
 
+const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
+const getCoreHelper = new CoreHelper();
 
 class ProductController extends ViewsController {
     constructor() {
@@ -13,9 +20,9 @@ class ProductController extends ViewsController {
 
     // index product
     getIndex(req, res, next) {
-        console.log('index product');
+        console.log('index product ..................');
 
-        res.render('product/create', {name: "12243434", title: "nmgdgjd gldsjg sjlsj"});
+        // res.render('product/create', {name: "12243434", title: "nmgdgjd gldsjg sjlsj"});
 
         // var email = req.body.email;
         // var password = req.body.password;
@@ -30,6 +37,8 @@ class ProductController extends ViewsController {
         //     last_name: lastName,
         // };
 
+        var af = getCoreHelper.mySql();
+        // console.log(af, '222222222 Connect DB');
         var newUser = new User({});
         //
         try {
@@ -39,7 +48,9 @@ class ProductController extends ViewsController {
         } catch (ex) {
             throw ex;
         }
-        // res.render('index')
+
+
+        res.render(getCoreHelper.paths.VIEWS + 'product/create.ejs', {name: 111, title: 5343});
 
     };
 

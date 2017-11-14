@@ -1,4 +1,8 @@
-var connection = require("./../../lib/connection.js");
+'use strict'
+// var connection = require("./../../lib/connection.js");
+
+
+
 var User = function (params) {
     this.email = params.email;
     this.password = params.password;
@@ -8,7 +12,7 @@ var User = function (params) {
 };
 
 User.prototype.register = function (newUser) {
-    connection.getConnection(function (error, connection) {
+    // connection.getConnection(function (error, connection) {
         // connection.doWhatever();
 
         // if (!!error) {
@@ -17,7 +21,8 @@ User.prototype.register = function (newUser) {
         //
         // }
 
-    });
+    // });
+    return;
 };
 
 module.exports = User;

@@ -6,7 +6,7 @@ var path = require('path');
 const getCoreHelper = require(path.join(__dirname, './../../config/CoreHelper.js'));
 const CoreHelper = new getCoreHelper();
 
-class BaseController {
+class BaseModels {
 
     connectionMYSQL() {
         var connectionPool = mySQL.createPool(CoreHelper.sampleDb[CoreHelper.sampleConfig.DB_CONNECTION]);
@@ -19,4 +19,4 @@ class BaseController {
 
 }
 
-module.exports = BaseController;
+module.exports = BaseModels;
