@@ -20,13 +20,14 @@ userRouter.get("/product", productController.getIndex);
 userRouter.get("/param/:param1/:param2", function (requset, response) {
     // response.writeHead(200, {'Content-Type': 'text/html'});
     // fs.createReadStream(__dirname + '/../resources/layouts/master.ejs', 'utf-8').pipe(response);
+
+    // fs.createReadStream(__dirname + '/../resources/view/apa.html', 'utf-8').pipe(response);
     var pa1 = requset.params.param1;
     var pa2 = requset.params.param2;
     var rs = `param1 / param2 => ${pa1} / ${pa2}`;
     // response.send(rs);
+
     response.sendFile(path.resolve(__dirname + '/../resources/layouts/master.ejs'), 'utf-8');
 });
-
-
 
 module.exports = userRouter;

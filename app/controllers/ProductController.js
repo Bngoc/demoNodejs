@@ -1,8 +1,9 @@
+'use strict';
 var User = require("../models/User.js");
 var Product = require("../models/Product.js");
 var UserController = require('./UserController.js');
 var ViewsController = require('./ViewsController.js');
-'use strict';
+
 
 class ProductController extends ViewsController {
     constructor() {
@@ -13,6 +14,9 @@ class ProductController extends ViewsController {
     // index product
     getIndex(req, res, next) {
         console.log('index product');
+
+        res.render('product/create', {name: "12243434", title: "nmgdgjd gldsjg sjlsj"});
+
         // var email = req.body.email;
         // var password = req.body.password;
         // var firstName = req.body.first_name;
@@ -25,16 +29,18 @@ class ProductController extends ViewsController {
         //     first_name: firstName,
         //     last_name: lastName,
         // };
-        // var newUser = new User(params);
+
+        var newUser = new User({});
         //
-        // try {
-        //     //connect
-        //     newUser.register();
-        //     // do other things...
-        // } catch (ex) {
-        //     throw ex;
-        // }
-        //res.render('index')
+        try {
+            //     //connect
+            newUser.register();
+            //     // do other things...
+        } catch (ex) {
+            throw ex;
+        }
+        // res.render('index')
+
     };
 
     // register
@@ -61,8 +67,6 @@ class ProductController extends ViewsController {
         //     throw ex;
         // }
     };
-
-
 }
 
 module.exports = ProductController;

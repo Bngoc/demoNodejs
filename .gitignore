@@ -2,6 +2,9 @@
 .env
 /node_modules
 
+*.log
+/logs/*
+
 #netbeans specific
 core
 nbproject/*
@@ -10,3 +13,4 @@ nbproject/*
 
 #phpstorm
 .idea/*
+

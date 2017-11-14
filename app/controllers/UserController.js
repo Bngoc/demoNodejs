@@ -1,10 +1,13 @@
-var User = require("../models/User.js");
-var HomeController = require('./HomeController.js');
-var ViewsController = require('./ViewsController.js');
 'use strict';
 
 var path = require('path'),
     fs = require('fs');
+
+var User = require("../models/User.js");
+var HomeController = require('./HomeController.js');
+var ViewsController = require('./ViewsController.js');
+
+
 
 class UserController {
     constructor() {
@@ -12,6 +15,7 @@ class UserController {
     }
 
     login(requset, response) {
+
         var viewsController = new ViewsController();
         var dataLayoutHtml = viewsController.renderLayout();
 
@@ -22,6 +26,10 @@ class UserController {
 
         // var homeController = new HomeController();
         // response.render('login.ejs', {layout: 11});
+
+        // var homeController = new HomeController();
+        // response.render('login', {layout: 11});
+
     }
 
     register(req, res, next) {
