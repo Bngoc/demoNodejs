@@ -1,0 +1,70 @@
+{
+  "styles": {
+    "main": {
+      "files": [
+        "bootstrap.css",
+        "bootstrap-responsive.css",
+        "flexslider.css",
+        "jquery.fancybox.css",
+        "cloud-zoom.css",
+        "style.css"
+      ],
+      "output": "site.min.css",
+      "dir": "css"
+    },
+    "admin_main": {
+      "files": [
+        "admin/bower_components/bootstrap/dist/css/bootstrap.min.css",
+        "admin/bower_components/metisMenu/dist/metisMenu.min.css",
+        "admin/bower_components/font-awesome/css/font-awesome.min.css",
+        "/admin/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css",
+        "admin/bower_components/datatables-responsive/css/dataTables.responsive.css",
+        "admin/dist/css/sb-admin-2.css",
+        "rawcss.css"
+      ],
+      "output": "site.min.css",
+      "dir": "css"
+    }
+  },
+  "scripts": {
+    "main": {
+      "files": [
+        "jquery.js",
+        "bootstrap.js",
+        "respond.min.js",
+        "application.js",
+        "bootstrap-tooltip.js",
+        "jquery.fancybox.js",
+        "jquery.flexslider.js",
+        "jquery.tweet.js",
+        "cloud-zoom.1.0.2.js",
+        "jquery.validate.js",
+        "jquery.carouFredSel-6.1.0-packed.js",
+        "jquery.mousewheel.min.js",
+        "jquery.touchSwipe.min.js",
+        "jquery.ba-throttle-debounce.min.js",
+        "custom.js",
+        "my_srcipt.js"
+      ],
+      "output": "site.min.js",
+      "dir": "js"
+    },
+    "admin_main": {
+      "files": [
+        "jquery/dist/jquery.min.js",
+        "bootstrap.min.js",
+        "admin/metisMenu.min.js",
+        "admin/jquery.dataTables.min.js",
+        "admin/dataTables.bootstrap.min.js",
+        "admin/sb-admin-2.js",
+        "jquery.validate.min.js",
+        "admin/ckfinder/ckfinder.js",
+        "admin/ckeditor/ckeditor.js",
+        "admin/mysrcipt.js",
+        "admin/func_ckfinder.js"
+      ],
+      "output": "mediaid.min.js",
+      "dir": "public/js"
+    }
+  }
+}

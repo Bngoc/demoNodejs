@@ -1,0 +1,12 @@
+/vendor
+.env
+/node_modules
+
+#netbeans specific
+core
+nbproject/*
+!nbproject/project.properties
+!nbproject/project.xm
+
+#phpstorm
+.idea/*

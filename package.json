@@ -1,0 +1,23 @@
+{
+  "name": "demo",
+  "version": "0.0.1",
+  "private": "true",
+  "dependencies": {
+    "express": "*",
+    "socket.io": "*",
+    "jsonwebtoken": "^7.3.0",
+    "mysql": "^2.13.0",
+    "serve-favicon": "*"
+  },
+  "author": "BuiNgoc",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "demo"
+  ],
+  "license": "ISC",
+  "description": ""
+}

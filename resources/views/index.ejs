@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title><%= titleDocument %></title>
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <%- defineHead %>
+
+</head>
+<div class="header"> <% defineHead %>
+    <% include topHeader.ejs %>
+</div>
+<body>
+
+<%- body %>
+<div id="showmsg"></div>
+<div id="showmsgt"></div>
+
+<div id="submit" type="submit">submit</div>
+
+<script>
+    var socket = io.connect('http://localhost:1230');
+
+    socket.on('message', function (message) {
+        $('#showmsg').text('The server has a message for you: ' + message);
+        console.log(message);
+    });
+
+    socket.on('send-data-test', function (messagensp) {
+        $('#showmsgt').text('messagensp for you: ' + messagensp);
+        console.log(messagensp);
+    });
+
+    $('#submit').on('click', function () {
+        socket.emit('send-data-test', '34567890');
+    });
+
+</script>
+
+<div class="footer"><% include footer.ejs %></div>
+</body>
+</html>
