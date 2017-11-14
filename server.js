@@ -1,9 +1,14 @@
-var express = require('express'),
+var config = require('./config/config.json');
+    express = require('express'),
     http = require('http'),
     fs = require('fs'),
     path = require('path'),
-    userRouter = require('./../app/routers.js');
+    userRouter = require('./app/routers.js');
 
+
+var DefinePaths = require('./config/paths.js');
+var gs = new DefinePaths();
+console.log(gs.ROOTAAA);
 
 var app = express();
 app.set('view engine', "ejs");
@@ -21,8 +26,8 @@ app.set('view options', {
     layout: false
 });
 
-app.set('i18n', 'off');
-app.get('log dir', __dirname + '/../public/logs/');
+// app.set('i18n', 'off');
+// app.get('log dir', __dirname + '/../public/logs/');
 
 app.use('/', userRouter);
 var server = http.createServer(app);
@@ -76,7 +81,7 @@ io.on('connection', function (socket) {
 //     fs.createReadStream(__dirname + '/../resources/view/apa.html', 'utf-8').pipe(response);
 //
 // });
-server.listen(1230);
+server.listen(config.domain_config['port'], config.domain_config['domain']);
 
 // app.engine('html', require('hbs').__express);
 // app.set('views', __dirname+'/views/');

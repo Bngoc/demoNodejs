@@ -1,6 +1,8 @@
+'use strict';
+
 var User = require("../models/User.js");
 var HomeController = require('./HomeController.js');
-'use strict';
+
 
 class UserController {
     constructor() {

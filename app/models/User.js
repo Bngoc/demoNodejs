@@ -16,7 +16,7 @@ User.prototype.register = function (newUser) {
         // } else  {
         //
         // }
-        // console.log(done + 'db');
+
     });
 };
 
