@@ -3,7 +3,12 @@
     "port": 1230,
     "host": "localhost"
   },
-  "DB_CONNECTION": "mysql",
   "APP_ENV": "local",
-  "APP_DEBUG": true
+  "APP_DEBUG": true,
+  "DB_CONNECTION": "mysql",
+  "DB_HOST": "localhost",
+  "PORT": 3306,
+  "DB_DATABASE": "laravel_exam",
+  "DB_USERNAME": "root",
+  "DB_PASSWORD": ""
 }

@@ -1,4 +1,4 @@
-var connection = require("./../../lib/connection.js");
+// var connection = require("./../../lib/connection.js");
 
 var Product = function (params) {
     this.email = params.email;

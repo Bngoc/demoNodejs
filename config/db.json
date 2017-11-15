@@ -2,10 +2,10 @@
   "mysql": {
     "driver": "mysql",
     "host": "localhost",
-    "user": "root",
+    "user": "forge",
     "password": "",
     "port": 3306,
-    "database": "laravel_exam",
+    "database": "forge",
     "charset": "utf8",
     "prefix": "",
     "connectionLimit": null
@@ -13,10 +13,10 @@
   "pgsql": {
     "driver": "pgsql",
     "host": "localhost",
-    "user": "root",
+    "user": "forge",
     "password": "",
     "port": 5432,
-    "database": "laravel_exam",
+    "database": "forge",
     "charset": "utf8",
     "prefix": "",
     "schema": "public"

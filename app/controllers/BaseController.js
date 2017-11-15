@@ -9,8 +9,8 @@ const CoreHelper = new getCoreHelper();
 class BaseController {
 
     connectionMYSQL() {
-        var connectionPool = mySQL.createPool(CoreHelper.sampleDb[CoreHelper.sampleConfig.DB_CONNECTION]);
-        return connectionPool.getConnection(done);
+        // var connectionPool = mySQL.createPool(CoreHelper.sampleDb[CoreHelper.sampleConfig.DB_CONNECTION]);
+        // return connectionPool.getConnection(done);
     }
 
     connectionPGSQL() {

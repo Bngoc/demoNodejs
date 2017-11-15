@@ -19,6 +19,7 @@ var CoreHelper = require('./config/CoreHelper.js');
 var callCoreHelper = new CoreHelper();
 
 var routers = callCoreHelper.runRoutes(app);
+var connection = callCoreHelper.getConnect();
 var server = callCoreHelper.runServer(app);
 
 // const sampleConfig = require(`${paths.CONFIG}/config.json`);

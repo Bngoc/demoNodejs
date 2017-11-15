@@ -1,9 +1,5 @@
 'use strict';
 
-// var express = require('express');
-// var path = require('path');
-// var userRouter = express.Router();
-//
 var UserController = require('./controllers/UserController.js');
 var ProductController = require('./controllers/ProductController.js');
 var HomeController = require('./controllers/HomeController.js');
@@ -19,7 +15,6 @@ class Routers {
         app.get("/login", userController.login);
         app.post("/register", userController.register);
         app.get("/product", productController.getIndex);
-
 
         app.get("/param/:param1/:param2", function (requset, response) {
             // response.writeHead(200, {'Content-Type': 'text/html'});
