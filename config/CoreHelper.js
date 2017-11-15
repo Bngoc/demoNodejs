@@ -112,7 +112,7 @@ class ConnectDB extends CoreHelper {
             const getNameConnectDb = this.sampleConfig.DB_CONNECTION ? this.sampleConfig.DB_CONNECTION : '';
             if (getNameConnectDb === 'mysql') {
                 return this.mySql();
-            } else if (getNameConnectDb === 'postgres') {
+            } else if (getNameConnectDb === 'pgsql') {
                 return this.pgSQL();
             } else {
                 console.log('Not config connect db!');

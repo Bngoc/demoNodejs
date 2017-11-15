@@ -22,7 +22,7 @@ User.prototype.register = function (connection, req, res) {
     // }
 
     // });
-    global.resultData = [];
+    var resultData = [];
 
     var dataRequsest = {
         id: 6
@@ -39,27 +39,30 @@ User.prototype.register = function (connection, req, res) {
     //         return resultData;
     //     });
     // });
-    connection.getConnection(function (error, connection) {
-        if (!!error) {
-            connection.release();
-        } else {
-            connection.query('SELECT * from product_counts where id = ?',
-                dataRequsest.id, function (err, rows, filed) {
-                    if (err) {
-                        // callback(err, null);
 
-                        console.log('xxxxxxxxxxxxxxxx', rows);
-                    } else
-                    // callback(null, rows);
-                        resultData.push(rows);
-                    console.log('yyyyyyyyyyyyyyyyyyyyyy', rows, 'ccccccccccccccc', resultData);
-                });
-        }
-    });
+    if (connection) {
+        connection.connect(function (error, connection) {
+            if (!!error) {
+                console.log('Fail connect ......!');
+            } else {
+                connection.query('SELECT * from product_counts where id = ?',
+                    dataRequsest.id, function (err, rows, filed) {
+                        if (err) {
+                            // callback(err, null);
 
-    console.log('___________________', resultData);
+                            console.log('xxxxxxxxxxxxxxxx', rows);
+                        } else
+                        // callback(null, rows);
+                            resultData.push(rows);
+                        console.log('yyyyyyyyyyyyyyyyyyyyyy', rows, 'ccccccccccccccc', resultData);
+                    });
+            }
+        });
+
+        console.log('___________________', resultData);
+    }
+
     return resultData;
 };
-
 
 module.exports = User;
