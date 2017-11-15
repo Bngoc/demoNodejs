@@ -8,13 +8,15 @@ var Product = require("./../models/Product.js");
 // var BaseController = require('./BaseController.js');
 var UserController = require('./UserController.js');
 var ViewsController = require('./ViewsController.js');
+var HelperViewController = require('./HelperViewController.js');
+const helperViewController = new HelperViewController();
 
 const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const getCoreHelper = new CoreHelper();
 const getConnect = getCoreHelper.getConnect();
 
 
-class ProductController extends ViewsController {
+class ProductController extends ViewsController{
     constructor() {
         super();
         console.log('constructor brfore index product');
@@ -23,7 +25,15 @@ class ProductController extends ViewsController {
     // index product
     getIndex(req, res, next) {
         try {
-            console.log('index product ..................');
+            var showResponse =  helperViewController;
+            showResponse.script = '<>';
+            showResponse.css = '<link rel="stylesheet" href="/css/style.min.css?v=1.5.0">';
+            showResponse.title = 'Home product';
+            showResponse.media = 'media';
+            // showResponse.meta = showResponse.setMeta();
+            // showResponse.css = showResponse.defaultScriptCss();
+
+            console.log('index product ..................', showResponse);
 
             // res.render('product/create', {name: "12243434", title: "nmgdgjd gldsjg sjlsj"});
 
@@ -42,10 +52,11 @@ class ProductController extends ViewsController {
 
             var newUser = new User({});
 
+            // console.log(getConnect);
             if (getConnect) {
                var rsData = newUser.register(getConnect, req, res);
 
-               console.log(rsData, " ----- rsData");
+               console.log(rsData, "  => Calll ------ rsData");
             }
 
             // if (connection) {
@@ -73,8 +84,11 @@ class ProductController extends ViewsController {
             // newUser.register();
             //     // do other things...
 
-
-            res.render(getCoreHelper.paths.VIEWS + 'product/create.ejs', {name: 111, title: 5343, body: [], bodyfff: 343434});
+            showResponse.name = 1111;
+            showResponse.body = [111, 4444, 5555];
+            showResponse.bodyfff = 1111;
+            showResponse.renderViews = 'product/create.ejs';
+            res.render(showResponse.renderViews, showResponse);
         } catch (ex) {
             throw ex;
         }

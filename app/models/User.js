@@ -22,41 +22,43 @@ User.prototype.register = function (connection, req, res) {
     // }
 
     // });
-    var resultData = [];
+    global.resultData = [];
 
     var dataRequsest = {
-        id: 4
+        id: 6
     };
 
-    // fetchID(data, callback) {
-        connection.query('SELECT * from product_counts where id = ?',
-            dataRequsest.id, function (err, rows, filed) {
-                connection.end();
-
-                if (err) {
-                    // callback(err, null);
-
-                    return resultData;
-                } else
-                    // callback(null, rows);
-                    resultData.push(rows);
-                    return resultData;
-            });
-    // }
-
-    // fetchID(dataRequsest, function (err, content) {
-    //     if (err) {
-    //         console.log(err);
-    //
-    //         // Do something with your error...
-    //     } else {
-    //         resultData.push(content);
+    // connection.connect(connectionString, (err, connection, done) => {
+    //     const query = connection.query('SELECT * from product_counts where id = ?', dataRequsest.id);
+    //     query.on('row', (row) => {
+    //         resultData.push(row);
     //         console.log(resultData);
-    //         // return resultData;
-    //     }
+    //     });
+    //     query.on('end', () => {
+    //         // done();
+    //         return resultData;
+    //     });
     // });
+    connection.getConnection(function (error, connection) {
+        if (!!error) {
+            connection.release();
+        } else {
+            connection.query('SELECT * from product_counts where id = ?',
+                dataRequsest.id, function (err, rows, filed) {
+                    if (err) {
+                        // callback(err, null);
 
-    // return resultData;
+                        console.log('xxxxxxxxxxxxxxxx', rows);
+                    } else
+                    // callback(null, rows);
+                        resultData.push(rows);
+                    console.log('yyyyyyyyyyyyyyyyyyyyyy', rows, 'ccccccccccccccc', resultData);
+                });
+        }
+    });
+
+    console.log('___________________', resultData);
+    return resultData;
 };
 
 

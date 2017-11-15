@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>{DEFINE_TITLE}</title>
+    <title><%- title %></title>
     <link rel="shortcut icon" href="https://cdn.sstatic.net/Sites/stackoverflow/img/favicon.ico?v=4f32ecc8f43d">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdn.sstatic.net/Js/stub.en.js?v=a9d1ca0830f9"></script>
@@ -37,11 +37,11 @@
 
 <div class="container _full ">
     <div id="content" class="snippet-hidden">
-        {CONTENT}
+        {CONTENT} <%- body %>
     </div>
 </div>
 
-{DEFINE_FOOTER}
+{DEFINE_FOOTER} <%- footer %>
 
 {INCLUDE_CSS}
 {INCLUDE_SCRIPT}

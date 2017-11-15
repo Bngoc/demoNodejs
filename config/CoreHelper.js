@@ -1,6 +1,7 @@
 'use strict';
 
 const MySQL = require("mysql");
+const pg = require('pg');
 const sampleRequirePaths = require('./../config/paths.js');
 const paths = new sampleRequirePaths();
 const sampleDB = require(`${paths.CONFIG}/db.json`);
@@ -33,8 +34,8 @@ function CoreHelper() {
 
     this.mySql = function () {
 
-        // var connectionPool = MySQL.createPool(this.getConfigInfoDb());
-        // retrun connectionPool;
+        var connectionPool = MySQL.createPool(this.getConfigInfoDb());
+        return connectionPool;
         ////* Check in controller
 
         // connectionPool.getConnection(function (error, connection) {
@@ -56,8 +57,8 @@ function CoreHelper() {
         // });
 
 
-        var connection = MySQL.createConnection(this.getConfigInfoDb());
-        return connection;
+        // var connection = MySQL.createConnection(this.getConfigInfoDb());
+        // return connection;
 
         ////* Check connect in controller
         // connection.connect(function (err) {
@@ -70,16 +71,22 @@ function CoreHelper() {
     };
 
     this.pgSQL = function connectionPGSQL() {
-
+        var connection = new pg.Pool(this.getConfigInfoDb());
+        // var connection = new pg.Client(this.getConfigInfoDb());
+        return connection;
     };
 
 
-    this.configApp = function (app) {
-
+    this.runSocket = function (app) {
+        // var Socket = require(`${paths.MODULE}/socket.js`);
+        // var configSocket = new Socket();
+        // return configSocket.configSocket(app, paths);
     };
 
-    this.configSocket = function (app) {
-
+    this.runExpress = function(app) {
+        var Express = require(`${paths.MODULE}/express.js`);
+        var configExpress = new Express();
+        return configExpress.configExpress(app, paths);
     };
 
     this.runRoutes = function (app) {
@@ -105,7 +112,7 @@ class ConnectDB extends CoreHelper {
             const getNameConnectDb = this.sampleConfig.DB_CONNECTION ? this.sampleConfig.DB_CONNECTION : '';
             if (getNameConnectDb === 'mysql') {
                 return this.mySql();
-            } else if (getNameConnectDb === 'pgsql') {
+            } else if (getNameConnectDb === 'postgres') {
                 return this.pgSQL();
             } else {
                 console.log('Not config connect db!');

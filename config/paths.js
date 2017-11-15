@@ -9,6 +9,7 @@ var DefinePaths = function definePaths() {
     this.LIB = `${this.ROOT}lib${DS}`;
     this.VENDOR = `${this.ROOT}vendor${DS}`;
     this.CONFIG = `${this.ROOT}config${DS}`;
+    this.MODULE = `${this.CONFIG}module${DS}`;
 
     this.APP = `${this.ROOT}app${DS}`;
     this.CONTROLLERS = `${this.ROOT}controllers${DS}`;

@@ -4,6 +4,7 @@
   "private": "true",
   "dependencies": {
     "express": "*",
+    "express-generator": "^4.13.4",
     "socket.io": "*",
     "jsonwebtoken": "^7.3.0",
     "mysql": "^2.13.0",
@@ -11,18 +12,27 @@
     "body-parser": "*",
     "morgan": "*",
     "i18n": "^0.8.3",
-    "serve-favicon": "^2.4.3"
-
+    "serve-favicon": "^2.4.3",
+    "supervisor": "^0.12.0",
+    "pg": "^6.1.2"
   },
   "author": "BuiNgoc",
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "supervisor ./"
   },
   "keywords": [
     "demo"
   ],
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bngoc/demoNodejs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Bngoc/demoNodejs/issues"
+  },
+  "homepage": "https://github.com/Bngoc/demoNodejs#readme",
   "description": ""
 }

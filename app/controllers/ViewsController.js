@@ -9,7 +9,7 @@ class ViewsController {
     constructor() {
         // this binding maintains the value of this
         // inside these methods during future calls .
-        this.footer = this.footer.bind(this)
+        this.footer = this.footer.bind(this);
         // this.bar = this.bar.bind(this)
         // this.baz = this.baz.bind(this)
     }
