@@ -3,6 +3,9 @@
 var path = require('path'),
     fs = require('fs');
 
+const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
+const coreHelper = new CoreHelper();
+
 var sampleHtmlMaster = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/master.ejs'), 'utf-8');
 
 function HelperViewController() {
@@ -20,6 +23,10 @@ function HelperViewController() {
     this.pagination = "";
     this.footer = "";
     this.isAuthenticated = false;
+
+    this.config = coreHelper.sampleConfig;
+    this.paths = coreHelper.paths;
+    this.connect = coreHelper.getConnect();
 };
 
 HelperViewController.prototype.readFile = function () {
@@ -31,7 +38,7 @@ HelperViewController.prototype.defaultScriptCss = function () {
 };
 
 HelperViewController.prototype.setMeta = function (sampleHtmlMaster) {
-    var sampleHtmlHeader = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/topHeader.ejs'), 'utf-8');
+    var sampleHtmlHeader = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/header.ejs'), 'utf-8');
     // return sampleHtmlMaster.replace('{DEFINE_HEADER}', sampleHtmlHeader);
 
     return sampleHtmlHeader;
@@ -43,7 +50,7 @@ HelperViewController.prototype.nav = function (sampleHtmlMaster) {
 };
 
 HelperViewController.prototype.header = function (sampleHtmlMaster) {
-    var sampleHtmlHeader = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/topHeader.ejs'), 'utf-8');
+    var sampleHtmlHeader = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/header.ejs'), 'utf-8');
     return sampleHtmlMaster.replace('{DEFINE_HEADER}', sampleHtmlHeader);
 };
 
@@ -53,7 +60,7 @@ HelperViewController.prototype.includeCss = function () {
 };
 
 HelperViewController.prototype.includeScript = function () {
- return 'list script';
+    return 'list script';
 };
 
 HelperViewController.prototype.footer = function (sampleHtmlMaster = 'sss') {
@@ -63,6 +70,7 @@ HelperViewController.prototype.footer = function (sampleHtmlMaster = 'sss') {
 
 
 HelperViewController.prototype.renderLayout = function () {
+
     var tmpSampleHtmlMaster = sampleHtmlMaster;
     var tmpSampleHtmlMaster = this.header(tmpSampleHtmlMaster);
     var tmpSampleHtmlMaster = this.nav(tmpSampleHtmlMaster);
@@ -73,4 +81,17 @@ HelperViewController.prototype.renderLayout = function () {
     return tmpSampleHtmlMaster;
 };
 
+
+class View extends HelperViewController {
+    view() {
+        this.css = HelperViewController.defaultScriptCss();
+    }
+
+    getCoreHelper() {
+
+    }
+}
+;
+
 module.exports = HelperViewController;
+module.exports = View;

@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html LANG="EN">
-
 <head>
     <meta charset="UTF-8">
-    <title><%- title %></title>
+    <title><%= title %></title>
     <link rel="shortcut icon" href="https://cdn.sstatic.net/Sites/stackoverflow/img/favicon.ico?v=4f32ecc8f43d">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdn.sstatic.net/Js/stub.en.js?v=a9d1ca0830f9"></script>
@@ -33,6 +32,8 @@
 <div id="notify-container"></div>
 <div id="custom-header"></div>
 
+<%- include('../layouts/header.ejs') %>
+
 {DEFINE_HEADER}
 
 <div class="container _full ">
@@ -41,9 +42,11 @@
     </div>
 </div>
 
-{DEFINE_FOOTER} <%- footer %>
+{DEFINE_FOOTER}
 
 {INCLUDE_CSS}
 {INCLUDE_SCRIPT}
+
+<div class="footer"><%- include('../layouts/footer.ejs) %></div>
 </body>
 </html>

@@ -9,7 +9,7 @@ var productController = new ProductController;
 var homeController = new HomeController;
 
 class Routers {
-    useRoutes(app, paths) {
+    useRoutes(app, coreHelper) {
 
         app.get("/", homeController.index);
         app.get("/login", userController.login);
@@ -26,9 +26,9 @@ class Routers {
             var rs = `param1 / param2 => ${pa1} / ${pa2}`;
             // response.send(rs);
             console.log('FFFFFFFFFFFFFFFFFFFFFF ', rs);
-            response.sendFile(paths.VIEWS + 'layouts/master.ejs', 'utf-8');
-            // response.sendFile(path.resolve(__dirname + '/../resources/layouts/master.ejs'), 'utf-8');
-        }).bind(paths);
+            response.sendFile(coreHelper.paths.VIEWS + 'layouts/master.ejs', 'utf-8');
+            // response.sendFile(coreHelper.paths.resolve(__dirname + '/../resources/layouts/master.ejs'), 'utf-8');
+        }).bind(coreHelper);
     }
 }
 

@@ -1,4 +1,8 @@
 'use strict';
+
+const HelperViewController = require('./HelperViewController.js');
+const helperViewController = new HelperViewController();
+
 var path = require('path'),
     fs = require('fs');
 
@@ -9,7 +13,7 @@ class ViewsController {
     constructor() {
         // this binding maintains the value of this
         // inside these methods during future calls .
-        this.footer = this.footer.bind(this);
+        // this.footer = this.footer.bind(this);
         // this.bar = this.bar.bind(this)
         // this.baz = this.baz.bind(this)
     }
@@ -20,7 +24,7 @@ class ViewsController {
     }
 
     header(sampleHtmlMaster) {
-        var sampleHtmlHeader = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/topHeader.ejs'), 'utf-8');
+        var sampleHtmlHeader = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/header.ejs'), 'utf-8');
         return sampleHtmlMaster.replace('{DEFINE_HEADER}', sampleHtmlHeader);
     }
 

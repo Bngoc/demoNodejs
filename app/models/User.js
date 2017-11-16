@@ -1,68 +1,51 @@
-'use strict'
-// var connection = require("./../../lib/connection.js");
+'use strict';
 
-
-var User = function (params) {
+let User = function (params) {
+    this.id = params.id;
     this.email = params.email;
     this.password = params.password;
     this.lastName = params.lastName;
     this.firstName = params.firstName;
+    this.fullName = params.fullName;
     // ...etc
 };
 
-User.prototype.register = function (connection, req, res) {
+User.prototype.register = function (req, res, callback) {
+    const connection = req.showResponse.connect;
 
-    // connection.getConnection(function (error, connection) {
-    // connection.doWhatever();
-
-    // if (!!error) {
-    //     tempCount.release();
-    // } else  {
-    //
-    // }
-
-    // });
-    var resultData = [];
+    let resultData = [];
 
     var dataRequsest = {
-        id: 6
+        id: req.id ? req.id : 6
     };
 
-    // connection.connect(connectionString, (err, connection, done) => {
-    //     const query = connection.query('SELECT * from product_counts where id = ?', dataRequsest.id);
-    //     query.on('row', (row) => {
-    //         resultData.push(row);
-    //         console.log(resultData);
-    //     });
-    //     query.on('end', () => {
-    //         // done();
-    //         return resultData;
-    //     });
-    // });
+    connection.connect(function (error) {
+        if (!!error) {
 
-    if (connection) {
-        connection.connect(function (error, connection) {
-            if (!!error) {
-                console.log('Fail connect ......!');
-            } else {
-                connection.query('SELECT * from product_counts where id = ?',
-                    dataRequsest.id, function (err, rows, filed) {
-                        if (err) {
-                            // callback(err, null);
+            req.showResponse.title = 'Errors 404';
+            req.showResponse.renderViews = 'errors/404.ejs';
 
-                            console.log('xxxxxxxxxxxxxxxx', rows);
-                        } else
-                        // callback(null, rows);
-                            resultData.push(rows);
-                        console.log('yyyyyyyyyyyyyyyyyyyyyy', rows, 'ccccccccccccccc', resultData);
-                    });
-            }
-        });
+            console.log('Fail connect ......!');
+            callback(error, req.showResponse);
+        } else {
+            connection.query('SELECT * from product_counts where id = ?',
+                dataRequsest.id, function (err, rows, filed) {
+                    if (err) {
 
-        console.log('___________________', resultData);
-    }
+                        req.showResponse.title = 'query error ... !';
+                        req.showResponse.name = 'SELECT * from product_counts where id = ?';
 
-    return resultData;
+                        callback(err, req.showResponse);
+                    } else {
+                        callback(null, rows);
+                    }
+                });
+        }
+    });
+};
+
+User.prototype.show = function (req, res, callback) {
+
 };
 
 module.exports = User;

@@ -6,7 +6,7 @@ const ejs = require('ejs');
 // const express_layouts  = require('express-ejs-layouts');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
-// const methodOverride   = require('method-override');
+const methodOverride = require('method-override');
 const express = require('express');
 const i18n = require('i18n');
 // const expressValidator = require('express-validator');
@@ -41,16 +41,16 @@ const favicon = require('serve-favicon');
 
 class Express {
 
-    configExpress(app, paths, passport) {
-        app.engine('html', ejs.renderFile);
+    configExpress(app, coreHelper, passport) {
         app.set('view engine', 'ejs');
-        app.set('views', paths.VIEWS);
+        app.engine('html', ejs.renderFile);
+        app.set('views', coreHelper.paths.VIEWS);
         app.set('layout', 'layouts/master');
         app.set("layout extractScripts", true);
         app.set("layout extractStyles", true);
         app.set("layout extractMetas", true);
         app.set("layout extractTitles", true);
-        // app.set('port', config.port);
+        app.set('port', coreHelper.sampleConfig.domain.port);
         // app.set('path_model', paths.models);
         // app.use(express_layouts);
 
@@ -59,11 +59,19 @@ class Express {
         app.use(bodyParser.json());
         app.use(bodyParser.text({type: 'text/html'}));
         // app.use(expressValidator(customValidator()));
-        // app.use(methodOverride('X-HTTP-Method-Override'));
+        app.use(methodOverride('X-HTTP-Method-Override'));
+        app.use(methodOverride(function (req, res) {
+            if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+                // look in urlencoded POST bodies and delete it
+                var method = req.body._method
+                delete req.body._method
+                return method
+            }
+        }));
 
-        app.use(express.static(paths.PUBLIC));
+        app.use(express.static(coreHelper.paths.PUBLIC));
         // app.use(errorhandler());
-        app.use(favicon(paths.IMAGES + 'favicon.ico'));
+        app.use(favicon(coreHelper.paths.IMAGES + 'favicon.ico'));
     };
 }
 

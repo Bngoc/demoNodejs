@@ -7,7 +7,6 @@ const paths = new sampleRequirePaths();
 const sampleDB = require(`${paths.CONFIG}/db.json`);
 const sampleConfig = require(`${paths.CONFIG}/config.json`);
 
-
 function CoreHelper() {
 
     this.paths = paths;
@@ -34,12 +33,11 @@ function CoreHelper() {
 
     this.mySql = function () {
 
-        var connectionPool = MySQL.createPool(this.getConfigInfoDb());
-        return connectionPool;
+        // var connectionPool = MySQL.createPool(this.getConfigInfoDb());
+        // return connectionPool;
         ////* Check in controller
 
         // connectionPool.getConnection(function (error, connection) {
-
         //     if (err) {
         //         res.json({"code": 100, "status": "Error in connection database"});
         //         return;
@@ -57,8 +55,8 @@ function CoreHelper() {
         // });
 
 
-        // var connection = MySQL.createConnection(this.getConfigInfoDb());
-        // return connection;
+        var connection = MySQL.createConnection(this.getConfigInfoDb());
+        return connection;
 
         ////* Check connect in controller
         // connection.connect(function (err) {
@@ -80,30 +78,32 @@ function CoreHelper() {
     this.runSocket = function (app) {
         // var Socket = require(`${paths.MODULE}/socket.js`);
         // var configSocket = new Socket();
-        // return configSocket.configSocket(app, paths);
+        //  configSocket.configSocket(app, paths);
+        //return configSocket;
     };
 
-    this.runExpress = function(app) {
+    this.runExpress = function (app) {
         var Express = require(`${paths.MODULE}/express.js`);
         var configExpress = new Express();
-        return configExpress.configExpress(app, paths);
+        configExpress.configExpress(app, this);
+        return configExpress;
     };
 
     this.runRoutes = function (app) {
         var Router = require(`${paths.APP}/routers.js`);
         var router = new Router();
-        return router.useRoutes(app, paths);
+        router.useRoutes(app, this);
+        return router;
     };
 
     this.runServer = function (app) {
-        var sampleServer = require(`${paths.CONFIG}/server.js`);
-        var server = new sampleServer();
+        var Server = require(`${paths.CONFIG}/server.js`);
+        var server = new Server();
         server.createServer(app, this.sampleConfig);
-
-        console.log('Running Server ....!');
         return server;
     };
 }
+
 
 class ConnectDB extends CoreHelper {
 
