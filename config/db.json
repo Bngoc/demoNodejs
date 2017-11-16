@@ -19,6 +19,7 @@
     "database": "forge",
     "charset": "utf8",
     "prefix": "",
-    "schema": "public"
+    "schema": "public",
+    "ssl": false
   }
 }

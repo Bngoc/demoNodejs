@@ -21,18 +21,14 @@ class ProductController extends ViewsController {
         try {
 
             var showResponse = helperViewController;
-            showResponse.script = '<>';
-            showResponse.css = '<link rel="stylesheet" href="/css/style.min.css?v=1.5.0">';
+            showResponse.script = 'ggsgsgsg>';
+            showResponse.cssInclude = "<link rel=\"stylesheet\" href=\"/css/style.min.css?v=1.5.0\">";
             showResponse.title = 'Home product';
             showResponse.media = 'media';
-            // showResponse.meta = showResponse.setMeta();
-            // showResponse.css = showResponse.defaultScriptCss();
-            showResponse.renderViews = 'product/create.ejs';
-            showResponse.body = [111, 4444, 5555];
-            showResponse.bodyfff = 1111;
-            showResponse.name = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
-            console.log('index product ..................', showResponse);
+            // showResponse.meta = showResponse.setMeta();
+            // showResponse.content = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXx';
+            showResponse.renderViews = 'product/create';
 
             var params = {
                 email: 'ems@gmail.com',
@@ -42,7 +38,6 @@ class ProductController extends ViewsController {
             };
 
             var newUser = new User({});
-
             // newUser.id = 16;
             // newUser.email = params.email;
             // newUser.firstName = params.first_name;
@@ -51,23 +46,24 @@ class ProductController extends ViewsController {
 
             req.showResponse = showResponse;
 
-
-            var rsData = newUser.register(req, res, function (errr, resultData) {
-                if (errr) {
+            var rsData = newUser.register(req, res, function (errConnect, resultData) {
+                if (errConnect) {
                     res.render(req.showResponse.renderViews, resultData);
                 } else {
 
-                    resultData.forEach(function (value, indexs) {
-                        console.log(value.product_id + ' ---- ' + indexs);
-                    });
-
+                    if (resultData.length) {
+                        resultData.forEach(function (value, indexs) {
+                            console.log(value.product_id + ' ---- ' + indexs);
+                        });
+                    }
                     showResponse.name = JSON.stringify(resultData);
-
+console.log(showResponse);
                     res.render(showResponse.renderViews, showResponse);
                 }
             });
         } catch (ex) {
             throw ex;
+            console.log('ERROR TRY_CATCH product');
         }
     };
 

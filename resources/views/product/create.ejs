@@ -1,7 +1,23 @@
-dhdkmh;d h<%- name %> ------------- <%- title %>
+<div id="showmsg"></div>
+<div id="showmsgt"></div>
 
-<% body.forEach(function(h){ %>
-<h3>xxxxx -- <%= h %></h3>
-<% }); %>
+<div id="submit" type="submit">submit</div>
+<%= name %>
+<script>
+    var socket = io.connect('http://localhost:8080');
 
-<% bodyfff -%> <h1>dgdsg sgs sg</h1>
+    socket.on('message', function (message) {
+        $('#showmsg').text('The server has a message for you: ' + message);
+        console.log(message);
+    });
+
+    socket.on('send-data-test', function (messagensp) {
+        $('#showmsgt').text('messagensp for you: ' + messagensp);
+        console.log(messagensp);
+    });
+
+    $('#submit').on('click', function () {
+        socket.emit('send-data-test', '34567890');
+    });
+
+</script>

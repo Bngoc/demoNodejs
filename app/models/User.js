@@ -11,7 +11,7 @@ let User = function (params) {
 };
 
 User.prototype.register = function (req, res, callback) {
-    const connection = req.showResponse.connect;
+    const connection = req.showResponse.coreHelper.getConnect();
 
     let resultData = [];
 
@@ -25,24 +25,27 @@ User.prototype.register = function (req, res, callback) {
             req.showResponse.title = 'Errors 404';
             req.showResponse.renderViews = 'errors/404.ejs';
 
-            console.log('Fail connect ......!');
+            console.log('Fail connect ......!', error, req.showResponse.coreHelper.getConfigInfoDb());
             callback(error, req.showResponse);
         } else {
-            connection.query('SELECT * from product_counts where id = ?',
-                dataRequsest.id, function (err, rows, filed) {
-                    if (err) {
+            // use SQL DB raw, because support connect Mysql and Postgres Sql
+            var myQuery = 'SELECT * from product_counts where id = ' + [dataRequsest.id];
 
-                        req.showResponse.title = 'query error ... !';
-                        req.showResponse.name = 'SELECT * from product_counts where id = ?';
-
-                        callback(err, req.showResponse);
-                    } else {
-                        callback(null, rows);
-                    }
-                });
+            connection.query(myQuery, function (err, rows, filed) {
+                if (err) {
+                    req.showResponse.title = 'query error ... !';
+                    req.showResponse.name = myQuery;
+                    callback(err, req.showResponse);
+                } else {
+                    //postgres sql result rows.row
+                    //mysql result rows
+                    callback(null, rows.rows ? rows.rows : rows);
+                }
+            });
         }
     });
 };
+
 
 User.prototype.show = function (req, res, callback) {
 

@@ -9,24 +9,31 @@ const coreHelper = new CoreHelper();
 var sampleHtmlMaster = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/master.ejs'), 'utf-8');
 
 function HelperViewController() {
-    this.title = "Home";
-    this.keywords = "demo nodejs";
-    this.meta = "abc";
+    this.title = "Welcome to " + coreHelper.sampleConfig.domain.host;
+    this.meta = '<meta name="twitter:app:country" content="US"/>'
+        + '<meta name="twitter:app:name:iphone" content="Stack Exchange iOS"/>'
+        + '<meta name="twitter:app:id:iphone" content="871299723"/>';
     this.media = "";
     this.header = "";
     this.nav = "";
-    this.script = "";
+
     this.css = "";
-    this.renderViews = "";
-    this.content = "";
+    this.cssInclude = "";
+
+    this.script = "";
+    this.scriptInclude = "";
+
+    // this.content = "";
     this.page = "4";
     this.pagination = "";
+
     this.footer = "";
+    this.feedBack = "";
+
+    this.renderViews = "";
     this.isAuthenticated = false;
 
-    this.config = coreHelper.sampleConfig;
-    this.paths = coreHelper.paths;
-    this.connect = coreHelper.getConnect();
+    this.coreHelper = coreHelper;
 };
 
 HelperViewController.prototype.readFile = function () {
@@ -35,6 +42,10 @@ HelperViewController.prototype.readFile = function () {
 
 HelperViewController.prototype.defaultScriptCss = function () {
     return 'method -> defaultScriptCss';
+};
+
+HelperViewController.prototype.coreHelper = function () {
+    return coreHelper;
 };
 
 HelperViewController.prototype.setMeta = function (sampleHtmlMaster) {
@@ -71,14 +82,14 @@ HelperViewController.prototype.footer = function (sampleHtmlMaster = 'sss') {
 
 HelperViewController.prototype.renderLayout = function () {
 
-    var tmpSampleHtmlMaster = sampleHtmlMaster;
-    var tmpSampleHtmlMaster = this.header(tmpSampleHtmlMaster);
-    var tmpSampleHtmlMaster = this.nav(tmpSampleHtmlMaster);
-    var tmpSampleHtmlMaster = this.footer(tmpSampleHtmlMaster);
+    // var tmpSampleHtmlMaster = sampleHtmlMaster;
+    // var tmpSampleHtmlMaster = this.header(tmpSampleHtmlMaster);
+    // var tmpSampleHtmlMaster = this.nav(tmpSampleHtmlMaster);
+    // var tmpSampleHtmlMaster = this.footer(tmpSampleHtmlMaster);
     // var sampleHtmlMaster = this.footer(sampleHtmlMaster);
     // var sampleHtmlMaster = this.footer(sampleHtmlMaster);
-
-    return tmpSampleHtmlMaster;
+    //
+    // return tmpSampleHtmlMaster;
 };
 
 

@@ -3,7 +3,7 @@
  * Module dependencies.
  */
 const ejs = require('ejs');
-// const express_layouts  = require('express-ejs-layouts');
+const expressLayouts  = require('express-ejs-layouts');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
@@ -51,8 +51,9 @@ class Express {
         app.set("layout extractMetas", true);
         app.set("layout extractTitles", true);
         app.set('port', coreHelper.sampleConfig.domain.port);
+        app.set('view options', {layout: 'layouts/master'});
         // app.set('path_model', paths.models);
-        // app.use(express_layouts);
+        app.use(expressLayouts);
 
         app.use(logger('dev'));
         app.use(bodyParser.urlencoded({extended: true}));

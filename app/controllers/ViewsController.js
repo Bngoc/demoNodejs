@@ -7,7 +7,7 @@ var path = require('path'),
     fs = require('fs');
 
 
-var sampleHtmlMaster = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/master.ejs'), 'utf-8');
+// var sampleHtmlMaster = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/master.ejs'), 'utf-8');
 
 class ViewsController {
     constructor() {
@@ -19,13 +19,13 @@ class ViewsController {
     }
 
     nav(sampleHtmlMaster) {
-        var sampleHtmlNav = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/nav.ejs'), 'utf-8');
-        return sampleHtmlMaster.replace('{DEFINE_NAV}', sampleHtmlNav);
+        // var sampleHtmlNav = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/nav.ejs'), 'utf-8');
+        // return sampleHtmlMaster.replace('{DEFINE_NAV}', sampleHtmlNav);
     }
 
     header(sampleHtmlMaster) {
-        var sampleHtmlHeader = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/header.ejs'), 'utf-8');
-        return sampleHtmlMaster.replace('{DEFINE_HEADER}', sampleHtmlHeader);
+        // var sampleHtmlHeader = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/header.ejs'), 'utf-8');
+        // return sampleHtmlMaster.replace('{DEFINE_HEADER}', sampleHtmlHeader);
     }
 
     defaultScriptCss() {
@@ -42,19 +42,19 @@ class ViewsController {
     }
 
     footer(sampleHtmlMaster) {
-        var sampleHtmlFooter = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/footer.ejs'), 'utf-8');
-        return sampleHtmlMaster.replace('{DEFINE_FOOTER}', sampleHtmlFooter);
+        // var sampleHtmlFooter = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/footer.ejs'), 'utf-8');
+        // return sampleHtmlMaster.replace('{DEFINE_FOOTER}', sampleHtmlFooter);
     }
 
     renderLayout() {
-        var tmpSampleHtmlMaster = sampleHtmlMaster;
-        var tmpSampleHtmlMaster = this.header(tmpSampleHtmlMaster);
-        var tmpSampleHtmlMaster = this.nav(tmpSampleHtmlMaster);
-        var tmpSampleHtmlMaster = this.footer(tmpSampleHtmlMaster);
-        // var sampleHtmlMaster = this.footer(sampleHtmlMaster);
-        // var sampleHtmlMaster = this.footer(sampleHtmlMaster);
-
-        return tmpSampleHtmlMaster;
+        // var tmpSampleHtmlMaster = sampleHtmlMaster;
+        // var tmpSampleHtmlMaster = this.header(tmpSampleHtmlMaster);
+        // var tmpSampleHtmlMaster = this.nav(tmpSampleHtmlMaster);
+        // var tmpSampleHtmlMaster = this.footer(tmpSampleHtmlMaster);
+        // // var sampleHtmlMaster = this.footer(sampleHtmlMaster);
+        // // var sampleHtmlMaster = this.footer(sampleHtmlMaster);
+        //
+        // return tmpSampleHtmlMaster;
     }
 }
 

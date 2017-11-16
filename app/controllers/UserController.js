@@ -19,16 +19,16 @@ class UserController {
 
     login(requset, response) {
 
-        var viewsController = new ViewsController();
-        var dataLayoutHtml = viewsController.renderLayout();
-
-        var sampleHtmlContent = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/user/login.ejs'), 'utf-8');
-        dataLayoutHtml = dataLayoutHtml.replace('{CONTENT}', sampleHtmlContent);
-        response.writeHead(200, {"Context-type": "text/html"});
-        response.end(dataLayoutHtml);
+        // var viewsController = new ViewsController();
+        // var dataLayoutHtml = viewsController.renderLayout();
+        //
+        // var sampleHtmlContent = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/user/login.ejs'), 'utf-8');
+        // dataLayoutHtml = dataLayoutHtml.replace('{CONTENT}', sampleHtmlContent);
+        // response.writeHead(200, {"Context-type": "text/html"});
+        // response.end(dataLayoutHtml);
 
         // var homeController = new HomeController();
-        // response.render('login.ejs', {layout: 11});
+        response.render('user/login.ejs', helperViewController);
 
         // var homeController = new HomeController();
         // response.render('login', {layout: 11});

@@ -22,9 +22,8 @@ class HomeController extends BaseController {
         showResponse.media = 'media';
         showResponse.name = 1111;
         showResponse.body = 'Home welcome';
-        showResponse.renderViews = 'layouts/footer.ejs';
+        showResponse.renderViews = 'home/index.ejs';
 
-        console.log(showResponse);
 
         response.render(showResponse.renderViews, showResponse);
 

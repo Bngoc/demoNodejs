@@ -2,7 +2,10 @@
 <html LANG="EN">
 <head>
     <meta charset="UTF-8">
+    <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA/4QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEREREAAAAAAAAAABAAAAAAAAAAAQAAAAAAAAAAEAAAAAAAAAAQAAEREQAAABEAEQAAEQAAAAAQAAABAAABABAAAAEAABAAAQAAAQAAEAAAAQABABEAAAAAERERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//wAA8A8AAP/3AAD/+wAA//0AAP/9AADg/AAAzz8AAN++AADfvQAA770AAPuzAAD8DwAA//8AAP//AAD//wAA"
+          rel="icon" type="image/x-icon"/>
     <title><%= title %></title>
+    <%- meta %>
     <link rel="shortcut icon" href="https://cdn.sstatic.net/Sites/stackoverflow/img/favicon.ico?v=4f32ecc8f43d">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdn.sstatic.net/Js/stub.en.js?v=a9d1ca0830f9"></script>
@@ -10,43 +13,46 @@
 
     <link rel="alternate" type="application/atom+xml" title="Feed for question &#39;ES6 Class Multiple inheritance&#39;"
           href="/feeds/question/29879267">
-    <meta name="twitter:app:country" content="US"/>
-    <meta name="twitter:app:name:iphone" content="Stack Exchange iOS"/>
-    <meta name="twitter:app:id:iphone" content="871299723"/>
-    <meta name="twitter:app:url:iphone"
-          content="se-zaphod://stackoverflow.com/questions/29879267/es6-class-multiple-inheritance"/>
+
     <meta name="twitter:app:name:ipad" content="Stack Exchange iOS"/>
     <meta name="twitter:app:id:ipad" content="871299723"/>
-    <meta name="twitter:app:url:ipad"
-          content="se-zaphod://stackoverflow.com/questions/29879267/es6-class-multiple-inheritance"/>
-    <meta name="twitter:app:name:googleplay" content="Stack Exchange Android">
-    <meta name="twitter:app:url:googleplay"
-          content="http://stackoverflow.com/questions/29879267/es6-class-multiple-inheritance">
-    <meta name="twitter:app:id:googleplay" content="com.stackexchange.marvin">
 
-    {DEFINE_CSS_DEFAULT}{DEFINE_SCRIPT_DEFAULT}
-
+    <%- css %>
+    <%- cssInclude %>
+    <%- script %>
 </head>
 <body class="question-page new-topbar">
 
 <div id="notify-container"></div>
 <div id="custom-header"></div>
 
-<%- include('../layouts/header.ejs') %>
-
-{DEFINE_HEADER}
+<%- include('./../layouts/header.ejs') %>
 
 <div class="container _full ">
     <div id="content" class="snippet-hidden">
-        {CONTENT} <%- body %>
+        <%- include('./../layouts/nav.ejs') %>
+        <div class="inner-content">
+            <div id="question-header">
+                <%- header %>
+            </div>
+
+            <div id="mainbar" role="main" aria-label="question and answers">
+                <%- content %>
+            </div>
+
+            <div id="sidebar" class="show-votes" role="complementary" aria-label="sidebar">
+                <%- include('./../layouts/sidebar.ejs') %>
+            </div>
+
+            <div id="feed-link">
+                <%- feedBack %>
+            </div>
+        </div>
     </div>
 </div>
 
-{DEFINE_FOOTER}
+<%- scriptInclude %>
 
-{INCLUDE_CSS}
-{INCLUDE_SCRIPT}
-
-<div class="footer"><%- include('../layouts/footer.ejs) %></div>
+<%- include('./../layouts/footer.ejs') %>
 </body>
 </html>
