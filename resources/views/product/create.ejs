@@ -2,9 +2,13 @@
 <div id="showmsgt"></div>
 
 <div id="submit" type="submit">submit</div>
-<%= name %>
-<script>
-    var socket = io.connect('http://localhost:8080');
+<%- name %>
+
+<script style="text/javascript">
+
+    var protocol = ('https:' == document.location.protocol ? 'https://' : 'http://');
+    var locationOrigin = document.location.origin;
+    var socket = io.connect(locationOrigin);
 
     socket.on('message', function (message) {
         $('#showmsg').text('The server has a message for you: ' + message);

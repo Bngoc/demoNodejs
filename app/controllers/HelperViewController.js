@@ -5,30 +5,32 @@ var path = require('path'),
 
 const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const coreHelper = new CoreHelper();
+const bundles = require(`${coreHelper.paths.ROOT}bundles.json`);
 
-var sampleHtmlMaster = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/master.ejs'), 'utf-8');
+
 
 function HelperViewController() {
+    this.getVersion = coreHelper.package.version;
     this.title = "Welcome to " + coreHelper.sampleConfig.domain.host;
-    this.meta = '<meta name="twitter:app:country" content="US"/>'
-        + '<meta name="twitter:app:name:iphone" content="Stack Exchange iOS"/>'
-        + '<meta name="twitter:app:id:iphone" content="871299723"/>';
-    this.media = "";
-    this.header = "";
-    this.nav = "";
 
-    this.css = "";
-    this.cssInclude = "";
+    this.metaCommon = {};
+    this.metaInclude = {};
 
-    this.script = "";
-    this.scriptInclude = "";
+    this.media = "&nbsp;";
+    this.header = "&nbsp;";
+    this.nav = "&nbsp;";
 
-    // this.content = "";
+    this.cssCommon = {};
+    this.cssInclude = {};
+
+    this.scriptCommon = {};
+    this.scriptInclude = {};
+
     this.page = "4";
     this.pagination = "";
 
-    this.footer = "";
-    this.feedBack = "";
+    this.footer = "&nbsp;";
+    this.feedBack = "&nbsp;";
 
     this.renderViews = "";
     this.isAuthenticated = false;
@@ -36,73 +38,66 @@ function HelperViewController() {
     this.coreHelper = coreHelper;
 };
 
-HelperViewController.prototype.readFile = function () {
-
-};
-
-HelperViewController.prototype.defaultScriptCss = function () {
-    return 'method -> defaultScriptCss';
-};
-
 HelperViewController.prototype.coreHelper = function () {
     return coreHelper;
 };
 
-HelperViewController.prototype.setMeta = function (sampleHtmlMaster) {
-    var sampleHtmlHeader = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/header.ejs'), 'utf-8');
-    // return sampleHtmlMaster.replace('{DEFINE_HEADER}', sampleHtmlHeader);
-
-    return sampleHtmlHeader;
-};
-
 HelperViewController.prototype.nav = function (sampleHtmlMaster) {
-    var sampleHtmlNav = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/nav.ejs'), 'utf-8');
-    return sampleHtmlMaster.replace('{DEFINE_NAV}', sampleHtmlNav);
+    // var sampleHtmlNav = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/nav.ejs'), 'utf-8');
+    // return sampleHtmlMaster.replace('{DEFINE_NAV}', sampleHtmlNav);
 };
 
 HelperViewController.prototype.header = function (sampleHtmlMaster) {
-    var sampleHtmlHeader = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/header.ejs'), 'utf-8');
-    return sampleHtmlMaster.replace('{DEFINE_HEADER}', sampleHtmlHeader);
-};
-
-HelperViewController.prototype.includeCss = function () {
-
-    return 'list css';
-};
-
-HelperViewController.prototype.includeScript = function () {
-    return 'list script';
+    // var sampleHtmlHeader = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/header.ejs'), 'utf-8');
+    // return sampleHtmlMaster.replace('{DEFINE_HEADER}', sampleHtmlHeader);
 };
 
 HelperViewController.prototype.footer = function (sampleHtmlMaster = 'sss') {
-    var sampleHtmlFooter = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/footer.ejs'), 'utf-8');
-    return sampleHtmlMaster.replace('{DEFINE_FOOTER}', sampleHtmlFooter);
-};
-
-
-HelperViewController.prototype.renderLayout = function () {
-
-    // var tmpSampleHtmlMaster = sampleHtmlMaster;
-    // var tmpSampleHtmlMaster = this.header(tmpSampleHtmlMaster);
-    // var tmpSampleHtmlMaster = this.nav(tmpSampleHtmlMaster);
-    // var tmpSampleHtmlMaster = this.footer(tmpSampleHtmlMaster);
-    // var sampleHtmlMaster = this.footer(sampleHtmlMaster);
-    // var sampleHtmlMaster = this.footer(sampleHtmlMaster);
-    //
-    // return tmpSampleHtmlMaster;
+    // var sampleHtmlFooter = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/footer.ejs'), 'utf-8');
+    // return sampleHtmlMaster.replace('{DEFINE_FOOTER}', sampleHtmlFooter);
+    return;
 };
 
 
 class View extends HelperViewController {
-    view() {
-        this.css = HelperViewController.defaultScriptCss();
+    constructor() {
+        super();
+        var isWeb = coreHelper.sampleConfig.WEB ? 'main' : 'admin_main';
+
+        this.metaCommon = this.getMetaCommon(bundles.meta[isWeb].link);
+        this.cssCommon = this.getCssCommon(bundles.styles[isWeb].files);
+        this.scriptCommon = this.getScriptCommon(bundles.scripts[isWeb].files);
     }
 
-    getCoreHelper() {
+    getMetaCommon(objMeta) {
+        var strMeteLink = '&nbsp;';
+        for (var key in objMeta) {
+            strMeteLink += objMeta[key];
+        }
+        return strMeteLink;
+    }
 
+    getCssCommon(objCss) {
+        var strCssCommon = '&nbsp;';
+        for (var key in objCss) {
+            strCssCommon += `<link rel="stylesheet" href="/css/${objCss[key]}?v=${this.getVersion}">`;
+        }
+        return strCssCommon;
+    }
+
+    getScriptCommon(objScript) {
+        var strScriptCommon = '&nbsp;';
+        for (var key in objScript) {
+            strScriptCommon += `<script type="text/javascript" src="/js/${objScript[key]}?v=${this.getVersion}"></script>`;
+        }
+        return strScriptCommon;
+    }
+
+    readFile(data) {
+        return;
     }
 }
-;
+
 
 module.exports = HelperViewController;
 module.exports = View;

@@ -71,6 +71,10 @@ class Express {
         }));
 
         app.use(express.static(coreHelper.paths.PUBLIC));
+        // app.use(express.static(coreHelper.paths.JS));
+        // app.use(express.static(coreHelper.paths.CSS));
+
+        // app.use('/images', express.static(coreHelper.paths.IMAGES));
         // app.use(errorhandler());
         app.use(favicon(coreHelper.paths.IMAGES + 'favicon.ico'));
     };

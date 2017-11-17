@@ -1,23 +1,35 @@
 {
+  "meta": {
+    "main": {
+      "link": [
+        "<meta name=\"twitter:app:BBBBBBBBBBB\" content=\"US\">",
+        "<meta name=\"twitter:app:BBBBBBBBBB\" content=\"US\">"
+      ]
+    },
+    "admin_main": {
+      "link": [
+        "<meta name=\"twitter:app:country\" content=\"US\">",
+        "<meta name=\"twitter:app:country\" content=\"US\">"
+      ]
+    }
+  },
   "styles": {
     "main": {
       "files": [
-        "bootstrap.css",
-        "bootstrap-responsive.css",
+        "main.css",
+        "style.css",
         "flexslider.css",
         "jquery.fancybox.css",
-        "cloud-zoom.css",
-        "style.css"
+        "cloud-zoom.css"
       ],
       "output": "site.min.css",
       "dir": "css"
     },
     "admin_main": {
       "files": [
-        "admin/bower_components/bootstrap/dist/css/bootstrap.min.css",
         "admin/bower_components/metisMenu/dist/metisMenu.min.css",
         "admin/bower_components/font-awesome/css/font-awesome.min.css",
-        "/admin/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css",
+        "admin/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css",
         "admin/bower_components/datatables-responsive/css/dataTables.responsive.css",
         "admin/dist/css/sb-admin-2.css",
         "rawcss.css"
@@ -29,7 +41,7 @@
   "scripts": {
     "main": {
       "files": [
-        "jquery.js",
+        "jquery-3.2.1.min.js",
         "bootstrap.js",
         "respond.min.js",
         "application.js",
@@ -42,9 +54,7 @@
         "jquery.carouFredSel-6.1.0-packed.js",
         "jquery.mousewheel.min.js",
         "jquery.touchSwipe.min.js",
-        "jquery.ba-throttle-debounce.min.js",
-        "custom.js",
-        "my_srcipt.js"
+        "jquery.ba-throttle-debounce.min.js"
       ],
       "output": "site.min.js",
       "dir": "js"

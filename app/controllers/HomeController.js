@@ -16,14 +16,14 @@ class HomeController extends BaseController {
     index(requset, response, next) {
 
         var showResponse = helperViewController;
-        showResponse.script = '<>';
-        showResponse.css = '<link rel="stylesheet" href="/css/style.min.css?v=1.5.0">';
-        showResponse.title = 'Home welcome';
+
+        showResponse.cssInclude = showResponse.getCssCommon(['main.css']);
+        // showResponse.title = 'Home welcome';
         showResponse.media = 'media';
         showResponse.name = 1111;
-        showResponse.body = 'Home welcome';
-        showResponse.renderViews = 'home/index.ejs';
+        showResponse.content = 'Home welcome content ????s';
 
+        showResponse.renderViews = 'home/index.ejs';
 
         response.render(showResponse.renderViews, showResponse);
 

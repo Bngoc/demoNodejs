@@ -20,8 +20,10 @@ var DefinePaths = function definePaths() {
 
     this.PUBLIC = `${this.ROOT}public${DS}`;
     this.CSS = `${this.PUBLIC}css${DS}`;
-    this.JS = `${this.PUBLIC}js${DS}`;
+    // this.CSS_P = path.resolve(`${this.PUBLIC}css${DS}`);
+    // this.JS_P = path.resolve(`${this.PUBLIC}js${DS}`);
     this.IMAGES = `${this.PUBLIC}images${DS}`;
+    // this.IMAGES_P = path.resolve(`${this.PUBLIC}images${DS}`);
     this.LOGS = `${this.PUBLIC}logs${DS}`;
 };
 

@@ -19,15 +19,16 @@ class ProductController extends ViewsController {
     // index product
     getIndex(req, res, next) {
         try {
-
             var showResponse = helperViewController;
-            showResponse.script = 'ggsgsgsg>';
-            showResponse.cssInclude = "<link rel=\"stylesheet\" href=\"/css/style.min.css?v=1.5.0\">";
-            showResponse.title = 'Home product';
-            showResponse.media = 'media';
 
-            // showResponse.meta = showResponse.setMeta();
-            // showResponse.content = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXx';
+            showResponse.title = 'Home product';
+            showResponse.scriptInclude = showResponse.getScriptCommon(['product/abc.js']);
+            showResponse.metaInclude = showResponse.getMetaCommon(['<meta name="twitter:app:id:ipad" content="871299723"/>']);
+            showResponse.cssInclude = showResponse.getCssCommon(['main.css']);
+
+            showResponse.content = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX content';
+            showResponse.name = '';
+
             showResponse.renderViews = 'product/create';
 
             var params = {
@@ -56,8 +57,9 @@ class ProductController extends ViewsController {
                             console.log(value.product_id + ' ---- ' + indexs);
                         });
                     }
+
                     showResponse.name = JSON.stringify(resultData);
-console.log(showResponse);
+
                     res.render(showResponse.renderViews, showResponse);
                 }
             });

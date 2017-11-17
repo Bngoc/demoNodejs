@@ -6,8 +6,11 @@ const sampleRequirePaths = require('./../config/paths.js');
 const paths = new sampleRequirePaths();
 const sampleDB = require(`${paths.CONFIG}/db.json`);
 const sampleConfig = require(`${paths.CONFIG}/config.json`);
+const samplePackage = require(`${paths.ROOT}/package.json`);
 
 function CoreHelper() {
+
+    this.package = samplePackage;
 
     this.paths = paths;
 
