@@ -2,6 +2,7 @@
 
 const MySQL = require("mysql");
 const pg = require('pg');
+
 const sampleRequirePaths = require('./../config/paths.js');
 const paths = new sampleRequirePaths();
 const sampleDB = require(`${paths.CONFIG}/db.json`);
@@ -35,7 +36,6 @@ function CoreHelper() {
     };
 
     this.mySql = function () {
-
         // var connectionPool = MySQL.createPool(this.getConfigInfoDb());
         // return connectionPool;
         ////* Check in controller
@@ -77,33 +77,32 @@ function CoreHelper() {
         return connection;
     };
 
-
-    this.runSocket = function (app) {
-        // var Socket = require(`${paths.MODULE}/socket.js`);
-        // var configSocket = new Socket();
-        //  configSocket.configSocket(app, paths);
-        //return configSocket;
+    this.runSocket = function (runServer) {
+        var Socket = require(`${paths.CONFIG}/socket.js`);
+        var socket = new Socket();
+        var configSocket = socket.configSocket(runServer, this);
+        return configSocket;
     };
 
     this.runExpress = function (app) {
         var Express = require(`${paths.MODULE}/express.js`);
-        var configExpress = new Express();
-        configExpress.configExpress(app, this);
+        var express = new Express();
+        var configExpress = express.configExpress(app, this);
         return configExpress;
     };
 
     this.runRoutes = function (app) {
         var Router = require(`${paths.APP}/routers.js`);
         var router = new Router();
-        router.useRoutes(app, this);
-        return router;
+        var useRoutes = router.useRoutes(app, this);
+        return useRoutes;
     };
 
     this.runServer = function (app) {
         var Server = require(`${paths.CONFIG}/server.js`);
         var server = new Server();
-        server.createServer(app, this.sampleConfig);
-        return server;
+        var createServer = server.createServer(app, this.sampleConfig);
+        return createServer;
     };
 }
 

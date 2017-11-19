@@ -1,80 +1,88 @@
 {
   "meta": {
-    "main": {
-      "link": [
-        "<meta name=\"twitter:app:BBBBBBBBBBB\" content=\"US\">",
-        "<meta name=\"twitter:app:BBBBBBBBBB\" content=\"US\">"
-      ]
-    },
-    "admin_main": {
-      "link": [
-        "<meta name=\"twitter:app:country\" content=\"US\">",
-        "<meta name=\"twitter:app:country\" content=\"US\">"
-      ]
-    }
+    "main": [
+      "<meta name=\"twitter:app:BBBBBBBBBBB\" content=\"US\">",
+      "<meta name=\"twitter:app:BBBBBBBBBB\" content=\"US\">"
+    ],
+    "admin_main": [
+      "<meta name=\"twitter:app:country\" content=\"US\">",
+      "<meta name=\"twitter:app:country\" content=\"US\">"
+    ]
   },
   "styles": {
     "main": {
       "files": [
-        "main.css",
-        "style.css",
-        "flexslider.css",
-        "jquery.fancybox.css",
-        "cloud-zoom.css"
-      ],
-      "output": "site.min.css",
-      "dir": "css"
+        "css/font-awesome.min.css",
+        "css/bootstrap.css",
+        "css/main.css",
+        "css/style.css",
+        "css/flexslider.css",
+        "css/jquery.fancybox.css",
+        "css/cloud-zoom.css"
+      ]
     },
     "admin_main": {
       "files": [
-        "admin/bower_components/metisMenu/dist/metisMenu.min.css",
-        "admin/bower_components/font-awesome/css/font-awesome.min.css",
-        "admin/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css",
-        "admin/bower_components/datatables-responsive/css/dataTables.responsive.css",
-        "admin/dist/css/sb-admin-2.css",
-        "rawcss.css"
-      ],
-      "output": "site.min.css",
-      "dir": "css"
+        "css/font-awesome/css/font-awesome.min.css",
+        "css/admin/bower_components/metisMenu/dist/metisMenu.min.css",
+        "css/admin/bower_components/font-awesome/css/font-awesome.min.css",
+        "css/admin/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css",
+        "css/admin/bower_components/datatables-responsive/css/dataTables.responsive.css",
+        "css/admin/dist/css/sb-admin-2.css",
+        "css/rawcss.css"
+      ]
     }
   },
   "scripts": {
     "main": {
-      "files": [
-        "jquery-3.2.1.min.js",
-        "bootstrap.js",
-        "respond.min.js",
-        "application.js",
-        "bootstrap-tooltip.js",
-        "jquery.fancybox.js",
-        "jquery.flexslider.js",
-        "jquery.tweet.js",
-        "cloud-zoom.1.0.2.js",
-        "jquery.validate.js",
-        "jquery.carouFredSel-6.1.0-packed.js",
-        "jquery.mousewheel.min.js",
-        "jquery.touchSwipe.min.js",
-        "jquery.ba-throttle-debounce.min.js"
-      ],
-      "output": "site.min.js",
-      "dir": "js"
+      "files": {
+        "head": [
+          "js/jquery-3.2.1.min.js",
+          "socket.io/socket.io.js",
+          "js/common.js"
+        ],
+        "body": [
+          "js/bootstrap.js",
+          "js/respond.min.js",
+          "js/application.js",
+          "js/bootstrap-tooltip.js",
+          "js/jquery.fancybox.js",
+          "js/jquery.flexslider.js",
+          "js/jquery.tweet.js",
+          "js/cloud-zoom.1.0.2.js",
+          "js/jquery.validate.js",
+          "js/jquery.carouFredSel-6.1.0-packed.js",
+          "js/jquery.mousewheel.min.js",
+          "js/jquery.touchSwipe.min.js",
+          "js/jquery.ba-throttle-debounce.min.js"
+        ]
+      }
     },
     "admin_main": {
-      "files": [
-        "jquery/dist/jquery.min.js",
-        "bootstrap.min.js",
-        "admin/metisMenu.min.js",
-        "admin/jquery.dataTables.min.js",
-        "admin/dataTables.bootstrap.min.js",
-        "admin/sb-admin-2.js",
-        "jquery.validate.min.js",
-        "admin/ckfinder/ckfinder.js",
-        "admin/ckeditor/ckeditor.js",
-        "admin/mysrcipt.js",
-        "admin/func_ckfinder.js"
-      ],
-      "output": "mediaid.min.js",
-      "dir": "public/js"
+      "files": {
+        "head": [
+          "js/jquery-3.2.1.min.js",
+          "js/bootstrap.js",
+          "js/respond.min.js",
+          "js/application.js",
+          "js/common.js"
+        ],
+        "body": [
+          "js/bootstrap.js",
+          "js/respond.min.js",
+          "js/application.js",
+          "js/bootstrap-tooltip.js",
+          "js/jquery.fancybox.js",
+          "js/jquery.flexslider.js",
+          "js/jquery.tweet.js",
+          "js/cloud-zoom.1.0.2.js",
+          "js/jquery.validate.js",
+          "js/jquery.carouFredSel-6.1.0-packed.js",
+          "js/jquery.mousewheel.min.js",
+          "js/jquery.touchSwipe.min.js",
+          "js/jquery.ba-throttle-debounce.min.js"
+        ]
+      }
     }
   }
 }

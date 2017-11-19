@@ -12,7 +12,7 @@ class Circle extends Shape {
 var obj = new Circle(223);
 obj.disp();
 
-'use strict'
+'use strict';
 class Polygon {
     constructor(height, width) {
         this.h = height;
@@ -20,7 +20,7 @@ class Polygon {
     }
 
     test() {
-        console.log("The height of the polygon: ", this.h)
+        console.log("The height of the polygon: ", this.h);
         console.log("The width of the polygon: ", this.w)
     }
 }

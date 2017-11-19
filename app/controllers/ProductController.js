@@ -13,7 +13,7 @@ var ViewsController = require('./ViewsController.js');
 class ProductController extends ViewsController {
     constructor() {
         super();
-        console.log('constructor brfore index product');
+        console.log('constructor brfore index product..');
     }
 
     // index product
@@ -22,11 +22,10 @@ class ProductController extends ViewsController {
             var showResponse = helperViewController;
 
             showResponse.title = 'Home product';
-            showResponse.scriptInclude = showResponse.getScriptCommon(['product/abc.js']);
-            showResponse.metaInclude = showResponse.getMetaCommon(['<meta name="twitter:app:id:ipad" content="871299723"/>']);
-            showResponse.cssInclude = showResponse.getCssCommon(['main.css']);
+            showResponse.scriptInclude = showResponse.readFileInclude(['js/product/abc.js']);
+            showResponse.metaInclude = showResponse.readFileInclude(['<meta name="twitter:app:id:ipad" content="871299723"/>'], 'o');
 
-            showResponse.content = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX content';
+            // showResponse.content = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX content';
             showResponse.name = '';
 
             showResponse.renderViews = 'product/create';
@@ -52,13 +51,13 @@ class ProductController extends ViewsController {
                     res.render(req.showResponse.renderViews, resultData);
                 } else {
 
-                    if (resultData.length) {
-                        resultData.forEach(function (value, indexs) {
-                            console.log(value.product_id + ' ---- ' + indexs);
-                        });
-                    }
+                    // if (resultData.length) {
+                    //     resultData.forEach(function (value, indexs) {
+                    //         console.log(value.product_id + ' ---- ' + indexs);
+                    //     });
+                    // }
 
-                    showResponse.name = JSON.stringify(resultData);
+                    showResponse.name = resultData;
 
                     res.render(showResponse.renderViews, showResponse);
                 }

@@ -1,0 +1,130 @@
+input {
+    margin: 0;
+}
+
+#frame .content .message-input .wrap ._552n li .ms_img input {
+    margin: 0;
+    height: auto;
+    line-height: inherit;
+    display: none;
+}
+
+.wrap ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.wrap ul._552n li {
+    position: unset;
+}
+
+.wrap ._552n {
+    bottom: 14px;
+    position: absolute;
+    right: 0;
+}
+
+._vzk {
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+}
+
+#frame .content .message-input .wrap .attachment-cst:hover {
+    opacity: 1;
+}
+
+#frame .content .message-input .wrap .attachment-cst {
+    opacity: .5;
+    cursor: pointer;
+    float: right;
+    margin-top: 10px;
+    position: absolute;
+    color: white;
+}
+
+._6gs {
+    background-image: url(../images/H2yAaG5kbRf.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: -17px -611px;
+}
+
+._6ge {
+    background-image: url(../images/H2yAaG5kbRf.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: -68px -611px;
+}
+
+.hidden_elem {
+    display: none !important;
+}
+
+._3oxr {
+    background-image: url(../images/H2yAaG5kbRf.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: 0 -611px;
+}
+
+._6gb {
+    display: block;
+    height: 16px;
+    position: relative;
+    transition: opacity .2s;
+    width: 16px;
+
+}
+
+._6gg {
+    background-image: url(../images/H2yAaG5kbRf.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: -51px -611px;
+}
+
+.r_emoji50 {
+    right: 50px;
+}
+
+.r_img70 {
+    right: 70px;
+}
+
+.r_file90 {
+    right: 90px;
+}
+
+#newMsgChat {
+    margin: 0px 0px 45px 0;
+    position: absolute;
+    bottom: 35px;
+    color: beige;
+    width: 100%;
+    -moz-animation-delay: 3.5s;
+    -webkit-animation-delay: 3.5s;
+    -o-animation-delay: 3.5s;
+    animation-delay: 3.5s;
+    -prefix-animation: slide 1s ease 3.5s forwards;
+    transition: height 600ms ease 0ms;
+}
+
+#newMsgChat .bs {
+    background: blue;
+    padding: 5px 10px;
+    border-radius: 5px;
+    line-height: 23px;
+    text-align: center;
+    width: 17%;
+    margin: auto;
+}
+
+#sendMessageChat {
+    margin-left: 9px;
+}
+
+#boxMsgChat li:last-child {
+    margin-bottom: 5px;
+}

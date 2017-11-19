@@ -23,6 +23,7 @@ var runExpress = callCoreHelper.runExpress(app);
 var runRouters = callCoreHelper.runRoutes(app);
 var runConnection = callCoreHelper.getConnect();
 
+var runSocket = callCoreHelper.runSocket(runServer);
 
 // const sampleConfig = require(`${paths.CONFIG}/config.json`);
 // const sampleConfigRoutes = require(`${paths.APP}/routers.js`);

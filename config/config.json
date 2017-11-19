@@ -5,11 +5,11 @@
   },
   "APP_ENV": "local",
   "APP_DEBUG": true,
-  "DB_CONNECTION": "mysqls",
+  "DB_CONNECTION": "pgsql",
   "DB_HOST": "localhost",
-  "PORT": 3306,
+  "PORT": 5432,
   "DB_DATABASE": "laravel_exam",
-  "DB_USERNAME": "root",
-  "DB_PASSWORD": "",
+  "DB_USERNAME": "postgres",
+  "DB_PASSWORD": "emngockt93",
   "WEB": 1
 }

@@ -6,6 +6,7 @@ class Server {
     createServer(app, config) {
         var server = http.createServer(app);
         server.listen(config.domain.port, config.domain.host);
+        return server;
     }
 }
 

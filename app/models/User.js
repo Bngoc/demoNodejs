@@ -24,14 +24,14 @@ User.prototype.register = function (req, res, callback) {
             if (!!error) {
 
                 req.showResponse.title = 'Errors 404';
-                req.showResponse.renderViews = 'errors/404.ejs';
+                // req.showResponse.renderViews = 'errors/404.ejs';
                 req.showResponse.content = `ERR: Cannot connect to Database server ${req.showResponse.coreHelper.sampleConfig.DB_CONNECTION}......`;
 
                 console.log(`ERR: Cannot connect to Database server ${req.showResponse.coreHelper.sampleConfig.DB_CONNECTION}......`);
                 callback(error, req.showResponse);
             } else {
                 // use SQL DB raw, because support connect Mysql and Postgres Sql
-                var myQuery = 'SELECT * from product_counts where id = ' + [dataRequsest.id];
+                var myQuery = 'SELECT * from product_counts limit 10';// where id = ' + [dataRequsest.id];
 
                 connection.query(myQuery, function (err, rows, filed) {
                     if (err) {

@@ -10,7 +10,8 @@ const methodOverride = require('method-override');
 const express = require('express');
 const i18n = require('i18n');
 // const expressValidator = require('express-validator');
-// const errorhandler     = require('errorhandler');
+
+const errorhandler     = require('errorhandler');
 const favicon = require('serve-favicon');
 // const cookieParser     = require('cookie-parser');
 // const session          = require('express-session');
@@ -46,8 +47,9 @@ class Express {
         app.engine('html', ejs.renderFile);
         app.set('views', coreHelper.paths.VIEWS);
         app.set('layout', 'layouts/master');
-        app.set("layout extractScripts", true);
-        app.set("layout extractStyles", true);
+        // Set True NOT use elemment response.render()
+        app.set("layout extractScripts", false);
+        app.set("layout extractStyles", false);
         app.set("layout extractMetas", true);
         app.set("layout extractTitles", true);
         app.set('port', coreHelper.sampleConfig.domain.port);
@@ -71,11 +73,11 @@ class Express {
         }));
 
         app.use(express.static(coreHelper.paths.PUBLIC));
-        // app.use(express.static(coreHelper.paths.JS));
-        // app.use(express.static(coreHelper.paths.CSS));
-
+        // app.use('/images',express.static(coreHelper.paths.JS));
+        // app.use('/images', express.static(coreHelper.paths.CSS));
         // app.use('/images', express.static(coreHelper.paths.IMAGES));
-        // app.use(errorhandler());
+
+        app.use(errorhandler());
         app.use(favicon(coreHelper.paths.IMAGES + 'favicon.ico'));
     };
 }

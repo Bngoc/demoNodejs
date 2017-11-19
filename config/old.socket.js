@@ -1,29 +1,28 @@
 /**
  * Module dependencies.
  */
-
-const socketIo = require('socket.io');
-// const sharedsession = require("express-socket.io-session");
-// const watson = require('watson-developer-cloud');
-// const i18n = require('i18n');
+const socketio = require('socket.io');
+const sharedsession = require("express-socket.io-session");
+const watson = require('watson-developer-cloud');
+const i18n = require('i18n');
 
 /**
  * include config
  */
-// const paths = require("./paths");
-// const config = require(paths.config + "config");
-// const lang = require(paths.config + "lang");
-// const file = require(paths.config + 'file');
+const paths = require("./paths");
+const config = require(paths.config + "config");
+const lang = require(paths.config + "lang");
+const file = require(paths.config + 'file');
 
-// const define = require(paths.config + 'define');
-// const controller = require(paths.controllers + 'controller');
-// const frame = require(paths.sockets + 'frame');
-// const sockets = require(paths.sockets + 'sockets');
+const define = require(paths.config + 'define');
+const controller = require(paths.controllers + 'controller');
+const frame = require(paths.sockets + 'frame');
+const sockets = require(paths.sockets + 'sockets');
 
-// const chatsModel = require(paths.models + 'chats');
-// const usersModel = require(paths.models + 'users');
-// const chatsTable = new chatsModel.Schema("chats").model;
-// const usersTable = new usersModel.Schema("users").model;
+const chatsModel = require(paths.models + 'chats');
+const usersModel = require(paths.models + 'users');
+const chatsTable = new chatsModel.Schema("chats").model;
+const usersTable = new usersModel.Schema("users").model;
 
 /**
  * variable
@@ -31,7 +30,7 @@ const socketIo = require('socket.io');
 var io;
 
 /* chatbot */
-// const conversation = watson.conversation(define.WATSON_CONVERSATION);
+const conversation = watson.conversation(define.WATSON_CONVERSATION);
 
 /**
  * Expose
@@ -39,49 +38,14 @@ var io;
 
 class Socket {
 
-    configSocket(server, express_session) {
-        io = socketIo(server);
-        // server listening for client
-        io.on('connection', function (socket) {
-            console.log(`connection ...................->  ${socket.id}`);
-            // chi thang phat ra => socket.emit
-            socket.emit('message', {content: 'You are connected server private!', importance: '1', 'socketID': socket.id});
-
-            // gui toan bo trong mang tru thang phat ra => socket.broadcast.emit
-            //socket.broadcast.emit('message', 'Another client has just connected!' + socket.id);
-
-            // all ==> io.sockets.emit
-            io.sockets.emit('message', {content: 'You are connected -- all!', importance: '1', 'socketID': socket.id});
-
-            socket.on('message', function (message) {
-                console.log('A client is speaking to me! They’re saying: ' + message);
-            });
-
-            //disconnect socket by id
-            socket.on('disconnect', function () {
-                console.log(`disconnect -  ${socket.id}`);
-                socket.emit('message', {content: 'bye bye!', importance: null, 'socketID': socket.id});
-            });
-
-            socket.on('sendDataMsg', function (datasocketAll) {
-                ////private
-                socket.emit('sendDataPrivate', 'send -= private' + datasocketAll + ' ' + socket.id);
-                ////all
-                // io.sockets.emit('send-data-test', 'send -= all' + datasocketAll + ' '  + socket.id);
-                //// all / private
-                socket.broadcast.emit('sendDataBroadCast', 'send -= all / private ' + datasocketAll + ' ' + socket.id);
-                //// io.to(socket.id).emit()
-            });
-
-        });
-
-        /*
-        // io.use(sharedsession(express_session));
+    configSocket(express_session, server) {
+        io = socketio(server);
+        io.use(sharedsession(express_session));
         io.on('connection', function (socket) {
             var userchat = sockets.getSessionCustommer(socket);
-            /!*
+            /*
              register User
-             *!/
+             */
             socket.on('addCustommer', function (data) {
                 var response = controller.responseSocket();
                 response.userchat = userchat;
@@ -132,7 +96,7 @@ class Socket {
                                 sockets.setSessionCustommer(socket, user);
                                 socket.broadcast.emit('addCustommerBroadcast', response);
 
-                                /!* add message *!/
+                                /* add message */
                                 var setting_frame_default = define.CONFIG_FRAME_DEFAULT;
                                 file.readSettingFrame('setting_frame', function (err, setting_frame) {
                                     setting_frame = JSON.parse(setting_frame);
@@ -159,7 +123,7 @@ class Socket {
                                         }
                                     });
                                 });
-                                /!* END: add message *!/
+                                /* END: add message */
 
                             } else {
 
@@ -175,9 +139,9 @@ class Socket {
                     socket.emit('addCustommer', response);
                 }
             });
-            /!*
+            /*
              new message
-             *!/
+             */
             socket.on('newMessage', function (data) {
                 var response = controller.responseSocket();
 
@@ -263,7 +227,7 @@ class Socket {
                                                     socket.emit('newMessage', response);
                                                     socket.broadcast.emit('newMessage', response);
 
-                                                    /!* code xử lý đẩy sang lấy mgs về *!/
+                                                    /* code xử lý đẩy sang lấy mgs về */
                                                     if (!user.support && data.type_sent == define.CUSTOMMER) {
                                                         var conversation_request = {
                                                             'input': {text: data.message},
@@ -301,7 +265,7 @@ class Socket {
                                                             }
                                                         });
                                                     }
-                                                    /!* END: code xử lý đẩy sang lấy mgs về *!/
+                                                    /* END: code xử lý đẩy sang lấy mgs về */
                                                 });
                                             } else {
                                                 response.message = lang.sprintf(lang.send_message_failed, '');
@@ -464,7 +428,7 @@ class Socket {
                     }
                 });
             });
-        });*/
+        });
     }
 }
 

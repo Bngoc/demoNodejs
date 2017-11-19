@@ -17,12 +17,16 @@ class HomeController extends BaseController {
 
         var showResponse = helperViewController;
 
-        showResponse.cssInclude = showResponse.getCssCommon(['main.css']);
-        // showResponse.title = 'Home welcome';
+        // showResponse.cssInclude = showResponse.readFileInclude(['css/main.css'], 'c');
+        showResponse.cssChat = '';//showResponse.readFileInclude(['css/chat.custom.css'], 'c');
+        showResponse.scriptIncludeHead = showResponse.readFileInclude(['js/scriptHead/validate.test.js']);
+        // showResponse.scriptInclude = showResponse.readFileInclude(['js/socket/client.test.js']);
         showResponse.media = 'media';
-        showResponse.name = 1111;
-        showResponse.content = 'Home welcome content ????s';
+        showResponse.name = 'HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH';
+        showResponse.dataInclude = 'here data include';
+        showResponse.gv = showResponse.readFileInclude(['js/home/test.js']);
 
+        showResponse.content = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX content';
         showResponse.renderViews = 'home/index.ejs';
 
         response.render(showResponse.renderViews, showResponse);

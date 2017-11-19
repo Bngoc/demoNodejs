@@ -1,27 +1,31 @@
-<div id="showmsg"></div>
-<div id="showmsgt"></div>
+<div id="mainbar" role="main" aria-label="question and answers">
+    <!--<div id="showmsg"></div>-->
+    <!--<div id="showmsgt"></div>-->
 
-<div id="submit" type="submit">submit</div>
-<%- name %>
+    <!--<div id="submit" type="submit">submit</div>-->
 
-<script style="text/javascript">
+    <table style="width:100%">
+        <tr>
+            <th>id</th>
+            <th>color_id</th>
+            <th>product_id</th>
+            <th>soluong</th>
+            <th>created_at</th>
+            <th>updated_at</th>
+        </tr>
+        <% if (name) {
+        name.forEach(function (item, indes) {%>
+        <tr>
+            <td><%= item.id %></td>
+            <td><%= item.color_id %></td>
+            <td><%= item.product_id %></td>
+            <td><%= item.soluong %></td>
+            <td><%= item.created_at %></td>
+            <td><%= item.updated_at %></td>
 
-    var protocol = ('https:' == document.location.protocol ? 'https://' : 'http://');
-    var locationOrigin = document.location.origin;
-    var socket = io.connect(locationOrigin);
+        </tr>
+        <% });
+        } %>
+    </table>
 
-    socket.on('message', function (message) {
-        $('#showmsg').text('The server has a message for you: ' + message);
-        console.log(message);
-    });
-
-    socket.on('send-data-test', function (messagensp) {
-        $('#showmsgt').text('messagensp for you: ' + messagensp);
-        console.log(messagensp);
-    });
-
-    $('#submit').on('click', function () {
-        socket.emit('send-data-test', '34567890');
-    });
-
-</script>
+</div>

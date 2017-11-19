@@ -8,31 +8,32 @@ const coreHelper = new CoreHelper();
 const bundles = require(`${coreHelper.paths.ROOT}bundles.json`);
 
 
-
 function HelperViewController() {
     this.getVersion = coreHelper.package.version;
     this.title = "Welcome to " + coreHelper.sampleConfig.domain.host;
 
-    this.metaCommon = {};
-    this.metaInclude = {};
+    this.metaCommonNotEdit = ' ';
+    this.metaInclude = ' ';
 
-    this.media = "&nbsp;";
-    this.header = "&nbsp;";
-    this.nav = "&nbsp;";
+    this.media = ' ';
+    this.header = ' ';
+    this.nav = '';
 
-    this.cssCommon = {};
-    this.cssInclude = {};
+    this.cssCommonNotEdit = ' ';
+    this.cssInclude = ' ';
 
-    this.scriptCommon = {};
-    this.scriptInclude = {};
+    this.scriptCommonHeadNotEdit = ' ';
+    this.scriptCommonBodyNotEdit = ' ';
+    this.scriptIncludeHead = ' ';
+    this.scriptInclude = ' ';
 
     this.page = "4";
     this.pagination = "";
 
-    this.footer = "&nbsp;";
-    this.feedBack = "&nbsp;";
+    this.footer = ' ';
+    this.feedBack = ' ';
 
-    this.renderViews = "";
+    this.renderViews = ' ';
     this.isAuthenticated = false;
 
     this.coreHelper = coreHelper;
@@ -47,9 +48,9 @@ HelperViewController.prototype.nav = function (sampleHtmlMaster) {
     // return sampleHtmlMaster.replace('{DEFINE_NAV}', sampleHtmlNav);
 };
 
-HelperViewController.prototype.header = function (sampleHtmlMaster) {
-    // var sampleHtmlHeader = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/header.ejs'), 'utf-8');
-    // return sampleHtmlMaster.replace('{DEFINE_HEADER}', sampleHtmlHeader);
+HelperViewController.prototype.getHeader = function (strHeader) {
+    var fss = ('<h1 itemprop="name">' + strHeader + '</h1>');
+    return fss;
 };
 
 HelperViewController.prototype.footer = function (sampleHtmlMaster = 'sss') {
@@ -64,40 +65,32 @@ class View extends HelperViewController {
         super();
         var isWeb = coreHelper.sampleConfig.WEB ? 'main' : 'admin_main';
 
-        this.metaCommon = this.getMetaCommon(bundles.meta[isWeb].link);
-        this.cssCommon = this.getCssCommon(bundles.styles[isWeb].files);
-        this.scriptCommon = this.getScriptCommon(bundles.scripts[isWeb].files);
+        this.metaCommonNotEdit = this.readFileInclude(bundles.meta[isWeb], 'o');
+        this.cssCommonNotEdit = this.readFileInclude(bundles.styles[isWeb].files, 'c');
+        this.scriptCommonHeadNotEdit = this.readFileInclude(bundles.scripts[isWeb].files.head);
+        this.scriptCommonBodyNotEdit = this.readFileInclude(bundles.scripts[isWeb].files.body);
     }
 
-    getMetaCommon(objMeta) {
-        var strMeteLink = '&nbsp;';
-        for (var key in objMeta) {
-            strMeteLink += objMeta[key];
+    readFileInclude(dataArray, option = 'j') {
+        var stringCommon = ' ';
+        option = option.toLowerCase();
+
+        for (var key in dataArray) {
+            switch (option) {
+                case "c":
+                    stringCommon += `<link rel="stylesheet" href="/${dataArray[key]}?v=${this.getVersion}">`;
+                    break;
+                case "j":
+                    stringCommon += `<script type="text/javascript" src="/${dataArray[key]}?v=${this.getVersion}"></script>`;
+                    break;
+                case "o":
+                    stringCommon += dataArray[key];
+                default:
+            }
         }
-        return strMeteLink;
-    }
-
-    getCssCommon(objCss) {
-        var strCssCommon = '&nbsp;';
-        for (var key in objCss) {
-            strCssCommon += `<link rel="stylesheet" href="/css/${objCss[key]}?v=${this.getVersion}">`;
-        }
-        return strCssCommon;
-    }
-
-    getScriptCommon(objScript) {
-        var strScriptCommon = '&nbsp;';
-        for (var key in objScript) {
-            strScriptCommon += `<script type="text/javascript" src="/js/${objScript[key]}?v=${this.getVersion}"></script>`;
-        }
-        return strScriptCommon;
-    }
-
-    readFile(data) {
-        return;
+        return stringCommon;
     }
 }
-
 
 module.exports = HelperViewController;
 module.exports = View;

@@ -5,59 +5,50 @@
     <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA/4QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEREREAAAAAAAAAABAAAAAAAAAAAQAAAAAAAAAAEAAAAAAAAAAQAAEREQAAABEAEQAAEQAAAAAQAAABAAABABAAAAEAABAAAQAAAQAAEAAAAQABABEAAAAAERERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//wAA8A8AAP/3AAD/+wAA//0AAP/9AADg/AAAzz8AAN++AADfvQAA770AAPuzAAD8DwAA//8AAP//AAD//wAA"
           rel="icon" type="image/x-icon"/>
     <title><%= title %></title>
-
-    <!--<link rel="shortcut icon" href="https://cdn.sstatic.net/Sites/stackoverflow/img/favicon.ico?v=4f32ecc8f43d">-->
-    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>-->
-    <!--<script src="https://cdn.sstatic.net/Js/stub.en.js?v=a9d1ca0830f9"></script>-->
-    <!--<link rel="stylesheet" type="text/css" href="https://cdn.sstatic.net/Sites/stackoverflow/all.css?v=897eb449dc3f">-->
-
-    <!--<link rel="alternate" type="application/atom+xml" title="Feed for question &#39;ES6 Class Multiple inheritance&#39;"-->
-          <!--href="/feeds/question/29879267">-->
-
-
-    <%- metaCommon %>
+    <%- metaCommonNotEdit %>
     <%- metaInclude %>
-    <%- cssCommon %>
+    <%- cssCommonNotEdit %>
     <%- cssInclude %>
-    <%- scriptCommon %>
+    <%- scriptCommonHeadNotEdit %>
+    <%- scriptIncludeHead %>
 
-    <!--default include socket.io-->
-    <script type="text/javascript" src='/socket.io/socket.io.js?v=<%= ((getVersion) ? getVersion : "")  %>'></script>
 </head>
 
 
-<bodys class="question-page new-topbar">
-    <div id="notify-container"></div>
-    <div id="custom-header"></div>
+<body class="question-page new-topbar">
+<div id="notify-container"></div>
+<div id="custom-header"></div>
 
-    <%- include('./../layouts/header.ejs') %>
+<%- include('./../layouts/header.ejs') %>
 
-    <div class="container _full ">
-        <div id="content" class="snippet-hidden">
-            <%- include('./../layouts/nav.ejs') %>
-            <div class="inner-content">
-                <div id="question-header">
-                    <%- header %>
-                </div>
-                <body>
-                <div id="mainbar" role="main" aria-label="question and answers">
-                    <%- body %>
-                    <%- content %>
-                </div>
-                </body>
-                <div id="sidebar" class="show-votes" role="complementary" aria-label="sidebar">
-                    <%- include('./../layouts/sidebar.ejs') %>
-                </div>
+<div class="container _full ">
+    <div id="content" class="snippet-hidden">
+        <%- include('./../layouts/nav.ejs') %>
+        <div class="inner-content">
+            <div id="question-header">
+                <%- header %>
+            </div>
 
-                <div id="feed-link">
-                    <%- feedBack %>
-                </div>
+            <div id="<%- (typeof isNotIncludeSidebar === 'undefined') ? 'mainbar' : ''  %>" role="main"
+                 aria-label="question and answers">
+                <%- body %>
+                <%- (typeof content !== 'undefined') ? content : '' %>
+            </div>
+            <% if (typeof isNotIncludeSidebar === 'undefined') { %>
+            <div id="sidebar" class="show-votes" role="complementary" aria-label="sidebar">
+                <%- include('./../layouts/sidebar.ejs') %>
+            </div>
+            <% } %>
+            <div id="feed-link">
+                <%- feedBack %>
             </div>
         </div>
     </div>
-
-    <%- scriptInclude %>
-
+</div>
+<%- scriptCommonBodyNotEdit %>
+<%- scriptInclude %>
+<footer id="footer" class="s-footer js-footer" role="contentinfo">
     <%- include('./../layouts/footer.ejs') %>
-</bodys>
+</footer>
+</body>
 </html>
