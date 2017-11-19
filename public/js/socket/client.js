@@ -133,6 +133,7 @@ SendChatMessage.prototype.changeAutoHeightBoxMsg = function () {
         var messageInput = _this.diffHeightBoxMsg();
         _this.diffHeightMsg(messageInput);
 
+console.log(messageInput , '---------------------');
 
 
         // var getHeight = parseInt($(this).attr('height_default'));
@@ -182,6 +183,10 @@ SendChatMessage.prototype.changeAutoHeightBoxMsg = function () {
 };
 
 function textAreaAdjust(o) {
-    o.style.height = "1px";
+    o.style.height = "0px";
+    console.log(o.style.height, 'lllllllllllllllllllllllll', o.scrollHeight);
+    console.log(o.offsetHeight, '--------', o.scrollTop ,'------', o.scrollHeight);
     o.style.height = (o.scrollHeight) + "px";
+    console.log(o.style.height, '22222222222222222222222222222');
+
 }
