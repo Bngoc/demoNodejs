@@ -21,6 +21,8 @@ class ChatController extends BaseController {
         showResponse.cssInclude = showResponse.readFileInclude(['css/chat.custom.css', 'css/chat.test.css'], 'c');
         showResponse.title = 'Home chat';
         showResponse.isNotIncludeSidebar = true;
+        showResponse.maxHeightBoxChat = 130;
+
         showResponse.scriptInclude = showResponse.readFileInclude(['js/socket/client.js']);
 
         showResponse.renderViews = 'chat/index.ejs';

@@ -134,28 +134,26 @@ input {
 }
 
 .scrollbar {
-    /*margin: 5px 0;*/
-    /*padding: 5px 0;*/
     float: left;
-    /*max-height: 120px;*/
     width: 100%;
-    background: #F5F5F5;
+    background: red;
+    /*background: #FFFFFF;*/
     overflow-y: scroll;
 }
 
-#style-3::-webkit-scrollbar-track {
+#style-box-sms::-webkit-scrollbar-track {
     /*-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);*/
-    background-color: #F5F5F5;
+    background-color: #FFFFFF;
     margin: 5px 0;
     padding: 5px 0;
 }
 
-#style-3::-webkit-scrollbar {
+#style-box-sms::-webkit-scrollbar {
     width: 8px;
     background-color: #F5F5F5;
 
 }
 
-#style-3::-webkit-scrollbar-thumb {
+#style-box-sms::-webkit-scrollbar-thumb {
     background-color: #A1A3A3;
 }

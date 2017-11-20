@@ -191,7 +191,7 @@
         </div>
         <div class="message-input" id="messageInput">
             <div class="wrap">
-                <div class="wrap scrollbar" id="style-3" style="max-height: 130px">
+                <div class="scrollbar" id="style-box-sms" max-height="<%= maxHeightBoxChat %>" style='max-height: <%= maxHeightBoxChat %>px'>
                     <ul class="_552n">
                         <li class="_13gd ">
                             <form action="https://upload.facebook.com/ajax/mercury/upload.php" class="_vzk"
@@ -230,7 +230,7 @@
                                                                          aria-hidden="true"></i></div>
                         </a></li>
                     </ul>
-                    <textarea id="boxChat" onscroll="textAreaAdjust(this)" style="max-height: 130px" class="box_msg"
+                    <textarea id="boxChat" onscroll="textAreaAdjust(this)" class="box_msg"
                               type="text" placeholder="Write your message..."></textarea>
                 </div>
             </div>

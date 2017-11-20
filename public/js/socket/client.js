@@ -84,38 +84,47 @@ SendChatMessage.prototype.diffHeightBoxMsg = function () {
     return $("#messageInput").outerHeight(); // $("#boxChat").innerHeight();
 };
 
-SendChatMessage.prototype.sendMsg = function (data) {
-    socket.emit('sendDataMsg', data);
-    $('#boxChat').val('');
-    var getH = $('#boxChat').attr('auto_height_box_msg') - $('#boxChat').attr('height_default');
-    this.diffHeightMsg(this.diffHeightBoxMsg(), getH);
+SendChatMessage.prototype.sendMsg = function () {
+    var data = $.trim($('#boxChat').val());
+    if (data.length) {
+        socket.emit('sendDataMsg', data);
+        $('#boxChat').val('');
+        var getH = $('#boxChat').attr('auto_height_box_msg') - $('#boxChat').attr('height_default');
+        this.diffHeightMsg(this.diffHeightBoxMsg(), getH);
+    }
 };
 
 SendChatMessage.prototype.eventClickSend = function () {
     var _this = this;
     $('#sendMessageChat').on('click', function () {
-        if ($.trim($('#boxChat').val())) {
-            _this.sendMsg($('#boxChat').val());
-        }
+        _this.sendMsg();
     });
 };
 
 SendChatMessage.prototype.eventEnterSend = function () {
     var _this = this;
-    $('#boxChat').keydown(function (event) {
-        try {
-            if (event.keyCode == 13 && event.shiftKey) {
-                _this.changeAutoHeightBoxMsg();
-            } else if (event.keyCode == 13) {
-                if ($.trim($(this).val())) {
-                    _this.sendMsg($(this).val());
-                    return false;
-                }
-            }
-        } catch (e) {
-        }
+    // create trigger keyUpDown after check enter vs (shift + enter) in textarea
+    $('#boxChat').on('keyUpDown', function (e) {
+        e.stopPropagation();
+        $('#boxChat').on('keyup keydown', function (evt) {
+            _this.changeAutoHeightBoxMsg();
+        });
     });
-};
+
+    $('#boxChat').on('keypress', function (evt) {
+        var valTextarea = $.trim($('#boxChat').val());
+
+        if (evt.shiftKey && evt.keyCode == 13) {
+            $('#boxChat').on('keyup keydown cut paste', function (evt) {
+                $(this).trigger('keyUpDown');
+            });
+        } else if (evt.keyCode == 13) {
+            _this.sendMsg();
+            return false;
+        }
+        $(this).trigger('keyUpDown');
+    });
+}
 
 SendChatMessage.prototype.eventScrollBottomBoxMsg = function () {
     $('#frameListMsg').bind('scroll', function () {
@@ -131,75 +140,76 @@ SendChatMessage.prototype.eventScrollBottomBoxMsg = function () {
 };
 
 SendChatMessage.prototype.changeAutoHeightBoxMsg = function () {
-    var _this = this;
+    // var _this = this;
+    // var frameListMsg = $('#frameListMsg');
+    // if (frameListMsg.scrollTop() + frameListMsg.innerHeight() > frameListMsg[0].scrollHeight) {
+    //     var messageInput = this.diffHeightBoxMsg();
+    //     this.diffHeightMsg(messageInput);
+    // }
 
-    $('#boxChat').on('change keyup keydown paste cut', function () {
-        $('#boxChat').keyup(function (event) {
-            if (event.keyCode != 13) {
-                // var getChangeHeight = $(this).attr('auto_height_box_msg');
-                // var maxHeight = parseInt($(this).style['max-height']);
+    /*$('#boxChat').on('change keyup keydown paste cut', function () {
+     $('#boxChat').keyup(function (event) {
+     if (event.keyCode != 13) {
+     // var getChangeHeight = $(this).attr('auto_height_box_msg');
+     // var maxHeight = parseInt($(this).style['max-height']);
 
-                var messageInput = _this.diffHeightBoxMsg();
-                _this.diffHeightMsg(messageInput);
 
-                console.log(messageInput, '---------------------');
+     console.log(messageInput, '---------------------');
 
-                console.log(event.keyCode);
-            }
-        });
+     console.log(event.keyCode);
+     }
+     });
 
-        // var getHeight = parseInt($(this).attr('height_default'));
-        // var csHeight = parseInt($(this)[0].style.height);
-        // const height = $('#boxChat').innerHeight();
-        //
-        //
-        //
-        //
-        // var getMaxHeight = (maxHeight > csHeight) ? maxHeight : csHeight;
-        // console.log('----->', messageInput);
-        // overflow-y: scroll
+     // var getHeight = parseInt($(this).attr('height_default'));
+     // var csHeight = parseInt($(this)[0].style.height);
+     // const height = $('#boxChat').innerHeight();
+     //
+     //
+     //
+     //
+     // var getMaxHeight = (maxHeight > csHeight) ? maxHeight : csHeight;
+     // console.log('----->', messageInput);
+     // overflow-y: scroll
 
-        /*
+     /!*
 
-         var heightChange = $('#boxChat').scrollHeight;
-         // var heightChange = (typeof getChangeHeight !== typeof undefined && getChangeHeight !== false) ? parseInt(getChangeHeight) : this.scrollHeight;
+     var heightChange = $('#boxChat').scrollHeight;
+     // var heightChange = (typeof getChangeHeight !== typeof undefined && getChangeHeight !== false) ? parseInt(getChangeHeight) : this.scrollHeight;
 
-         // var maxHeight = Math.max(heightChange, height);
-         const defineHeight = 150;
-         var rsHeight = null;
+     // var maxHeight = Math.max(heightChange, height);
+     const defineHeight = 150;
+     var rsHeight = null;
 
-         console.log(height, getChangeHeight,'_________', getHeight, '----->', csHeight);
+     console.log(height, getChangeHeight,'_________', getHeight, '----->', csHeight);
 
-         if (height > getChangeHeight && heightChange < defineHeight) {
-         rsHeight = height;
-         } else if (height > defineHeight && $(this).val() != '') {
-         rsHeight = defineHeight;
-         // $(this).attr('auto_height_box_msg', defineHeight);
-         // $(this).css('height', defineHeight);
-         // } else if ((typeof getChangeHeight !== typeof undefined && getChangeHeight !== false)) {
+     if (height > getChangeHeight && heightChange < defineHeight) {
+     rsHeight = height;
+     } else if (height > defineHeight && $(this).val() != '') {
+     rsHeight = defineHeight;
+     // $(this).attr('auto_height_box_msg', defineHeight);
+     // $(this).css('height', defineHeight);
+     // } else if ((typeof getChangeHeight !== typeof undefined && getChangeHeight !== false)) {
 
-         } else if ($(this).val() == '') {
-         // rsHeight = getHeight;
-         } else {
-         rsHeight = getChangeHeight;
-         }
+     } else if ($(this).val() == '') {
+     // rsHeight = getHeight;
+     } else {
+     rsHeight = getChangeHeight;
+     }
 
-         console.log('rsHeight', rsHeight, getChangeHeight);
-         // if (getChangeHeight < rsHeight)
-         // $(this).attr('auto_height_box_msg', rsHeight);
+     console.log('rsHeight', rsHeight, getChangeHeight);
+     // if (getChangeHeight < rsHeight)
+     // $(this).attr('auto_height_box_msg', rsHeight);
 
-         // $(this).css('height', rsHeight);
-         */
+     // $(this).css('height', rsHeight);
+     *!/
 
-    });
+     });*/
 };
 
 function textAreaAdjust(o) {
-
     o.style.height = "1px";
-    console.log(o.style.height, 'lllllllllllllllllllllllll', o.scrollHeight);
-    console.log(o.offsetHeight, '--------', o.scrollTop, '------', o.scrollHeight);
     o.style.height = (o.scrollHeight) + "px";
-    console.log(o.style.height, '22222222222222222222222222222');
-    // }
+
+    let maxHeight = $('#style-box-sms').attr('max-height');
+    $('#boxChat').attr('auto_height_box_msg', ((o.style.height < maxHeight) ? o.style.height : maxHeight));
 }
