@@ -55,19 +55,19 @@ var SendChatMessage = function () {
             $("#boxChat").attr({'auto_height_box_msg': heightDefault});
             $("#boxChat").css({'min-height': heightDefault});
 
-            this.diffHeightMsg((heightDefault + 12));
+            this.diffHeightMsg((heightDefault + 26));
             $("#frameListMsg").animate({scrollTop: $("#frameListMsg").height()}, 500);
         };
     };
 
-    this.changeAutoHeightBoxMsg();
+    // this.changeAutoHeightBoxMsg();
 };
 
 SendChatMessage.prototype.diffHeightMsg = function (diffBoxMsg, rsReplie) {
     var diffMessage = $('#frame .content').height() - $('.contact-profile').height();// - diffBoxMsg;
 
     if (rsReplie) {
-        diffBoxMsg = diffBoxMsg - rsReplie + 12;
+        diffBoxMsg = diffBoxMsg - rsReplie + 20;
         $('#boxChat').val('');
         $('#boxChat').css('height', 'auto');
     }
@@ -81,11 +81,12 @@ SendChatMessage.prototype.diffHeightMsg = function (diffBoxMsg, rsReplie) {
 };
 
 SendChatMessage.prototype.diffHeightBoxMsg = function () {
-    return  $("#messageInput").outerHeight();
+    return $("#messageInput").outerHeight(); // $("#boxChat").innerHeight();
 };
 
 SendChatMessage.prototype.sendMsg = function (data) {
     socket.emit('sendDataMsg', data);
+    $('#boxChat').val('');
     var getH = $('#boxChat').attr('auto_height_box_msg') - $('#boxChat').attr('height_default');
     this.diffHeightMsg(this.diffHeightBoxMsg(), getH);
 };
@@ -93,7 +94,7 @@ SendChatMessage.prototype.sendMsg = function (data) {
 SendChatMessage.prototype.eventClickSend = function () {
     var _this = this;
     $('#sendMessageChat').on('click', function () {
-        if ($('#boxChat').val()) {
+        if ($.trim($('#boxChat').val())) {
             _this.sendMsg($('#boxChat').val());
         }
     });
@@ -101,10 +102,15 @@ SendChatMessage.prototype.eventClickSend = function () {
 
 SendChatMessage.prototype.eventEnterSend = function () {
     var _this = this;
-    $('#boxChat').keyup(function (event) {
+    $('#boxChat').keydown(function (event) {
         try {
-            if (event.keyCode == 13 && $(this).val()) {
-                _this.sendMsg($(this).val());
+            if (event.keyCode == 13 && event.shiftKey) {
+                _this.changeAutoHeightBoxMsg();
+            } else if (event.keyCode == 13) {
+                if ($.trim($(this).val())) {
+                    _this.sendMsg($(this).val());
+                    return false;
+                }
             }
         } catch (e) {
         }
@@ -128,13 +134,19 @@ SendChatMessage.prototype.changeAutoHeightBoxMsg = function () {
     var _this = this;
 
     $('#boxChat').on('change keyup keydown paste cut', function () {
-        // var getChangeHeight = $(this).attr('auto_height_box_msg');
-        // var maxHeight = parseInt($(this).style['max-height']);
-        var messageInput = _this.diffHeightBoxMsg();
-        _this.diffHeightMsg(messageInput);
+        $('#boxChat').keyup(function (event) {
+            if (event.keyCode != 13) {
+                // var getChangeHeight = $(this).attr('auto_height_box_msg');
+                // var maxHeight = parseInt($(this).style['max-height']);
 
-console.log(messageInput , '---------------------');
+                var messageInput = _this.diffHeightBoxMsg();
+                _this.diffHeightMsg(messageInput);
 
+                console.log(messageInput, '---------------------');
+
+                console.log(event.keyCode);
+            }
+        });
 
         // var getHeight = parseInt($(this).attr('height_default'));
         // var csHeight = parseInt($(this)[0].style.height);
@@ -183,10 +195,11 @@ console.log(messageInput , '---------------------');
 };
 
 function textAreaAdjust(o) {
-    o.style.height = "0px";
+
+    o.style.height = "1px";
     console.log(o.style.height, 'lllllllllllllllllllllllll', o.scrollHeight);
-    console.log(o.offsetHeight, '--------', o.scrollTop ,'------', o.scrollHeight);
+    console.log(o.offsetHeight, '--------', o.scrollTop, '------', o.scrollHeight);
     o.style.height = (o.scrollHeight) + "px";
     console.log(o.style.height, '22222222222222222222222222222');
-
+    // }
 }
