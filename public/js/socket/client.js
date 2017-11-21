@@ -50,13 +50,24 @@ var SendChatMessage = function () {
 
         this.getDefaultHeightMsgBox = function () {
             let heightDefault = this.diffHeightBoxMsg();
+            let realHeghitRaw = $("#messageInput").outerHeight(true);
+            let getHeightFrameListMsg = $("#frameListMsg").height();
             let minHeightBoxChat = $('#style-box-sms').attr('min-height');
+            let maxHeightBoxChat = $('#style-box-sms').attr('max-height');
+
+            $(".scrollbar").attr({'realHeghitRaw': realHeghitRaw, 'realHeghitChange': realHeghitRaw});
 
             $("#boxChat").attr({'height_default': heightDefault});
             $("#boxChat").attr({'auto_height_box_msg': heightDefault});
             $("#boxChat").css({'min-height': minHeightBoxChat + 'px'});
 
-            this.diffHeightMsg((heightDefault));
+
+            $('#frameListMsg').css({
+                'min-height': (getHeightFrameListMsg - minHeightBoxChat - 25),
+                // 'max-height': (diffMessage - maxHeightBoxChat - 25),
+                'height': 0
+            });
+
             $("#frameListMsg").animate({scrollTop: $("#frameListMsg").height()}, 500);
         };
     };
@@ -64,27 +75,20 @@ var SendChatMessage = function () {
     // this.changeAutoHeightBoxMsg();
 };
 
-SendChatMessage.prototype.diffHeightMsg = function (diffBoxMsg, rsReplie) {
-    var diffMessage = $('#frame .content').height() - $('.contact-profile').height();// - diffBoxMsg;
-    let minHeightBoxChat = $('#style-box-sms').attr('min-height');
-    let maxHeightBoxChat = $('#style-box-sms').attr('max-height');
-    let auto_height_box_msg = $('#boxChat').attr('auto_height_box_msg');
-    let heightFrameListMsg = $('#frameListMsg').height();
+SendChatMessage.prototype.diffHeightMsg = function () {
+    const minHeightBoxChat = $('#style-box-sms').attr('min-height');
+    let realheghitchange = parseInt($('.scrollbar').attr('realheghitchange')) - parseInt($('.scrollbar').attr('realheghitRaw'));
 
-    if (rsReplie) {
-        diffBoxMsg = diffBoxMsg - rsReplie;
-        var minHeightFrameListMsg = ((auto_height_box_msg >= maxHeightBoxChat) ? (heightFrameListMsg - 22) : (heightFrameListMsg - auto_height_box_msg));
-        $('#boxChat').val('');
-        $('#boxChat').css('min-height', minHeightBoxChat);
-        $('#frameListMsg').css({'min-height': minHeightFrameListMsg});
-    } else {
-        $('#frameListMsg').css({
-            'min-height': (diffMessage - minHeightBoxChat - 20),
-            'max-height': (diffMessage - maxHeightBoxChat - 20),
-            'height': (minHeightBoxChat)
-        });
-    }
-    $('#boxChat').attr('auto_height_box_msg', 0);
+    $('#boxChat').css('height', minHeightBoxChat, '!important');
+    $('#boxChat').css('min-height', minHeightBoxChat);
+
+    let heightFrameListMsg = $('#frameListMsg').height() + realheghitchange;
+    $('#frameListMsg').css({'min-height': heightFrameListMsg});
+
+
+    $('.scrollbar').attr('realheghitchange', $('.scrollbar').attr('realheghitRaw'));
+    $('#boxChat').val('');
+    return false;
 };
 
 SendChatMessage.prototype.diffHeightBoxMsg = function () {
@@ -95,9 +99,7 @@ SendChatMessage.prototype.sendMsg = function () {
     var data = $.trim($('#boxChat').val());
     if (data.length) {
         socket.emit('sendDataMsg', data);
-        $('#boxChat').val('');
-        var getH = $('#boxChat').attr('auto_height_box_msg') - $('#boxChat').attr('height_default');
-        this.diffHeightMsg(this.diffHeightBoxMsg(), getH);
+        this.diffHeightMsg();
     }
 };
 
@@ -147,6 +149,9 @@ SendChatMessage.prototype.eventScrollBottomBoxMsg = function () {
 };
 
 SendChatMessage.prototype.changeAutoHeightBoxMsg = function () {
+let scrollbar = $('.scrollbar').height();
+    console.log(scrollbar);
+
     // var _this = this;
     // var frameListMsg = $('#frameListMsg');
     // if (frameListMsg.scrollTop() + frameListMsg.innerHeight() > frameListMsg[0].scrollHeight) {
@@ -213,10 +218,28 @@ SendChatMessage.prototype.changeAutoHeightBoxMsg = function () {
      });*/
 };
 
-function textAreaAdjust(o) {
-    o.style.height = "1px";
-    o.style.height = (o.scrollHeight) + "px";
+$('#frameListMsg').on('changeBoxMsg', function () {
+    // console.log(parseInt($('.scrollbar').attr('realheghitchange')), parseInt($('.scrollbar').attr('realheghitraw')));
+    let diffChangeBoxMsg = $(this).outerHeight() - $('.scrollbar').outerHeight(true) + 12 + parseInt($('.scrollbar').attr('realheghitraw'));
+    $(this).css('min-height', diffChangeBoxMsg);
 
-    let maxHeight = $('#style-box-sms').attr('max-height');
-    $('#boxChat').attr('auto_height_box_msg', ((o.style.height < maxHeight) ? o.style.height : maxHeight));
+    // $("#frameListMsg").animate({scrollTop: $('#frameListMsg').outerHeight()}, 1000);
+});
+
+function textAreaAdjust(o) {
+    // o.style.height = "1px";
+    // o.style.height = (o.scrollHeight) + "px";
+    //
+    // let maxHeight = parseInt($('#style-box-sms').attr('max-height'));
+    // $('#boxChat').attr('auto_height_box_msg', ((o.style.height < maxHeight) ? o.style.height : maxHeight));
+    //
+    // let outerHeight = $('.scrollbar').outerHeight(false);
+    // let getRealheghitchange = parseInt($('.scrollbar').attr('realheghitchange'));
+    // let getRealheghitRaw = parseInt($('.scrollbar').attr('realheghitraw'));
+    //
+    // if ((outerHeight > getRealheghitchange && getRealheghitchange <= maxHeight)) {
+    //     $('.scrollbar').attr('realheghitchange', (getRealheghitchange <= maxHeight) ? outerHeight : maxHeight);
+    //     $('#frameListMsg').trigger('changeBoxMsg');
+    // }
+    // console.log($('.scrollbar').height(), $('.scrollbar').innerHeight(), $('.scrollbar').outerHeight())
 }

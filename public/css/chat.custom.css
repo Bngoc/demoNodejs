@@ -617,16 +617,19 @@
     border-top: 1px solid brown;
     background: whitesmoke;
     border-bottom: 1px solid darkgray;
+    display: block;
 }
 #frame .content .message-input .wrap {
     position: relative;
     /*padding: 1px 0px 1px 10px;*/
+    display: block;
 }
 #frame .content .message-input .wrap .box_msg {
     font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
     float: left;
     /*border: none;*/
     border: 1px solid;
+    display: block;
     width: 80%;
     font-size: 1em;
     color: #32465a;
