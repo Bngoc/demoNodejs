@@ -22,6 +22,7 @@ class ChatController extends BaseController {
         showResponse.title = 'Home chat';
         showResponse.isNotIncludeSidebar = true;
         showResponse.maxHeightBoxChat = 130;
+        showResponse.minHeightBoxChat = 56;
 
         showResponse.scriptInclude = showResponse.readFileInclude(['js/socket/client.js']);
 

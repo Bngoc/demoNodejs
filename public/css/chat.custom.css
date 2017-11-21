@@ -491,7 +491,7 @@
 }
 #frame .content {
     float: right;
-    width: 60%;
+    width: 66%;
     height: 100%;
     overflow: hidden;
     position: relative;
@@ -619,7 +619,7 @@
     border-bottom: 1px solid darkgray;
 }
 #frame .content .message-input .wrap {
-    position: unset;
+    position: relative;
     /*padding: 1px 0px 1px 10px;*/
 }
 #frame .content .message-input .wrap .box_msg {
@@ -631,14 +631,15 @@
     font-size: 1em;
     color: #32465a;
     margin: 5px 0px 5px 15px;
-    padding: 9px 0px 9px 0px;
-    overflow: hidden;
+    padding: 9px 113px 9px 3px;
+    overflow-y: scroll;
+    overflow-x: hidden;
     word-wrap: break-word;
 }
 @media screen and (max-width: 735px) {
     #frame .content .message-input .wrap .box_msg {
-        padding: 9px 0px 9px 0px;
-        width: 85%;
+        /*padding: 9px 113px 9px 3px;*/
+        width: 86%;
     }
 }
 #frame .content .message-input .wrap .box_msg:focus {

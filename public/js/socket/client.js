@@ -50,12 +50,13 @@ var SendChatMessage = function () {
 
         this.getDefaultHeightMsgBox = function () {
             let heightDefault = this.diffHeightBoxMsg();
+            let minHeightBoxChat = $('#style-box-sms').attr('min-height');
 
             $("#boxChat").attr({'height_default': heightDefault});
             $("#boxChat").attr({'auto_height_box_msg': heightDefault});
-            $("#boxChat").css({'min-height': heightDefault});
+            $("#boxChat").css({'min-height': minHeightBoxChat + 'px'});
 
-            this.diffHeightMsg((heightDefault + 26));
+            this.diffHeightMsg((heightDefault));
             $("#frameListMsg").animate({scrollTop: $("#frameListMsg").height()}, 500);
         };
     };
@@ -65,19 +66,25 @@ var SendChatMessage = function () {
 
 SendChatMessage.prototype.diffHeightMsg = function (diffBoxMsg, rsReplie) {
     var diffMessage = $('#frame .content').height() - $('.contact-profile').height();// - diffBoxMsg;
+    let minHeightBoxChat = $('#style-box-sms').attr('min-height');
+    let maxHeightBoxChat = $('#style-box-sms').attr('max-height');
+    let auto_height_box_msg = $('#boxChat').attr('auto_height_box_msg');
+    let heightFrameListMsg = $('#frameListMsg').height();
 
     if (rsReplie) {
-        diffBoxMsg = diffBoxMsg - rsReplie + 20;
+        diffBoxMsg = diffBoxMsg - rsReplie;
+        var minHeightFrameListMsg = ((auto_height_box_msg >= maxHeightBoxChat) ? (heightFrameListMsg - 22) : (heightFrameListMsg - auto_height_box_msg));
         $('#boxChat').val('');
-        $('#boxChat').css('height', 'auto');
+        $('#boxChat').css('min-height', minHeightBoxChat);
+        $('#frameListMsg').css({'min-height': minHeightFrameListMsg});
+    } else {
+        $('#frameListMsg').css({
+            'min-height': (diffMessage - minHeightBoxChat - 20),
+            'max-height': (diffMessage - maxHeightBoxChat - 20),
+            'height': (minHeightBoxChat)
+        });
     }
-
-    $('#frameListMsg').css({
-        'min-height': (diffMessage - diffBoxMsg),
-        'max-height': (diffMessage - diffBoxMsg ),
-        // 'height': (diffMessage - diffBoxMsg)
-    });
-    $('#boxChat').attr('auto_height_box_msg', diffBoxMsg);
+    $('#boxChat').attr('auto_height_box_msg', 0);
 };
 
 SendChatMessage.prototype.diffHeightBoxMsg = function () {
