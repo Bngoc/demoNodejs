@@ -17,7 +17,9 @@ class Routers {
         app.get("/login", userController.login);
         app.post("/register", userController.register);
         app.get("/product", productController.getIndex);
+
         app.get("/chat", chatController.getIndex);
+        app.post("/chat/content-chat", chatController.getContentChat);
 
         app.get("/param/:param1/:param2", function (requset, response) {
             // response.writeHead(200, {'Content-Type': 'text/html'});

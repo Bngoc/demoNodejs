@@ -47,7 +47,7 @@ class Express {
         app.engine('html', ejs.renderFile);
         app.set('views', coreHelper.paths.VIEWS);
         app.set('layout', 'layouts/master');
-        // Set True NOT use elemment response.render()
+        // Set True NOT use elemment CSS SCRIPT ... response.render()
         app.set("layout extractScripts", false);
         app.set("layout extractStyles", false);
         app.set("layout extractMetas", true);
@@ -59,15 +59,17 @@ class Express {
 
         app.use(logger('dev'));
         app.use(bodyParser.urlencoded({extended: true}));
+        //JSON
         app.use(bodyParser.json());
         app.use(bodyParser.text({type: 'text/html'}));
         // app.use(expressValidator(customValidator()));
         app.use(methodOverride('X-HTTP-Method-Override'));
+
         app.use(methodOverride(function (req, res) {
             if (req.body && typeof req.body === 'object' && '_method' in req.body) {
                 // look in urlencoded POST bodies and delete it
-                var method = req.body._method
-                delete req.body._method
+                var method = req.body._method;
+                delete req.body._method;
                 return method
             }
         }));

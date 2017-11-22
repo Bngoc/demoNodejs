@@ -65,11 +65,11 @@ class Socket {
 
             socket.on('sendDataMsg', function (datasocketAll) {
                 ////private
-                socket.emit('sendDataPrivate', 'send -= private' + datasocketAll + ' ' + socket.id);
+                socket.emit('sendDataPrivate', 'send -= private' + datasocketAll + '---' + socket.id);
                 ////all
                 // io.sockets.emit('send-data-test', 'send -= all' + datasocketAll + ' '  + socket.id);
                 //// all / private
-                socket.broadcast.emit('sendDataBroadCast', 'send -= all / private ' + datasocketAll + ' ' + socket.id);
+                socket.broadcast.emit('sendDataBroadCast', 'send -= all / private ' + datasocketAll + ' --- ' + socket.id);
                 //// io.to(socket.id).emit()
             });
 

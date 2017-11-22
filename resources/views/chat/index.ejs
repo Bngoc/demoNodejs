@@ -142,7 +142,7 @@
             <button id="settings"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Settings</span></button>
         </div>
     </div>
-    <div class="content">
+    <div class="content" id="content-chat">
         <div class="contact-profile">
             <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
             <p>Harvey Specter</p>
@@ -152,7 +152,7 @@
                 <i class="fa fa-instagram" aria-hidden="true"></i>
             </div>
         </div>
-        <div class="messages" id="frameListMsg">
+        <div class="messages" id="frameListMsg" box-raw-msg="<%= minHeightBoxChat %>" box-change-msg="<%= minHeightBoxChat %>">
             <ul id="boxMsgChat">
                 <li class="sent">
                     <img src="http://emilcarlsson.se/assets/mikeross.png" alt=""/>
@@ -192,7 +192,7 @@
         <div class="message-input" id="messageInput">
             <div class="wrap">
                 <div class="scrollbar" id="style-box-sms" min-height="<%= minHeightBoxChat %>" max-height="<%= maxHeightBoxChat %>" style='max-height: <%= maxHeightBoxChat %>px'>
-                    <textarea style="max-height: 100px;" id="boxChat" onscroll="textAreaAdjust(this)" class="box_msg"
+                    <textarea style="max-height: 100px;" id="boxChat" class="box_msg"
                               type="text" placeholder="Write your message..."></textarea>
                 </div>
                 <div class="btn-controler-act">

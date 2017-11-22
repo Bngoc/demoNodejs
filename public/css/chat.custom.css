@@ -627,8 +627,8 @@
 #frame .content .message-input .wrap .box_msg {
     font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
     float: left;
-    /*border: none;*/
-    border: 1px solid;
+    border: none;
+    /*border: 1px solid;*/
     display: block;
     width: 80%;
     font-size: 1em;
