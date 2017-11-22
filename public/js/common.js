@@ -31,3 +31,4 @@ function convertHtmlToPlainText(strHtml = '') {
         .replace(/</g, '&lt;')
         .replace(/\n/g, '<br>');
 }
+

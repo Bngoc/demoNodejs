@@ -9,6 +9,7 @@ socket.on('sendDataPrivate', function (messageReplies) {
         + '<p>' + convertHtmlToPlainText(messageReplies) + '</p></li>';
 
     $('#boxMsgChat').append(msg);
+    $('.contact.active .preview').html('<span>You: </span>' + convertHtmlToPlainText(messageReplies));
     $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, 500);
 });
 
@@ -155,7 +156,7 @@ SendChatMessage.prototype.reloadContentBoxChatAjax = function () {
         let dataRequest = {
             url: '/chat/content-chat',
             data: {
-                imgProfile: '<img src="'+ imgProfile +'" alt="">',
+                imgProfile: '<img src="' + imgProfile + '" alt="">',
                 userName: userName
             }
         };
@@ -187,6 +188,39 @@ $('body').on('changeBoxMsg', '#frameListMsg', function () {
         $("#frameListMsg").animate({scrollTop: getMinHeightFrameListMsg()}, 500);
 });
 
+
+$("body").on('click', '#profile-img', function () {
+    $("#status-options").toggleClass("active");
+});
+
+$("body").on('click', '.expand-button', function () {
+    $("#profile").toggleClass("expanded");
+    $("#contacts").toggleClass("expanded");
+});
+
+$("body").on('click', '#status-options ul li', function () {
+    $("#profile-img").removeClass();
+    $("#status-online").removeClass("active");
+    $("#status-away").removeClass("active");
+    $("#status-busy").removeClass("active");
+    $("#status-offline").removeClass("active");
+    $(this).addClass("active");
+
+    if ($("#status-online").hasClass("active")) {
+        $("#profile-img").addClass("online");
+    } else if ($("#status-away").hasClass("active")) {
+        $("#profile-img").addClass("away");
+    } else if ($("#status-busy").hasClass("active")) {
+        $("#profile-img").addClass("busy");
+    } else if ($("#status-offline").hasClass("active")) {
+        $("#profile-img").addClass("offline");
+    } else {
+        $("#profile-img").removeClass();
+    }
+    ;
+
+    $("#status-options").removeClass("active");
+});
 
 function getMinHeightFrameListMsg() {
     return $(".content").outerHeight() - $(".contact-profile").outerHeight() - $("#messageInput").outerHeight() - 1;
