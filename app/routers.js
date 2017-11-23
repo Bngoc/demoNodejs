@@ -1,24 +1,23 @@
 'use strict';
 
-var UserController = require('./controllers/UserController.js');
-var ProductController = require('./controllers/ProductController.js');
-var HomeController = require('./controllers/HomeController.js');
-var ChatController = require('./controllers/ChatController.js');
-
-var userController = new UserController();
-var productController = new ProductController;
-var homeController = new HomeController;
-var chatController = new ChatController;
-
 class Routers {
     useRoutes(app, coreHelper) {
+        let useMiddleware = coreHelper.callModule(`${coreHelper.paths.MIDDLEWARE}Authenticate.js`, true);
 
-        app.get("/", homeController.index);
-        app.get("/login", userController.login);
-        app.post("/register", userController.register);
+        let productController = coreHelper.callModule(`${coreHelper.paths.CONTROLLERS}ProductController.js`, true);
+        let homeController = coreHelper.callModule(`${coreHelper.paths.CONTROLLERS}HomeController.js`, true);
+        let chatController = coreHelper.callModule(`${coreHelper.paths.CONTROLLERS}ChatController.js`, true);
+        let userController = coreHelper.callModule(`${coreHelper.paths.CONTROLLERS}UserController.js`, true);
+
+        app.get("/", homeController.getIndex);
+
+        app.get("/login", userController.getLogin);
+        app.get("/forgot", userController.getForgot);
+        app.get("/register", userController.getRegister);
+        app.post("/signup", userController.postRegister);
         app.get("/product", productController.getIndex);
 
-        app.get("/chat", chatController.getIndex);
+        app.get("/chat", useMiddleware.isAuthenticated, chatController.getIndex);
         app.post("/chat/content-chat", chatController.getContentChat);
 
         app.get("/param/:param1/:param2", function (requset, response) {

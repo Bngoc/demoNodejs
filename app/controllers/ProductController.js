@@ -1,18 +1,18 @@
 'use strict';
 
-const HelperViewController = require('./HelperViewController.js');
-const helperViewController = new HelperViewController();
+const ViewController = require('./ViewController.js');
+const helperViewController = new ViewController();
 
 var User = require("./../models/User.js");
 var Product = require("./../models/Product.js");
 
 // var BaseController = require('./BaseController.js');
 var UserController = require('./UserController.js');
-var ViewsController = require('./ViewsController.js');
 
-class ProductController extends ViewsController {
+
+class ProductController {
     constructor() {
-        super();
+        // super();
         console.log('constructor brfore index product..');
     }
 

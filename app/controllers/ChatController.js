@@ -1,14 +1,8 @@
 'use strict';
 
-const HelperViewController = require('./HelperViewController.js');
-const helperViewController = new HelperViewController();
+const ViewController = require('./ViewController.js');
+const helperViewController = new ViewController();
 
-
-var path = require('path'),
-    fs = require('fs'),
-    ejs = require('ejs');
-
-var ViewsController = require('./ViewsController.js');
 var BaseController = require('./BaseController.js');
 
 const HEIGHT_BOX_CHAT_MAX = 130;
@@ -45,7 +39,6 @@ class ChatController extends BaseController {
 
         showResponseChat.renderViews = 'chat/content.chat.ejs';
 
-        // res.status(200).send(showResponseChat);
 
         // zender view before send data
         //{layout: 'ajax'}

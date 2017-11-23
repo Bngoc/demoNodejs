@@ -12,20 +12,20 @@ var DefinePaths = function definePaths() {
     this.MODULE = `${this.CONFIG}module${DS}`;
 
     this.APP = `${this.ROOT}app${DS}`;
-    this.CONTROLLERS = `${this.ROOT}controllers${DS}`;
-    this.MODELS = `${this.ROOT}models${DS}`;
+    this.CONTROLLERS = `${this.APP}controllers${DS}`;
+    this.MIDDLEWARE = `${this.APP}middleware${DS}`;
+    this.MODELS = `${this.APP}models${DS}`;
 
     this.RESOURCES = `${this.ROOT}resources${DS}`;
     this.VIEWS = `${this.RESOURCES}views${DS}`;
 
     this.PUBLIC = `${this.ROOT}public${DS}`;
     this.CSS = `${this.PUBLIC}css${DS}`;
-    // this.CSS_P = path.resolve(`${this.PUBLIC}css${DS}`);
     this.JS = `${this.PUBLIC}js${DS}`;
-    // this.JS_P = path.resolve(`${this.PUBLIC}js${DS}`);
     this.IMAGES = `${this.PUBLIC}images${DS}`;
-    // this.IMAGES_P = path.resolve(`${this.PUBLIC}images${DS}`);
-    this.LOGS = `${this.PUBLIC}logs${DS}`;
+
+    this.STORAGE = `${this.ROOT}storage${DS}`;
+    this.LOGS = `${this.STORAGE}logs${DS}`;
 };
 
 module.exports = DefinePaths;
@@ -40,7 +40,7 @@ exports.locales = this.ROOT + 'locales' + DS;
 // exports.CONFIG  = this.ROOT + 'config' + DS;
 // exports.cache           = this.ROOT + 'cache' + DS;
 exports.config_module = this.config + 'modules' + DS;
-exports.middlewares = this.config + 'middlewares' + DS;
+// exports.middlewares = this.config + 'middlewares' + DS;
 exports.config_passport = this.config_module + 'passport' + DS;
 // exports.APP             = this.ROOT + 'app' + DS;
 // exports.controllers     = this.APP + 'controllers' + DS;

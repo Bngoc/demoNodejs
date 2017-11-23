@@ -8,10 +8,13 @@ const paths = new sampleRequirePaths();
 const sampleDB = require(`${paths.CONFIG}/db.json`);
 const sampleConfig = require(`${paths.CONFIG}/config.json`);
 const samplePackage = require(`${paths.ROOT}/package.json`);
+const sampleApp = require(`${paths.CONFIG}/app.js`);
 
 function CoreHelper() {
 
     this.package = samplePackage;
+
+    this.app = sampleApp;
 
     this.paths = paths;
 
@@ -104,6 +107,13 @@ function CoreHelper() {
         var createServer = server.createServer(app, this.sampleConfig);
         return createServer;
     };
+
+    this.callModule = function (nameController = '', isNew = false) {
+        if (nameController == '') return false;
+        var UseController = require(nameController);
+
+        return isNew ? new UseController() : UseController;
+    }
 }
 
 
@@ -123,6 +133,35 @@ class ConnectDB extends CoreHelper {
             }
         } catch (ex) {
             return null;
+        }
+    }
+
+    connection(callback) {
+        const connection = this.getConnect();
+        const strDB = this.sampleConfig.DB_CONNECTION ? this.sampleConfig.DB_CONNECTION : '';
+        var resultContion = {
+            error: '',
+            msg: '',
+            data: connection
+        };
+
+        if (connection) {
+            connection.connect(function (error) {
+                if (!!error) {
+                    resultContion.error = error;
+                    resultContion.msg = `ERR: Cannot connect to Database server ${strDB}......`;
+
+                    console.log(`ERR: Cannot connect to Database server ${strDB}......`);
+                    callback(resultContion);
+                } else {
+                    callback(resultContion);
+                }
+            });
+        } else {
+            resultContion.error = 'Not config connect db!';
+            resultContion.msg = `ERR: Cannot config connect to Database server ${strDB}......`;
+
+            callback(resultContion);
         }
     }
 }

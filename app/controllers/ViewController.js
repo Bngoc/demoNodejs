@@ -8,7 +8,7 @@ const coreHelper = new CoreHelper();
 const bundles = require(`${coreHelper.paths.ROOT}bundles.json`);
 
 
-function HelperViewController() {
+function ViewController() {
     this.getVersion = coreHelper.package.version;
     this.title = "Welcome to " + coreHelper.sampleConfig.domain.host;
 
@@ -39,28 +39,28 @@ function HelperViewController() {
     this.coreHelper = coreHelper;
 };
 
-HelperViewController.prototype.coreHelper = function () {
+ViewController.prototype.coreHelper = function () {
     return coreHelper;
 };
 
-HelperViewController.prototype.nav = function (sampleHtmlMaster) {
+ViewController.prototype.nav = function (sampleHtmlMaster) {
     // var sampleHtmlNav = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/nav.ejs'), 'utf-8');
     // return sampleHtmlMaster.replace('{DEFINE_NAV}', sampleHtmlNav);
 };
 
-HelperViewController.prototype.getHeader = function (strHeader) {
+ViewController.prototype.getHeader = function (strHeader) {
     var fss = ('<h1 itemprop="name">' + strHeader + '</h1>');
     return fss;
 };
 
-HelperViewController.prototype.footer = function (sampleHtmlMaster = 'sss') {
+ViewController.prototype.footer = function (sampleHtmlMaster = 'sss') {
     // var sampleHtmlFooter = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/footer.ejs'), 'utf-8');
     // return sampleHtmlMaster.replace('{DEFINE_FOOTER}', sampleHtmlFooter);
     return;
 };
 
 
-class View extends HelperViewController {
+class View extends ViewController {
     constructor() {
         super();
         var isWeb = coreHelper.sampleConfig.WEB ? 'main' : 'admin_main';
@@ -92,5 +92,5 @@ class View extends HelperViewController {
     }
 }
 
-module.exports = HelperViewController;
+module.exports = ViewController;
 module.exports = View;

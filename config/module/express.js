@@ -2,6 +2,8 @@
 /**
  * Module dependencies.
  */
+
+const passport = require('passport');
 const ejs = require('ejs');
 const expressLayouts  = require('express-ejs-layouts');
 const logger = require('morgan');
@@ -16,7 +18,9 @@ const favicon = require('serve-favicon');
 // const cookieParser     = require('cookie-parser');
 // const session          = require('express-session');
 // const flash            = require('express-flash');
-// const env              = process.env.NODE_ENV || 'development';
+
+// use hander log
+const env              = process.env.NODE_ENV || 'development';
 
 /**
  * include config

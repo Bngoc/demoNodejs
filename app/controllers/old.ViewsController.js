@@ -1,7 +1,7 @@
 'use strict';
 
-const HelperViewController = require('./HelperViewController.js');
-const helperViewController = new HelperViewController();
+const ViewController = require('./ViewController.js');
+const helperViewController = new ViewController();
 
 var path = require('path'),
     fs = require('fs');

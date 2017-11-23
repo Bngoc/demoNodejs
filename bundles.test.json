@@ -14,7 +14,7 @@
       "files": [
         "css/font-awesome.min.css",
         "css/bootstrap.css",
-        "css/main.test.css",
+        "css/main.css",
         "css/style.css",
         "css/flexslider.css",
         "css/jquery.fancybox.css",
@@ -44,7 +44,9 @@
         "body": [
           "js/bootstrap.js",
           "js/respond.min.js",
+          "js/application.js",
           "js/bootstrap-tooltip.js",
+          "js/jquery.fancybox.js",
           "js/jquery.flexslider.js",
           "js/jquery.tweet.js",
           "js/cloud-zoom.1.0.2.js",

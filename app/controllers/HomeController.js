@@ -1,21 +1,15 @@
 'use strict';
 
-const HelperViewController = require('./HelperViewController.js');
-const helperViewController = new HelperViewController();
+const ViewController = require('./ViewController.js');
+const helper = new ViewController();
 
-
-var path = require('path'),
-    fs = require('fs');
-
-var ViewsController = require('./ViewsController.js');
 var BaseController = require('./BaseController.js');
-
 
 class HomeController extends BaseController {
 
-    index(requset, response, next) {
+    getIndex(requset, response, next) {
 
-        var showResponse = helperViewController;
+        var showResponse = helper;
 
         // showResponse.cssInclude = showResponse.readFileInclude(['css/main.css'], 'c');
         showResponse.cssChat = '';//showResponse.readFileInclude(['css/chat.custom.css'], 'c');

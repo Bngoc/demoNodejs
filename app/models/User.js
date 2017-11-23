@@ -3,11 +3,31 @@
 let User = function (params) {
     this.id = params.id;
     this.email = params.email;
+    this.phone = params.phone;
     this.password = params.password;
-    this.lastName = params.lastName;
-    this.firstName = params.firstName;
-    this.fullName = params.fullName;
-    // ...etc
+    this.verification_code = params.verificationCode;
+    this.is_active = params.isActive;
+    this.is_reported = params.isReported;
+    this.is_blocked = params.isBlocked;
+    this.lastactive = params.lastactive;
+};
+
+User.prototype.checkExistUserName = function (req, res, callback) {
+    var myQuery = 'SELECT * from users limit 10';// where id = ' + [dataRequsest.id];
+
+    req.connection.query(myQuery, function (err, rows, filed) {
+        if (err) {
+            req.showResponse.title = 'query error ... !';
+            req.showResponse.name = myQuery;
+            req.showResponse.content = myQuery;
+
+            callback(err, req.showResponse);
+        } else {
+            //postgres sql result rows.row
+            //mysql result rows
+            callback(null, rows.rows ? rows.rows : rows);
+        }
+    });
 };
 
 User.prototype.register = function (req, res, callback) {
@@ -31,7 +51,7 @@ User.prototype.register = function (req, res, callback) {
                 callback(error, req.showResponse);
             } else {
                 // use SQL DB raw, because support connect Mysql and Postgres Sql
-                var myQuery = 'SELECT * from product_counts limit 10';// where id = ' + [dataRequsest.id];
+                var myQuery = 'SELECT * from users limit 10';// where id = ' + [dataRequsest.id];
 
                 connection.query(myQuery, function (err, rows, filed) {
                     if (err) {

@@ -1,0 +1,63 @@
+.logo-login {
+    padding: 5px 0 25px;
+    max-width: 121px;
+}
+
+.logo-login img {
+    width: 100%;
+}
+
+.slogan {
+    font-family: fslogan;
+    /* font-size: 130%; */
+    color: #fff;
+}
+
+.login-box {
+    background-color: #FFF;
+    max-width: 360px;
+    padding: 20px 10px 40px;
+    margin: 30px 5px 0px 5px;
+}
+
+.title {
+    font-family: fsemibold;
+    font-size: 150%;
+    color: #303030;
+}
+
+.color-gray {
+    color: #333;
+}
+
+.padding {
+    padding: 10px 0 0 0;
+}
+
+.font80 {
+    font-size: 80%;
+}
+
+.input-code {
+    width: 90%;
+}
+
+
+.width-box80 {
+    background-color: #fff;
+    font-size: 90%;
+    width: 90%;
+}
+.box {
+    border: 1px solid #a4a4a4;
+    padding: 10px;
+    margin: 20px 0 0 0;
+    text-align: left;
+}
+
+.footer {
+    font-family: fregular;
+    font-size: 80%;
+    color: #ccc;
+    padding: 20px 5px 30px 5px;
+}

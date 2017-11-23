@@ -1,17 +1,3 @@
-// var express = require('express'),
-//     http = require('http'),
-//     // fs = require('fs'),
-//     // path = require('path'),
-//     userRouter = require('./../app/routers.js'),
-//     favicon = require('serve-favicon');
-
-/**
- /* define paths
- /*
- */
-// const sampleRequirePaths = require('./config/paths.js');
-// const paths = new sampleRequirePaths();
-
 const express = require('express');
 var app = express();
 

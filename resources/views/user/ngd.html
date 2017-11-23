@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head id="j_idt2">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Login - Đăng nhập - iNET</title>
+    <link href="/resources/css/style.css" rel="stylesheet" type="text/css" />
+    <script language="javascript" src="/resources/js/jquery.min.js"></script>
+    <script language="javascript" src="/resources/js/jquery-ui.min.js"></script>
+    <script type="text/javascript">
+        function resetCaptcha() {
+            document.getElementById('imgCaptcha').src = '/captcha.gif?' + Math.random();
+        }
+        $(document).ready(function() {
+            (function($) {
+                //CÄƒn giá»¯a pháº§n tá»­ thuá»™c tÃ­nh lÃ  absolute so vá»›i pháº§n hiá»ƒn thá»‹ cá»§a trÃ¬nh duyá»‡t, chá»‰ dÃ¹ng cho pháº§n tá»­ absolute Ä‘á»‘i vá»›i body
+                $.fn.absoluteCenter = function() {
+                    this.each(function() {
+                        var top = -($(this).outerHeight() / 2) + 'px';
+                        var left = -($(this).outerWidth() / 2) + 'px';
+                        $(this).css({'position': 'absolute', 'position':'fixed', 'margin-top': top, 'margin-left': left, 'top': '50%', 'left': '50%'});
+                        return this;
+                    });
+                }
+            })(jQuery);
+
+            //Äáº·t biáº¿n cho cÃ¡c Ä‘á»‘i tÆ°á»£ng Ä‘á»ƒ gá»i dá»… dÃ ng
+            var bg = $('div#popup-bg');
+            var obj = $('div#popup');
+            var btnClose = obj.find('#popup-close');
+            //Hiá»‡n cÃ¡c Ä‘á»‘i tÆ°á»£ng
+            bg.animate({opacity: 0.2}, 0).fadeIn(1000); //cho ná»n trong suá»‘t
+            obj.fadeIn(1000).draggable({cursor: 'move', handle: '#popup-header'}).absoluteCenter(); //cÄƒn giá»¯a popup vÃ  thÃªm draggable cá»§a jquery UI cho pháº§n header cá»§a popup
+            //ÄÃ³ng popup khi nháº¥n nÃºt
+            //btnClose.click(function(){
+            //	bg.fadeOut(1000);
+            //	obj.fadeOut(1000);
+            //});
+            //ÄÃ³ng popup khi nháº¥n background
+            //bg.click(function(){
+            //	btnClose.click(); //Káº¿ thá»«a nÃºt Ä‘Ã³ng á»Ÿ trÃªn
+            //});
+            //ÄÃ³ng popup khi nháº¥n nÃºt Esc trÃªn bÃ n phÃ­m
+            //$(document).keydown(function(e){
+            //	if(e.keyCode==27){
+            //		btnClose.click(); //Káº¿ thá»«a nÃºt Ä‘Ã³ng á»Ÿ trÃªn
+            //	}
+            //});
+        });
+    </script>
+    <script>
+        // This is called with the results from from FB.getLoginStatus().
+        function statusChangeCallback(response) {
+            console.log('statusChangeCallback');
+            console.log(response);
+            // The response object is returned with a status field that lets the
+            // app know the current login status of the person.
+            // Full docs on the response object can be found in the documentation
+            // for FB.getLoginStatus().
+            if (response.status === 'connected') {
+                // Logged into your app and Facebook.
+                testAPI();
+            } else if (response.status === 'not_authorized') {
+                // The person is logged into Facebook, but not your app.
+                document.getElementById('status').innerHTML = 'Please log ' +
+                    'into this app.';
+            } else {
+                // The person is not logged into Facebook, so we're not sure if
+                // they are logged into this app or not.
+                document.getElementById('status').innerHTML = 'Please log ' +
+                    'into Facebook.';
+            }
+        }
+
+        // This function is called when someone finishes with the Login
+        // Button.  See the onlogin handler attached to it in the sample
+        // code below.
+        function checkLoginState() {
+            FB.getLoginStatus(function(response) {
+                statusChangeCallback(response);
+            });
+        }
+
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId: '1709491889268648',
+                xfbml: true,
+                version: 'v2.6'
+            });
+        };
+
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        // Here we run a very simple test of the Graph API after login is
+        // successful.  See statusChangeCallback() for when this call is made.
+        function testAPI() {
+            console.log('Welcome!  Fetching your information.... ');
+            FB.api('/me', function(response) {
+                console.log('Successful login for: ' + response.name);
+                document.getElementById('status').innerHTML =
+                    'Thanks for logging in, ' + response.name + '!' + response.id;
+            });
+        }
+        function redirectLoginSucess() {
+            FB.api('/me', function(response) {
+                var name = response.name;
+                var facebookId = response.id;
+                console.log('name=' + name);
+                console.log('facebookId=' + facebookId);
+                $("form#formHiddenFB input[name=nameFB]").val(name);
+                $("form#formHiddenFB input[name=facebookIdFB]").val(facebookId);
+                $("form#formHiddenFB").submit();
+            });
+        }
+    </script></head><body class="background-blue">
+<center>
+    <div class="logo-login">
+        <!--&lt;img src="{request.contextPath}/resources/images/logo-inet.png" /&gt;-->
+        <img src="/resources/images/logo-inet.png" />
+    </div>
+    <p class="slogan">Một mật khẩu dành cho tất cả các dịch vụ của iNET</p>
+    <div class="login-box">
+        <form id="j_idt9" name="j_idt9" method="post" action="/login/" enctype="application/x-www-form-urlencoded">
+            <input type="hidden" name="j_idt9" value="j_idt9" />
+
+            <p class="title">ĐĂNG NHẬP</p>
+            <p></p>
+            <p class="input-code"><input type="text" name="j_idt9:j_idt13" class="width-box80 box" placeholder="Username hoặc Email" />
+            </p>
+            <p class="input-code"><input type="password" name="j_idt9:j_idt15" value="" class="width-box80 box" placeholder="Mật khẩu" />
+            </p>
+            <p class="input-code"><input type="submit" name="j_idt9:j_idt22" value="ĐĂNG NHẬP" style="vertical-align:middle" class="buttonDN" />
+            </p>
+            <p class="color-gray font80 padding" style="font-family:fregular;">hoặc</p>
+            <p class="input-code"><input type="button" name="j_idt9:j_idt24" value="Đăng nhập qua facebook" style="vertical-align:middle; margin-top:10px !important;" class="buttonDN backgroud-fb" onclick="FB.login(function(response) {                                     if (response.status === 'connected') {                                         redirectLoginSucess();                                     }                                 })" />
+            </p>
+            <p class="padding">
+                <a href="https://id.inet.vn/getpass/" class="link">Quên mật khẩu</a>  |
+                <a href="https://id.inet.vn/signup/" class="link">Đăng ký</a>
+            </p><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:0" value="-5638426969748414004:1078937918694657004" autocomplete="off" />
+        </form>
+    </div>
+    <p class="footer">©iNET - Email: id@inet.vn - Hotline: 0936.133.316</p>
+</center>
+<form method="post" action="/facebook/sdk.jsp" id="formHiddenFB" style="display: none">
+    <input type="hidden" name="nameFB" />
+    <input type="hidden" name="facebookIdFB" />
+</form></body>
+</html>
