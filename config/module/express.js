@@ -2,7 +2,9 @@
 /**
  * Module dependencies.
  */
-
+//convert url ?ab=name&f=1
+const url = require('url');
+//authenticate
 const passport = require('passport');
 const ejs = require('ejs');
 const expressLayouts  = require('express-ejs-layouts');
@@ -21,6 +23,9 @@ const favicon = require('serve-favicon');
 
 // use hander log
 const env              = process.env.NODE_ENV || 'development';
+
+
+
 
 /**
  * include config
@@ -47,6 +52,7 @@ const env              = process.env.NODE_ENV || 'development';
 class Express {
 
     configExpress(app, coreHelper, passport) {
+
         app.set('view engine', 'ejs');
         app.engine('html', ejs.renderFile);
         app.set('views', coreHelper.paths.VIEWS);
@@ -62,12 +68,15 @@ class Express {
         app.use(expressLayouts);
 
         app.use(logger('dev'));
+        // use encode url
         app.use(bodyParser.urlencoded({extended: true}));
         //JSON
         app.use(bodyParser.json());
         app.use(bodyParser.text({type: 'text/html'}));
         // app.use(expressValidator(customValidator()));
         app.use(methodOverride('X-HTTP-Method-Override'));
+
+
 
         app.use(methodOverride(function (req, res) {
             if (req.body && typeof req.body === 'object' && '_method' in req.body) {
@@ -78,6 +87,7 @@ class Express {
             }
         }));
 
+
         app.use(express.static(coreHelper.paths.PUBLIC));
         // app.use('/images',express.static(coreHelper.paths.JS));
         // app.use('/images', express.static(coreHelper.paths.CSS));
@@ -85,6 +95,8 @@ class Express {
 
         app.use(errorhandler());
         app.use(favicon(coreHelper.paths.IMAGES + 'favicon.ico'));
+
+
     };
 }
 

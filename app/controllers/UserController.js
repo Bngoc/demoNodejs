@@ -3,8 +3,8 @@
 const ViewController = require('./ViewController.js');
 const helper = new ViewController();
 
-
 var User = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}User.js`);
+var Contacts = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Contacts.js`);
 var HomeController = helper.coreHelper.callModule(`${helper.coreHelper.paths.CONTROLLERS}HomeController.js`);
 
 
@@ -26,7 +26,7 @@ class UserController {
         response.render('user/login.ejs', helper);
     }
 
-    getForgot (req, res, next) {
+    getForgot(req, res, next) {
         var showResponse = helper;
 
         showResponse.title = 'Forgot - Đăng nhập - iNET';
@@ -59,16 +59,17 @@ class UserController {
             showResponse.content = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX content';
             showResponse.name = '';
 
-            showResponse.renderViews = 'product/create';
+            showResponse.renderViews = 'errors/error.ejs';
 
-            var params = {
+            var dataRequest = {
+                phone: '4444444',
                 email: 'ems@gmail.com',
                 password: '34567890-=567890-098765467890',
                 first_name: 'bui',
                 last_name: 'lastName',
             };
 
-            var newUser = new User({});
+
             // newUser.id = 16;
             // newUser.email = params.email;
             // newUser.firstName = params.first_name;
@@ -77,46 +78,59 @@ class UserController {
 
             req.showResponse = showResponse;
 
-            helper.coreHelper.connection(function (resultDataConnection) {
-                const connection = resultDataConnection.data;
+            helper.coreHelper.connection(function (resultConnection) {
+                const connect = resultConnection.connect;
 
-                if(resultDataConnection.error) {
-
-                    showResponse.content = resultDataConnection.msg;
-
-                    res.render(req.showResponse.renderViews, showResponse);
+                if (resultConnection.error || resultConnection.connect == null) {
+                    showResponse.content = resultConnection.msg;
+                    // res.render(showResponse.renderViews, showResponse);
                 } else {
-                    req.connection = connection;
+                    var newUser = new User({});
+                    newUser.checkExistUserName(connect, dataRequest, function (resultSql) {
+                        if (resultSql.error) {
+                            showResponse.content = resultSql.msg;
+                            // res.render(showResponse.renderViews, showResponse);
+                        } else {
+                            if (resultSql.result) {
+                                // exist user
+                                showResponse.renderViews = 'user/register.ejs';
+                                // res.render(showResponse.renderViews, showResponse);
+                                //res.redirect(req.url) ~~ res.redirect(req.header('referrer'));
+                                res.redirect('/register');
+                            } else {
+                                // Save user
+                                newUser.registerInsert(connect, dataRequest, function (resultDataInsert) {
+                                    if (resultDataInsert.error) {
+                                        showResponse.content = resultDataInsert.msg;
+                                        // res.render(req.showResponse.renderViews, showResponse);
+                                    } else {
 
-                    var rsData = newUser.checkExistUserName(req, res, function () {
+                                        var newContacts = new Contacts({});
+                                        newContacts.insert(connect, dataRequest, function (resultInsert) {
+                                            if (resultInsert.error) {
+                                                showResponse.content = resultInsert.msg;
+                                                // res.render(req.showResponse.renderViews, resultData);
+                                            } else {
 
-                        res.render(showResponse.renderViews, showResponse);
+                                                // showResponse.name = '1234567890_____________';
+
+                                                showResponse.renderViews = 'chat/index.ejs';
+
+                                                // res.render(showResponse.renderViews);
+                                                // res.redirect('/chat');
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }
                     });
-
-                    // var rsData = newUser.register(req, res, function (errConnect, resultData) {
-                    //     if (errConnect) {
-                    //         res.render(req.showResponse.renderViews, resultData);
-                    //     } else {
-                    //
-                    //         // if (resultData.length) {
-                    //         //     resultData.forEach(function (value, indexs) {
-                    //         //         console.log(value.product_id + ' ---- ' + indexs);
-                    //         //     });
-                    //         // }
-                    //
-                    //         showResponse.name = resultData;
-                    //
-                    //         res.render(showResponse.renderViews, showResponse);
-                    //     }
-                    // });
                 }
             });
-
-
-
         } catch (ex) {
             throw ex;
             console.log('ERROR TRY_CATCH product');
+            res.render(showResponse.renderViews, showResponse);
         }
     };
 

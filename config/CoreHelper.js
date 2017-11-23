@@ -10,6 +10,7 @@ const sampleConfig = require(`${paths.CONFIG}/config.json`);
 const samplePackage = require(`${paths.ROOT}/package.json`);
 const sampleApp = require(`${paths.CONFIG}/app.js`);
 
+
 function CoreHelper() {
 
     this.package = samplePackage;
@@ -41,37 +42,8 @@ function CoreHelper() {
     this.mySql = function () {
         // var connectionPool = MySQL.createPool(this.getConfigInfoDb());
         // return connectionPool;
-        ////* Check in controller
-
-        // connectionPool.getConnection(function (error, connection) {
-        //     if (err) {
-        //         res.json({"code": 100, "status": "Error in connection database"});
-        //         return;
-        //     }
-        //     connection.query("select * from user", function (err, rows) {
-        //         connection.release();
-        //         if (!err) {
-        //             res.json(rows);
-        //         }
-        //     });
-        //     connection.on('error', function (err) {
-        //         res.json({"code": 100, "status": "Error in connection database"});
-        //         return;
-        //     });
-        // });
-
-
         var connection = MySQL.createConnection(this.getConfigInfoDb());
         return connection;
-
-        ////* Check connect in controller
-        // connection.connect(function (err) {
-        //     if (!err) {
-        //         console.log("Database is connected ... nn");
-        //     } else {
-        //         console.log("Error connecting database ... nn");
-        //     }
-        // });
     };
 
     this.pgSQL = function connectionPGSQL() {
@@ -83,22 +55,19 @@ function CoreHelper() {
     this.runSocket = function (runServer) {
         var Socket = require(`${paths.CONFIG}/socket.js`);
         var socket = new Socket();
-        var configSocket = socket.configSocket(runServer, this);
-        return configSocket;
+        socket.configSocket(runServer, this);
     };
 
     this.runExpress = function (app) {
         var Express = require(`${paths.MODULE}/express.js`);
         var express = new Express();
-        var configExpress = express.configExpress(app, this);
-        return configExpress;
+       express.configExpress(app, this);
     };
 
     this.runRoutes = function (app) {
         var Router = require(`${paths.APP}/routers.js`);
         var router = new Router();
-        var useRoutes = router.useRoutes(app, this);
-        return useRoutes;
+        router.useRoutes(app, this);
     };
 
     this.runServer = function (app) {
@@ -142,7 +111,7 @@ class ConnectDB extends CoreHelper {
         var resultContion = {
             error: '',
             msg: '',
-            data: connection
+            connect: connection
         };
 
         if (connection) {
@@ -150,7 +119,6 @@ class ConnectDB extends CoreHelper {
                 if (!!error) {
                     resultContion.error = error;
                     resultContion.msg = `ERR: Cannot connect to Database server ${strDB}......`;
-
                     console.log(`ERR: Cannot connect to Database server ${strDB}......`);
                     callback(resultContion);
                 } else {
@@ -160,7 +128,6 @@ class ConnectDB extends CoreHelper {
         } else {
             resultContion.error = 'Not config connect db!';
             resultContion.msg = `ERR: Cannot config connect to Database server ${strDB}......`;
-
             callback(resultContion);
         }
     }

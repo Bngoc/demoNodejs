@@ -1,15 +1,27 @@
 const express = require('express');
 var app = express();
 
+// var Router = require('reversable-router');
+// var router = new Router();
+// router.extendExpress(app);
+// router.registerAppHelpers(app);
+
+
+
+
+// var router = require('express-named-router-url-generator')(express);
+
+
 var CoreHelper = require('./config/CoreHelper.js');
 var callCoreHelper = new CoreHelper();
 
 var runServer = callCoreHelper.runServer(app);
-var runExpress = callCoreHelper.runExpress(app);
-var runRouters = callCoreHelper.runRoutes(app);
-var runConnection = callCoreHelper.getConnect();
 
-var runSocket = callCoreHelper.runSocket(runServer);
+callCoreHelper.runExpress(app);
+callCoreHelper.runRoutes(app);
+callCoreHelper.getConnect();
+callCoreHelper.runSocket(runServer);
+
 
 // const sampleConfig = require(`${paths.CONFIG}/config.json`);
 // const sampleConfigRoutes = require(`${paths.APP}/routers.js`);

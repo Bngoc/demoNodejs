@@ -1,7 +1,9 @@
 'use strict';
 
+
 class Routers {
     useRoutes(app, coreHelper) {
+
         let useMiddleware = coreHelper.callModule(`${coreHelper.paths.MIDDLEWARE}Authenticate.js`, true);
 
         let productController = coreHelper.callModule(`${coreHelper.paths.CONTROLLERS}ProductController.js`, true);
@@ -32,8 +34,9 @@ class Routers {
             console.log('FFFFFFFFFFFFFFFFFFFFFF ', rs);
             response.sendFile(coreHelper.paths.VIEWS + 'layouts/master.ejs', 'utf-8');
             // response.sendFile(coreHelper.paths.resolve(__dirname + '/../resources/layouts/master.ejs'), 'utf-8');
-        }).bind(coreHelper);
+        });
     }
 }
+
 
 module.exports = Routers;

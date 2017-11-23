@@ -563,6 +563,7 @@ body.fb_hidden {
         <div class="login-box">
             <form id="j_idt9" name="j_idt9" method="post" action="/signup" enctype="application/x-www-form-urlencoded">
                 <input type="hidden" name="j_idt9" value="j_idt9">
+                <input type="hidden" name="_method" value="post">
 
                 <p class="title">ĐĂNG KÝ TÀI KHOẢN</p>
                 <p></p>
@@ -606,15 +607,16 @@ body.fb_hidden {
         <br>
         <p class="slogan">hoặc</p>
         <div class="login-box" style="padding: 10px 10px 20px;">
-            <form id="j_idt37" name="j_idt37" method="post" action="/signup/"
-                  enctype="application/x-www-form-urlencoded">
+            <form id="j_idt37" name="j_idt37" method="post" action="/signup" enctype="application/x-www-form-urlencoded">
                 <input type="hidden" name="j_idt37" value="j_idt37">
-
-                <p class="input-code"><input type="button" name="j_idt37:j_idt39" value="Đăng nhập qua facebook"
+                <input type="hidden" name="_method" value="post">
+                <p class="input-code">
+                    <input type="button" name="j_idt37:j_idt39" value="Đăng nhập qua facebook"
                                              style="vertical-align:middle; margin-top:10px !important;"
                                              class="buttonDN backgroud-fb"
-                                             onclick="FB.login(function (response) {                                     if (response.status === 'connected') {                                         redirectLoginSucess();                                     }                                 })">
-                </p><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:0"
+                           onclick="FB.login(function (response) {if (response.status === 'connected') {redirectLoginSucess(); } })">
+                </p>
+                <input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:0"
                            value="-4934038408204541946:-4370945332936836905" autocomplete="off">
             </form>
         </div>

@@ -1,5 +1,13 @@
 'use strict';
 
+var bcrypt = require('bcrypt');
+
+var resultSql = {
+    error: '',
+    msg: '',
+    result: null
+};
+
 let User = function (params) {
     this.id = params.id;
     this.email = params.email;
@@ -12,24 +20,46 @@ let User = function (params) {
     this.lastactive = params.lastactive;
 };
 
-User.prototype.checkExistUserName = function (req, res, callback) {
-    var myQuery = 'SELECT * from users limit 10';// where id = ' + [dataRequsest.id];
+User.prototype.checkExistUserName = function (connect, dataRequest, callback) {
+    var myQuery = `SELECT * from users where phone = '${dataRequest.phone}' or email = '${dataRequest.email}'`;
 
-    req.connection.query(myQuery, function (err, rows, filed) {
+    connect.query(myQuery, function (err, rows, filed) {
         if (err) {
-            req.showResponse.title = 'query error ... !';
-            req.showResponse.name = myQuery;
-            req.showResponse.content = myQuery;
-
-            callback(err, req.showResponse);
+            resultSql.msg = 'query error ... !';
+            resultSql.error = myQuery;
         } else {
-            //postgres sql result rows.row
-            //mysql result rows
-            callback(null, rows.rows ? rows.rows : rows);
+            //postgres sql result rows.row || mysql result rows
+            resultSql.result = rows.rows ? (count(rows.rows) > 0) : (rows > 0);
         }
+        callback(resultSql)
     });
 };
 
+User.prototype.comparePassword = function (passw, cb) {
+    bcrypt.compare(passw, this.password, function (err, isMatch) {
+        if (err) {
+            return cb(err);
+        }
+        cb(null, isMatch);
+    });
+};
+
+User.prototype.registerInsert = function (connect, dataRequest, callback) {
+
+    var myQuery = '';
+
+    connect.query(myQuery, function (err, rows, filed) {
+        if (err) {
+            resultSql.msg = 'query error ... !';
+            resultSql.error = myQuery;
+        } else {
+            //postgres sql result rows.row || mysql result rows
+            resultSql.result = rows.rows ? rows.rows : rows
+        }
+        callback(resultSql);
+    });
+
+}
 User.prototype.register = function (req, res, callback) {
     const connection = req.showResponse.coreHelper.getConnect();
 
