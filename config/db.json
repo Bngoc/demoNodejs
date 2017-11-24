@@ -8,7 +8,8 @@
     "database": "forge",
     "charset": "utf8",
     "prefix": "",
-    "connectionLimit": null
+    "connectionLimit": null,
+    "debug": true
   },
   "pgsql": {
     "driver": "pgsql",

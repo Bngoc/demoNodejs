@@ -3,6 +3,10 @@
 var mysqlModel = require('mysql-model');
 //https://www.npmjs.com/package/mysql-model
 
+// http://knexjs.org/
+// http://bookshelfjs.org/
+
+
 var resultSql = {
     error: '',
     msg: '',
@@ -21,14 +25,26 @@ let User = function (params) {
     this.lastactive = params.lastactive;
 };
 
-User.prototype.insert = function (connect, dataRequest, callback) {
+User.prototype.insert = function (connect, configDb, dataRequest, callback) {
 
-    const MyAppModel = mysqlModel.createConnection(connect);
-    var users = new MyAppModel({tableName: "users"});
+    const MyAppModel = mysqlModel.createConnection(configDb);
 
-    users.save();
-    
-    console.log(users, '___________________________');
+    var modelUserData = {
+        email: dataRequest.email,
+        phone: dataRequest.phone,
+        password: dataRequest.password
+    };
+
+    var Movie = MyAppModel.extend({
+        tableName: "users",
+    });
+
+    var movie = new Movie(modelUserData);
+    movie.save(function (errr, data) {
+        console.log(data,'---------------------------------------------------', errr);
+    });
+
+
 
     var objInsert = {};
 
@@ -67,8 +83,9 @@ User.prototype.checkExistUserName = function (connect, dataRequest, callback) {
             resultSql.error = myQuery;
         } else {
             //postgres sql result rows.row || mysql result rows
-            resultSql.result = rows.rows ? (count(rows.rows) > 0) : (rows > 0);
+            resultSql.result = rows.rows ? (rows.rows.length > 0) : (rows.length > 0);
         }
+        console.log('99999999999999999999', resultSql)
         callback(resultSql)
     });
 };

@@ -92,6 +92,7 @@ class UserController {
                             res.render(showResponse.renderViews, showResponse);
                         } else {
                             const aliasRouter = helper.coreHelper.aliasRouter();
+                            const configDb = helper.coreHelper.getConfigInfoDb();
 
                             if (resultSql.result) {
                                 // exist user
@@ -107,7 +108,7 @@ class UserController {
                                 newUser.lastactive = Date.now();
 
                                 console.log(JSON.stringify(newUser));
-                                newUser.insert(connect, newUser, function (resultDataInsert) {
+                                newUser.insert(connect, configDb, newUser, function (resultDataInsert) {
                                     if (resultDataInsert.error) {
                                         showResponse.content = resultDataInsert.msg;
                                         // res.render(req.showResponse.renderViews, showResponse);
@@ -120,7 +121,7 @@ class UserController {
                                                 // res.render(req.showResponse.renderViews, resultData);
                                             } else {
 
-                                                // console.log(aliasRouter.build('admin.user.edit', {id: 2}), '------------------------');
+                                                console.log('-----------chat-------------');
                                                 // showResponse.name = '1234567890_____________';
 
                                                 showResponse.renderViews = 'chat/index.ejs';
