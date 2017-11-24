@@ -1,5 +1,7 @@
 'use strict';
 
+const bcrypt = require('bcrypt');
+
 const ViewController = require('./ViewController.js');
 const helper = new ViewController();
 
@@ -14,14 +16,12 @@ class UserController {
     }
 
     getLogin(requset, response) {
-
         var showResponse = helper;
 
         showResponse.title = 'Login - Đăng nhập - iNET';
         showResponse.header = showResponse.getHeader('Chào mừng đến ' + showResponse.coreHelper.sampleConfig.domain.host);
         showResponse.cssInclude = showResponse.readFileInclude(['css/style.user.css'], 'c');
         showResponse.isNotIncludeSidebar = true;
-
 
         response.render('user/login.ejs', helper);
     }
@@ -64,7 +64,7 @@ class UserController {
             var dataRequest = {
                 phone: '4444444',
                 email: 'ems@gmail.com',
-                password: '34567890-=567890-098765467890',
+                password: '34567890-=0',
                 first_name: 'bui',
                 last_name: 'lastName',
             };
@@ -83,14 +83,16 @@ class UserController {
 
                 if (resultConnection.error || resultConnection.connect == null) {
                     showResponse.content = resultConnection.msg;
-                    // res.render(showResponse.renderViews, showResponse);
+                    res.render(showResponse.renderViews, showResponse);
                 } else {
                     var newUser = new User({});
                     newUser.checkExistUserName(connect, dataRequest, function (resultSql) {
                         if (resultSql.error) {
                             showResponse.content = resultSql.msg;
-                            // res.render(showResponse.renderViews, showResponse);
+                            res.render(showResponse.renderViews, showResponse);
                         } else {
+                            const aliasRouter = helper.coreHelper.aliasRouter();
+
                             if (resultSql.result) {
                                 // exist user
                                 showResponse.renderViews = 'user/register.ejs';
@@ -99,7 +101,13 @@ class UserController {
                                 res.redirect('/register');
                             } else {
                                 // Save user
-                                newUser.registerInsert(connect, dataRequest, function (resultDataInsert) {
+                                newUser.email = dataRequest.email;
+                                newUser.phone = dataRequest.phone;
+                                newUser.password = bcrypt.hashSync(dataRequest.password, 10);
+                                newUser.lastactive = Date.now();
+
+                                console.log(JSON.stringify(newUser));
+                                newUser.insert(connect, newUser, function (resultDataInsert) {
                                     if (resultDataInsert.error) {
                                         showResponse.content = resultDataInsert.msg;
                                         // res.render(req.showResponse.renderViews, showResponse);
@@ -112,11 +120,13 @@ class UserController {
                                                 // res.render(req.showResponse.renderViews, resultData);
                                             } else {
 
+                                                // console.log(aliasRouter.build('admin.user.edit', {id: 2}), '------------------------');
                                                 // showResponse.name = '1234567890_____________';
 
                                                 showResponse.renderViews = 'chat/index.ejs';
 
                                                 // res.render(showResponse.renderViews);
+                                                res.redirect(aliasRouter.build('chat'));
                                                 // res.redirect('/chat');
                                             }
                                         });

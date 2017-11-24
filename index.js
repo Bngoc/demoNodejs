@@ -1,26 +1,18 @@
 const express = require('express');
 var app = express();
 
-// var Router = require('reversable-router');
-// var router = new Router();
-// router.extendExpress(app);
-// router.registerAppHelpers(app);
-
-
-
-
-// var router = require('express-named-router-url-generator')(express);
-
-
 var CoreHelper = require('./config/CoreHelper.js');
 var callCoreHelper = new CoreHelper();
 
+// ------------- Run app ----------------------
 var runServer = callCoreHelper.runServer(app);
 
 callCoreHelper.runExpress(app);
 callCoreHelper.runRoutes(app);
 callCoreHelper.getConnect();
 callCoreHelper.runSocket(runServer);
+
+
 
 
 // const sampleConfig = require(`${paths.CONFIG}/config.json`);

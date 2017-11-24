@@ -3,6 +3,7 @@
   "version": "0.0.2",
   "private": "true",
   "dependencies": {
+    "backbone": "^1.3.3",
     "bcrypt": "^1.0.3",
     "body-parser": "*",
     "errorhandler": "^1.5.0",
@@ -16,12 +17,14 @@
     "method-override": "^2.3.10",
     "morgan": "*",
     "mysql": "^2.13.0",
+    "mysql-model": "0.0.2",
+    "named-routes": "^2.0.6",
     "passport": "^0.4.0",
     "pg": "^6.1.2",
-    "reversable-router": "^1.0.5",
     "serve-favicon": "^2.4.3",
     "socket.io": "^2.0.4",
     "supervisor": "^0.12.0",
+    "underscore": "^1.8.3",
     "url": "^0.11.0"
   },
   "author": "BuiNgoc",

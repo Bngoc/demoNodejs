@@ -29,7 +29,7 @@ app.set('view options', {
 // app.set('i18n', 'off');
 // app.get('log dir', __dirname + '/../public/logs/');
 
-app.use('/', userRouter);
+// app.use('/', userRouter);
 var server = http.createServer(app);
 var io = require('socket.io')(server);
 

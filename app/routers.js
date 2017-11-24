@@ -1,17 +1,30 @@
 'use strict';
 
+var Router = require('named-routes');
+var router = new Router();
+//https://github.com/alubbe/named-routes
 
 class Routers {
     useRoutes(app, coreHelper) {
 
-        let useMiddleware = coreHelper.callModule(`${coreHelper.paths.MIDDLEWARE}Authenticate.js`, true);
+        router.extendExpress(app);
+        router.registerAppHelpers(app);
 
+        let useMiddleware = coreHelper.callModule(`${coreHelper.paths.MIDDLEWARE}Authenticate.js`, true);
         let productController = coreHelper.callModule(`${coreHelper.paths.CONTROLLERS}ProductController.js`, true);
         let homeController = coreHelper.callModule(`${coreHelper.paths.CONTROLLERS}HomeController.js`, true);
         let chatController = coreHelper.callModule(`${coreHelper.paths.CONTROLLERS}ChatController.js`, true);
         let userController = coreHelper.callModule(`${coreHelper.paths.CONTROLLERS}UserController.js`, true);
 
-        app.get("/", homeController.getIndex);
+        app.get('/', 'user', homeController.getIndex);
+
+        app.get('/admin/user/:id', 'admin.user.edit', [useMiddleware.isAuthenticated], homeController.getIndex);
+
+        // router.add('get', '/admin/user/:id', function() {
+        //     var url = router.build('admin.user.edit', {id: 2}); // /admin/user/2
+        // },{
+        //     name: 'admin.user.edit'
+        // });
 
         app.get("/login", userController.getLogin);
         app.get("/forgot", userController.getForgot);
@@ -19,7 +32,7 @@ class Routers {
         app.post("/signup", userController.postRegister);
         app.get("/product", productController.getIndex);
 
-        app.get("/chat", useMiddleware.isAuthenticated, chatController.getIndex);
+        app.get("/chat", 'chat', useMiddleware.isAuthenticated, chatController.getIndex);
         app.post("/chat/content-chat", chatController.getContentChat);
 
         app.get("/param/:param1/:param2", function (requset, response) {
@@ -35,6 +48,8 @@ class Routers {
             response.sendFile(coreHelper.paths.VIEWS + 'layouts/master.ejs', 'utf-8');
             // response.sendFile(coreHelper.paths.resolve(__dirname + '/../resources/layouts/master.ejs'), 'utf-8');
         });
+
+        return router;
     }
 }
 

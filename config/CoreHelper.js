@@ -9,7 +9,7 @@ const sampleDB = require(`${paths.CONFIG}/db.json`);
 const sampleConfig = require(`${paths.CONFIG}/config.json`);
 const samplePackage = require(`${paths.ROOT}/package.json`);
 const sampleApp = require(`${paths.CONFIG}/app.js`);
-
+var setAliasRouter = {};
 
 function CoreHelper() {
 
@@ -61,14 +61,18 @@ function CoreHelper() {
     this.runExpress = function (app) {
         var Express = require(`${paths.MODULE}/express.js`);
         var express = new Express();
-       express.configExpress(app, this);
+        express.configExpress(app, this);
     };
 
     this.runRoutes = function (app) {
         var Router = require(`${paths.APP}/routers.js`);
         var router = new Router();
-        router.useRoutes(app, this);
+        var createRouter = router.useRoutes(app, this);
+        if (!setAliasRouter.length) setAliasRouter = createRouter;
+
+        return createRouter;
     };
+
 
     this.runServer = function (app) {
         var Server = require(`${paths.CONFIG}/server.js`);
@@ -82,7 +86,11 @@ function CoreHelper() {
         var UseController = require(nameController);
 
         return isNew ? new UseController() : UseController;
-    }
+    };
+
+    this.aliasRouter = function () {
+        return setAliasRouter;
+    };
 }
 
 

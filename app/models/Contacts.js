@@ -33,5 +33,16 @@ Contacts.prototype.insert = function (connect, dataRequest, callback) {
     });
 };
 
+Contacts.prototype.show = function (connect, dataRequest, callback) {
+
+};
+
+Contacts.prototype.update = function (connect, dataRequest, callback) {
+
+};
+
+Contacts.prototype.delete = function (connect, dataRequest, callback) {
+
+};
 
 module.exports = Contacts;

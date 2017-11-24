@@ -1,6 +1,7 @@
 'use strict';
 
-var bcrypt = require('bcrypt');
+var mysqlModel = require('mysql-model');
+//https://www.npmjs.com/package/mysql-model
 
 var resultSql = {
     error: '',
@@ -18,6 +19,43 @@ let User = function (params) {
     this.is_reported = params.isReported;
     this.is_blocked = params.isBlocked;
     this.lastactive = params.lastactive;
+};
+
+User.prototype.insert = function (connect, dataRequest, callback) {
+
+    const MyAppModel = mysqlModel.createConnection(connect);
+    var users = new MyAppModel({tableName: "users"});
+
+    users.save();
+    
+    console.log(users, '___________________________');
+
+    var objInsert = {};
+
+    var myQuery = '';
+
+    connect.query(myQuery, function (err, rows, filed) {
+        if (err) {
+            resultSql.msg = 'query error ... !';
+            resultSql.error = myQuery;
+        } else {
+            //postgres sql result rows.row || mysql result rows
+            resultSql.result = rows.rows ? rows.rows : rows
+        }
+        callback(resultSql);
+    });
+};
+
+User.prototype.show = function (connect, dataRequest, callback) {
+
+};
+
+User.prototype.update = function (connect, dataRequest, callback) {
+
+};
+
+User.prototype.delete = function (connect, dataRequest, callback) {
+
 };
 
 User.prototype.checkExistUserName = function (connect, dataRequest, callback) {
@@ -58,8 +96,8 @@ User.prototype.registerInsert = function (connect, dataRequest, callback) {
         }
         callback(resultSql);
     });
+};
 
-}
 User.prototype.register = function (req, res, callback) {
     const connection = req.showResponse.coreHelper.getConnect();
 
@@ -106,9 +144,5 @@ User.prototype.register = function (req, res, callback) {
     }
 };
 
-
-User.prototype.show = function (req, res, callback) {
-
-};
 
 module.exports = User;

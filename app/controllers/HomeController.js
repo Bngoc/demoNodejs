@@ -23,6 +23,10 @@ class HomeController extends BaseController {
         showResponse.content = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX content';
         showResponse.renderViews = 'home/index.ejs';
 
+        var useRouter = helper.coreHelper.aliasRouter();
+        console.log(useRouter.build('admin.user.edit', {id: 2}), '------------------------');
+
+        // response.redirect();
         response.render(showResponse.renderViews, showResponse);
 
 

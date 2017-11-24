@@ -7,7 +7,7 @@ const url = require('url');
 //authenticate
 const passport = require('passport');
 const ejs = require('ejs');
-const expressLayouts  = require('express-ejs-layouts');
+const expressLayouts = require('express-ejs-layouts');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
@@ -15,15 +15,14 @@ const express = require('express');
 const i18n = require('i18n');
 // const expressValidator = require('express-validator');
 
-const errorhandler     = require('errorhandler');
+const errorhandler = require('errorhandler');
 const favicon = require('serve-favicon');
 // const cookieParser     = require('cookie-parser');
 // const session          = require('express-session');
 // const flash            = require('express-flash');
 
 // use hander log
-const env              = process.env.NODE_ENV || 'development';
-
+const env = process.env.NODE_ENV || 'development';
 
 
 
@@ -77,7 +76,6 @@ class Express {
         app.use(methodOverride('X-HTTP-Method-Override'));
 
 
-
         app.use(methodOverride(function (req, res) {
             if (req.body && typeof req.body === 'object' && '_method' in req.body) {
                 // look in urlencoded POST bodies and delete it
@@ -87,16 +85,11 @@ class Express {
             }
         }));
 
-
+        // public folfer public
         app.use(express.static(coreHelper.paths.PUBLIC));
-        // app.use('/images',express.static(coreHelper.paths.JS));
-        // app.use('/images', express.static(coreHelper.paths.CSS));
-        // app.use('/images', express.static(coreHelper.paths.IMAGES));
 
         app.use(errorhandler());
         app.use(favicon(coreHelper.paths.IMAGES + 'favicon.ico'));
-
-
     };
 }
 
