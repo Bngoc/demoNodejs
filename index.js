@@ -12,6 +12,8 @@ callCoreHelper.runRoutes(app);
 callCoreHelper.getConnect();
 callCoreHelper.runSocket(runServer);
 
+callCoreHelper.connectKnex();
+callCoreHelper.bookshelf();
 
 
 

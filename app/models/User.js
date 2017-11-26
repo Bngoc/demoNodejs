@@ -1,10 +1,12 @@
 'use strict';
 
-var mysqlModel = require('mysql-model');
+// var mysqlModel = require('mysql-model');
 //https://www.npmjs.com/package/mysql-model
+
 
 // http://knexjs.org/
 // http://bookshelfjs.org/
+//https://www.npmjs.com/package/knex-model-wrapper
 
 
 var resultSql = {

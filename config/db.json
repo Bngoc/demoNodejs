@@ -8,8 +8,9 @@
     "database": "forge",
     "charset": "utf8",
     "prefix": "",
+    "timezone": "utc",
     "connectionLimit": null,
-    "debug": true
+    "debug": false
   },
   "pgsql": {
     "driver": "pgsql",

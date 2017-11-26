@@ -78,6 +78,20 @@ class UserController {
 
             req.showResponse = showResponse;
 
+// ------------------------------------------------------------
+            const connectKnex = helper.coreHelper.connectKnex();
+            var fsf = '6666666666666666666666666';
+            connectKnex.select().table('users').then(function (row) {
+                console.log('--------------------', row, '------------------');
+                res.send(row);
+            }).catch(function(e) {
+                console.log('________________________', e, '________________________');
+                res.send(e);
+            });
+
+
+// ------------------------------------------------------------
+
             helper.coreHelper.connection(function (resultConnection) {
                 const connect = resultConnection.connect;
 
@@ -93,6 +107,8 @@ class UserController {
                         } else {
                             const aliasRouter = helper.coreHelper.aliasRouter();
                             const configDb = helper.coreHelper.getConfigInfoDb();
+
+
 
                             if (resultSql.result) {
                                 // exist user
