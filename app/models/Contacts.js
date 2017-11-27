@@ -6,6 +6,33 @@ var resultSql = {
     result: null
 };
 
+const path = require('path');
+
+const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
+const coreHelper = new CoreHelper();
+const bookshelf = require('bookshelf')(coreHelper.connectKnex());
+
+// let Users = bookshelf.Model.extend({
+//     tableName: 'users',
+//
+//     contacts: function() {
+//         return this.hasOne(Contacts);
+//     }
+//
+//     // books: function() {
+//     //     return this.hasMany(Book);
+//     // }
+//
+// });
+
+var Contact = bookshelf.Model.extend({
+    tableName: 'contacts',
+    users: function() {
+        return this.belongsTo(Users);
+    }
+});
+
+
 let Contacts = function (params) {
     this.id = params.id;
     this.users_id = params.users_id;
@@ -17,6 +44,16 @@ let Contacts = function (params) {
     this.gender = params.gender;
     this.mood_message = params.mood_message;
     this.status = params.status;
+};
+
+Contacts.prototype.inserts = function (dataRequest, callback) {
+    new Contact(dataRequest).save().then(function(model) {
+        resultSql.result = model;
+        callback(resultSql);
+    }).catch(function (err) {
+        resultSql.error = err;
+        callback(resultSql);
+    });
 };
 
 Contacts.prototype.insert = function (connect, dataRequest, callback) {

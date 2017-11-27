@@ -13,7 +13,13 @@ callCoreHelper.getConnect();
 callCoreHelper.runSocket(runServer);
 
 callCoreHelper.connectKnex();
-callCoreHelper.bookshelf();
+
+// callCoreHelper.checkConnect(function (rsConnect) {
+//     if (rsConnect.error) {
+//         // runServer.close();
+//         // process.exit(1);
+//     }
+// });
 
 
 

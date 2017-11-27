@@ -56,20 +56,19 @@ class UserController {
             // showResponse.scriptInclude = showResponse.readFileInclude(['js/product/abc.js']);
             // showResponse.metaInclude = showResponse.readFileInclude(['<meta name="twitter:app:id:ipad" content="871299723"/>'], 'o');
 
-            showResponse.content = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX content';
+            showResponse.content = '';
             showResponse.name = '';
-
             showResponse.renderViews = 'errors/error.ejs';
 
             var dataRequest = {
-                phone: '4444444',
-                email: 'ems@gmail.com',
-                password: '34567890-=0',
-                first_name: 'bui',
-                last_name: 'lastName',
+                phone: req.body.phone,
+                email: req.body.email,
+                password: req.body.password,
+                first_name: req.body.name,
+                last_name: 'lastNamef',
             };
 
-
+            var newUser = new User({});
             // newUser.id = 16;
             // newUser.email = params.email;
             // newUser.firstName = params.first_name;
@@ -78,82 +77,130 @@ class UserController {
 
             req.showResponse = showResponse;
 
-// ------------------------------------------------------------
-            const connectKnex = helper.coreHelper.connectKnex();
-            var fsf = '6666666666666666666666666';
-            connectKnex.select().table('users').then(function (row) {
-                console.log('--------------------', row, '------------------');
-                res.send(row);
-            }).catch(function(e) {
-                console.log('________________________', e, '________________________');
-                res.send(e);
-            });
+            const aliasRouter = helper.coreHelper.aliasRouter();
 
+            // -------------------------C1-----------------------------------
+            newUser.checkUser(dataRequest, function (result) {
+                if (result.error) {
+                    showResponse.header = 'Errror';
+                    showResponse.content = JSON.stringify(result.error);
 
-// ------------------------------------------------------------
-
-            helper.coreHelper.connection(function (resultConnection) {
-                const connect = resultConnection.connect;
-
-                if (resultConnection.error || resultConnection.connect == null) {
-                    showResponse.content = resultConnection.msg;
                     res.render(showResponse.renderViews, showResponse);
                 } else {
-                    var newUser = new User({});
-                    newUser.checkExistUserName(connect, dataRequest, function (resultSql) {
-                        if (resultSql.error) {
-                            showResponse.content = resultSql.msg;
-                            res.render(showResponse.renderViews, showResponse);
-                        } else {
-                            const aliasRouter = helper.coreHelper.aliasRouter();
-                            const configDb = helper.coreHelper.getConfigInfoDb();
+                    var resultSql = result.result;
+                    if (resultSql > 0) {
+                        showResponse.renderViews = 'user/register.ejs';
+                        res.redirect('/register');
+                    } else {
+                        var dtUser = {
+                            email: dataRequest.email,
+                            phone: dataRequest.phone,
+                            lastactive: dataRequest.email,
+                            password: bcrypt.hashSync(dataRequest.password, 10)
+                        };
 
+                        newUser.insertUser(dtUser, function (rsData) {
 
+                            console.log(rsData, '--------------000---------------');
+                            // showResponse.content = JSON.stringify(rsData);
+                            // res.render(showResponse.renderViews, showResponse);
 
-                            if (resultSql.result) {
-                                // exist user
-                                showResponse.renderViews = 'user/register.ejs';
-                                // res.render(showResponse.renderViews, showResponse);
-                                //res.redirect(req.url) ~~ res.redirect(req.header('referrer'));
-                                res.redirect('/register');
+                            if (rsData.error) {
+                                showResponse.header = 'Errror.';
+                                showResponse.content = JSON.stringify(rsData.error);
+
+                                res.render(showResponse.renderViews, showResponse);
                             } else {
-                                // Save user
-                                newUser.email = dataRequest.email;
-                                newUser.phone = dataRequest.phone;
-                                newUser.password = bcrypt.hashSync(dataRequest.password, 10);
-                                newUser.lastactive = Date.now();
+                                var newContacts = new Contacts({});
+                                var newContact = {
+                                    users_id: rsData.result.id,
+                                    first_name: 'XXX',
+                                    last_name: 'anc',
+                                    country: 'vn',
+                                    gender: 1
+                                };
 
-                                console.log(JSON.stringify(newUser));
-                                newUser.insert(connect, configDb, newUser, function (resultDataInsert) {
-                                    if (resultDataInsert.error) {
-                                        showResponse.content = resultDataInsert.msg;
-                                        // res.render(req.showResponse.renderViews, showResponse);
+                                newContacts.inserts(newContact, function (resultInsert) {
+                                    if (resultInsert.error) {
+                                        showResponse.header = 'Errror......';
+                                        showResponse.content = JSON.stringify(resultInsert.error);
+
+                                        res.render(showResponse.renderViews, showResponse);
                                     } else {
-
-                                        var newContacts = new Contacts({});
-                                        newContacts.insert(connect, dataRequest, function (resultInsert) {
-                                            if (resultInsert.error) {
-                                                showResponse.content = resultInsert.msg;
-                                                // res.render(req.showResponse.renderViews, resultData);
-                                            } else {
-
-                                                console.log('-----------chat-------------');
-                                                // showResponse.name = '1234567890_____________';
-
-                                                showResponse.renderViews = 'chat/index.ejs';
-
-                                                // res.render(showResponse.renderViews);
-                                                res.redirect(aliasRouter.build('chat'));
-                                                // res.redirect('/chat');
-                                            }
-                                        });
+                                        res.redirect(aliasRouter.build('chat'));
                                     }
                                 });
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             });
+
+
+// ------------------------------------------------------------
+            // ------------------------------C2------------------------------
+
+            /*helper.coreHelper.connection(function (resultConnection) {
+             const connect = resultConnection.connect;
+
+             if (resultConnection.error || resultConnection.connect == null) {
+             showResponse.content = resultConnection.msg;
+             res.render(showResponse.renderViews, showResponse);
+             } else {
+             var newUser = new User({});
+             newUser.checkExistUserName(connect, dataRequest, function (resultSql) {
+             if (resultSql.error) {
+             showResponse.content = resultSql.msg;
+             res.render(showResponse.renderViews, showResponse);
+             } else {
+             const aliasRouter = helper.coreHelper.aliasRouter();
+             const configDb = helper.coreHelper.getConfigInfoDb();
+
+
+             if (resultSql.result) {
+             // exist user
+             showResponse.renderViews = 'user/register.ejs';
+             // res.render(showResponse.renderViews, showResponse);
+             //res.redirect(req.url) ~~ res.redirect(req.header('referrer'));
+             res.redirect('/register');
+             } else {
+             // Save user
+             newUser.email = dataRequest.email;
+             newUser.phone = dataRequest.phone;
+             newUser.password = bcrypt.hashSync(dataRequest.password, 10);
+             newUser.lastactive = Date.now();
+
+             console.log(JSON.stringify(newUser));
+             newUser.insert(connect, configDb, newUser, function (resultDataInsert) {
+             if (resultDataInsert.error) {
+             showResponse.content = resultDataInsert.msg;
+             // res.render(req.showResponse.renderViews, showResponse);
+             } else {
+
+             var newContacts = new Contacts({});
+             newContacts.insert(connect, dataRequest, function (resultInsert) {
+             if (resultInsert.error) {
+             showResponse.content = resultInsert.msg;
+             // res.render(req.showResponse.renderViews, resultData);
+             } else {
+
+             console.log('-----------chat-------------');
+             // showResponse.name = '1234567890_____________';
+
+             showResponse.renderViews = 'chat/index.ejs';
+
+             // res.render(showResponse.renderViews);
+             res.redirect(aliasRouter.build('chat'));
+             // res.redirect('/chat');
+             }
+             });
+             }
+             });
+             }
+             }
+             });
+             }
+             });*/
         } catch (ex) {
             throw ex;
             console.log('ERROR TRY_CATCH product');

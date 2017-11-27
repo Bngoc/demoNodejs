@@ -8,6 +8,33 @@
 // http://bookshelfjs.org/
 //https://www.npmjs.com/package/knex-model-wrapper
 
+const bcrypt = require('bcrypt');
+const path = require('path');
+
+const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
+const coreHelper = new CoreHelper();
+const bookshelf = require('bookshelf')(coreHelper.connectKnex());
+
+let Users = bookshelf.Model.extend({
+    tableName: 'users',
+
+    contacts: function () {
+        return this.hasOne(Contact);
+    }
+
+    // books: function() {
+    //     return this.hasMany(Book);
+    // }
+
+});
+
+// var Contacts = bookshelf.Model.extend({
+//     tableName: 'contacts',
+//     users: function() {
+//         return this.belongsTo(Users);
+//     }
+// });
+
 
 var resultSql = {
     error: '',
@@ -27,6 +54,38 @@ let User = function (params) {
     this.lastactive = params.lastactive;
 };
 
+
+User.prototype.checkUser = function (dataRequest, callback) {
+    Users.query(function (qb) {
+        qb.where('phone', '=', dataRequest.phone).andWhere('email', '=', dataRequest.email);
+    }).count().then(function (findUser) {
+        resultSql.result = findUser;
+        callback(resultSql);
+    }).catch(function (err) {
+        resultSql.error = err;
+        callback(resultSql);
+    });
+};
+
+
+User.prototype.insertUser = function (dtUser, callback) {
+    // bookshelf.transaction(function (transaction) {
+        Users.forge()
+            .save(dtUser)
+            // .save(dtUser, {transacting: transaction})
+            .then(function (model) {
+                // transaction.commit;
+                resultSql.result = model;
+                callback(resultSql);
+            })
+            .catch(function (err) {
+                // transaction.rollback;
+                resultSql.error = err;
+                callback(resultSql);
+            });
+    // });
+};
+
 User.prototype.insert = function (connect, configDb, dataRequest, callback) {
 
     const MyAppModel = mysqlModel.createConnection(configDb);
@@ -43,9 +102,8 @@ User.prototype.insert = function (connect, configDb, dataRequest, callback) {
 
     var movie = new Movie(modelUserData);
     movie.save(function (errr, data) {
-        console.log(data,'---------------------------------------------------', errr);
+        console.log(data, '---------------------------------------------------', errr);
     });
-
 
 
     var objInsert = {};

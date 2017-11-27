@@ -145,25 +145,32 @@ class ConnectDB extends CoreHelper {
         const knex = require('knex')({
             client: this.sampleConfig.DB_CONNECTION ? this.sampleConfig.DB_CONNECTION : '',
             connection: _this.getConfigInfoDb(),
-            pool: {
-                afterCreate: function (conn, done) {
-                    // in this example we use pg driver's connection API
-                    conn.query('SET timezone="UTC";', function (err) {
-                        if (err) {
-                            // first query failed, return error and don't try to make next query
-                            console.log('err -> ', err);
-                            done(err, conn);
-                        } else {
-                            // do the second query...
-                            conn.query('SELECT set_limit(0.01);', function (err) {
-                                // if err is not falsy, connection is discarded from pool
-                                // if connection aquire was triggered by a query the error is passed to query promise
-                                done(err, conn);
-                            });
-                        }
-                    });
-                }
-            },
+            // pool: {
+            //     afterCreate: function (conn, callback) {
+            //         // in this example we use pg driver's connection API
+            //         // conn.query('SET timezone="UTC";', function (err) {
+            //         //     if (err) {
+            //         //         // first query failed, return error and don't try to make next query
+            //         //         console.log('err -> ', err);
+            //         //         callback(err, conn);
+            //         //     } else {
+            //         //         // do the second query...
+            //         //         conn.query('SELECT set_limit(0.01);', function (err) {
+            //         //             // if err is not falsy, connection is discarded from pool
+            //         //             // if connection aquire was triggered by a query the error is passed to query promise
+            //         //             callback(err, conn);
+            //         //         });
+            //         //     }
+            //         // });
+            //
+            //         conn.query({text: 'SELECT 1 = 1'}, [], callback(err));
+            //
+            //         // ping: function(connection, callback) {
+            //         //     connection.query({text: 'SELECT 1 = 1'}, [], callback);
+            //         // }
+            //
+            //     }
+            // },
             debug: true,
             migrations: {
                 directory: __dirname + 'db/migrations'
@@ -174,25 +181,27 @@ class ConnectDB extends CoreHelper {
         });
 
         return knex;
-    }
+    };
 
-    bookshelf() {
+    checkConnect(cb) {
         const connect = this.connectKnex();
-        //
-        // var resultContion = {
-        //     error: '',
-        //     msg: '',
-        //     connect: connect
-        // };
+        const strDB = this.sampleConfig.DB_CONNECTION ? this.sampleConfig.DB_CONNECTION : '';
+        var resultContion = {
+            error: '',
+            msg: '',
+            connect: connect
+        };
 
-
-        // const bookshelf = require('bookshelf')(this.connectionKnex());
-        // console.log('--------------------', connect.pool,  '----------------------');
-        // connect.connection.afterCreate(function (error, connection) {
-        //     console.log(error, '----------------------', connection);
-        // });
-
-        // return bookshelf;
+        connect.raw('select 1+1 as result').catch(err => {
+        console.log(err, 'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh');
+            if (err.code === 'ECONNREFUSED') {
+                resultContion.msg = `ERR: Cannot connect to Database server ${strDB}......`;
+                resultContion.error = err.code;
+                cb(resultContion);
+            } else {
+                cb(resultContion);
+            }
+        });
     }
 }
 
