@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `is_reported` TINYINT(1) NULL DEFAULT 0,
   `is_blocked` TINYINT(1) NULL DEFAULT 0,
   `lastactive` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` DATETIME NULL,
-  `updated_at` DATETIME NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -61,12 +61,12 @@ CREATE TABLE IF NOT EXISTS `contacts` (
   `middle_name` VARCHAR(20) NULL,
   `last_name` VARCHAR(20) NULL,
   `user_name` VARCHAR(255) NULL,
-  `country` varchar(100) NOT NULL,
-  `gender` varchar(10) NOT NULL,
-  `mood_message` varchar(100) NOT NULL DEFAULT '0',
+  `country` varchar(100) DEFAULT NULL,
+  `gender` varchar(10) DEFAULT NULL,
+  `mood_message` varchar(100) DEFAULT NULL,
   `status` TINYINT(1) NULL DEFAULT 0,
-  `created_at` DATETIME NULL,
-  `updated_at` DATETIME NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
   PRIMARY KEY (`id`),
   UNIQUE KEY `contacts_users_id_UNIQUE` (`users_id`))
 ENGINE = InnoDB;
@@ -84,8 +84,8 @@ CREATE TABLE IF NOT EXISTS `conversation` (
   `title` VARCHAR(40) NULL,
   `creator_id` INT NOT NULL,
   `channel_id` VARCHAR(45) NULL,
-  `created_at` DATETIME NULL,
-  `updated_at` DATETIME NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -102,8 +102,8 @@ CREATE TABLE IF NOT EXISTS `participants` (
   `conversation_id` INT NOT NULL,
   `users_id` INT NOT NULL,
   `type` ENUM('single', 'group') NULL,
-  `created_at` DATETIME NULL,
-  `updated_at` DATETIME NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
   PRIMARY KEY (`id`),
   UNIQUE KEY `conversation_users_id_UNIQUE` (`conversation_id`, `users_id`))
 ENGINE = InnoDB;
@@ -127,8 +127,8 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `attachment_url` VARCHAR(255) NULL,
   `guid` VARCHAR(100) NULL,
   `group_id` int(11) NOT NULL DEFAULT '0',
-  `created_at` DATETIME NULL,
-  `updated_at` DATETIME NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
   PRIMARY KEY (`id`),
   UNIQUE KEY `group_sender_partic_UNIQUE` (`group_id`, `sender_id`, `participants_id`))
 ENGINE = InnoDB;
@@ -177,8 +177,8 @@ CREATE TABLE IF NOT EXISTS `reports` (
   `report_type` VARCHAR(45) NULL,
   `notes` TEXT NULL,
   `deleted_at` DATETIME NULL,
-  `created_at` DATETIME NULL,
-  `updated_at` DATETIME NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
   PRIMARY KEY (`id`),
   UNIQUE KEY `participantsId_user_reports_UNIQUE` (`participants_id`, `users_id`))
 ENGINE = InnoDB;
@@ -196,8 +196,8 @@ CREATE TABLE IF NOT EXISTS `block_list` (
   `users_id` INT NOT NULL,
   `participants_id` INT NOT NULL,
   `deleted_at` DATETIME NULL,
-  `created_at` DATETIME NULL,
-  `updated_at` DATETIME NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
   PRIMARY KEY (`id`),
   UNIQUE KEY `participantsId_user_UNIQUE` (`participants_id`, `users_id`))
 ENGINE = InnoDB;
@@ -214,8 +214,8 @@ CREATE TABLE IF NOT EXISTS `deleted_conversations` (
   `id` INT NOT NULL,
   `conversation_id` INT NOT NULL,
   `users_id` INT NOT NULL,
-  `created_at` DATETIME NULL,
-  `updated_at` DATETIME NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
   `deleted_at` DATETIME NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `conversationId_user_UNIQUE` (`conversation_id`, `users_id`))
@@ -236,8 +236,8 @@ CREATE TABLE IF NOT EXISTS `devices` (
   `type` ENUM('APPLE') NULL,
   `device_token` VARCHAR(120) NULL,
   `deleted_at` DATETIME NULL,
-  `created_at` DATETIME NULL,
-  `updated_at` DATETIME NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
 
   PRIMARY KEY (`id`),
    UNIQUE KEY `devicesId_user_UNIQUE` (`device_id`, `users_id`))
@@ -257,8 +257,8 @@ CREATE TABLE IF NOT EXISTS `access` (
   `token` VARCHAR(60) NULL,
   `devices_id` INT NOT NULL,
   `deleted_at` DATETIME NULL,
-  `created_at` DATETIME NULL,
-  `updated_at` DATETIME NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
 
   PRIMARY KEY (`id`),
    UNIQUE KEY `devicesId_UNIQUE` (`devices_id`))
@@ -276,8 +276,8 @@ CREATE TABLE IF NOT EXISTS `deleted_messages` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `messages_id` INT NOT NULL,
   `users_id` INT NOT NULL,
-  `created_at` DATETIME NULL,
-  `updated_at` DATETIME NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
   `deleted_at` DATETIME NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
@@ -299,8 +299,8 @@ CREATE TABLE `product_counts` (
   `size_id` int(10) unsigned NOT NULL,
   `product_id` int(10) unsigned NOT NULL,
   `soluong` int(11) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
   PRIMARY KEY (`id`),
   KEY `product_counts_color_id_foreign` (`color_id`) USING BTREE,
   KEY `product_counts_size_id_foreign` (`size_id`) USING BTREE,

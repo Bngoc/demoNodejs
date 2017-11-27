@@ -81,8 +81,9 @@ class UserController {
 
             // -------------------------C1-----------------------------------
             newUser.checkUser(dataRequest, function (result) {
+                console.log('fffffffffffffffffffffffffffffffffffffffffffffff', result);
                 if (result.error) {
-                    showResponse.header = 'Errror';
+                    showResponse.header = 'Errror.......';
                     showResponse.content = JSON.stringify(result.error);
 
                     res.render(showResponse.renderViews, showResponse);
@@ -92,44 +93,14 @@ class UserController {
                         showResponse.renderViews = 'user/register.ejs';
                         res.redirect('/register');
                     } else {
-                        var dtUser = {
-                            email: dataRequest.email,
-                            phone: dataRequest.phone,
-                            lastactive: dataRequest.email,
-                            password: bcrypt.hashSync(dataRequest.password, 10)
-                        };
-
-                        newUser.insertUser(dtUser, function (rsData) {
-
-                            console.log(rsData, '--------------000---------------');
-                            // showResponse.content = JSON.stringify(rsData);
-                            // res.render(showResponse.renderViews, showResponse);
-
+                        newUser.insertUser(dataRequest, function (rsData) {
                             if (rsData.error) {
                                 showResponse.header = 'Errror.';
                                 showResponse.content = JSON.stringify(rsData.error);
 
                                 res.render(showResponse.renderViews, showResponse);
                             } else {
-                                var newContacts = new Contacts({});
-                                var newContact = {
-                                    users_id: rsData.result.id,
-                                    first_name: 'XXX',
-                                    last_name: 'anc',
-                                    country: 'vn',
-                                    gender: 1
-                                };
-
-                                newContacts.inserts(newContact, function (resultInsert) {
-                                    if (resultInsert.error) {
-                                        showResponse.header = 'Errror......';
-                                        showResponse.content = JSON.stringify(resultInsert.error);
-
-                                        res.render(showResponse.renderViews, showResponse);
-                                    } else {
-                                        res.redirect(aliasRouter.build('chat'));
-                                    }
-                                });
+                                res.redirect(aliasRouter.build('chat'));
                             }
                         });
                     }

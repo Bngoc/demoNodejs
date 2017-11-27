@@ -10,6 +10,7 @@
 
 const bcrypt = require('bcrypt');
 const path = require('path');
+const Promise = require('bluebird');
 
 const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const coreHelper = new CoreHelper();
@@ -17,24 +18,41 @@ const bookshelf = require('bookshelf')(coreHelper.connectKnex());
 
 let Users = bookshelf.Model.extend({
     tableName: 'users',
-
+    hasTimestamps: true,
+    validations: {
+        email: [
+            'isRequired',
+            {isEmail: {allow_display_name: true}}, // Options object passed to node-validator
+            {method: 'isLength', error: 'Username 4-32 characters long.', args: [4, 32]} // Custom error message
+        ],
+        username: ['required', 'alphaNumeric'],
+    },
+    validate: function (model, attrs, options) {
+        return CheckIt(this.toJSON()).run(this.validations);
+    },
     contacts: function () {
         return this.hasOne(Contact);
     }
 
-    // books: function() {
-    //     return this.hasMany(Book);
+    // message: function() {
+    //     return this.hasMany(Message);
     // }
 
 });
 
-// var Contacts = bookshelf.Model.extend({
-//     tableName: 'contacts',
-//     users: function() {
-//         return this.belongsTo(Users);
-//     }
-// });
+var Contact = bookshelf.Model.extend({
+    tableName: 'contacts',
+    users: function () {
+        return this.belongsTo(Users);
+    }
+});
 
+
+var result = {
+    error: '',
+    msg: '',
+    result: null
+};
 
 var resultSql = {
     error: '',
@@ -57,34 +75,50 @@ let User = function (params) {
 
 User.prototype.checkUser = function (dataRequest, callback) {
     Users.query(function (qb) {
-        qb.where('phone', '=', dataRequest.phone).andWhere('email', '=', dataRequest.email);
+        qb.where('phone', '=', dataRequest.phone).orWhere('email', '=', dataRequest.email);
     }).count().then(function (findUser) {
-        resultSql.result = findUser;
-        callback(resultSql);
+        result.result = findUser;
+        callback(result);
     }).catch(function (err) {
-        resultSql.error = err;
-        callback(resultSql);
+        result.error = err;
+        callback(result);
     });
 };
 
 
-User.prototype.insertUser = function (dtUser, callback) {
-    // bookshelf.transaction(function (transaction) {
-        Users.forge()
-            .save(dtUser)
-            // .save(dtUser, {transacting: transaction})
-            .then(function (model) {
-                // transaction.commit;
-                resultSql.result = model;
-                callback(resultSql);
-            })
-            .catch(function (err) {
-                // transaction.rollback;
-                resultSql.error = err;
-                callback(resultSql);
+User.prototype.insertUser = function (dataRequest, callback) {
+    var dtUser = {
+        email: dataRequest.email,
+        phone: dataRequest.phone,
+        lastactive: dataRequest.email,
+        password: bcrypt.hashSync(dataRequest.password, 10)
+    };
+    bookshelf.transaction(function (t) {
+        return new Users(dtUser)
+            .save(null, {transacting: t})
+            .tap(function (useModelData) {
+                return Promise.map([
+                    {
+                        first_name: dataRequest.first_name,
+                        last_name: dataRequest.last_name,
+                        middle_name: (dataRequest.first_name + ' ' + dataRequest.last_name),
+                        // country: 'vn'
+                    }
+                ], function (info) {
+                    // Some validation could take place here.
+                    return new Contact(info).save({'users_id': useModelData.id}, {transacting: t});
+                });
             });
-    // });
+    }).then(function (library) {
+        result.result = library;
+        callback(result);
+
+    }).catch(function (err) {
+        result.error = err;
+        callback(result);
+    });
 };
+
 
 User.prototype.insert = function (connect, configDb, dataRequest, callback) {
 
@@ -223,3 +257,45 @@ User.prototype.register = function (req, res, callback) {
 
 
 module.exports = User;
+
+
+function insertUser(user, cb) {
+    return bookshelf.transaction(function (t) {
+        var key = user.key;
+
+        var devID = Developer.forge({key: key})
+            .fetch({require: true, transacting: t})
+            .call("get", "id");
+
+        var addressID = devID.then(function () {
+            return Address.forge(user.address).fetch({require: true, transacting: t})
+        }).call("get", "addressId");
+
+        var financialID = addressModel.then(function () {
+            return Financial.forge(user.financial).save(null, {transacting: t})
+        }).call("get", "financialId");
+
+        var userModel = financialID.then(function () {
+            var userEntity = user.personal;
+            userEntity.addressId = addressID.value();
+            userEntity.developerId = devID.value();
+            userEntity.financialId = financialID.value();
+            return User.forge(userEntity).save(null, {transacting: t});
+        });
+
+        return userModel.then(function (userModel) {
+            logger.info('saved user: ', userModel);
+            logger.info('commiting transaction');
+            t.commit(userModel);
+        }).catch(function (e) {
+            t.rollback(e);
+            throw e;
+        });
+    }).then(function (model) {
+        logger.info(model, ' successfully saved');
+        return Promise.resolve(respond.success({userId: model.get('userId')}));
+    }).catch(function (err) {
+        logger.error(err, ' occurred');
+        return Promise.reject(new DatabaseError('Unable to write user to database due to error ', err.message));
+    });
+};

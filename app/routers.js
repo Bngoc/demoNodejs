@@ -35,6 +35,18 @@ class Routers {
         app.get("/chat", 'chat', useMiddleware.isAuthenticated, chatController.getIndex);
         app.post("/chat/content-chat", chatController.getContentChat);
 
+
+        // app.get('/auth/facebook', passport.authenticate('facebook', {
+        //     scope : ['public_profile', 'email']
+        // }));
+        //
+        // app.get('/auth/facebook/callback',
+        //     passport.authenticate('facebook', {
+        //         successRedirect: '/profile',
+        //         failureRedirect: '/'
+        //     })
+        // );
+
         app.get("/param/:param1/:param2", function (requset, response) {
             // response.writeHead(200, {'Content-Type': 'text/html'});
             // fs.createReadStream(__dirname + '/../resources/layouts/master.ejs', 'utf-8').pipe(response);
