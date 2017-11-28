@@ -1,6 +1,7 @@
 'use strict';
 
 const bcrypt = require('bcrypt');
+const flash            = require('connect-flash');
 
 const ViewController = require('./ViewController.js');
 const helper = new ViewController();
@@ -20,9 +21,24 @@ class UserController {
 
         showResponse.title = 'Login - Đăng nhập - XXX';
         showResponse.cssInclude = showResponse.readFileInclude(['css/style.user.css'], 'c');
+        showResponse.messageLogin = requset.flash('messageLogin');
         showResponse.isNotIncludeSidebar = true;
 
         response.render('user/login.ejs', helper);
+    }
+    postLoginClone(req, res, next) {
+        helper.coreHelper.passport().authenticate('whatIsThis', function(err, user, info) {
+            console.log('------------------------', user, '-----------------', info);
+
+            // if (err) { return next(err); }
+            //
+            // if (!user) { return res.redirect('/login'); }
+            //
+            // req.logIn(user, function(err) {
+            //     if (err) { return next(err); }
+            //     return res.redirect('/users/' + user.username);
+            // });
+        })(req, res, next);
     }
 
     postLogin(req, res) {

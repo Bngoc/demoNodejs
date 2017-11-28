@@ -73,6 +73,15 @@ let User = function (params) {
     this.lastactive = params.lastactive;
 };
 
+
+User.prototype.findOne = function (dataRequest, callback) {
+    Users.where({id: dataRequest.id}).fetch().then(function (data) {
+        callback(null, data);
+    }).catch(function (err) {
+        callback(err);
+    });
+}
+
 User.prototype.findUser = function (dataRequest, callback) {
     Users.query(function (qb) {
         qb.where('phone', '=', dataRequest.loginId).orWhere('email', '=', dataRequest.loginId);
@@ -81,7 +90,7 @@ User.prototype.findUser = function (dataRequest, callback) {
         callback(result);
     }).catch(function (err) {
         result.error = err;
-        result.code = err.code;
+        result.code = err.code ? err.code : 'ERROR';
         callback(result);
     });
 };

@@ -35,10 +35,22 @@ class Routers {
                 'whatIsThis',
                 {
                     successRedirect: '/chat',
-                    failureRedirect: '/',
-                    failureFlash: true
+                    failureRedirect: '/login',
+                    failureFlash: true,
+                    failureMessage: '123456789XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx'
                 }),
             userController.postLogin);
+
+        // app.post("/login",
+        //     // coreHelper.passport().authenticate(
+        //     //     'whatIsThis',
+        //     //     {
+        //     //         successRedirect: '/chat',
+        //     //         failureRedirect: '/login',
+        //     //         failureFlash: true,
+        //     //         failureMessage: '123456789XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx'
+        //     //     }),
+        //     userController.postLoginClone);
 
         app.get("/forgot", userController.getForgot);
         app.get("/register", userController.getRegister);

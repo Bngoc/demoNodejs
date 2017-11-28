@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `phone` VARCHAR(16) NOT NULL,
   `email` VARCHAR(255) NOT NULL,
-  `password` VARCHAR(40) NULL,
+  `password` VARCHAR(255) NULL,
   `verification_code` CHAR(6) NULL,
   `is_active` TINYINT(1) NULL DEFAULT 0,
   `is_reported` TINYINT(1) NULL DEFAULT 0,

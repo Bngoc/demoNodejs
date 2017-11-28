@@ -17,13 +17,12 @@ const i18n = require('i18n');
 
 const errorhandler = require('errorhandler');
 const favicon = require('serve-favicon');
-// const cookieParser     = require('cookie-parser');
-const session          = require('express-session');
-const flash            = require('connect-flash');
+const cookieParser     = require('cookie-parser');
+const session = require('express-session');
+const flash = require('connect-flash');
 
 // use hander log
 const env = process.env.NODE_ENV || 'development';
-
 
 
 /**
@@ -75,7 +74,17 @@ class Express {
         // app.use(expressValidator(customValidator()));
         app.use(methodOverride('X-HTTP-Method-Override'));
 
-
+        app.use(cookieParser('secret'));
+        app.use(session({
+            secret: '{mySecretRequired}',
+            name: 'session_id',
+            saveUninitialized: true,
+            resave: true,
+            cookie: {
+                secure: false,
+                maxAge: (3600000 * 24) * 1, // * day
+            }
+        }));
         app.use(passport.initialize());
         app.use(passport.session());
         app.use(flash());
