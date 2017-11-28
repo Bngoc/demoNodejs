@@ -18,8 +18,8 @@ const i18n = require('i18n');
 const errorhandler = require('errorhandler');
 const favicon = require('serve-favicon');
 // const cookieParser     = require('cookie-parser');
-// const session          = require('express-session');
-// const flash            = require('express-flash');
+const session          = require('express-session');
+const flash            = require('connect-flash');
 
 // use hander log
 const env = process.env.NODE_ENV || 'development';
@@ -50,7 +50,7 @@ const env = process.env.NODE_ENV || 'development';
 
 class Express {
 
-    configExpress(app, coreHelper, passport) {
+    configExpress(app, coreHelper) {
 
         app.set('view engine', 'ejs');
         app.engine('html', ejs.renderFile);
@@ -75,6 +75,10 @@ class Express {
         // app.use(expressValidator(customValidator()));
         app.use(methodOverride('X-HTTP-Method-Override'));
 
+
+        app.use(passport.initialize());
+        app.use(passport.session());
+        app.use(flash());
 
         app.use(methodOverride(function (req, res) {
             if (req.body && typeof req.body === 'object' && '_method' in req.body) {

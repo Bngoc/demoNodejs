@@ -558,74 +558,68 @@ body.fb_hidden {
 
 <div class="background-blue" cz-shortcut-listen="true">
     <center>
-        <div class="logo-login"><img src="/resources/images/logo-inet.png"></div>
-        <p class="slogan">Một mật khẩu dành cho tất cả các dịch vụ của iNET</p>
         <div class="login-box">
             <form id="j_idt9" name="j_idt9" method="post" action="/signup" enctype="application/x-www-form-urlencoded">
                 <input type="hidden" name="j_idt9" value="j_idt9">
                 <input type="hidden" name="_method" value="post">
-
                 <p class="title">ĐĂNG KÝ TÀI KHOẢN</p>
-                <p></p>
-                <p class="input-code"><input type="text" name="name" value="" class="width-box80 box"
-                                             placeholder="Họ và tên">
+
+                <p class="input-code">
+                    <input type="text" name="name" value="" class="width-box80 box" placeholder="Họ và tên">
                 </p>
-                <!--&lt;p class="input-code"&gt;
-                    &lt;h:inputText styleClass="width-box80 box" pt:placeholder="T&ecirc;n truy c&#7853;p"
-                        required="true" requiredMessage="Vui l&ograve;ng nh&#7853;p t&ecirc;n truy c&#7853;p!"
-                        label="T&ecirc;n truy c&#7853;p" value="{registerController.username}"&gt;
-                        &lt;f:validateLength minimum="3" maximum="20"/&gt;
-                        &lt;f:validateRegex pattern="[a-zA-Z0-9]*"/&gt;
-                    &lt;/h:inputText&gt;
-                &lt;/p&gt;-->
-                <p class="input-code"><input type="text" name="email" value="" class="width-box80 box"
-                                             placeholder="Email">
+                <p class="input-code">
+                    <input type="text" name="email" value="" class="width-box80 box" placeholder="Email">
                 </p>
-                <p class="input-code"><input type="text" name="phone" value="" class="width-box80 box"
-                                             placeholder="Mobile (09xxxx, 01xxxx)">
+                <p class="input-code">
+                    <input type="text" name="phone" value="" class="width-box80 box"
+                           placeholder="Mobile">
                 </p>
-                <p class="input-code"><input type="password" name="password" value="" class="width-box80 box"
-                                             placeholder="Mật khẩu >= 6 ký tự">
+                <p class="input-code">
+                    <input type="password" name="password" value="" class="width-box80 box"
+                           placeholder="Mật khẩu">
                 </p>
-                <p class="input-code"><input type="password" name="repassword" value=""
-                                             style="vertical-align:middle"
-                                             class="width-box80 box" placeholder="Nhập lại mật khẩu">
+                <p class="input-code">
+                    <input type="password" name="repassword" value=""
+                           style="vertical-align:middle"
+                           class="width-box80 box" placeholder="Nhập lại mật khẩu">
                 </p>
-                <p class="input-code"><input type="submit" name="j_idt9:j_idt32" value="ĐĂNG KÝ"
-                                             style="vertical-align:middle" class="buttonDN">
+                <p class="input-code">
+                    <input type="submit" name="j_idt9:j_idt32" value="ĐĂNG KÝ"
+                           style="vertical-align:middle" class="buttonDN">
                 </p>
                 <p class="input-code">
                     <br>
                     Bạn đã có tài khoản?
-                    <a href="https://id.inet.vn/login/">
+                    <a href="/login">
                         Đăng nhập
                     </a>
                 </p><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:0"
                            value="-4934038408204541946:-4370945332936836905" autocomplete="off">
             </form>
-        </div>
-        <br>
-        <p class="slogan">hoặc</p>
-        <div class="login-box" style="padding: 10px 10px 20px;">
-            <form id="j_idt37" name="j_idt37" method="post" action="/signup" enctype="application/x-www-form-urlencoded">
-                <input type="hidden" name="j_idt37" value="j_idt37">
-                <input type="hidden" name="_method" value="post">
-                <p class="input-code">
-                    <input type="button" name="j_idt37:j_idt39" value="Đăng nhập qua facebook"
-                                             style="vertical-align:middle; margin-top:10px !important;"
-                                             class="buttonDN backgroud-fb"
-                           onclick="FB.login(function (response) {if (response.status === 'connected') {redirectLoginSucess(); } })">
-                </p>
-                <input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:0"
+            <p class="slogan">hoặc</p>
+            <div class="login-box" style="padding: 10px 10px 20px;">
+                <form id="j_idt37" name="j_idt37" method="post" action="/signup"
+                      enctype="application/x-www-form-urlencoded">
+                    <input type="hidden" name="j_idt37" value="j_idt37">
+                    <input type="hidden" name="_method" value="post">
+                    <p class="input-code">
+                        <input type="button" name="j_idt37:j_idt39" value="Đăng nhập qua facebook"
+                               style="vertical-align:middle; margin-top:10px !important;"
+                               class="buttonDN backgroud-fb"
+                               onclick="FB.login(function (response) {if (response.status === 'connected') {redirectLoginSucess(); } })">
+                    </p>
+                    <input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:0"
                            value="-4934038408204541946:-4370945332936836905" autocomplete="off">
-            </form>
+                </form>
+            </div>
         </div>
-        <p class="footer">©iNET - Email: id@inet.vn - Hotline: 0936.133.316</p>
     </center>
+
     <form method="post" action="/facebook/sdk.jsp" id="formHiddenFB" style="display: none">
         <input type="hidden" name="nameFB">
         <input type="hidden" name="facebookIdFB">
     </form>
+
     <div id="fb-root" class=" fb_reset">
         <div style="position: absolute; top: -10000px; height: 0px; width: 0px;">
             <div></div>

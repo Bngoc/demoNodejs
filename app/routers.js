@@ -1,5 +1,6 @@
 'use strict';
 
+const passport = require('passport')
 var Router = require('named-routes');
 var router = new Router();
 //https://github.com/alubbe/named-routes
@@ -27,6 +28,18 @@ class Routers {
         // });
 
         app.get("/login", userController.getLogin);
+        // app.post("/login", userController.postLogin);
+
+        app.post("/login",
+            coreHelper.passport().authenticate(
+                'whatIsThis',
+                {
+                    successRedirect: '/chat',
+                    failureRedirect: '/',
+                    failureFlash: true
+                }),
+            userController.postLogin);
+
         app.get("/forgot", userController.getForgot);
         app.get("/register", userController.getRegister);
         app.post("/signup", userController.postRegister);

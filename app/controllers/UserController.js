@@ -18,19 +18,67 @@ class UserController {
     getLogin(requset, response) {
         var showResponse = helper;
 
-        showResponse.title = 'Login - Đăng nhập - iNET';
-        showResponse.header = showResponse.getHeader('Chào mừng đến ' + showResponse.coreHelper.sampleConfig.domain.host);
+        showResponse.title = 'Login - Đăng nhập - XXX';
         showResponse.cssInclude = showResponse.readFileInclude(['css/style.user.css'], 'c');
         showResponse.isNotIncludeSidebar = true;
 
         response.render('user/login.ejs', helper);
     }
 
+    postLogin(req, res) {
+        try {
+            var request = {
+                loginId: req.body.loginId,
+                pwd: req.body.pwd
+            };
+            var responseData = {};
+
+            if (req.xhr) {
+                if (req.body.loginId && req.body.pwd) {
+                    var user = new User({});
+                    user.findUser(request, function (resultUser) {
+                        if (resultUser.code) {
+
+                            res.status(404).send(resultUser);
+                        } else {
+                            if (resultUser.result) {
+                                if (bcrypt.compareSync(req.body.pwd, resultUser.result.attributes.password)) {
+                                    // req.session.userCurrent = resultUser;
+                                    res.status(200).send(resultUser);
+                                } else {
+                                    responseData.pwd = 'Sai pass rùi .... ^_^';
+                                    res.status(200).send(responseData);
+                                }
+                            }
+                            else {
+                                responseData.loginId = "Nhập tài khoản khong ton tại hoặc pass sai .... :d";
+                                res.status(200).send(responseData);
+                            }
+                        }
+                    });
+                } else if (req.body.loginId && req.body.pwd == '') {
+                    responseData.pwd = "Nhập pwd vào .... :d";
+                    res.status(200).send(responseData);
+                } else if (req.body.loginId == '' && req.body.pwd) {
+                    responseData.loginId = "Nhập tài khoản vào .... :d";
+                    res.status(200).send(responseData);
+                } else {
+                    responseData.pwd = "Nhập pass vào .... :d";
+                    responseData.loginId = "Nhập tài khoản vào .... :d";
+                    res.status(200).send(responseData);
+                }
+            }
+        }
+
+        catch (e) {
+            res.status(500).send();
+        }
+    }
+
     getForgot(req, res, next) {
         var showResponse = helper;
 
-        showResponse.title = 'Forgot - Đăng nhập - iNET';
-        showResponse.header = showResponse.getHeader('Quên mật khẩu')
+        showResponse.title = 'Forgot - Quên mật khẩu - XXX';
         showResponse.isNotIncludeSidebar = true;
         showResponse.cssInclude = showResponse.readFileInclude(['css/style.user.css'], 'c');
 
@@ -40,8 +88,8 @@ class UserController {
     getRegister(req, res, next) {
         var showResponse = helper;
 
-        showResponse.title = 'Signup - Đăng nhập - iNET';
-        showResponse.header = showResponse.getHeader('Đăng ký');
+        showResponse.title = 'Signup - Đăng nhập - XXX';
+        // showResponse.header = showResponse.getHeader('Đăng ký');
         showResponse.isNotIncludeSidebar = true;
         showResponse.cssInclude = showResponse.readFileInclude(['css/style.user.css'], 'c');
 
@@ -65,7 +113,8 @@ class UserController {
                 email: req.body.email,
                 password: req.body.password,
                 first_name: req.body.name,
-                last_name: 'lastNamef',
+                last_name: 'xxxx',
+                repassword: req.body.repassword
             };
 
             var newUser = new User({});
@@ -80,21 +129,26 @@ class UserController {
             const aliasRouter = helper.coreHelper.aliasRouter();
 
             // -------------------------C1-----------------------------------
-            newUser.checkUser(dataRequest, function (result) {
-                console.log('fffffffffffffffffffffffffffffffffffffffffffffff', result);
-                if (result.error) {
+            newUser.checkUser(dataRequest, function (resultData) {
+                console.log(resultData);
+                if (resultData.code) {
                     showResponse.header = 'Errror.......';
-                    showResponse.content = JSON.stringify(result.error);
+                    showResponse.content = JSON.stringify(resultData.error);
 
                     res.render(showResponse.renderViews, showResponse);
                 } else {
-                    var resultSql = result.result;
+                    var resultSql = resultData.result;
+
                     if (resultSql > 0) {
+                        var smsNotification = {
+                            flag: 'danger',
+                            msg: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+                        }
                         showResponse.renderViews = 'user/register.ejs';
-                        res.redirect('/register');
+                        res.redirect('/register', smsNotification);
                     } else {
                         newUser.insertUser(dataRequest, function (rsData) {
-                            if (rsData.error) {
+                            if (rsData.code) {
                                 showResponse.header = 'Errror.';
                                 showResponse.content = JSON.stringify(rsData.error);
 
@@ -177,7 +231,7 @@ class UserController {
             console.log('ERROR TRY_CATCH product');
             res.render(showResponse.renderViews, showResponse);
         }
-    };
+    }
 
     postRegisterXXXX(req, res, next) {
 
@@ -202,7 +256,7 @@ class UserController {
         } catch (ex) {
             throw ex;
         }
-    };
+    }
 
     getLogout(req, res, next) {
 

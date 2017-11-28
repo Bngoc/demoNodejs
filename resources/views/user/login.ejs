@@ -123,43 +123,55 @@
 
 <div class="background-blue">
     <center>
-        <div class="logo-login">
-            <!--&lt;img src="{request.contextPath}/resources/images/logo-inet.png" /&gt;-->
-            <img src="/resources/images/logo-inet.png"/>
-        </div>
-        <p class="slogan">Một mật khẩu dành cho tất cả các dịch vụ của iNET</p>
         <div class="login-box">
-            <form id="j_idt9" name="j_idt9" method="post" action="/login/" enctype="application/x-www-form-urlencoded">
-                <input type="hidden" name="j_idt9" value="j_idt9"/>
+            <form id="login-form" name="j_idt9" method="post" action="/login" enctype="application/x-www-form-urlencoded">
+                <input type="hidden" name="_method" value="post"/>
 
                 <p class="title">ĐĂNG NHẬP</p>
-                <p></p>
-                <p class="input-code"><input type="text" name="j_idt9:j_idt13" class="width-box80 box"
-                                             placeholder="Username hoặc Email"/>
+                <p class="input-code">
+                    <input type="text" name="loginId" class="width-box80 box" placeholder="Username hoặc Email"/>
                 </p>
-                <p class="input-code"><input type="password" name="j_idt9:j_idt15" value="" class="width-box80 box"
-                                             placeholder="Mật khẩu"/>
+                <p class="input-code">
+                    <input type="password" name="pwd" value="" class="width-box80 box"
+                           placeholder="Mật khẩu"/>
                 </p>
-                <p class="input-code"><input type="submit" name="j_idt9:j_idt22" value="ĐĂNG NHẬP"
-                                             style="vertical-align:middle" class="buttonDN"/>
+                <p class="input-code">
+                    <input type="submit" id="btn-login-form" value="ĐĂNG NHẬP" style="vertical-align:middle"
+                           class="buttonDN"/>
                 </p>
                 <p class="color-gray font80 padding" style="font-family:fregular;">hoặc</p>
-                <p class="input-code"><input type="button" name="j_idt9:j_idt24" value="Đăng nhập qua facebook"
-                                             style="vertical-align:middle; margin-top:10px !important;"
-                                             class="buttonDN backgroud-fb"
-                                             onclick="FB.login(function(response) {                                     if (response.status === 'connected') {                                         redirectLoginSucess();                                     }                                 })"/>
+                <p class="input-code">
+                    <input type="button" name="j_idt9:j_idt24" value="Đăng nhập qua facebook"
+                           style="vertical-align:middle; margin-top:10px !important;"
+                           class="buttonDN backgroud-fb"
+                           onclick="FB.login(function(response) {                                     if (response.status === 'connected') {                                         redirectLoginSucess();                                     }                                 })"/>
                 </p>
                 <p class="padding">
                     <a href="/forgot" class="link">Quên mật khẩu</a> |
                     <a href="/register" class="link">Đăng ký</a>
-                </p><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:0"
-                           value="-5638426969748414004:1078937918694657004" autocomplete="off"/>
+                </p><input type="hidden" name="" id="" value="" autocomplete="off"/>
             </form>
         </div>
-        <p class="footer">©iNET - Email: id@inet.vn - Hotline: 0936.133.316</p>
     </center>
 
     <form method="post" action="/facebook/sdk.jsp" id="formHiddenFB" style="display: none">
         <input type="hidden" name="nameFB"/>
         <input type="hidden" name="facebookIdFB"/>
     </form>
+</div>
+
+<script type="text/javascript">
+    $('body').on('click', '#btn-login-form', function () {
+
+        var attrFromLogin = $('#login-form');
+        var dataRequest = {
+            url: attrFromLogin.attr('action'),
+            data: attrFromLogin.serialize()
+        };
+
+//        callDataJS(dataRequest, function (result) {
+//            console.log(result);
+//        });
+    });
+
+</script>

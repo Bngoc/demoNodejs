@@ -49,6 +49,7 @@ var Contact = bookshelf.Model.extend({
 
 
 var result = {
+    code: null,
     error: '',
     msg: '',
     result: null
@@ -72,6 +73,19 @@ let User = function (params) {
     this.lastactive = params.lastactive;
 };
 
+User.prototype.findUser = function (dataRequest, callback) {
+    Users.query(function (qb) {
+        qb.where('phone', '=', dataRequest.loginId).orWhere('email', '=', dataRequest.loginId);
+    }).fetch().then(function (findUser) {
+        result.result = findUser;
+        callback(result);
+    }).catch(function (err) {
+        result.error = err;
+        result.code = err.code;
+        callback(result);
+    });
+};
+
 
 User.prototype.checkUser = function (dataRequest, callback) {
     Users.query(function (qb) {
@@ -81,6 +95,7 @@ User.prototype.checkUser = function (dataRequest, callback) {
         callback(result);
     }).catch(function (err) {
         result.error = err;
+        result.code = err.code;
         callback(result);
     });
 };
@@ -115,6 +130,7 @@ User.prototype.insertUser = function (dataRequest, callback) {
 
     }).catch(function (err) {
         result.error = err;
+        result.code = err.code;
         callback(result);
     });
 };

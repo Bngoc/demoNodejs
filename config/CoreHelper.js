@@ -73,6 +73,12 @@ function CoreHelper() {
         return createRouter;
     };
 
+    this.passport = function () {
+        var Passport = require(`${paths.MODULE}/passport.js`);
+        var passport = new Passport();
+        var configPassport = passport.configPassport(this);
+        return configPassport;
+    };
 
     this.runServer = function (app) {
         var Server = require(`${paths.CONFIG}/server.js`);
@@ -145,32 +151,6 @@ class ConnectDB extends CoreHelper {
         const knex = require('knex')({
             client: this.sampleConfig.DB_CONNECTION ? this.sampleConfig.DB_CONNECTION : '',
             connection: _this.getConfigInfoDb(),
-            // pool: {
-            //     afterCreate: function (conn, callback) {
-            //         // in this example we use pg driver's connection API
-            //         // conn.query('SET timezone="UTC";', function (err) {
-            //         //     if (err) {
-            //         //         // first query failed, return error and don't try to make next query
-            //         //         console.log('err -> ', err);
-            //         //         callback(err, conn);
-            //         //     } else {
-            //         //         // do the second query...
-            //         //         conn.query('SELECT set_limit(0.01);', function (err) {
-            //         //             // if err is not falsy, connection is discarded from pool
-            //         //             // if connection aquire was triggered by a query the error is passed to query promise
-            //         //             callback(err, conn);
-            //         //         });
-            //         //     }
-            //         // });
-            //
-            //         conn.query({text: 'SELECT 1 = 1'}, [], callback(err));
-            //
-            //         // ping: function(connection, callback) {
-            //         //     connection.query({text: 'SELECT 1 = 1'}, [], callback);
-            //         // }
-            //
-            //     }
-            // },
             debug: true,
             migrations: {
                 directory: __dirname + 'db/migrations'
