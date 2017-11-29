@@ -36,7 +36,7 @@ class Routers {
         // ------------------- c1 -------------------
         // app.post("/register", userController.postRegister);
         // ------------------- c2 -------------------
-        app.post("/register", userController.postRegisterAjax);
+        app.post("/register", useMiddleware.authenticatedRegister, userController.postRegisterAjax);
         app.get('/logout', userController.getLogout);
 
         // app.get('/auth/facebook', coreHelper.passport('facebook').authenticate('facebook', {scope : ['public_profile', 'email']}));
