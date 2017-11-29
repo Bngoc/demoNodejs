@@ -68,9 +68,9 @@ CREATE TABLE IF NOT EXISTS `contacts` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `contacts_users_id_UNIQUE` (`users_id`)),
-  CONSTRAINT `contact` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-ENGINE = InnoDB;
+  UNIQUE KEY `contacts_users_id_UNIQUE` (`users_id`),
+  CONSTRAINT `contacts` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+)ENGINE = InnoDB;
 
 SHOW WARNINGS;
 
