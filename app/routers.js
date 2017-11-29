@@ -28,42 +28,39 @@ class Routers {
         // });
 
         app.get("/login", userController.getLogin);
+
+        // --------------------C0 ------------------
         // app.post("/login", userController.postLogin);
 
+        // --------------------C1 ------------------
         app.post("/login",
-            coreHelper.passport().authenticate(
-                'whatIsThis',
+            coreHelper.passport('local').authenticate(
+                'local',
                 {
                     successRedirect: '/chat',
                     failureRedirect: '/login',
-                    failureFlash: true,
-                    failureMessage: '123456789XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx'
-                }),
-            userController.postLogin);
+                    failureFlash: true
+                })
+        );
 
-        // app.post("/login",
-        //     // coreHelper.passport().authenticate(
-        //     //     'whatIsThis',
-        //     //     {
-        //     //         successRedirect: '/chat',
-        //     //         failureRedirect: '/login',
-        //     //         failureFlash: true,
-        //     //         failureMessage: '123456789XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx'
-        //     //     }),
-        //     userController.postLoginClone);
+        // --------------------C2 ------------------
+        // app.post("/login", userController.postLoginClone);
 
         app.get("/forgot", userController.getForgot);
+        app.post("/forgot", userController.postForgot);
         app.get("/register", userController.getRegister);
-        app.post("/signup", userController.postRegister);
-        app.get("/product", productController.getIndex);
+        app.post("/register", userController.postRegister);
+        app.get('/logout', userController.getLogout);
 
+        app.get("/product", productController.getIndex);
         app.get("/chat", 'chat', useMiddleware.isAuthenticated, chatController.getIndex);
         app.post("/chat/content-chat", chatController.getContentChat);
 
 
-        // app.get('/auth/facebook', passport.authenticate('facebook', {
+        // app.get('/auth/facebook', coreHelper.passport('facebook').authenticate('facebook', {
         //     scope : ['public_profile', 'email']
         // }));
+
         //
         // app.get('/auth/facebook/callback',
         //     passport.authenticate('facebook', {

@@ -1,0 +1,65 @@
+.cn_error_list {
+    padding: 15px 15px 5px 15px;
+    background-color: #ffdbdb;
+    border: 1px solid #cc0000;
+}
+
+.cn_error_list .cn_error_item div {
+    padding: 4px;
+}
+
+.cn_error_list .cn_error_item div a {
+    color: #cc0000 !important;
+    text-decoration: none;
+}
+
+.cn_notify_list {
+    background: #e0efe0;
+    padding: 15px 15px 5px 15px;
+    border: 1px solid #30a030;
+}
+
+.cn_notify_list .cn_notify_item div {
+    padding: 1px;
+}
+
+.cn_notify_list .cn_notify_item div a {
+    color: #30a030 !important;
+}
+
+.cn_warnings_list {
+    background: #fff080;
+    padding: 15px 15px 5px 15px;
+    border: 1px solid #804000;
+}
+
+.cn_warnings_list .cn_warnings_item div {
+    background: #fff080;
+    padding: 4px;
+    /*color: black;*/
+}
+
+.cn_warnings_list .cn_warnings_item div a {
+    color: #804000 !important;
+}
+
+.error_border {
+    border: 1px solid red !important;
+}
+
+.addSelectMulti {
+    background: #1E90FF;
+    color: white !important;
+}
+
+.addFocusOutSelectMulti {
+    background-color: #C8C8C8 !important;
+    color: black !important;
+}
+.ag__btn.ag__btn__delete_ajax {
+    background-image: url(../img/share/btn_delete.png);
+}
+
+.ag_edit_lay_dele {
+    margin-left: 15px;
+}

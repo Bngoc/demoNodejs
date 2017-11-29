@@ -128,14 +128,21 @@
                 <input type="hidden" name="_method" value="post"/>
 
                 <p class="title">ĐĂNG NHẬP</p>
-                <%- messageLogin %>
+
                 <p class="input-code">
                     <input type="text" name="loginId" class="width-box80 box" placeholder="Username hoặc Email"/>
                 </p>
                 <p class="input-code">
                     <input type="password" name="pwd" value="" class="width-box80 box"
                            placeholder="Mật khẩu"/>
+
                 </p>
+                <div id='message' style='display:<%= error_msg ? "block" : "none" %>'>
+                    <%- error_msg || 111111111111 %>
+                </div>
+
+                <%- success_msg || 1111111111 %>
+                <%- warning_msg || 1111111 %>
                 <p class="input-code">
                     <input type="submit" id="btn-login-form" value="ĐĂNG NHẬP" style="vertical-align:middle"
                            class="buttonDN"/>
@@ -151,7 +158,7 @@
                     <a href="/forgot" class="link">Quên mật khẩu</a> |
                     <a href="/register" class="link">Đăng ký</a>
                 </p><input type="hidden" name="" id="" value="" autocomplete="off"/>
-            </form>
+            </div>
         </div>
     </center>
 

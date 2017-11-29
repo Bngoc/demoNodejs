@@ -1,7 +1,7 @@
 'use strict';
 
 const bcrypt = require('bcrypt');
-const flash            = require('connect-flash');
+const flash = require('connect-flash');
 
 const ViewController = require('./ViewController.js');
 const helper = new ViewController();
@@ -19,28 +19,59 @@ class UserController {
     getLogin(requset, response) {
         var showResponse = helper;
 
+        let messagePassport = requset.flash('error');
+        if (messagePassport.length) {
+            try {
+                let dataPassport = JSON.parse(messagePassport[0]);
+                if (dataPassport.code || dataPassport.result == null) {
+                    requset.flash('error_msg', "Nhập tài khoản không tồn tại hoặc pass sai .... :d");
+                } else if (dataPassport.code == null && dataPassport.result) {
+                    requset.flash('error_msg', "pass sai .... :d");
+                }
+            }
+            catch (e) {
+                requset.flash('error_msg', messagePassport[0]);
+            }
+        }
+
         showResponse.title = 'Login - Đăng nhập - XXX';
         showResponse.cssInclude = showResponse.readFileInclude(['css/style.user.css'], 'c');
-        showResponse.messageLogin = requset.flash('messageLogin');
+        showResponse.error_msg = requset.flash('error_msg');
         showResponse.isNotIncludeSidebar = true;
 
         response.render('user/login.ejs', helper);
     }
-    postLoginClone(req, res, next) {
-        helper.coreHelper.passport().authenticate('whatIsThis', function(err, user, info) {
-            console.log('------------------------', user, '-----------------', info);
 
+    // todo error
+    postLoginClone(req, res, next) {
+        helper.coreHelper.passport().authenticate('whatIsThis', function (err, user, info) {
             // if (err) { return next(err); }
-            //
-            // if (!user) { return res.redirect('/login'); }
-            //
-            // req.logIn(user, function(err) {
-            //     if (err) { return next(err); }
-            //     return res.redirect('/users/' + user.username);
-            // });
+
+            let infoPassport = info;
+            //{"code":null,"error":"","msg":"","result":null}'
+            if (infoPassport.message) {
+                let dataPassport = JSON.parse(infoPassport.message);
+                // console.log('------------------------', dataPassport.code, user, '-----------------', infoPassport)
+                if (dataPassport.code || dataPassport.result == null) {
+                    req.flash('error_msg', dataPassport.code);
+                    return res.redirect('/login');
+                } else {
+                    if (dataPassport.result && user) {
+                        // console.log('_____________', dataPassport.result ,'_______________');
+                        // req.logIn(user, function(err) {
+                        //     if (err) { return next(err); }
+                        //     return res.redirect('/users/' + user.username);
+                        // });
+
+                        // next(null, user);// res.redirect('/chat');
+
+                    }
+                }
+            }
         })(req, res, next);
     }
 
+    // C0 call ajax
     postLogin(req, res) {
         try {
             var request = {
@@ -101,12 +132,17 @@ class UserController {
         res.render('user/forgot.ejs', showResponse);
     }
 
+    postForgot(req, res, next) {
+
+    }
+
     getRegister(req, res, next) {
         var showResponse = helper;
 
         showResponse.title = 'Signup - Đăng nhập - XXX';
         // showResponse.header = showResponse.getHeader('Đăng ký');
         showResponse.isNotIncludeSidebar = true;
+        showResponse.errors = [];
         showResponse.cssInclude = showResponse.readFileInclude(['css/style.user.css'], 'c');
 
         res.render('user/register.ejs', showResponse);
@@ -116,132 +152,156 @@ class UserController {
         try {
             var showResponse = helper;
 
-            // showResponse.title = 'Home product';
-            // showResponse.scriptInclude = showResponse.readFileInclude(['js/product/abc.js']);
-            // showResponse.metaInclude = showResponse.readFileInclude(['<meta name="twitter:app:id:ipad" content="871299723"/>'], 'o');
+            req.checkBody('name', 'Name ').notEmpty();
+            req.checkBody('email', 'Name ').notEmpty();
+            req.checkBody('email', 'Name ').isEmail();
+            req.checkBody('phone', 'Name ').notEmpty();
+            req.checkBody('password', 'Name ').notEmpty();
+            req.checkBody('repassword', 'Nameddfdfdf dgdgdg ').equals(req.body.password);
 
-            showResponse.content = '';
-            showResponse.name = '';
-            showResponse.renderViews = 'errors/error.ejs';
+            showResponse.cssInclude = showResponse.readFileInclude(['css/style.user.css'], 'c');
+            showResponse.isNotIncludeSidebar = true;
 
-            var dataRequest = {
-                phone: req.body.phone,
-                email: req.body.email,
-                password: req.body.password,
-                first_name: req.body.name,
-                last_name: 'xxxx',
-                repassword: req.body.repassword
-            };
+            let errors = req.validationErrors();
+            if (errors) {
+                console.log(errors);
+                showResponse.errors = errors;
+                // showResponse.errors = JSON.stringify(errors);
 
-            var newUser = new User({});
-            // newUser.id = 16;
-            // newUser.email = params.email;
-            // newUser.firstName = params.first_name;
-            // newUser.password = params.password;
-            // newUser.fulName = params.first_name + ' ' + params.last_name;
+                showResponse.renderViews = 'user/register.ejs';
 
-            req.showResponse = showResponse;
+                res.render(showResponse.renderViews, showResponse);
+            } else {
+                console.log('ok');
 
-            const aliasRouter = helper.coreHelper.aliasRouter();
 
-            // -------------------------C1-----------------------------------
-            newUser.checkUser(dataRequest, function (resultData) {
-                console.log(resultData);
-                if (resultData.code) {
-                    showResponse.header = 'Errror.......';
-                    showResponse.content = JSON.stringify(resultData.error);
+                // showResponse.title = 'Home product';
+                // showResponse.scriptInclude = showResponse.readFileInclude(['js/product/abc.js']);
+                // showResponse.metaInclude = showResponse.readFileInclude(['<meta name="twitter:app:id:ipad" content="871299723"/>'], 'o');
 
-                    res.render(showResponse.renderViews, showResponse);
-                } else {
-                    var resultSql = resultData.result;
+                showResponse.content = '';
+                showResponse.name = '';
+                showResponse.renderViews = 'errors/error.ejs';
 
-                    if (resultSql > 0) {
-                        var smsNotification = {
-                            flag: 'danger',
-                            msg: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-                        }
-                        showResponse.renderViews = 'user/register.ejs';
-                        res.redirect('/register', smsNotification);
+                var dataRequest = {
+                    phone: req.body.phone,
+                    email: req.body.email,
+                    password: req.body.password,
+                    first_name: req.body.name,
+                    last_name: 'xxxx',
+                    repassword: req.body.repassword
+                };
+
+                var newUser = new User({});
+                // newUser.id = 16;
+                // newUser.email = params.email;
+                // newUser.firstName = params.first_name;
+                // newUser.password = params.password;
+                // newUser.fulName = params.first_name + ' ' + params.last_name;
+
+                req.showResponse = showResponse;
+
+                const aliasRouter = helper.coreHelper.aliasRouter();
+
+                // -------------------------C1-----------------------------------
+                newUser.checkUser(dataRequest, function (resultData) {
+                    console.log(resultData);
+                    if (resultData.code) {
+                        showResponse.header = 'Errror.......';
+                        showResponse.content = JSON.stringify(resultData.error);
+
+                        res.render(showResponse.renderViews, showResponse);
                     } else {
-                        newUser.insertUser(dataRequest, function (rsData) {
-                            if (rsData.code) {
-                                showResponse.header = 'Errror.';
-                                showResponse.content = JSON.stringify(rsData.error);
+                        var resultSql = resultData.result;
 
-                                res.render(showResponse.renderViews, showResponse);
-                            } else {
-                                res.redirect(aliasRouter.build('chat'));
+                        if (resultSql > 0) {
+                            var smsNotification = {
+                                flag: 'danger',
+                                msg: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
                             }
-                        });
+                            showResponse.renderViews = 'user/register.ejs';
+                            res.redirect('/register', smsNotification);
+                        } else {
+                            newUser.insertUser(dataRequest, function (rsData) {
+                                if (rsData.code) {
+                                    showResponse.header = 'Errror.';
+                                    showResponse.content = JSON.stringify(rsData.error);
+
+                                    res.render(showResponse.renderViews, showResponse);
+                                } else {
+                                    res.redirect('/login');
+                                }
+                            });
+                        }
                     }
-                }
-            });
+                });
 
 
 // ------------------------------------------------------------
-            // ------------------------------C2------------------------------
+                // ------------------------------C2------------------------------
 
-            /*helper.coreHelper.connection(function (resultConnection) {
-             const connect = resultConnection.connect;
+                /*helper.coreHelper.connection(function (resultConnection) {
+                 const connect = resultConnection.connect;
 
-             if (resultConnection.error || resultConnection.connect == null) {
-             showResponse.content = resultConnection.msg;
-             res.render(showResponse.renderViews, showResponse);
-             } else {
-             var newUser = new User({});
-             newUser.checkExistUserName(connect, dataRequest, function (resultSql) {
-             if (resultSql.error) {
-             showResponse.content = resultSql.msg;
-             res.render(showResponse.renderViews, showResponse);
-             } else {
-             const aliasRouter = helper.coreHelper.aliasRouter();
-             const configDb = helper.coreHelper.getConfigInfoDb();
+                 if (resultConnection.error || resultConnection.connect == null) {
+                 showResponse.content = resultConnection.msg;
+                 res.render(showResponse.renderViews, showResponse);
+                 } else {
+                 var newUser = new User({});
+                 newUser.checkExistUserName(connect, dataRequest, function (resultSql) {
+                 if (resultSql.error) {
+                 showResponse.content = resultSql.msg;
+                 res.render(showResponse.renderViews, showResponse);
+                 } else {
+                 const aliasRouter = helper.coreHelper.aliasRouter();
+                 const configDb = helper.coreHelper.getConfigInfoDb();
 
 
-             if (resultSql.result) {
-             // exist user
-             showResponse.renderViews = 'user/register.ejs';
-             // res.render(showResponse.renderViews, showResponse);
-             //res.redirect(req.url) ~~ res.redirect(req.header('referrer'));
-             res.redirect('/register');
-             } else {
-             // Save user
-             newUser.email = dataRequest.email;
-             newUser.phone = dataRequest.phone;
-             newUser.password = bcrypt.hashSync(dataRequest.password, 10);
-             newUser.lastactive = Date.now();
+                 if (resultSql.result) {
+                 // exist user
+                 showResponse.renderViews = 'user/register.ejs';
+                 // res.render(showResponse.renderViews, showResponse);
+                 //res.redirect(req.url) ~~ res.redirect(req.header('referrer'));
+                 res.redirect('/register');
+                 } else {
+                 // Save user
+                 newUser.email = dataRequest.email;
+                 newUser.phone = dataRequest.phone;
+                 newUser.password = bcrypt.hashSync(dataRequest.password, 10);
+                 newUser.lastactive = Date.now();
 
-             console.log(JSON.stringify(newUser));
-             newUser.insert(connect, configDb, newUser, function (resultDataInsert) {
-             if (resultDataInsert.error) {
-             showResponse.content = resultDataInsert.msg;
-             // res.render(req.showResponse.renderViews, showResponse);
-             } else {
+                 console.log(JSON.stringify(newUser));
+                 newUser.insert(connect, configDb, newUser, function (resultDataInsert) {
+                 if (resultDataInsert.error) {
+                 showResponse.content = resultDataInsert.msg;
+                 // res.render(req.showResponse.renderViews, showResponse);
+                 } else {
 
-             var newContacts = new Contacts({});
-             newContacts.insert(connect, dataRequest, function (resultInsert) {
-             if (resultInsert.error) {
-             showResponse.content = resultInsert.msg;
-             // res.render(req.showResponse.renderViews, resultData);
-             } else {
+                 var newContacts = new Contacts({});
+                 newContacts.insert(connect, dataRequest, function (resultInsert) {
+                 if (resultInsert.error) {
+                 showResponse.content = resultInsert.msg;
+                 // res.render(req.showResponse.renderViews, resultData);
+                 } else {
 
-             console.log('-----------chat-------------');
-             // showResponse.name = '1234567890_____________';
+                 console.log('-----------chat-------------');
+                 // showResponse.name = '1234567890_____________';
 
-             showResponse.renderViews = 'chat/index.ejs';
+                 showResponse.renderViews = 'chat/index.ejs';
 
-             // res.render(showResponse.renderViews);
-             res.redirect(aliasRouter.build('chat'));
-             // res.redirect('/chat');
-             }
-             });
-             }
-             });
-             }
-             }
-             });
-             }
-             });*/
+                 // res.render(showResponse.renderViews);
+                 res.redirect(aliasRouter.build('chat'));
+                 // res.redirect('/chat');
+                 }
+                 });
+                 }
+                 });
+                 }
+                 }
+                 });
+                 }
+                 });*/
+            }
         } catch (ex) {
             throw ex;
             console.log('ERROR TRY_CATCH product');
@@ -275,7 +335,8 @@ class UserController {
     }
 
     getLogout(req, res, next) {
-
+        req.logout();
+        res.redirect('/login');
     }
 }
 

@@ -18,7 +18,8 @@
         "css/style.css",
         "css/flexslider.css",
         "css/jquery.fancybox.css",
-        "css/cloud-zoom.css"
+        "css/cloud-zoom.css",
+        "css/common.style.css"
       ]
     },
     "admin_main": {

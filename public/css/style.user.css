@@ -62,6 +62,14 @@
     padding: 20px 5px 30px 5px;
 }
 
-.login-box #j_idt9 p:first-of-type {
+.login-box form p:first-of-type {
     margin-bottom: 15px;
+}
+
+.login-box .msg-noti {
+    text-align: left;
+    margin: 0 auto;
+    display: block;
+    clear: both;
+    padding: 0px 0px 4px 0px;
 }

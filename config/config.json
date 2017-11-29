@@ -11,5 +11,10 @@
   "DB_DATABASE": "mvcnodejs",
   "DB_USERNAME": "root",
   "DB_PASSWORD": "",
-  "WEB": 1
+  "WEB": 1,
+  "facebookStrategy": {
+    "clientID": 1,
+    "clientSecret": 1111,
+    "callbackURL": 11
+  }
 }

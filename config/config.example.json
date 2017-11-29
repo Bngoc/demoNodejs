@@ -8,7 +8,13 @@
   "DB_CONNECTION": "mysql",
   "DB_HOST": "localhost",
   "PORT": 3306,
-  "DB_DATABASE": "laravel_exam2",
+  "DB_DATABASE": "mvcnodejs",
   "DB_USERNAME": "root",
-  "DB_PASSWORD": ""
+  "DB_PASSWORD": "",
+  "WEB": 1,
+  "facebookStrategy": {
+    "clientID": 1,
+    "clientSecret": 1111,
+    "callbackURL": 11
+  }
 }

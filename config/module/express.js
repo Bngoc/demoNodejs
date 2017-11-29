@@ -13,11 +13,11 @@ const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const express = require('express');
 const i18n = require('i18n');
-// const expressValidator = require('express-validator');
+const expressValidator = require('express-validator');
 
 const errorhandler = require('errorhandler');
 const favicon = require('serve-favicon');
-const cookieParser     = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
 
@@ -71,6 +71,7 @@ class Express {
         //JSON
         app.use(bodyParser.json());
         app.use(bodyParser.text({type: 'text/html'}));
+        app.use(expressValidator());
         // app.use(expressValidator(customValidator()));
         app.use(methodOverride('X-HTTP-Method-Override'));
 
@@ -88,6 +89,16 @@ class Express {
         app.use(passport.initialize());
         app.use(passport.session());
         app.use(flash());
+
+        //Global vars
+        app.use(function (req, res, next) {
+            res.locals.success_msg = req.flash('success_msg');
+            res.locals.error_msg = req.flash('error_msg');
+            res.locals.warning_msg = req.flash('warning_msg');
+            res.locals.notify_msg = req.flash('notify_msg');
+            res.locals.userCurrent = req.user || null;
+            next();
+        });
 
         app.use(methodOverride(function (req, res) {
             if (req.body && typeof req.body === 'object' && '_method' in req.body) {

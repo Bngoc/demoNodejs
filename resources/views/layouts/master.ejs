@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA/4QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEREREAAAAAAAAAABAAAAAAAAAAAQAAAAAAAAAAEAAAAAAAAAAQAAEREQAAABEAEQAAEQAAAAAQAAABAAABABAAAAEAABAAAQAAAQAAEAAAAQABABEAAAAAERERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//wAA8A8AAP/3AAD/+wAA//0AAP/9AADg/AAAzz8AAN++AADfvQAA770AAPuzAAD8DwAA//8AAP//AAD//wAA"
           rel="icon" type="image/x-icon"/>
-    <title><%= title %></title>
-    <%- metaCommonNotEdit %>
-    <%- metaInclude %>
-    <%- cssCommonNotEdit %>
-    <%- cssInclude %>
-    <%- scriptCommonHeadNotEdit %>
-    <%- scriptIncludeHead %>
+    <title><%= (typeof title !== 'undefined') ? title : '' %></title>
+    <%- (typeof metaCommonNotEdit !== 'undefined') ? metaCommonNotEdit : '' %>
+    <%- (typeof metaInclude !== 'undefined') ? metaInclude : '' %>
+    <%- (typeof cssCommonNotEdit !== 'undefined') ? cssCommonNotEdit : '' %>
+    <%- (typeof cssInclude !== 'undefined') ? cssInclude : '' %>
+    <%- (typeof scriptCommonHeadNotEdit !== 'undefined') ? scriptCommonHeadNotEdit : '' %>
+    <%- (typeof scriptIncludeHead !== 'undefined') ? scriptIncludeHead : '' %>
 
 </head>
 
@@ -26,7 +26,7 @@
         <%- include('./../layouts/nav.ejs') %>
         <div class="inner-content">
             <div id="question-header">
-                <%- header %>
+                <%- (typeof header !== 'undefined') ? header : '' %>
             </div>
 
             <div id="<%- (typeof isNotIncludeSidebar === 'undefined') ? 'mainbar' : ''  %>" role="main"
@@ -40,13 +40,13 @@
             </div>
             <% } %>
             <div id="feed-link">
-                <%- feedBack %>
+                <%- (typeof header !== 'undefined') ? feedBack : '' %>
             </div>
         </div>
     </div>
 </div>
-<%- scriptCommonBodyNotEdit %>
-<%- scriptInclude %>
+<%- (typeof scriptCommonBodyNotEdit !== 'undefined') ? scriptCommonBodyNotEdit : '' %>
+<%- (typeof scriptInclude !== 'undefined') ? scriptInclude : '' %>
 <footer id="footer" class="s-footer js-footer" role="contentinfo">
     <%- include('./../layouts/footer.ejs') %>
 </footer>

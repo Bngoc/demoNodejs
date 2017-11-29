@@ -12,6 +12,7 @@ class Authenticate {
             return next();
 
         // IF A USER ISN'T LOGGED IN, THEN REDIRECT THEM SOMEWHERE
+        // req.flash('error_msg', 'ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ');
         res.redirect('/login');
     }
 }

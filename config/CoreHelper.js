@@ -73,10 +73,15 @@ function CoreHelper() {
         return createRouter;
     };
 
-    this.passport = function () {
+    this.passport = function (optCall) {
         var Passport = require(`${paths.MODULE}/passport.js`);
         var passport = new Passport();
-        var configPassport = passport.configPassport(this);
+        if (optCall === 'local') {
+            var configPassport = passport.configPassport(this);
+        } else if (optCall === 'facebook'){
+            var configPassport = passport.configPassportFB(this);
+        }
+
         return configPassport;
     };
 

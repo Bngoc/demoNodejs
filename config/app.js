@@ -14,8 +14,7 @@ const app = {
     participants: {
         0: 'single',
         1: 'group'
-    }
-
+    },
 };
 
 module.exports = app;

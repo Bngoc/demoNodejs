@@ -559,30 +559,50 @@ body.fb_hidden {
 <div class="background-blue" cz-shortcut-listen="true">
     <center>
         <div class="login-box">
-            <form id="j_idt9" name="j_idt9" method="post" action="/signup" enctype="application/x-www-form-urlencoded">
+            <form id="j_idt9" name="j_idt9" method="post" action="/register"
+                  enctype="application/x-www-form-urlencoded">
                 <input type="hidden" name="j_idt9" value="j_idt9">
                 <input type="hidden" name="_method" value="post">
                 <p class="title">ĐĂNG KÝ TÀI KHOẢN</p>
 
                 <p class="input-code">
-                    <input type="text" name="name" value="" class="width-box80 box" placeholder="Họ và tên">
+                    <input type="text" name="name" value="" class="width-box80 box" placeholder="Họ và tên"/>
                 </p>
+                    <% if (errors.findIndex(x => x.param=="name") !== -1) { %>
+                <div class="alert alert-danger msg-noti"><%- errors[errors.findIndex(x => x.param=="name")].msg %></div>
+                <% } %>
                 <p class="input-code">
-                    <input type="text" name="email" value="" class="width-box80 box" placeholder="Email">
+                    <input type="text" name="email" value="" class="width-box80 box" placeholder="Email"/>
                 </p>
+                    <% if (errors.findIndex(x => x.param=="email") !== -1) { %>
+                <div class="alert alert-danger msg-noti"><%- errors[errors.findIndex(x => x.param=="email")].msg %>
+                </div>
+                <% } %>
                 <p class="input-code">
                     <input type="text" name="phone" value="" class="width-box80 box"
                            placeholder="Mobile">
                 </p>
+                <% if (errors.findIndex(x => x.param=="phone") !== -1) { %>
+                <div class="alert alert-danger msg-noti"><%- errors[errors.findIndex(x => x.param=="phone")].msg %>
+                </div>
+                <% } %>
                 <p class="input-code">
                     <input type="password" name="password" value="" class="width-box80 box"
                            placeholder="Mật khẩu">
                 </p>
+                <% if (errors.findIndex(x => x.param=="password") !== -1) { %>
+                <div class="alert alert-danger msg-noti"><%- errors[errors.findIndex(x => x.param=="password")].msg %>
+                </div>
+                <% } %>
                 <p class="input-code">
                     <input type="password" name="repassword" value=""
                            style="vertical-align:middle"
                            class="width-box80 box" placeholder="Nhập lại mật khẩu">
                 </p>
+                <% if (errors.findIndex(x => x.param=="repassword") !== -1) { %>
+                <div class="alert alert-danger msg-noti"><%- errors[errors.findIndex(x => x.param=="repassword")].msg %>
+                </div>
+                <% } %>
                 <p class="input-code">
                     <input type="submit" name="j_idt9:j_idt32" value="ĐĂNG KÝ"
                            style="vertical-align:middle" class="buttonDN">
