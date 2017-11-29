@@ -1,6 +1,6 @@
 'use strict';
 
-const passport = require('passport')
+const passport = require('passport');
 var Router = require('named-routes');
 var router = new Router();
 //https://github.com/alubbe/named-routes
@@ -17,57 +17,44 @@ class Routers {
         let chatController = coreHelper.callModule(`${coreHelper.paths.CONTROLLERS}ChatController.js`, true);
         let userController = coreHelper.callModule(`${coreHelper.paths.CONTROLLERS}UserController.js`, true);
 
+        // ---------------------- List router ----------------------------
         app.get('/', 'user', homeController.getIndex);
 
-        app.get('/admin/user/:id', 'admin.user.edit', [useMiddleware.isAuthenticated], homeController.getIndex);
-
-        // router.add('get', '/admin/user/:id', function() {
-        //     var url = router.build('admin.user.edit', {id: 2}); // /admin/user/2
-        // },{
-        //     name: 'admin.user.edit'
-        // });
-
         app.get("/login", userController.getLogin);
-
         // --------------------C0 ------------------
         // app.post("/login", userController.postLogin);
-
         // --------------------C1 ------------------
-        app.post("/login",
-            coreHelper.passport('local').authenticate(
-                'local',
-                {
-                    successRedirect: '/chat',
-                    failureRedirect: '/login',
-                    failureFlash: true
-                })
-        );
-
+        // app.post("/login", coreHelper.passport('local').authenticate('local', { successRedirect: '/chat', failureRedirect: '/login', failureFlash: true}));
         // --------------------C2 ------------------
         // app.post("/login", userController.postLoginClone);
+        // ------------------- c3 -------------------
+        app.post("/login", userController.postLoginAjax);
 
         app.get("/forgot", userController.getForgot);
         app.post("/forgot", userController.postForgot);
         app.get("/register", userController.getRegister);
-        app.post("/register", userController.postRegister);
+        // ------------------- c1 -------------------
+        // app.post("/register", userController.postRegister);
+        // ------------------- c2 -------------------
+        app.post("/register", userController.postRegisterAjax);
         app.get('/logout', userController.getLogout);
+
+        // app.get('/auth/facebook', coreHelper.passport('facebook').authenticate('facebook', {scope : ['public_profile', 'email']}));
+        // app.get('/auth/facebook/callback', passport.authenticate('facebook', {successRedirect: '/profile', failureRedirect: '/'}));
+
 
         app.get("/product", productController.getIndex);
         app.get("/chat", 'chat', useMiddleware.isAuthenticated, chatController.getIndex);
         app.post("/chat/content-chat", chatController.getContentChat);
 
 
-        // app.get('/auth/facebook', coreHelper.passport('facebook').authenticate('facebook', {
-        //     scope : ['public_profile', 'email']
-        // }));
-
-        //
-        // app.get('/auth/facebook/callback',
-        //     passport.authenticate('facebook', {
-        //         successRedirect: '/profile',
-        //         failureRedirect: '/'
-        //     })
-        // );
+        // --------------------Test ------------------------------------------------
+        app.get('/admin/user/:id', 'admin.user.edit', [useMiddleware.isAuthenticated], homeController.getIndex);
+        // router.add('get', '/admin/user/:id', function() {
+        //     var url = router.build('admin.user.edit', {id: 2}); // /admin/user/2
+        // },{
+        //     name: 'admin.user.edit'
+        // });
 
         app.get("/param/:param1/:param2", function (requset, response) {
             // response.writeHead(200, {'Content-Type': 'text/html'});
@@ -82,6 +69,7 @@ class Routers {
             response.sendFile(coreHelper.paths.VIEWS + 'layouts/master.ejs', 'utf-8');
             // response.sendFile(coreHelper.paths.resolve(__dirname + '/../resources/layouts/master.ejs'), 'utf-8');
         });
+        // --------------------End Test ------------------------------------------------
 
         return router;
     }

@@ -42,36 +42,7 @@ class UserController {
         response.render('user/login.ejs', helper);
     }
 
-    // todo error
-    postLoginClone(req, res, next) {
-        helper.coreHelper.passport().authenticate('whatIsThis', function (err, user, info) {
-            // if (err) { return next(err); }
-
-            let infoPassport = info;
-            //{"code":null,"error":"","msg":"","result":null}'
-            if (infoPassport.message) {
-                let dataPassport = JSON.parse(infoPassport.message);
-                // console.log('------------------------', dataPassport.code, user, '-----------------', infoPassport)
-                if (dataPassport.code || dataPassport.result == null) {
-                    req.flash('error_msg', dataPassport.code);
-                    return res.redirect('/login');
-                } else {
-                    if (dataPassport.result && user) {
-                        // console.log('_____________', dataPassport.result ,'_______________');
-                        // req.logIn(user, function(err) {
-                        //     if (err) { return next(err); }
-                        //     return res.redirect('/users/' + user.username);
-                        // });
-
-                        // next(null, user);// res.redirect('/chat');
-
-                    }
-                }
-            }
-        })(req, res, next);
-    }
-
-    // C0 call ajax
+    // C0 -> call ajax - not passport (no authenticate)
     postLogin(req, res) {
         try {
             var request = {
@@ -122,6 +93,105 @@ class UserController {
         }
     }
 
+    // c1 login submit hmtl - user filter middleware
+
+    // c2 login submit html - authenticate
+    postLoginClone(req, res, next) {
+        helper.coreHelper.passport('local').authenticate('local', function (err, user, info) {
+            // if (err) { return next(err); }
+
+            let infoPassport = info;
+            //{"code":null,"error":"","msg":"","result":null}'
+            if (infoPassport.message) {
+                let dataPassport = JSON.parse(infoPassport.message);
+                // console.log('------------------------', dataPassport.code, user, '-----------------', infoPassport)
+                if (dataPassport.code || dataPassport.result == null) {
+                    req.flash('error_msg', dataPassport.code);
+                    return res.redirect('/login');
+                } else {
+                    if (dataPassport.result && user) {
+                        // console.log('_____________', dataPassport.result ,'_______________');
+                        req.logIn(user, function (err) {
+                            if (err) {
+                                return next(err);
+                            }
+                            return res.redirect('/chat');
+                        });
+                    }
+                }
+            }
+        })(req, res, next);
+    }
+
+    // c3 -> call Ajax - authenticate
+    postLoginAjax(req, res, next) {
+        if (req.xhr) {
+            var responseDataMap = {
+                url: '',
+                validate: [],
+                msg: '',
+                code: '',
+                status: false
+            };
+
+            if (req.body.loginId && req.body.pwd) {
+                helper.coreHelper.passport('local').authenticate('local', function (err, user, info) {
+                    let infoPassport = info;
+                    //{"code":null,"error":"","msg":"","result":null}'
+                    if (infoPassport.message) {
+                        let dataPassport = JSON.parse(infoPassport.message);
+                        if (dataPassport.code || dataPassport.result == null) {
+                            responseDataMap.code = dataPassport.code || 'ERR0003';
+                            responseDataMap.msg = 'Account not exits';
+                        } else {
+                            if (dataPassport.result && user) {
+                                req.logIn(user, function (err) {
+                                    if (err) {
+                                        responseDataMap.code = "ERR0003";
+                                        responseDataMap.msg = 'Login Fail....!';
+                                    } else {
+                                        responseDataMap.status = true;
+                                        responseDataMap.url = 'chat';
+                                        responseDataMap.msg = 'Login success';
+                                        res.status(200).send(responseDataMap);
+                                    }
+                                    res.status(200).join(responseDataMap);
+                                });
+                            } else {
+                                responseDataMap.code = "ERR0003";
+                                responseDataMap.msg = 'Account or password not authentication';
+                            }
+                        }
+                    } else {
+                        responseDataMap.code = "ERR0004";
+                        responseDataMap.msg = 'ERROR: Server Not Response';
+                        res.status(200).send(responseDataMap);
+                    }
+                    res.status(200).send(responseDataMap);
+                })(req, res, next);
+            } else {
+                responseDataMap.code = 'ERR0001';
+                var validateMsg = [];
+                if (req.body.loginId == '' && req.body.pwd) {
+                    validateMsg.push({param: 'loginId', msg: 'Account is required'})
+                }
+                else if (req.body.loginId && req.body.pwd == '') {
+                    validateMsg.push({param: 'pwd', smg: 'Password is required'})
+                } else {
+                    validateMsg.push(
+                        {param: 'loginId', msg: 'Account is required'},
+                        {param: 'pwd', msg: 'Password is required'}
+                    );
+                }
+                responseDataMap.validate = validateMsg;
+
+                res.status(200).send(responseDataMap);
+            }
+        } else {
+            res.status(500).send('Not');
+        }
+    }
+
     getForgot(req, res, next) {
         var showResponse = helper;
 
@@ -148,32 +218,31 @@ class UserController {
         res.render('user/register.ejs', showResponse);
     }
 
+    // submit - html
     postRegister(req, res, next) {
         try {
             var showResponse = helper;
 
-            req.checkBody('name', 'Name ').notEmpty();
-            req.checkBody('email', 'Name ').notEmpty();
-            req.checkBody('email', 'Name ').isEmail();
-            req.checkBody('phone', 'Name ').notEmpty();
-            req.checkBody('password', 'Name ').notEmpty();
-            req.checkBody('repassword', 'Nameddfdfdf dgdgdg ').equals(req.body.password);
+            req.checkBody('name', 'Name is required').notEmpty();
+            req.checkBody('email', 'Email is required').notEmpty();
+            req.checkBody('email', 'Email not is email ').isEmail();
+            req.checkBody('phone', 'Phone is required').notEmpty();
+            req.checkBody('phone', 'Phone is Nunmber ').isNumeric();
+            req.checkBody('password', 'Password is required').notEmpty();
+            req.checkBody('password', 'The password length must be between 6 and 20.').isLength({min: 6, max: 20});
+            req.checkBody('repassword', 'Re-Password is required').notEmpty();
+            req.checkBody('repassword', 'Password does not match the confirm password ').equals(req.body.password);
 
             showResponse.cssInclude = showResponse.readFileInclude(['css/style.user.css'], 'c');
             showResponse.isNotIncludeSidebar = true;
 
             let errors = req.validationErrors();
             if (errors) {
-                console.log(errors);
                 showResponse.errors = errors;
-                // showResponse.errors = JSON.stringify(errors);
-
                 showResponse.renderViews = 'user/register.ejs';
 
                 res.render(showResponse.renderViews, showResponse);
             } else {
-                console.log('ok');
-
 
                 // showResponse.title = 'Home product';
                 // showResponse.scriptInclude = showResponse.readFileInclude(['js/product/abc.js']);
@@ -193,34 +262,26 @@ class UserController {
                 };
 
                 var newUser = new User({});
-                // newUser.id = 16;
-                // newUser.email = params.email;
-                // newUser.firstName = params.first_name;
-                // newUser.password = params.password;
-                // newUser.fulName = params.first_name + ' ' + params.last_name;
 
                 req.showResponse = showResponse;
 
                 const aliasRouter = helper.coreHelper.aliasRouter();
 
-                // -------------------------C1-----------------------------------
+                // -------------------------C1 connect DB Knex vs Bookshelf -----------------------------------
                 newUser.checkUser(dataRequest, function (resultData) {
                     console.log(resultData);
                     if (resultData.code) {
                         showResponse.header = 'Errror.......';
-                        showResponse.content = JSON.stringify(resultData.error);
+                        showResponse.content = JSON.stringify(resultData);
 
                         res.render(showResponse.renderViews, showResponse);
                     } else {
                         var resultSql = resultData.result;
 
                         if (resultSql > 0) {
-                            var smsNotification = {
-                                flag: 'danger',
-                                msg: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-                            }
+                            req.flash('userExits', 'Tai khoan da ton tai');
                             showResponse.renderViews = 'user/register.ejs';
-                            res.redirect('/register', smsNotification);
+                            res.redirect('/register');
                         } else {
                             newUser.insertUser(dataRequest, function (rsData) {
                                 if (rsData.code) {
@@ -237,10 +298,10 @@ class UserController {
                 });
 
 
-// ------------------------------------------------------------
-                // ------------------------------C2------------------------------
-
-                /*helper.coreHelper.connection(function (resultConnection) {
+                // -----------------------------END C1-------------------------------
+                // ------------------------------C2 connect DB not Lib------------------------------
+                /*
+                 helper.coreHelper.connection(function (resultConnection) {
                  const connect = resultConnection.connect;
 
                  if (resultConnection.error || resultConnection.connect == null) {
@@ -300,37 +361,81 @@ class UserController {
                  }
                  });
                  }
-                 });*/
+                 });
+                 */
             }
         } catch (ex) {
             throw ex;
-            console.log('ERROR TRY_CATCH product');
+            console.log('ERROR TRY_CATCH');
             res.render(showResponse.renderViews, showResponse);
         }
     }
 
-    postRegisterXXXX(req, res, next) {
+    // submit - ajax
+    postRegisterAjax(req, res, next) {
+        if (req.xhr) {
+            let responseData = {
+                url: '',
+                validate: [],
+                msg: '',
+                code: '',
+                status: false
+            };
 
-        var email = req.body.email;
-        var password = req.body.password;
-        var firstName = req.body.first_name;
-        var lastName = req.body.last_name;
-        var userId;
+            req.checkBody('name', 'Name is required').notEmpty();
+            req.checkBody('email', 'Email is required').notEmpty();
+            req.checkBody('email', 'Email not is email ').isEmail();
+            req.checkBody('phone', 'Phone is required').notEmpty();
+            req.checkBody('phone', 'Phone is Nunmber ').isNumeric();
+            req.checkBody('password', 'Password is required').notEmpty();
+            req.checkBody('password', 'The password length must be between 6 and 20.').isLength({min: 6, max: 20});
+            req.checkBody('repassword', 'Re-Password is required').notEmpty();
+            req.checkBody('repassword', 'Password does not match the confirm password ').equals(req.body.password);
 
-        var params = {
-            email: email,
-            password: password,
-            first_name: firstName,
-            last_name: lastName,
-        };
-        var newUser = new User(params);
+            let errors = req.validationErrors();
+            if (errors) {
+                responseData.validate = errors;
+                responseData.code = 'ERR0001';
+                res.status(200).send(responseData);
+            } else {
+                var newUser = new User({});
+                var dataRequest = {
+                    phone: req.body.phone,
+                    email: req.body.email,
+                    password: req.body.password,
+                    first_name: req.body.name,
+                    // last_name: 'xxxx',
+                    repassword: req.body.repassword
+                };
 
-        try {
-            //connect
-            newUser.register();
-            // do other things...
-        } catch (ex) {
-            throw ex;
+                newUser.checkUser(dataRequest, function (resultData) {
+                    if (resultData.code) {
+                        responseData.code = resultData.code;
+                        responseData.msg = 'Error: Sql execute select error';
+                    } else {
+                        var resultSql = resultData.result;
+
+                        if (resultSql > 0) {
+                            responseData.code = 'ERR0002';
+                            responseData.msg = 'Tai khoan da ton tai';
+                        } else {
+                            newUser.insertUser(dataRequest, function (rsData) {
+                                if (rsData.code) {
+                                    responseData.code = 'ERR0003';
+                                    responseData.msg = 'Error: Sql execute insert error';
+                                } else {
+                                    responseData.status = true;
+                                    responseData.url = 'login'
+                                }
+                                res.status(200).send(responseData);
+                            });
+                        }
+                    }
+                    res.status(200).send(responseData);
+                });
+            }
+        } else {
+            res.status(500).send('Not')
         }
     }
 

@@ -18,12 +18,12 @@
         } else if (response.status === 'not_authorized') {
             // The person is logged into Facebook, but not your app.
             document.getElementById('status').innerHTML = 'Please log ' +
-                'into this app.';
+                    'into this app.';
         } else {
             // The person is not logged into Facebook, so we're not sure if
             // they are logged into this app or not.
             document.getElementById('status').innerHTML = 'Please log ' +
-                'into Facebook.';
+                    'into Facebook.';
         }
     }
 
@@ -62,7 +62,7 @@
         FB.api('/me', function (response) {
             console.log('Successful login for: ' + response.name);
             document.getElementById('status').innerHTML =
-                'Thanks for logging in, ' + response.name + '!' + response.id;
+                    'Thanks for logging in, ' + response.name + '!' + response.id;
         });
     }
     function redirectLoginSucess() {
@@ -559,28 +559,31 @@ body.fb_hidden {
 <div class="background-blue" cz-shortcut-listen="true">
     <center>
         <div class="login-box">
-            <form id="j_idt9" name="j_idt9" method="post" action="/register"
+            <form id="register-form" name="j_idt9" method="post" action="/register"
                   enctype="application/x-www-form-urlencoded">
-                <input type="hidden" name="j_idt9" value="j_idt9">
                 <input type="hidden" name="_method" value="post">
                 <p class="title">ĐĂNG KÝ TÀI KHOẢN</p>
 
                 <p class="input-code">
                     <input type="text" name="name" value="" class="width-box80 box" placeholder="Họ và tên"/>
+                    <label class="name-msg"></label>
                 </p>
-                    <% if (errors.findIndex(x => x.param=="name") !== -1) { %>
+
+                <% if (errors.findIndex(x => x.param=="name") !== -1) { %>
                 <div class="alert alert-danger msg-noti"><%- errors[errors.findIndex(x => x.param=="name")].msg %></div>
                 <% } %>
                 <p class="input-code">
                     <input type="text" name="email" value="" class="width-box80 box" placeholder="Email"/>
+                    <label class="email-msg"></label>
                 </p>
-                    <% if (errors.findIndex(x => x.param=="email") !== -1) { %>
+                <% if (errors.findIndex(x => x.param=="email") !== -1) { %>
                 <div class="alert alert-danger msg-noti"><%- errors[errors.findIndex(x => x.param=="email")].msg %>
                 </div>
                 <% } %>
                 <p class="input-code">
                     <input type="text" name="phone" value="" class="width-box80 box"
                            placeholder="Mobile">
+                    <label class="phone-msg"></label>
                 </p>
                 <% if (errors.findIndex(x => x.param=="phone") !== -1) { %>
                 <div class="alert alert-danger msg-noti"><%- errors[errors.findIndex(x => x.param=="phone")].msg %>
@@ -589,6 +592,7 @@ body.fb_hidden {
                 <p class="input-code">
                     <input type="password" name="password" value="" class="width-box80 box"
                            placeholder="Mật khẩu">
+                    <label class="password-msg"></label>
                 </p>
                 <% if (errors.findIndex(x => x.param=="password") !== -1) { %>
                 <div class="alert alert-danger msg-noti"><%- errors[errors.findIndex(x => x.param=="password")].msg %>
@@ -598,24 +602,25 @@ body.fb_hidden {
                     <input type="password" name="repassword" value=""
                            style="vertical-align:middle"
                            class="width-box80 box" placeholder="Nhập lại mật khẩu">
+                    <label class="repassword-msg"></label>
                 </p>
                 <% if (errors.findIndex(x => x.param=="repassword") !== -1) { %>
                 <div class="alert alert-danger msg-noti"><%- errors[errors.findIndex(x => x.param=="repassword")].msg %>
                 </div>
                 <% } %>
+                <p class="input-code" id="msg-com-error"></p>
                 <p class="input-code">
-                    <input type="submit" name="j_idt9:j_idt32" value="ĐĂNG KÝ"
-                           style="vertical-align:middle" class="buttonDN">
+                    <!--<input type="submit" name="" value="ĐĂNG KÝ" style="vertical-align:middle" class="buttonDN">-->
+                    <input type="button" name="" id="btn-register-form" value="ĐĂNG KÝ" style="vertical-align:middle"
+                           class="buttonDN">
                 </p>
+
                 <p class="input-code">
-                    <br>
-                    Bạn đã có tài khoản?
-                    <a href="/login">
-                        Đăng nhập
-                    </a>
-                </p><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:0"
-                           value="-4934038408204541946:-4370945332936836905" autocomplete="off">
+                    <br> Bạn đã có tài khoản?
+                    <a href="/login">Đăng nhập</a>
+                </p>
             </form>
+
             <p class="slogan">hoặc</p>
             <div class="login-box" style="padding: 10px 10px 20px;">
                 <form id="j_idt37" name="j_idt37" method="post" action="/signup"
@@ -655,3 +660,34 @@ body.fb_hidden {
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    $('body').on('click', '#btn-register-form', function () {
+
+        var attrFromLogin = $('#register-form');
+        var dataRequest = {
+            url: attrFromLogin.attr('action'),
+            data: attrFromLogin.serialize()
+        };
+
+        callDataJS(dataRequest, function (result) {
+            if (result) {
+                if (result.validate) {
+                    result.validate.forEach(function (val) {
+                        console.log(val);
+                        $('input[name="' + val.param + '"]').addClass('error');
+                         $('label.' + val.param + '-msg').html(cnMessagesShow([val.msg], 'e'));
+                    });
+                }
+
+                if (result.status) {
+                    window.location = result.url;
+                } else {
+                    $('#msg-com-error').text(result.msg);
+                }
+            }
+            console.log(result);
+        });
+    });
+
+</script>

@@ -56,10 +56,15 @@
     background-color: #C8C8C8 !important;
     color: black !important;
 }
+
 .ag__btn.ag__btn__delete_ajax {
     background-image: url(../img/share/btn_delete.png);
 }
 
 .ag_edit_lay_dele {
     margin-left: 15px;
+}
+
+.error {
+    border: 1px solid red !important;
 }

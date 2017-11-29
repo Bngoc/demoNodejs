@@ -15,11 +15,28 @@ function callDataJS(dataRequest, callback) {
 
             callback(dataResult);
         },
-        error: function (err) {
-            console.log(err);
-        },
-        complete: function () {
-            $('#overlay_loading_plan').hide();
+        error: function (jqXHR, status, error) {
+            console.log(jqXHR, status, error);
+            var msg = '';
+            if (jqXHR.status === 0) {
+                msg = 'Not connect.\n Verify Network.';
+            } else if (jqXHR.status == 404) {
+                msg = 'Requested page not found. [404]';
+            } else if (jqXHR.status == 401) {
+                msg = 'Login Failed. [401]';
+                window.location = '/login';
+            } else if (jqXHR.status == 500) {
+                msg = 'Internal Server Error [500].';
+            } else if (exception === 'parsererror') {
+                msg = 'Requested JSON parse failed.';
+            } else if (exception === 'timeout') {
+                msg = 'Time out error.';
+            } else if (exception === 'abort') {
+                msg = 'Ajax request aborted.';
+            } else {
+                msg = 'Uncaught Error.\n' + jqXHR.responseText;
+            }
+            // $('#post').html(msg);
         }
     });
 }
@@ -32,7 +49,7 @@ function convertHtmlToPlainText(strHtml = '') {
         .replace(/\n/g, '<br>');
 }
 
-function cnMessagesShow(arrNotify, notify) {
+function cnMessagesShow(arrNotify, notify, optionMulti = false) {
     var delay = 7500;
     var result = '';
     var date = new Date();
@@ -61,9 +78,10 @@ function cnMessagesShow(arrNotify, notify) {
     });
 
     result += '</div>';
-
-    $('[id="message"]:not(#message:first)').remove();
-    $('#message').css('display', 'block');
+    if(optionMulti) {
+        $('[id="message"]:not(#message:first)').remove();
+        $('#message').css('display', 'block');
+    }
     return result;
 }
 
@@ -73,6 +91,7 @@ function notify_auto_hide(id, type, delay) {
 
         if ($('.cn_' + type + '_item').length == 0) {
             $('#message').css('display', 'none');
+            $('.cn_' + type + '_list').hide();
         }
     }, delay);
 }

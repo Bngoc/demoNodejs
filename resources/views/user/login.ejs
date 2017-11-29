@@ -144,8 +144,8 @@
                 <%- success_msg || 1111111111 %>
                 <%- warning_msg || 1111111 %>
                 <p class="input-code">
-                    <input type="submit" id="btn-login-form" value="ĐĂNG NHẬP" style="vertical-align:middle"
-                           class="buttonDN"/>
+                    <input type="button" id="btn-login-form" value="ĐĂNG NHẬP" style="vertical-align:middle" class="buttonDN"/>
+                    <!--<input type="submit" id="btn-login-form" value="ĐĂNG NHẬP" style="vertical-align:middle" class="buttonDN"/>-->
                 </p>
                 <p class="color-gray font80 padding" style="font-family:fregular;">hoặc</p>
                 <p class="input-code">
@@ -177,9 +177,9 @@
             data: attrFromLogin.serialize()
         };
 
-//        callDataJS(dataRequest, function (result) {
-//            console.log(result);
-//        });
+        callDataJS(dataRequest, function (result) {
+            console.log(result);
+        });
     });
 
 </script>

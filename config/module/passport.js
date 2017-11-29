@@ -14,7 +14,6 @@ class Passport {
 
         // serialize sessions
         passport.serializeUser(function (user, done) {
-            console.log('--------111111111111111---------', user, '---------11111111111----------------');
             done(null, user.id)
         });
 
