@@ -86,6 +86,12 @@ class ChatController extends BaseController {
     }
 
     postChangeStatus(req, res) {
+        var responseAjax = {
+            status: false,
+            code: null,
+            msg: ''
+        };
+
         if (req.xhr) {
             let userCurrent = req.user;
             if (userCurrent) {
@@ -97,14 +103,20 @@ class ChatController extends BaseController {
 
                 newContacts.updateContact(dataRequest, function (err, rsModel) {
                     if (err) {
-                        res.status(200).send(err);
+                        responseAjax.code = err;
                     } else {
-                        res.status(200).send(rsModel);
+                        responseAjax.status = true;
                     }
+                    res.status(200).send(responseAjax);
                 });
+            }else {
+                responseAjax.code = 'ERR0001';
+                responseAjax.msg = 'Account current is empty';
+                res.status(200).send(responseAjax);
             }
         } else {
-            res.status(500).send('ERR0000');
+            responseAjax.code = 'ERR0000';
+            res.status(500).send(responseAjax);
         }
     }
 }

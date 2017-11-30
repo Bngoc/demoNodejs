@@ -20,7 +20,7 @@ let Contacts = bookshelf.Model.extend({
     outputVirtuals: true,
     hasTimestamps: true,
     virtuals: {
-        fullName: function () {
+        middle_name: function () {
             return this.get('first_name') + ' ' + this.get('last_name');
         }
     },
@@ -44,11 +44,25 @@ let Contact = function (params) {
 
 Contacts.prototype.updateContact = function (dataRequest, callback) {
     console.log(dataRequest, '_____________________________________________');
-    new Contacts(dataRequest.clause).save(dataRequest.dataUpdate).then(function(model) {
-        callback(null, model);
-    }).catch(function (err) {
-        callback(err);
-    });
+    Contacts
+        .forge(dataRequest.clause)
+        .fetch({require: true})
+        .then(function (modelContact) {
+            modelContact.save(
+                // dataRequest.dataUpdate // {}
+                {
+                    status: dataRequest.dataUpdate.status || modelContact.get('status')
+                }
+            )
+                .then(function (model) {
+                    callback(null, model);
+                }).catch(function (errUpdate) {
+                callback(errUpdate);
+            });
+        })
+        .catch(function (err) {
+            callback(err);
+        });
 };
 
 Contacts.prototype.inserts = function (dataRequest, callback) {
