@@ -39,18 +39,18 @@ function ViewController() {
     this.coreHelper = coreHelper;
 };
 
-ViewController.prototype.coreHelper = function () {
-    return coreHelper;
+ViewController.prototype.getHeader = function (strHeader) {
+    var fss = ('<h1 itemprop="name">' + strHeader + '</h1>');
+    return fss;
 };
+
+// ViewController.prototype.coreHelper = function () {
+//     return coreHelper;
+// };
 
 ViewController.prototype.nav = function (sampleHtmlMaster) {
     // var sampleHtmlNav = fs.readFileSync(path.resolve(__dirname + '/../../resources/views/layouts/nav.ejs'), 'utf-8');
     // return sampleHtmlMaster.replace('{DEFINE_NAV}', sampleHtmlNav);
-};
-
-ViewController.prototype.getHeader = function (strHeader) {
-    var fss = ('<h1 itemprop="name">' + strHeader + '</h1>');
-    return fss;
 };
 
 ViewController.prototype.footer = function (sampleHtmlMaster = 'sss') {

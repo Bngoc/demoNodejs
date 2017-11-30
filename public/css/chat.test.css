@@ -165,3 +165,7 @@ input {
     cursor: default;
     display: block;
 }
+
+#status-options .change-status p:first-letter {
+    text-transform:capitalize;
+}

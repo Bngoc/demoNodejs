@@ -1,22 +1,18 @@
-<%- userCurrent ? JSON.stringify(userCurrent) : 11111111111111111 %>
+<%- user ? JSON.stringify(user) : 11111111111111111 %>
 
 <div id="frame">
     <div id="sidepanel">
         <div id="profile">
             <div class="wrap">
-                <img id="profile-img" src="http://emilcarlsson.se/assets/mikeross.png" class="online" alt=""/>
-                <p class="user-name-chat">Mike Ross</p>
+                <img id="profile-img" src="http://emilcarlsson.se/assets/mikeross.png" class='<%- status %>' alt=""/>
+                <p class="user-name-chat"><%- userName %></p>
                 <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
                 <div id="status-options">
                     <ul>
-                        <li id="status-online" class="active"><span class="status-circle"></span>
-                            <p>Online</p></li>
-                        <li id="status-away"><span class="status-circle"></span>
-                            <p>Away</p></li>
-                        <li id="status-busy"><span class="status-circle"></span>
-                            <p>Busy</p></li>
-                        <li id="status-offline"><span class="status-circle"></span>
-                            <p>Offline</p></li>
+                        <% for( var key in listStatus) { %>
+                        <li id='status-<%- listStatus[key] %>' data-url='<%= urlUpdareStatus %>' data-value='<%- key %>' class='change-status <% (listStatus[key] == status) ? "active" : "" %>'><span class="status-circle"></span>
+                            <p><%- listStatus[key] %></p></li>
+                        <% } %>
                     </ul>
                 </div>
                 <div id="expanded">
@@ -154,7 +150,8 @@
                 <i class="fa fa-instagram" aria-hidden="true"></i>
             </div>
         </div>
-        <div class="messages" id="frameListMsg" box-raw-msg="<%= minHeightBoxChat %>" box-change-msg="<%= minHeightBoxChat %>">
+        <div class="messages" id="frameListMsg" box-raw-msg="<%= minHeightBoxChat %>"
+             box-change-msg="<%= minHeightBoxChat %>">
             <ul id="boxMsgChat">
                 <li class="sent">
                     <img src="http://emilcarlsson.se/assets/mikeross.png" alt=""/>
@@ -193,50 +190,51 @@
         </div>
         <div class="message-input" id="messageInput">
             <div class="wrap">
-                <div class="scrollbar" id="style-box-sms" min-height="<%= minHeightBoxChat %>" max-height="<%= maxHeightBoxChat %>" style='max-height: <%= maxHeightBoxChat %>px'>
+                <div class="scrollbar" id="style-box-sms" min-height="<%= minHeightBoxChat %>"
+                     max-height="<%= maxHeightBoxChat %>" style='max-height: <%= maxHeightBoxChat %>px'>
                     <textarea style="max-height: 100px;" id="boxChat" class="box_msg"
                               type="text" placeholder="Write your message..."></textarea>
                 </div>
                 <div class="btn-controler-act">
-                <ul class="_552n">
-                    <li class="_13gd ">
-                        <form action="https://upload.facebook.com/ajax/mercury/upload.php" class="_vzk"
-                              title="Add Files" method="post">
-                            <input type="hidden" name="attach_id" value="">
-                            <input type="hidden" name="images_only" value="false">
-                            <div class="ms_img">
-                                <input id="add_f" type="file" class="" name="attachment[]" multiple="" accept="*"
-                                       title="Add Files">
-                                <label for="add_f" class="_4q61 _6gb _6gg attachment-cst r_file90" tabindex="-1"
-                                       href="#">
-                                    <i class="hidden_elem" alt="Camera"></i></label>
-                            </div>
-                        </form>
-                    </li>
-                    <li class="_13f- ">
-                        <form action="https://upload.facebook.com/ajax/mercury/upload.php" class="_vzk"
-                              title="Add Photos" method="post">
-                            <input type="hidden" name="attach_id" value="">
-                            <input type="hidden" name="images_only" value="true">
-                            <div class="ms_img">
-                                <input id="add_i" type="file" class="" name="attachment[]" multiple=""
-                                       accept="image/*"
-                                       title="Add Photos">
-                                <label for="add_i" class="_4q61 _6gb _6ge attachment-cst r_img70" tabindex="-1"
-                                       href="#">
-                                    <i class="hidden_elem" alt="Camera"></i></label>
-                            </div>
-                        </form>
-                    </li>
-                    <li class="_13gg "><a class="_6gb _3oxr attachment-cst r_emoji50" role="button"
-                                          title="Choose an emoji" href="#"><i class="" aria-hidden="true"></i></a>
-                    </li>
-                    <li class="_13gg "><a id="sendMessageChat" class="sms-send">
-                        <div class="submit attachment-cst r_bt25"><i class="fa fa-paper-plane"
-                                                                     aria-hidden="true"></i></div>
-                    </a></li>
-                </ul>
-            </div>
+                    <ul class="_552n">
+                        <li class="_13gd ">
+                            <form action="https://upload.facebook.com/ajax/mercury/upload.php" class="_vzk"
+                                  title="Add Files" method="post">
+                                <input type="hidden" name="attach_id" value="">
+                                <input type="hidden" name="images_only" value="false">
+                                <div class="ms_img">
+                                    <input id="add_f" type="file" class="" name="attachment[]" multiple="" accept="*"
+                                           title="Add Files">
+                                    <label for="add_f" class="_4q61 _6gb _6gg attachment-cst r_file90" tabindex="-1"
+                                           href="#">
+                                        <i class="hidden_elem" alt="Camera"></i></label>
+                                </div>
+                            </form>
+                        </li>
+                        <li class="_13f- ">
+                            <form action="https://upload.facebook.com/ajax/mercury/upload.php" class="_vzk"
+                                  title="Add Photos" method="post">
+                                <input type="hidden" name="attach_id" value="">
+                                <input type="hidden" name="images_only" value="true">
+                                <div class="ms_img">
+                                    <input id="add_i" type="file" class="" name="attachment[]" multiple=""
+                                           accept="image/*"
+                                           title="Add Photos">
+                                    <label for="add_i" class="_4q61 _6gb _6ge attachment-cst r_img70" tabindex="-1"
+                                           href="#">
+                                        <i class="hidden_elem" alt="Camera"></i></label>
+                                </div>
+                            </form>
+                        </li>
+                        <li class="_13gg "><a class="_6gb _3oxr attachment-cst r_emoji50" role="button"
+                                              title="Choose an emoji" href="#"><i class="" aria-hidden="true"></i></a>
+                        </li>
+                        <li class="_13gg "><a id="sendMessageChat" class="sms-send">
+                            <div class="submit attachment-cst r_bt25"><i class="fa fa-paper-plane"
+                                                                         aria-hidden="true"></i></div>
+                        </a></li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div id="newMsgChat" style="display: none">

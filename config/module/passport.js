@@ -19,7 +19,7 @@ class Passport {
 
         // sau khi xac thuc thi kiem tra cac router gui len server
         passport.deserializeUser(function (id, done) {
-            newUser.findOne({id: id}, function (err, user) {
+            newUser.findById(id, function (err, user) {
                 done(err, user)
             })
         });
@@ -107,7 +107,6 @@ class Passport {
         }, function (username, password, callback) {
             var User = coreHelper.callModule(`${coreHelper.paths.MODELS}User.js`);
             var newUser = new User({});
-
             newUser.findUser({loginId: username}, function (resultUser) {
                 if (resultUser.code) {
                     return callback(null, false, {message: JSON.stringify(resultUser)});

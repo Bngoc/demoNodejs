@@ -15,38 +15,39 @@ const Promise = require('bluebird');
 const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const coreHelper = new CoreHelper();
 const bookshelf = require('bookshelf')(coreHelper.connectKnex());
+const Conversation = coreHelper.callModule(`${coreHelper.paths.MODELS}chat/Conversation.js`);
+const BlockList = coreHelper.callModule(`${coreHelper.paths.MODELS}chat/BlockList.js`);
+const Contacts = coreHelper.callModule(`${coreHelper.paths.MODELS}Contacts.js`);
 
 let Users = bookshelf.Model.extend({
     tableName: 'users',
     hasTimestamps: true,
-    validations: {
-        email: [
-            'isRequired',
-            {isEmail: {allow_display_name: true}}, // Options object passed to node-validator
-            {method: 'isLength', error: 'Username 4-32 characters long.', args: [4, 32]} // Custom error message
-        ],
-        username: ['required', 'alphaNumeric'],
-    },
-    validate: function (model, attrs, options) {
-        return CheckIt(this.toJSON()).run(this.validations);
-    },
+    // validations: {
+    //     email: [
+    //         'isRequired',
+    //         {isEmail: {allow_display_name: true}}, // Options object passed to node-validator
+    //         {method: 'isLength', error: 'Username 4-32 characters long.', args: [4, 32]} // Custom error message
+    //     ],
+    //     username: ['required', 'alphaNumeric'],
+    // },
+    // validate: function (model, attrs, options) {
+    //     return CheckIt(this.toJSON()).run(this.validations);
+    // },
+    hidden: ['password'],
+
     contacts: function () {
-        return this.hasOne(Contact);
-    }
+        return this.hasOne(Contacts, 'users_id');
+    },
 
-    // message: function() {
-    //     return this.hasMany(Message);
-    // }
-
+    blockList: function () {
+        return this.hasMany(BlockList, 'users_id');
+    },
+    conversation: function () {
+        return this.hasMany(Conversation, 'creator_id');
+    },
 });
 
-var Contact = bookshelf.Model.extend({
-    tableName: 'contacts',
-    users: function () {
-        return this.belongsTo(Users);
-    }
-});
-
+// --------------------------------------End relationship -------------------------
 
 var result = {
     code: null,
@@ -73,30 +74,55 @@ let User = function (params) {
     this.lastactive = params.lastactive;
 };
 
+Users.prototype.findById = function (id, callback) {
+    Users.where({id: id}).fetch().then(function (data) {
+        // Users.where({id: id}).fetch({withRelated: ['contacts']}).then(function (data) {
+        callback(null, data);
+    }).catch(function (err) {
+        callback(err);
+    });
+};
 
-User.prototype.findOne = function (dataRequest, callback) {
+Users.prototype.findByIdChat = function (id, callback) {
+    Users.where({id: id}).fetch({withRelated: ['contacts', 'blockList', 'conversation']}).then(function (data) {
+        callback(null, data);
+    }).catch(function (err) {
+        callback(err);
+    });
+};
+
+Users.prototype.findOne = function (dataRequest, callback) {
     Users.where({id: dataRequest.id}).fetch().then(function (data) {
         callback(null, data);
     }).catch(function (err) {
         callback(err);
     });
-}
+};
 
-User.prototype.findUser = function (dataRequest, callback) {
-    Users.query(function (qb) {
-        qb.where('phone', '=', dataRequest.loginId).orWhere('email', '=', dataRequest.loginId);
-    }).fetch().then(function (findUser) {
-        result.result = findUser;
-        callback(result);
-    }).catch(function (err) {
-        result.error = err;
-        result.code = err.code ? err.code : 'ERROR';
-        callback(result);
-    });
+Users.prototype.findUser = function (dataRequest, callback) {
+    let response = result;
+    Users
+        .query(function (qb) {
+            qb
+                .where('phone', '=', dataRequest.loginId)
+                .orWhere('email', '=', dataRequest.loginId);
+        })
+        .fetch()
+        .then(function (model) {
+            response.result = model;
+            callback(response);
+        })
+        .catch(function (err) {
+            if (err.length) {
+                response.error = err;
+                response.code = err.code ? err.code : 'ERROR';
+            }
+            callback(response);
+        });
 };
 
 
-User.prototype.checkUser = function (dataRequest, callback) {
+Users.prototype.checkUser = function (dataRequest, callback) {
     Users.query(function (qb) {
         qb.where('phone', '=', dataRequest.phone).orWhere('email', '=', dataRequest.email);
     }).count().then(function (findUser) {
@@ -110,7 +136,7 @@ User.prototype.checkUser = function (dataRequest, callback) {
 };
 
 
-User.prototype.insertUser = function (dataRequest, callback) {
+Users.prototype.insertUser = function (dataRequest, callback) {
     var dtUser = {
         email: dataRequest.email,
         phone: dataRequest.phone,
@@ -125,12 +151,12 @@ User.prototype.insertUser = function (dataRequest, callback) {
                     {
                         first_name: dataRequest.first_name,
                         last_name: dataRequest.last_name,
-                        middle_name: (dataRequest.first_name + ' ' + dataRequest.last_name),
+                        // middle_name: (dataRequest.first_name + ' ' + dataRequest.last_name),
                         // country: 'vn'
                     }
                 ], function (info) {
                     // Some validation could take place here.
-                    return new Contact(info).save({'users_id': useModelData.id}, {transacting: t});
+                    return new Contacts(info).save({'users_id': useModelData.id}, {transacting: t});
                 });
             });
     }).then(function (library) {
@@ -145,7 +171,7 @@ User.prototype.insertUser = function (dataRequest, callback) {
 };
 
 
-User.prototype.insert = function (connect, configDb, dataRequest, callback) {
+Users.prototype.insert = function (connect, configDb, dataRequest, callback) {
 
     const MyAppModel = mysqlModel.createConnection(configDb);
 
@@ -181,19 +207,19 @@ User.prototype.insert = function (connect, configDb, dataRequest, callback) {
     });
 };
 
-User.prototype.show = function (connect, dataRequest, callback) {
+Users.prototype.show = function (connect, dataRequest, callback) {
 
 };
 
-User.prototype.update = function (connect, dataRequest, callback) {
+Users.prototype.update = function (connect, dataRequest, callback) {
 
 };
 
-User.prototype.delete = function (connect, dataRequest, callback) {
+Users.prototype.delete = function (connect, dataRequest, callback) {
 
 };
 
-User.prototype.checkExistUserName = function (connect, dataRequest, callback) {
+Users.prototype.checkExistUserName = function (connect, dataRequest, callback) {
     var myQuery = `SELECT * from users where phone = '${dataRequest.phone}' or email = '${dataRequest.email}'`;
 
     connect.query(myQuery, function (err, rows, filed) {
@@ -209,7 +235,7 @@ User.prototype.checkExistUserName = function (connect, dataRequest, callback) {
     });
 };
 
-User.prototype.comparePassword = function (passw, cb) {
+Users.prototype.comparePassword = function (passw, cb) {
     bcrypt.compare(passw, this.password, function (err, isMatch) {
         if (err) {
             return cb(err);
@@ -218,7 +244,7 @@ User.prototype.comparePassword = function (passw, cb) {
     });
 };
 
-User.prototype.registerInsert = function (connect, dataRequest, callback) {
+Users.prototype.registerInsert = function (connect, dataRequest, callback) {
 
     var myQuery = '';
 
@@ -234,7 +260,7 @@ User.prototype.registerInsert = function (connect, dataRequest, callback) {
     });
 };
 
-User.prototype.register = function (req, res, callback) {
+Users.prototype.register = function (req, res, callback) {
     const connection = req.showResponse.coreHelper.getConnect();
 
     let resultData = [];
@@ -281,9 +307,7 @@ User.prototype.register = function (req, res, callback) {
 };
 
 
-module.exports = User;
-
-
+/*
 function insertUser(user, cb) {
     return bookshelf.transaction(function (t) {
         var key = user.key;
@@ -324,3 +348,7 @@ function insertUser(user, cb) {
         return Promise.reject(new DatabaseError('Unable to write user to database due to error ', err.message));
     });
 };
+*/
+
+module.exports = Users;
+// module.exports = User;

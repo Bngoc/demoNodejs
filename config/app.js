@@ -1,9 +1,9 @@
 const app = {
     chatStatus: {
-        0: 'Offline',
-        1: 'Online',
-        2: 'Away',
-        3: 'Busy'
+        0: 'online',
+        1: 'offline',
+        2: 'away',
+        3: 'busy'
     },
     messageType: {
         1: 'text',

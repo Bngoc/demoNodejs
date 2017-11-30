@@ -80,8 +80,9 @@ function cnMessagesShow(arrNotify, notify, optionMulti = false) {
     result += '</div>';
     if(optionMulti) {
         $('[id="message"]:not(#message:first)').remove();
-        $('#message').css('display', 'block');
     }
+
+    $('#message').css('display', 'block');
     return result;
 }
 

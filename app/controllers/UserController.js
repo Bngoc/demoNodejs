@@ -136,7 +136,10 @@ class UserController {
 
             if (req.body.loginId && req.body.pwd) {
                 helper.coreHelper.passport('local').authenticate('local', function (err, user, info) {
+                    if(err) return next(err);
+
                     let infoPassport = info;
+                    console.log(infoPassport , ' _________________________');
                     //{"code":null,"error":"","msg":"","result":null}'
                     if (infoPassport.message) {
                         let dataPassport = JSON.parse(infoPassport.message);
@@ -171,6 +174,7 @@ class UserController {
                 })(req, res, next);
             } else {
                 responseDataMap.code = 'ERR0001';
+                responseDataMap.msg = 'Account is empty';
                 var validateMsg = [];
                 if (req.body.loginId == '' && req.body.pwd) {
                     validateMsg.push({param: 'loginId', msg: 'Account is required'})
@@ -261,7 +265,7 @@ class UserController {
                     repassword: req.body.repassword
                 };
 
-                var newUser = new User({});
+                var newUser = new User();
 
                 req.showResponse = showResponse;
 
@@ -381,68 +385,59 @@ class UserController {
                 code: '',
                 status: false
             };
+            req.checkBody('name', 'Name is required').notEmpty();
+            req.checkBody('email', 'Email is required').notEmpty();
+            req.checkBody('email', 'Email not is email ').isEmail();
+            req.checkBody('phone', 'Phone is required').notEmpty();
+            req.checkBody('phone', 'Phone is Nunmber ').isNumeric();
+            req.checkBody('password', 'Password is required').notEmpty();
+            req.checkBody('password', 'The password length must be between 6 and 20.').isLength({min: 6, max: 20});
+            req.checkBody('repassword', 'Re-Password is required').notEmpty();
+            req.checkBody('repassword', 'Password does not match the confirm password ').equals(req.body.password);
 
-            if (typeof userCurrent !== 'undefined') {
-                console.log(111111111111111111111111111111111111);
-                responseData.status = true;
-                responseData.url = '/';
+            let errors = req.validationErrors();
+            if (errors) {
+                responseData.validate = errors;
+                responseData.code = 'ERR0001';
                 res.status(200).send(responseData);
             } else {
+                var newUser = new User();
+                var dataRequest = {
+                    phone: req.body.phone,
+                    email: req.body.email,
+                    password: req.body.password,
+                    first_name: req.body.name,
+                    last_name: 'xxx-xx',
+                    repassword: req.body.repassword
+                };
 
-                req.checkBody('name', 'Name is required').notEmpty();
-                req.checkBody('email', 'Email is required').notEmpty();
-                req.checkBody('email', 'Email not is email ').isEmail();
-                req.checkBody('phone', 'Phone is required').notEmpty();
-                req.checkBody('phone', 'Phone is Nunmber ').isNumeric();
-                req.checkBody('password', 'Password is required').notEmpty();
-                req.checkBody('password', 'The password length must be between 6 and 20.').isLength({min: 6, max: 20});
-                req.checkBody('repassword', 'Re-Password is required').notEmpty();
-                req.checkBody('repassword', 'Password does not match the confirm password ').equals(req.body.password);
+                newUser.checkUser(dataRequest, function (resultData) {
+                    if (resultData.code) {
+                        responseData.code = resultData.code;
+                        responseData.msg = 'Error: Sql execute select error';
+                        res.status(200).send(responseData);
+                    } else {
+                        var resultSql = resultData.result;
 
-                let errors = req.validationErrors();
-                if (errors) {
-                    responseData.validate = errors;
-                    responseData.code = 'ERR0001';
-                    res.status(200).send(responseData);
-                } else {
-                    var newUser = new User({});
-                    var dataRequest = {
-                        phone: req.body.phone,
-                        email: req.body.email,
-                        password: req.body.password,
-                        first_name: req.body.name,
-                        // last_name: 'xxxx',
-                        repassword: req.body.repassword
-                    };
-
-                    newUser.checkUser(dataRequest, function (resultData) {
-                        if (resultData.code) {
-                            responseData.code = resultData.code;
-                            responseData.msg = 'Error: Sql execute select error';
+                        if (resultSql > 0) {
+                            responseData.code = 'ERR0002';
+                            responseData.msg = 'Tai khoan da ton tai';
                             res.status(200).send(responseData);
                         } else {
-                            var resultSql = resultData.result;
-
-                            if (resultSql > 0) {
-                                responseData.code = 'ERR0002';
-                                responseData.msg = 'Tai khoan da ton tai';
+                            newUser.insertUser(dataRequest, function (rsData) {
+                                if (rsData.code) {
+                                    responseData.code = 'ERR0003';
+                                    responseData.msg = 'Error: Sql execute insert error';
+                                } else {
+                                    responseData.status = true;
+                                    responseData.url = 'login'
+                                }
                                 res.status(200).send(responseData);
-                            } else {
-                                newUser.insertUser(dataRequest, function (rsData) {
-                                    if (rsData.code) {
-                                        responseData.code = 'ERR0003';
-                                        responseData.msg = 'Error: Sql execute insert error';
-                                    } else {
-                                        responseData.status = true;
-                                        responseData.url = 'login'
-                                    }
-                                    res.status(200).send(responseData);
-                                });
-                            }
+                            });
                         }
-                        // res.status(200).send(responseData);
-                    });
-                }
+                    }
+                    // res.status(200).send(responseData);
+                });
             }
         } else {
             res.status(500).send('Not')
@@ -450,7 +445,8 @@ class UserController {
     }
 
     getLogout(req, res, next) {
-        req.logout();
+        req.session.destroy();
+        req.logOut();
         res.redirect('/login');
     }
 }

@@ -96,7 +96,7 @@ class Express {
             res.locals.error_msg = req.flash('error_msg');
             res.locals.warning_msg = req.flash('warning_msg');
             res.locals.notify_msg = req.flash('notify_msg');
-            res.locals.userCurrent = req.user || null;
+            res.locals.user = req.user || null;
             next();
         });
 

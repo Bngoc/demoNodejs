@@ -20,7 +20,7 @@ class Routers {
         // ---------------------- List router ----------------------------
         app.get('/', 'user', homeController.getIndex);
 
-        app.get("/login", userController.getLogin);
+        app.get("/login", useMiddleware.authenticatedRegister, userController.getLogin);
         // --------------------C0 ------------------
         // app.post("/login", userController.postLogin);
         // --------------------C1 ------------------
@@ -28,11 +28,11 @@ class Routers {
         // --------------------C2 ------------------
         // app.post("/login", userController.postLoginClone);
         // ------------------- c3 -------------------
-        app.post("/login", userController.postLoginAjax);
+        app.post("/login", useMiddleware.authenticatedRegister, userController.postLoginAjax);
 
-        app.get("/forgot", userController.getForgot);
+        app.get("/forgot", useMiddleware.authenticatedRegister, userController.getForgot);
         app.post("/forgot", userController.postForgot);
-        app.get("/register", userController.getRegister);
+        app.get("/register", useMiddleware.authenticatedRegister, userController.getRegister);
         // ------------------- c1 -------------------
         // app.post("/register", userController.postRegister);
         // ------------------- c2 -------------------
@@ -44,8 +44,10 @@ class Routers {
 
 
         app.get("/product", productController.getIndex);
+        // app.get("/chat", 'chat', chatController.getIndex);
         app.get("/chat", 'chat', useMiddleware.isAuthenticated, chatController.getIndex);
-        app.post("/chat/content-chat", chatController.getContentChat);
+        app.post("/chat/content-chat", chatController.postContentChat);
+        app.post("/chat/change-status", 'chat.change.status', chatController.postChangeStatus);
 
 
         // --------------------Test ------------------------------------------------
