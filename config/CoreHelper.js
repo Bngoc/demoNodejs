@@ -168,6 +168,13 @@ class ConnectDB extends CoreHelper {
         return knex;
     };
 
+    bookshelf () {
+        const bookshelf = require('bookshelf')(this.connectKnex());
+        bookshelf.plugin('registry');
+
+        return bookshelf;
+    }
+
     checkConnect(cb) {
         const connect = this.connectKnex();
         const strDB = this.sampleConfig.DB_CONNECTION ? this.sampleConfig.DB_CONNECTION : '';

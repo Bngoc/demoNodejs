@@ -14,9 +14,13 @@ const Promise = require('bluebird');
 
 const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const coreHelper = new CoreHelper();
-const bookshelf = require('bookshelf')(coreHelper.connectKnex());
+
+const knex = coreHelper.connectKnex();
+const bookshelf =  coreHelper.bookshelf();
+
 const Conversation = coreHelper.callModule(`${coreHelper.paths.MODELS}chat/Conversation.js`);
 const BlockList = coreHelper.callModule(`${coreHelper.paths.MODELS}chat/BlockList.js`);
+const Participants = coreHelper.callModule(`${coreHelper.paths.MODELS}chat/Participants.js`);
 const Contacts = coreHelper.callModule(`${coreHelper.paths.MODELS}Contacts.js`);
 
 let Users = bookshelf.Model.extend({
@@ -35,15 +39,18 @@ let Users = bookshelf.Model.extend({
     // },
     hidden: ['password'],
 
-    contacts: function () {
+    useContacts: function () {
         return this.hasOne(Contacts, 'users_id');
     },
 
-    blockList: function () {
+    useBlockList: function () {
         return this.hasMany(BlockList, 'users_id');
     },
-    conversation: function () {
+    useConversation: function () {
         return this.hasMany(Conversation, 'creator_id');
+    },
+    useParticipants: function () {
+        return this.hasMany(Participants, 'users_id');
     },
 });
 
@@ -84,12 +91,53 @@ Users.prototype.findById = function (id, callback) {
 };
 
 Users.prototype.findByIdChat = function (id, callback) {
-    Users.where({id: id}).fetch({withRelated: ['contacts', 'blockList', 'conversation']}).then(function (data) {
+    Users.where({id: id}).fetch({withRelated: ['useContacts', 'useBlockList']}).then(function (data) {
+        let responseData = [];
+        responseData.push({infoAccount: data});
+
+        let getBlockList = data.relations.useBlockList
+            .filter(function (isDelete) {
+                if (isDelete.get('deleted_at') != 0) {
+                    return isDelete.get('participants_id');
+                }
+            })
+            .map(function (listItem) {
+                return listItem.get('participants_id');
+            });
+
+        Participants
+            .where('id','not in', getBlockList)
+            .where({
+                "users_id": data.get('id')
+            })
+            // .fetchAll()
+            .fetchAll({withRelated: ['parConversation']})
+            // .fetchAll({withRelated: ['conversations'], columns: ['id', 'title', 'creator_id', 'channel_id']})
+            .then(function (modelParticipants) {
+
+                console.log('___________________', JSON.stringify(modelParticipants), '_______________________________');
+                // responseData.push({participant: modelParticipants});
+            })
+            .catch(function (errPartici) {
+                callback(errPartici);
+            });
+
+        console.log('___________________', getBlockList, '_______________________________');
+        // console.log('___________________', JSON.stringify(responseData), '_______________________________');
+
         callback(null, data);
     }).catch(function (err) {
         callback(err);
     });
 };
+
+// Users.prototype.findByIdChat = function (id, callback) {
+//     Users.where({id: id}).fetch({withRelated: ['useContacts', 'useBlockList', 'useParticipants']}).then(function (data) {
+//         callback(null, data);
+//     }).catch(function (err) {
+//         callback(err);
+//     });
+// };
 
 Users.prototype.findOne = function (dataRequest, callback) {
     Users.where({id: dataRequest.id}).fetch().then(function (data) {
@@ -308,47 +356,47 @@ Users.prototype.register = function (req, res, callback) {
 
 
 /*
-function insertUser(user, cb) {
-    return bookshelf.transaction(function (t) {
-        var key = user.key;
+ function insertUser(user, cb) {
+ return bookshelf.transaction(function (t) {
+ var key = user.key;
 
-        var devID = Developer.forge({key: key})
-            .fetch({require: true, transacting: t})
-            .call("get", "id");
+ var devID = Developer.forge({key: key})
+ .fetch({require: true, transacting: t})
+ .call("get", "id");
 
-        var addressID = devID.then(function () {
-            return Address.forge(user.address).fetch({require: true, transacting: t})
-        }).call("get", "addressId");
+ var addressID = devID.then(function () {
+ return Address.forge(user.address).fetch({require: true, transacting: t})
+ }).call("get", "addressId");
 
-        var financialID = addressModel.then(function () {
-            return Financial.forge(user.financial).save(null, {transacting: t})
-        }).call("get", "financialId");
+ var financialID = addressModel.then(function () {
+ return Financial.forge(user.financial).save(null, {transacting: t})
+ }).call("get", "financialId");
 
-        var userModel = financialID.then(function () {
-            var userEntity = user.personal;
-            userEntity.addressId = addressID.value();
-            userEntity.developerId = devID.value();
-            userEntity.financialId = financialID.value();
-            return User.forge(userEntity).save(null, {transacting: t});
-        });
+ var userModel = financialID.then(function () {
+ var userEntity = user.personal;
+ userEntity.addressId = addressID.value();
+ userEntity.developerId = devID.value();
+ userEntity.financialId = financialID.value();
+ return User.forge(userEntity).save(null, {transacting: t});
+ });
 
-        return userModel.then(function (userModel) {
-            logger.info('saved user: ', userModel);
-            logger.info('commiting transaction');
-            t.commit(userModel);
-        }).catch(function (e) {
-            t.rollback(e);
-            throw e;
-        });
-    }).then(function (model) {
-        logger.info(model, ' successfully saved');
-        return Promise.resolve(respond.success({userId: model.get('userId')}));
-    }).catch(function (err) {
-        logger.error(err, ' occurred');
-        return Promise.reject(new DatabaseError('Unable to write user to database due to error ', err.message));
-    });
-};
-*/
+ return userModel.then(function (userModel) {
+ logger.info('saved user: ', userModel);
+ logger.info('commiting transaction');
+ t.commit(userModel);
+ }).catch(function (e) {
+ t.rollback(e);
+ throw e;
+ });
+ }).then(function (model) {
+ logger.info(model, ' successfully saved');
+ return Promise.resolve(respond.success({userId: model.get('userId')}));
+ }).catch(function (err) {
+ logger.error(err, ' occurred');
+ return Promise.reject(new DatabaseError('Unable to write user to database due to error ', err.message));
+ });
+ };
+ */
 
 module.exports = Users;
 // module.exports = User;

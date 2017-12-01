@@ -24,7 +24,7 @@ let Contacts = bookshelf.Model.extend({
             return this.get('first_name') + ' ' + this.get('last_name');
         }
     },
-    users: function () {
+    conUser: function () {
         return this.belongsTo(User, 'id');
     }
 });
@@ -43,20 +43,20 @@ let Contact = function (params) {
 };
 
 Contacts.prototype.updateContact = function (dataRequest, callback) {
-    console.log(dataRequest, '_____________________________________________');
     Contacts
         .forge(dataRequest.clause)
         .fetch({require: true})
         .then(function (modelContact) {
-            modelContact.save(
+            modelContact
+                .save(
                 // dataRequest.dataUpdate // {}
                 {
                     status: dataRequest.dataUpdate.status || modelContact.get('status')
-                }
-            )
+                })
                 .then(function (model) {
                     callback(null, model);
-                }).catch(function (errUpdate) {
+                })
+                .catch(function (errUpdate) {
                 callback(errUpdate);
             });
         })

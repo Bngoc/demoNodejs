@@ -39,7 +39,10 @@ class ChatController extends BaseController {
                     return next(err);
                 }
 
-                let notiContacts = rsData.relations.contacts;
+                let notiContacts = rsData.relations.useContacts;
+
+                showResponse.testData = rsData;
+
 
                 showResponse.userName = notiContacts ? notiContacts.attributes.middle_name : '';
                 showResponse.status = notiContacts ? helper.coreHelper.app.chatStatus[notiContacts.attributes.status] : '';

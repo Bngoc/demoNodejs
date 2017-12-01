@@ -196,7 +196,7 @@ CREATE TABLE IF NOT EXISTS `block_list` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `users_id` INT NOT NULL,
   `participants_id` INT NOT NULL,
-  `deleted_at` DATETIME NULL,
+  `deleted_at` tinyint NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
