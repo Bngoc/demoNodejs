@@ -33,13 +33,13 @@ class ChatController extends BaseController {
         let userCurrent = req.user;
 
         if (userCurrent) {
-            var newUser = new User();
+            var newUser = new User.class({});
             newUser.findByIdChat(userCurrent.attributes.id, function (err, rsData) {
                 if (err) {
                     return next(err);
                 }
 
-                let notiContacts = rsData.relations.useContacts;
+                let notiContacts = rsData.infoAccount.relations.useContacts;
 
                 showResponse.testData = rsData;
 
@@ -48,6 +48,13 @@ class ChatController extends BaseController {
                 showResponse.status = notiContacts ? helper.coreHelper.app.chatStatus[notiContacts.attributes.status] : '';
                 showResponse.listStatus = helper.coreHelper.app.chatStatus;
                 showResponse.urlUpdareStatus = aliasRouter.build('chat.change.status');
+
+
+
+                // res.locals.listParticipants = infoParticipant ? infoParticipant : null;
+                // req.session.listParticipants = infoParticipant ? infoParticipant : null;
+
+                showResponse.listParticipant = rsData.infoParticipant ? rsData.infoParticipant : null;
 
 
                 console.log('---------------------------------', helper.coreHelper.app.chatStatus[notiContacts.attributes.status]);
@@ -72,7 +79,7 @@ class ChatController extends BaseController {
         showResponseChat.userName = req.body.userName;
         showResponseChat.renderViews = 'chat/content.chat.ejs';
 
-        // zender view before send data
+         // zender view before send data
         //{layout: 'ajax'}
         res.render(showResponseChat.renderViews, {data: showResponseChat, layout: false}, function (err, renderHtml) {
             if (err) {
@@ -94,11 +101,10 @@ class ChatController extends BaseController {
             code: null,
             msg: ''
         };
-
         if (req.xhr) {
             let userCurrent = req.user;
             if (userCurrent) {
-                var newContacts = new Contacts();
+                var newContacts = new Contacts.class();
                 var dataRequest = {
                     clause: {users_id: userCurrent.attributes.id},
                     dataUpdate: {status: parseInt(req.body.status)},

@@ -160,8 +160,6 @@ SendChatMessage.prototype.reloadContentBoxChatAjax = function () {
                 userName: userName
             }
         };
-        console.log(dataRequest);
-
         callDataJS(dataRequest, function (dataResult) {
             if (dataResult.html) {
                 $('#content-chat').html(dataResult.html);

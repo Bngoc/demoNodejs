@@ -10,7 +10,9 @@
                 <div id="status-options" data-url='<%= urlUpdareStatus %>'>
                     <ul>
                         <% for( var key in listStatus) { %>
-                        <li id='status-<%- listStatus[key] %>' status='<%- listStatus[key] %>' data-value='<%- key %>' class='change-status <% (listStatus[key] == status) ? "active" : "" %>'><span class="status-circle"></span>
+                        <li id='status-<%- listStatus[key] %>' status='<%- listStatus[key] %>' data-value='<%- key %>'
+                            class='change-status <% (listStatus[key] == status) ? "active" : "" %>'><span
+                                class="status-circle"></span>
                             <p><%- listStatus[key] %></p></li>
                         <% } %>
                     </ul>
@@ -31,6 +33,43 @@
         </div>
         <div id="contacts">
             <ul>
+                <% if(listParticipant){
+                listParticipant.forEach((element, indx)=> {
+
+                if (element.count == 1) {
+                let infoContact = element.infoAccountParticipant.relations.useContacts;
+
+                %>
+                <li class="contact">
+                    <div class="wrap" data-changel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
+                        <span class='contact-status <%- listStatus[infoContact.attributes.status] ? listStatus[infoContact.attributes.status] : "" %>'></span>
+                        <img src="http://emilcarlsson.se/assets/louislitt.png" alt=""/>
+                        <div class="meta">
+                            <p class="name"><%- infoContact.attributes.middle_name ? infoContact.attributes.middle_name : '&nbsp;' %></p>
+                            <p class="preview mood_message"><%- infoContact.attributes.mood_message ? infoContact.attributes.mood_message : '&nbsp;' %></p>
+                            <!--<p class="preview"> <%- element.count %> Remove last</p>-->
+                        </div>
+                    </div>
+                </li>
+                <% } else { %>
+
+                    <% JSON.stringify(element) %>
+                <li class="contact">
+                    <div class="wrap" data-changel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
+                        <span class="contact-status online"></span>
+                        <img src="http://emilcarlsson.se/assets/louislitt.png" alt=""/>
+                        <div class="meta">
+                            <p class="name"><%- element.title %></p>
+                            <!--<p class="preview mood_message">mood_message</p>-->
+                            <p class="preview"> <%- element.count %> participants</p>
+                        </div>
+                    </div>
+                </li>
+                <% }
+                });
+                }%>
+
+
                 <li class="contact">
                     <div class="wrap">
                         <span class="contact-status online"></span>

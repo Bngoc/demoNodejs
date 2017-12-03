@@ -169,8 +169,7 @@ class ConnectDB extends CoreHelper {
     };
 
     bookshelf () {
-        const bookshelf = require('bookshelf')(this.connectKnex());
-        bookshelf.plugin('registry');
+        var bookshelf = require('bookshelf')(this.connectKnex());
 
         return bookshelf;
     }

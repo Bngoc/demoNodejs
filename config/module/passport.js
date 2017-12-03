@@ -10,7 +10,7 @@ const flash = require('connect-flash');
 class Passport {
     configPassport(coreHelper) {
         var User = coreHelper.callModule(`${coreHelper.paths.MODELS}User.js`);
-        var newUser = new User({});
+        var newUser = new User.class({});
 
         // serialize sessions
         passport.serializeUser(function (user, done) {
@@ -106,7 +106,7 @@ class Passport {
             passwordField: 'pwd',
         }, function (username, password, callback) {
             var User = coreHelper.callModule(`${coreHelper.paths.MODELS}User.js`);
-            var newUser = new User({});
+            var newUser = new User.class({});
             newUser.findUser({loginId: username}, function (resultUser) {
                 if (resultUser.code) {
                     return callback(null, false, {message: JSON.stringify(resultUser)});

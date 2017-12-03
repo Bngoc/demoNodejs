@@ -15,8 +15,10 @@ function callDataJS(dataRequest, callback) {
 
             callback(dataResult);
         },
-        error: function (jqXHR, status, error) {
-            console.log(jqXHR, status, error);
+        error: function (jqXHR, exception, error) {
+            console.log('ERR Ajax 1: =>', jqXHR);
+            console.log('ERR Ajax 2: =>', exception);
+            console.log('ERR Ajax 3: =>', error);
             var msg = '';
             if (jqXHR.status === 0) {
                 msg = 'Not connect.\n Verify Network.';
@@ -64,7 +66,7 @@ function cnMessagesShow(arrNotify, notify, optionMulti = false) {
         type = 'warnings';
     } else if (notify == 's') {
         type = 'sussce';
-    }else if (notify == 'i') {
+    } else if (notify == 'i') {
         // type = 'notification';
     }
 
@@ -78,7 +80,7 @@ function cnMessagesShow(arrNotify, notify, optionMulti = false) {
     });
 
     result += '</div>';
-    if(optionMulti) {
+    if (optionMulti) {
         $('[id="message"]:not(#message:first)').remove();
     }
 

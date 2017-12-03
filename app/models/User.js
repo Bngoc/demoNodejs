@@ -11,17 +11,21 @@
 const bcrypt = require('bcrypt');
 const path = require('path');
 const Promise = require('bluebird');
+var _ = require('underscore');
 
 const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const coreHelper = new CoreHelper();
 
 const knex = coreHelper.connectKnex();
-const bookshelf =  coreHelper.bookshelf();
+const bookshelf = coreHelper.bookshelf();
 
-const Conversation = coreHelper.callModule(`${coreHelper.paths.MODELS}chat/Conversation.js`);
+
+const Conversations = coreHelper.callModule(`${coreHelper.paths.MODELS}chat/Conversation.js`);
 const BlockList = coreHelper.callModule(`${coreHelper.paths.MODELS}chat/BlockList.js`);
 const Participants = coreHelper.callModule(`${coreHelper.paths.MODELS}chat/Participants.js`);
 const Contacts = coreHelper.callModule(`${coreHelper.paths.MODELS}Contacts.js`);
+
+// Note - use require model other, because relationship not working
 
 let Users = bookshelf.Model.extend({
     tableName: 'users',
@@ -40,17 +44,21 @@ let Users = bookshelf.Model.extend({
     hidden: ['password'],
 
     useContacts: function () {
-        return this.hasOne(Contacts, 'users_id');
+        // return this.hasOne(new Contacts.model, 'users_id');
+        return this.hasOne(coreHelper.callModule(`${coreHelper.paths.MODELS}Contacts.js`).model, 'users_id');
     },
 
     useBlockList: function () {
-        return this.hasMany(BlockList, 'users_id');
+        // return this.hasMany(BlockList(model), 'users_id');
+        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}chat/BlockList.js`).model, 'users_id');
     },
     useConversation: function () {
-        return this.hasMany(Conversation, 'creator_id');
+        // return this.hasMany(Conversation(model), 'creator_id');
+        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}chat/Conversation.js`).model, 'creator_id');
     },
     useParticipants: function () {
-        return this.hasMany(Participants, 'users_id');
+        // return this.hasMany(Participants(model), 'users_id');
+        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}chat/Participants.js`).model, 'users_id');
     },
 });
 
@@ -81,7 +89,7 @@ let User = function (params) {
     this.lastactive = params.lastactive;
 };
 
-Users.prototype.findById = function (id, callback) {
+User.prototype.findById = function (id, callback) {
     Users.where({id: id}).fetch().then(function (data) {
         // Users.where({id: id}).fetch({withRelated: ['contacts']}).then(function (data) {
         callback(null, data);
@@ -90,10 +98,11 @@ Users.prototype.findById = function (id, callback) {
     });
 };
 
-Users.prototype.findByIdChat = function (id, callback) {
+User.prototype.findByIdChat = function (id, callback) {
+
     Users.where({id: id}).fetch({withRelated: ['useContacts', 'useBlockList']}).then(function (data) {
-        let responseData = [];
-        responseData.push({infoAccount: data});
+        let responseData = {};
+        responseData['infoAccount'] = data;
 
         let getBlockList = data.relations.useBlockList
             .filter(function (isDelete) {
@@ -105,27 +114,105 @@ Users.prototype.findByIdChat = function (id, callback) {
                 return listItem.get('participants_id');
             });
 
-        Participants
-            .where('id','not in', getBlockList)
-            .where({
-                "users_id": data.get('id')
+        Participants.model
+            .query(function (qd) {
+                qd.where('id', 'not in', getBlockList).where({"users_id": data.get('id')})
             })
-            // .fetchAll()
-            .fetchAll({withRelated: ['parConversation']})
-            // .fetchAll({withRelated: ['conversations'], columns: ['id', 'title', 'creator_id', 'channel_id']})
+            .fetchAll({columns: ['id', 'conversation_id', 'users_id']})
+            // .fetchAll({columns: ['id', 'title', 'creator_id', 'channel_id']})
             .then(function (modelParticipants) {
+                let getParticipantsList = modelParticipants.map(function (listItem) {
+                    return listItem.get('conversation_id');
+                });
 
-                console.log('___________________', JSON.stringify(modelParticipants), '_______________________________');
-                // responseData.push({participant: modelParticipants});
+                Conversations.model
+                    .query(function (dq) {
+                        dq.where('id', 'in', getParticipantsList)
+                    })
+                    // .fetchAll({withRelated: ['cccccc', {'conParticipant': function(db){ qb.where('status', 'enabled'); }}]})
+                    .fetchAll({
+                        withRelated: [{
+                            'conParticipant': function (qb) {
+                                qb.where('users_id', '!=', id)
+                            }
+                        }]
+                    })
+                    .then(function (modelConver) {
+                        // responseData['infoParticipant'] = modelConver;
+
+                        var infoParticipantClone = [];
+
+                        modelConver.forEach(function (elem) {
+
+
+                            elem.relations.conParticipant.forEach(function (elemUser, indx) {
+                                let infoParticipant = {};
+                                infoParticipant['idConversation'] = elem.get('id');
+                                infoParticipant['title'] = elem.get('title');
+                                infoParticipant['creator_id'] = elem.get('creator_id');
+                                infoParticipant['channel_id'] = elem.get('channel_id');
+                                infoParticipant['type'] = elemUser.get('type');
+
+                                // infoParticipant['infoAccountParticipant'] = {};
+
+                                infoParticipantClone.push(
+                                    new Promise(function (resolveOne, rejectOne) {
+                                        Users
+                                            .forge({id: elemUser.get('users_id')})
+                                            .fetch({withRelated: ['useContacts'], require: true})
+                                            .then(function (dtModel) {
+                                                resolveOne(dtModel);
+                                            })
+                                            .catch(function (errUser) {
+                                                rejectOne(errUser);
+                                            });
+
+                                    }).then(function (resultUser) {
+
+                                        infoParticipant['infoAccountParticipant'] = resultUser;
+                                        return infoParticipant;
+                                    })
+                                );
+                            });
+                        });
+
+                        let resultDataParticipant = [];
+
+                        Promise.all(infoParticipantClone)
+                            .then(function (resultValueAllPromise) {
+                                resultValueAllPromise.forEach((element, indx)=> {
+                                    var infoAccountParticipantTemp = [];
+                                    if (element.type === coreHelper.app.participants[0]) {
+                                        element.count = 1;
+                                        resultDataParticipant.push(element);
+                                    } else {
+                                        // Group
+                                        let indexId = resultDataParticipant.findIndex(x => x.idConversation == element.idConversation);
+                                        if (indexId !== -1) {
+                                            resultDataParticipant[indexId].count += 1;
+                                            resultDataParticipant[indexId].infoAccountParticipant.push(element.infoAccountParticipant);
+                                        } else {
+                                            let tmp = element.infoAccountParticipant;
+                                            element.count = 1;
+                                            element.infoAccountParticipant = [];
+                                            element.infoAccountParticipant.push(tmp);
+
+                                            resultDataParticipant.push(element);
+                                        }
+                                    }
+                                });
+
+                                responseData['infoParticipant'] = resultDataParticipant;
+                                callback(null, responseData);
+                            });
+                    })
+                    .catch(function (errConver) {
+                        callback(errConver);
+                    });
             })
             .catch(function (errPartici) {
                 callback(errPartici);
             });
-
-        console.log('___________________', getBlockList, '_______________________________');
-        // console.log('___________________', JSON.stringify(responseData), '_______________________________');
-
-        callback(null, data);
     }).catch(function (err) {
         callback(err);
     });
@@ -139,7 +226,7 @@ Users.prototype.findByIdChat = function (id, callback) {
 //     });
 // };
 
-Users.prototype.findOne = function (dataRequest, callback) {
+User.prototype.findOne = function (dataRequest, callback) {
     Users.where({id: dataRequest.id}).fetch().then(function (data) {
         callback(null, data);
     }).catch(function (err) {
@@ -147,7 +234,7 @@ Users.prototype.findOne = function (dataRequest, callback) {
     });
 };
 
-Users.prototype.findUser = function (dataRequest, callback) {
+User.prototype.findUser = function (dataRequest, callback) {
     let response = result;
     Users
         .query(function (qb) {
@@ -170,7 +257,7 @@ Users.prototype.findUser = function (dataRequest, callback) {
 };
 
 
-Users.prototype.checkUser = function (dataRequest, callback) {
+User.prototype.checkUser = function (dataRequest, callback) {
     Users.query(function (qb) {
         qb.where('phone', '=', dataRequest.phone).orWhere('email', '=', dataRequest.email);
     }).count().then(function (findUser) {
@@ -184,7 +271,7 @@ Users.prototype.checkUser = function (dataRequest, callback) {
 };
 
 
-Users.prototype.insertUser = function (dataRequest, callback) {
+User.prototype.insertUser = function (dataRequest, callback) {
     var dtUser = {
         email: dataRequest.email,
         phone: dataRequest.phone,
@@ -219,7 +306,7 @@ Users.prototype.insertUser = function (dataRequest, callback) {
 };
 
 
-Users.prototype.insert = function (connect, configDb, dataRequest, callback) {
+User.prototype.insert = function (connect, configDb, dataRequest, callback) {
 
     const MyAppModel = mysqlModel.createConnection(configDb);
 
@@ -255,19 +342,19 @@ Users.prototype.insert = function (connect, configDb, dataRequest, callback) {
     });
 };
 
-Users.prototype.show = function (connect, dataRequest, callback) {
+User.prototype.show = function (connect, dataRequest, callback) {
 
 };
 
-Users.prototype.update = function (connect, dataRequest, callback) {
+User.prototype.update = function (connect, dataRequest, callback) {
 
 };
 
-Users.prototype.delete = function (connect, dataRequest, callback) {
+User.prototype.delete = function (connect, dataRequest, callback) {
 
 };
 
-Users.prototype.checkExistUserName = function (connect, dataRequest, callback) {
+User.prototype.checkExistUserName = function (connect, dataRequest, callback) {
     var myQuery = `SELECT * from users where phone = '${dataRequest.phone}' or email = '${dataRequest.email}'`;
 
     connect.query(myQuery, function (err, rows, filed) {
@@ -278,12 +365,12 @@ Users.prototype.checkExistUserName = function (connect, dataRequest, callback) {
             //postgres sql result rows.row || mysql result rows
             resultSql.result = rows.rows ? (rows.rows.length > 0) : (rows.length > 0);
         }
-        console.log('99999999999999999999', resultSql)
+
         callback(resultSql)
     });
 };
 
-Users.prototype.comparePassword = function (passw, cb) {
+User.prototype.comparePassword = function (passw, cb) {
     bcrypt.compare(passw, this.password, function (err, isMatch) {
         if (err) {
             return cb(err);
@@ -292,7 +379,7 @@ Users.prototype.comparePassword = function (passw, cb) {
     });
 };
 
-Users.prototype.registerInsert = function (connect, dataRequest, callback) {
+User.prototype.registerInsert = function (connect, dataRequest, callback) {
 
     var myQuery = '';
 
@@ -308,7 +395,7 @@ Users.prototype.registerInsert = function (connect, dataRequest, callback) {
     });
 };
 
-Users.prototype.register = function (req, res, callback) {
+User.prototype.register = function (req, res, callback) {
     const connection = req.showResponse.coreHelper.getConnect();
 
     let resultData = [];
@@ -355,48 +442,5 @@ Users.prototype.register = function (req, res, callback) {
 };
 
 
-/*
- function insertUser(user, cb) {
- return bookshelf.transaction(function (t) {
- var key = user.key;
+module.exports = {model: Users, class: User};
 
- var devID = Developer.forge({key: key})
- .fetch({require: true, transacting: t})
- .call("get", "id");
-
- var addressID = devID.then(function () {
- return Address.forge(user.address).fetch({require: true, transacting: t})
- }).call("get", "addressId");
-
- var financialID = addressModel.then(function () {
- return Financial.forge(user.financial).save(null, {transacting: t})
- }).call("get", "financialId");
-
- var userModel = financialID.then(function () {
- var userEntity = user.personal;
- userEntity.addressId = addressID.value();
- userEntity.developerId = devID.value();
- userEntity.financialId = financialID.value();
- return User.forge(userEntity).save(null, {transacting: t});
- });
-
- return userModel.then(function (userModel) {
- logger.info('saved user: ', userModel);
- logger.info('commiting transaction');
- t.commit(userModel);
- }).catch(function (e) {
- t.rollback(e);
- throw e;
- });
- }).then(function (model) {
- logger.info(model, ' successfully saved');
- return Promise.resolve(respond.success({userId: model.get('userId')}));
- }).catch(function (err) {
- logger.error(err, ' occurred');
- return Promise.reject(new DatabaseError('Unable to write user to database due to error ', err.message));
- });
- };
- */
-
-module.exports = Users;
-// module.exports = User;
