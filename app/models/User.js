@@ -127,7 +127,7 @@ User.prototype.findByIdChat = function (id, callback) {
 
                 Conversations.model
                     .query(function (dq) {
-                        dq.where('id', 'in', getParticipantsList)
+                        dq.where('id', 'in', getParticipantsList).where('deleted_at', '=', '0');
                     })
                     // .fetchAll({withRelated: ['cccccc', {'conParticipant': function(db){ qb.where('status', 'enabled'); }}]})
                     .fetchAll({
@@ -138,13 +138,9 @@ User.prototype.findByIdChat = function (id, callback) {
                         }]
                     })
                     .then(function (modelConver) {
-                        // responseData['infoParticipant'] = modelConver;
-
                         var infoParticipantClone = [];
 
                         modelConver.forEach(function (elem) {
-
-
                             elem.relations.conParticipant.forEach(function (elemUser, indx) {
                                 let infoParticipant = {};
                                 infoParticipant['idConversation'] = elem.get('id');
@@ -157,10 +153,12 @@ User.prototype.findByIdChat = function (id, callback) {
 
                                 infoParticipantClone.push(
                                     new Promise(function (resolveOne, rejectOne) {
+
                                         Users
                                             .forge({id: elemUser.get('users_id')})
                                             .fetch({withRelated: ['useContacts'], require: true})
                                             .then(function (dtModel) {
+                                                console.log(JSON.stringify(dtModel) , '\n')
                                                 resolveOne(dtModel);
                                             })
                                             .catch(function (errUser) {
