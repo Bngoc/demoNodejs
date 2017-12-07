@@ -85,6 +85,8 @@ CREATE TABLE IF NOT EXISTS `conversation` (
   `title` VARCHAR(40) NULL,
   `creator_id` INT NOT NULL,
   `channel_id` VARCHAR(45) NULL,
+  `deleted_users_id` int(11) NOT NULL,
+  `is_deleted` tinyint(1) NULL DEFAULT 0,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
@@ -177,7 +179,7 @@ CREATE TABLE IF NOT EXISTS `reports` (
   `participants_id` INT NOT NULL,
   `report_type` VARCHAR(45) NULL,
   `notes` TEXT NULL,
-  `deleted_at` DATETIME NULL,
+  `is_deleted` tinyint(1) NULL DEFAULT 0,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -196,7 +198,7 @@ CREATE TABLE IF NOT EXISTS `block_list` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `users_id` INT NOT NULL,
   `participants_id` INT NOT NULL,
-  `deleted_at` tinyint NULL,
+  `is_deleted` tinyint(1) NULL DEFAULT 0,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -217,7 +219,7 @@ CREATE TABLE IF NOT EXISTS `deleted_conversations` (
   `users_id` INT NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `deleted_at` DATETIME NULL,
+  `is_deleted` tinyint(1) NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `conversationId_user_UNIQUE` (`conversation_id`, `users_id`))
 ENGINE = InnoDB;
@@ -236,7 +238,7 @@ CREATE TABLE IF NOT EXISTS `devices` (
   `device_id` VARCHAR(120) NULL,
   `type` ENUM('APPLE') NULL,
   `device_token` VARCHAR(120) NULL,
-  `deleted_at` DATETIME NULL,
+  `is_deleted` tinyint(1) NULL DEFAULT 0,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
 
@@ -257,7 +259,7 @@ CREATE TABLE IF NOT EXISTS `access` (
   `users_id` INT NOT NULL,
   `token` VARCHAR(60) NULL,
   `devices_id` INT NOT NULL,
-  `deleted_at` DATETIME NULL,
+  `is_deleted` tinyint(1) NULL DEFAULT 0,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
 
@@ -279,7 +281,7 @@ CREATE TABLE IF NOT EXISTS `deleted_messages` (
   `users_id` INT NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `deleted_at` DATETIME NULL,
+  `is_deleted` tinyint(1) NULL DEFAULT 0,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 

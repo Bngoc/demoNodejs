@@ -106,7 +106,7 @@ User.prototype.findByIdChat = function (id, callback) {
 
         let getBlockList = data.relations.useBlockList
             .filter(function (isDelete) {
-                if (isDelete.get('deleted_at') != 0) {
+                if (isDelete.get('is_deleted') != 0) {
                     return isDelete.get('participants_id');
                 }
             })
@@ -127,7 +127,7 @@ User.prototype.findByIdChat = function (id, callback) {
 
                 Conversations.model
                     .query(function (dq) {
-                        dq.where('id', 'in', getParticipantsList).where('deleted_at', '=', '0');
+                        dq.where('id', 'in', getParticipantsList).where('is_deleted', '=', '0');
                     })
                     // .fetchAll({withRelated: ['cccccc', {'conParticipant': function(db){ qb.where('status', 'enabled'); }}]})
                     .fetchAll({
