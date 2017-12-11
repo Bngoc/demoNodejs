@@ -1,5 +1,9 @@
 'use strict';
 
+const socketIo = require('socket.io');
+const sharedSession = require("express-socket.io-session");
+var io;
+
 const ViewController = require('./ViewController.js');
 const helper = new ViewController();
 
@@ -50,7 +54,6 @@ class ChatController extends BaseController {
                 showResponse.urlUpdareStatus = aliasRouter.build('chat.change.status');
 
 
-
                 // res.locals.listParticipants = infoParticipant ? infoParticipant : null;
                 // req.session.listParticipants = infoParticipant ? infoParticipant : null;
 
@@ -79,7 +82,7 @@ class ChatController extends BaseController {
         showResponseChat.userName = req.body.userName;
         showResponseChat.renderViews = 'chat/content.chat.ejs';
 
-         // zender view before send data
+        // zender view before send data
         //{layout: 'ajax'}
         res.render(showResponseChat.renderViews, {data: showResponseChat, layout: false}, function (err, renderHtml) {
             if (err) {
@@ -118,7 +121,7 @@ class ChatController extends BaseController {
                     }
                     res.status(200).send(responseAjax);
                 });
-            }else {
+            } else {
                 responseAjax.code = 'ERR0001';
                 responseAjax.msg = 'Account current is empty';
                 res.status(200).send(responseAjax);
@@ -127,6 +130,64 @@ class ChatController extends BaseController {
             responseAjax.code = 'ERR0000';
             res.status(500).send(responseAjax);
         }
+    }
+
+    configSocket(server, configSession) {
+        io = socketIo(server);
+        // io.use(sharedsession(configSession));
+
+        io.on('connection', function (socket) {
+                console.log(`connection ______________________________________________>>>>  ${socket.id}`);
+
+            // var userCurrent = express_session.req.user;
+            console.log('express_session.req.user', socket.request.session );
+            // if (userCurrent.length) {
+            //     var newUser = new User.class({});
+            //     newUser.findConversation(userCurrent.attributes.id, function (err, rsDataConversation) {
+            //         if (err) rsDataConversation = {};
+            //
+            //         socket.broadcast.emit('sendListConversation', JSON.stringify(rsDataConversation));
+            //     });
+            // }
+
+                    // chi thang phat ra => socket.emit
+                    socket.emit('message', {
+                        content: 'You are connected server private!',
+                        importance: '1',
+                        'socketID': socket.id
+                    });
+
+                    // gui toan bo trong mang tru thang phat ra => socket.broadcast.emit
+                    //socket.broadcast.emit('message', 'Another client has just connected!' + socket.id);
+
+                    // all ==> io.sockets.emit
+                    io.sockets.emit('message', {
+                        content: 'You are connected -- all!',
+                        importance: '1',
+                        'socketID': socket.id
+                    });
+
+                    socket.on('message', function (message) {
+                        console.log('A client is speaking to me! They’re saying: ' + message);
+                    });
+
+                    //disconnect socket by id
+                    socket.on('disconnect', function () {
+                        console.log(`disconnect -  ${socket.id}`);
+                        socket.emit('message', {content: 'bye bye!', importance: null, 'socketID': socket.id});
+                    });
+
+                    socket.on('sendDataMsg', function (datasocketAll) {
+                        ////private
+                        socket.emit('sendDataPrivate', 'send -= private' + datasocketAll + '---' + socket.id);
+                        ////all
+                        // io.sockets.emit('send-data-test', 'send -= all' + datasocketAll + ' '  + socket.id);
+                        //// all / private
+                        socket.broadcast.emit('sendDataBroadCast', 'send -= all / private ' + datasocketAll + ' --- ' + socket.id);
+                        //// io.to(socket.id).emit()
+                    });
+
+            });
     }
 }
 

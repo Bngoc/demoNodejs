@@ -53,7 +53,8 @@ function CoreHelper() {
     };
 
     this.runSocket = function (runServer) {
-        var Socket = require(`${paths.CONFIG}/socket.js`);
+        var Socket = require(`${paths.CONTROLLERS}/ChatController.js`);
+        // var Socket = require(`${paths.CONFIG}/socket.js`);
         var socket = new Socket();
         socket.configSocket(runServer, this);
     };
@@ -61,8 +62,14 @@ function CoreHelper() {
     this.runExpress = function (app) {
         var Express = require(`${paths.MODULE}/express.js`);
         var express = new Express();
-        express.configExpress(app, this);
+       return express.configExpress(app, this);
     };
+
+    // this.runSession = function (app) {
+    //     var Express = require(`${paths.MODULE}/express.js`);
+    //     var express = new Express();
+    //    return express.configSession(app);
+    // };
 
     this.runRoutes = function (app) {
         var Router = require(`${paths.APP}/routers.js`);
@@ -126,7 +133,7 @@ class ConnectDB extends CoreHelper {
 
     connection(callback) {
         const connection = this.getConnect();
-        const strDB = this.sampleConfig.DB_CONNECTION ? this.sampleConfig.DB_CONNECTION : '';
+        const strDB = sampleConfig.DB_CONNECTION ? sampleConfig.DB_CONNECTION : '';
         var resultContion = {
             error: '',
             msg: '',
@@ -154,9 +161,9 @@ class ConnectDB extends CoreHelper {
     connectKnex() {
         var _this = this;
         const knex = require('knex')({
-            client: this.sampleConfig.DB_CONNECTION ? this.sampleConfig.DB_CONNECTION : '',
+            client: sampleConfig.DB_CONNECTION ? sampleConfig.DB_CONNECTION : '',
             connection: _this.getConfigInfoDb(),
-            debug: true,
+            debug: sampleConfig.APP_DEBUG,
             migrations: {
                 directory: __dirname + 'db/migrations'
             },
@@ -176,7 +183,7 @@ class ConnectDB extends CoreHelper {
 
     checkConnect(cb) {
         const connect = this.connectKnex();
-        const strDB = this.sampleConfig.DB_CONNECTION ? this.sampleConfig.DB_CONNECTION : '';
+        const strDB = sampleConfig.DB_CONNECTION ? sampleConfig.DB_CONNECTION : '';
         var resultContion = {
             error: '',
             msg: '',

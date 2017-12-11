@@ -139,30 +139,31 @@ class UserController {
                     if(err) return next(err);
 
                     let infoPassport = info;
-                    console.log(infoPassport , ' _________________________');
                     //{"code":null,"error":"","msg":"","result":null}'
                     if (infoPassport.message) {
                         let dataPassport = JSON.parse(infoPassport.message);
                         if (dataPassport.code || dataPassport.result == null) {
                             responseDataMap.code = dataPassport.code || 'ERR0003';
                             responseDataMap.msg = 'Account not exits';
+                            res.status(200).send(responseDataMap);
                         } else {
                             if (dataPassport.result && user) {
                                 req.logIn(user, function (err) {
                                     if (err) {
                                         responseDataMap.code = "ERR0003";
                                         responseDataMap.msg = 'Login Fail....!';
+                                        res.status(200).send(responseDataMap);
                                     } else {
                                         responseDataMap.status = true;
                                         responseDataMap.url = 'chat';
                                         responseDataMap.msg = 'Login success';
                                         res.status(200).send(responseDataMap);
                                     }
-                                    res.status(200).join(responseDataMap);
                                 });
                             } else {
                                 responseDataMap.code = "ERR0003";
                                 responseDataMap.msg = 'Account or password not authentication';
+                                res.status(200).send(responseDataMap);
                             }
                         }
                     } else {
@@ -170,7 +171,6 @@ class UserController {
                         responseDataMap.msg = 'ERROR: Server Not Response';
                         res.status(200).send(responseDataMap);
                     }
-                    res.status(200).send(responseDataMap);
                 })(req, res, next);
             } else {
                 responseDataMap.code = 'ERR0001';

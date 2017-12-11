@@ -98,10 +98,10 @@ User.prototype.findById = function (id, callback) {
     });
 };
 
-User.prototype.findByIdChat = function (id, callback) {
 
+User.prototype.findConversation = function (id, callback) {
+    let responseData = {};
     Users.where({id: id}).fetch({withRelated: ['useContacts', 'useBlockList']}).then(function (data) {
-        let responseData = {};
         responseData['infoAccount'] = data;
 
         let getBlockList = data.relations.useBlockList
@@ -138,82 +138,95 @@ User.prototype.findByIdChat = function (id, callback) {
                         }]
                     })
                     .then(function (modelConver) {
-                        var infoParticipantClone = [];
+                        responseData['modelConversation'] = modelConver;
 
-                        modelConver.forEach(function (elem) {
-                            elem.relations.conParticipant.forEach(function (elemUser, indx) {
-                                let infoParticipant = {};
-                                infoParticipant['idConversation'] = elem.get('id');
-                                infoParticipant['title'] = elem.get('title');
-                                infoParticipant['creator_id'] = elem.get('creator_id');
-                                infoParticipant['channel_id'] = elem.get('channel_id');
-                                infoParticipant['type'] = elemUser.get('type');
-
-                                // infoParticipant['infoAccountParticipant'] = {};
-
-                                infoParticipantClone.push(
-                                    new Promise(function (resolveOne, rejectOne) {
-
-                                        Users
-                                            .forge({id: elemUser.get('users_id')})
-                                            .fetch({withRelated: ['useContacts'], require: true})
-                                            .then(function (dtModel) {
-                                                console.log(JSON.stringify(dtModel) , '\n')
-                                                resolveOne(dtModel);
-                                            })
-                                            .catch(function (errUser) {
-                                                rejectOne(errUser);
-                                            });
-
-                                    }).then(function (resultUser) {
-
-                                        infoParticipant['infoAccountParticipant'] = resultUser;
-                                        return infoParticipant;
-                                    })
-                                );
-                            });
-                        });
-
-                        let resultDataParticipant = [];
-
-                        Promise.all(infoParticipantClone)
-                            .then(function (resultValueAllPromise) {
-                                resultValueAllPromise.forEach((element, indx)=> {
-                                    var infoAccountParticipantTemp = [];
-                                    if (element.type === coreHelper.app.participants[0]) {
-                                        element.count = 1;
-                                        resultDataParticipant.push(element);
-                                    } else {
-                                        // Group
-                                        let indexId = resultDataParticipant.findIndex(x => x.idConversation == element.idConversation);
-                                        if (indexId !== -1) {
-                                            resultDataParticipant[indexId].count += 1;
-                                            resultDataParticipant[indexId].infoAccountParticipant.push(element.infoAccountParticipant);
-                                        } else {
-                                            let tmp = element.infoAccountParticipant;
-                                            element.count = 1;
-                                            element.infoAccountParticipant = [];
-                                            element.infoAccountParticipant.push(tmp);
-
-                                            resultDataParticipant.push(element);
-                                        }
-                                    }
-                                });
-
-                                responseData['infoParticipant'] = resultDataParticipant;
-                                callback(null, responseData);
-                            });
+                        callback(null, responseData);
                     })
-                    .catch(function (errConver) {
-                        callback(errConver);
+                    .catch(function (errPartici) {
+                        callback(errPartici);
                     });
-            })
-            .catch(function (errPartici) {
-                callback(errPartici);
-            });
+            }).catch(function (errPartici) {
+            callback(errPartici);
+        });
     }).catch(function (err) {
         callback(err);
     });
+}
+
+User.prototype.findByIdChat = function (id, callback) {
+    let responseData = {};
+    this.findConversation(id, function (err, modelConversation) {
+
+        if (err) {
+            callback(err)
+        } else {
+            responseData['infoAccount'] = modelConversation.infoAccount;
+            let modelConver = modelConversation.modelConversation;
+            let infoParticipantClone = [];
+
+            modelConver.forEach(function (elem) {
+                elem.relations.conParticipant.forEach(function (elemUser, indx) {
+                    let infoParticipant = {};
+                    infoParticipant['idConversation'] = elem.get('id');
+                    infoParticipant['title'] = elem.get('title');
+                    infoParticipant['creator_id'] = elem.get('creator_id');
+                    infoParticipant['channel_id'] = elem.get('channel_id');
+                    infoParticipant['type'] = elemUser.get('type');
+
+                    infoParticipantClone.push(
+                        new Promise(function (resolveOne, rejectOne) {
+
+                            Users
+                                .forge({id: elemUser.get('users_id')})
+                                .fetch({withRelated: ['useContacts'], require: true})
+                                .then(function (dtModel) {
+                                    resolveOne(dtModel);
+                                })
+                                .catch(function (errUser) {
+                                    rejectOne(errUser);
+                                });
+
+                        }).then(function (resultUser) {
+
+                            infoParticipant['infoAccountParticipant'] = resultUser;
+                            return infoParticipant;
+                        })
+                    );
+                });
+            });
+
+            let resultDataParticipant = [];
+
+            Promise.all(infoParticipantClone)
+                .then(function (resultValueAllPromise) {
+                    resultValueAllPromise.forEach((element, indx)=> {
+                        var infoAccountParticipantTemp = [];
+                        if (element.type === coreHelper.app.participants[0]) {
+                            element.count = 1;
+                            resultDataParticipant.push(element);
+                        } else {
+                            // Group
+                            let indexId = resultDataParticipant.findIndex(x => x.idConversation == element.idConversation);
+                            if (indexId !== -1) {
+                                resultDataParticipant[indexId].count += 1;
+                                resultDataParticipant[indexId].infoAccountParticipant.push(element.infoAccountParticipant);
+                            } else {
+                                let tmp = element.infoAccountParticipant;
+                                element.count = 1;
+                                element.infoAccountParticipant = [];
+                                element.infoAccountParticipant.push(tmp);
+
+                                resultDataParticipant.push(element);
+                            }
+                        }
+                    });
+
+                    responseData['infoParticipant'] = resultDataParticipant;
+                    callback(null, responseData);
+                });
+        }
+    });
+
 };
 
 // Users.prototype.findByIdChat = function (id, callback) {

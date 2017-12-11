@@ -75,20 +75,13 @@ class Express {
         // app.use(expressValidator(customValidator()));
         app.use(methodOverride('X-HTTP-Method-Override'));
 
-        app.use(cookieParser('secret'));
-        app.use(session({
-            secret: '{mySecretRequired}',
-            name: 'session_id',
-            saveUninitialized: true,
-            resave: true,
-            cookie: {
-                secure: false,
-                maxAge: (3600000 * 24) * 1, // * day
-            }
-        }));
-        app.use(passport.initialize());
-        app.use(passport.session());
-        app.use(flash());
+        // app.use(cookieParser('secret'));
+        // app.use(this.configSession());
+        // app.use(passport.initialize());
+        // app.use(passport.session());
+        // app.use(flash());
+
+        this.configSession(app);
 
         //Global vars
         app.use(function (req, res, next) {
@@ -115,17 +108,28 @@ class Express {
         app.use(errorhandler());
         app.use(favicon(coreHelper.paths.IMAGES + 'favicon.ico'));
     };
+
+    configSession(app) {
+        let sessionConfig =  session({
+            secret: '{mySecretRequired}',
+            name: 'session_id',
+            saveUninitialized: true,
+            resave: true,
+            cookie: {
+                secure: false,
+                maxAge: (3600000 * 24) * 1, // * day
+            }
+        });
+        app.use(cookieParser('secret'));
+        app.use(sessionConfig);
+        app.use(passport.initialize());
+        app.use(passport.session());
+        app.use(flash());
+        // app.use(i18n.init);
+
+        return sessionConfig;
+    }
+
 }
-
-// exports.configSession = function(app, passport) {
-//     app.use(cookieParserConfig);
-//     app.use(sessionConfig);
-//     app.use(passport.initialize());
-//     app.use(passport.session());
-//     app.use(flash());
-//     app.use(i18n.init);
-//     return sessionConfig;
-// }
-
 
 module.exports = Express;
