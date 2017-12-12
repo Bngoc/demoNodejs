@@ -51,7 +51,12 @@ Contact.prototype.updateContact = function (dataRequest, callback) {
                 .save(
                 // dataRequest.dataUpdate // {}
                 {
-                    status: (typeof dataRequest.dataUpdate.status !== 'undefined' ? dataRequest.dataUpdate.status : modelContact.get('status'))
+                    status: (typeof dataRequest.dataUpdate.status !== 'undefined' ? dataRequest.dataUpdate.status : modelContact.get('status')),
+                    is_life: (typeof dataRequest.dataUpdate.is_life !== 'undefined' ? dataRequest.dataUpdate.is_life : modelContact.get('is_life')),
+                    country: (typeof dataRequest.dataUpdate.country !== 'undefined' ? dataRequest.dataUpdate.country : modelContact.get('country')),
+                    gender: (typeof dataRequest.dataUpdate.gender !== 'undefined' ? dataRequest.dataUpdate.gender : modelContact.get('gender')),
+                    mood_message: (typeof dataRequest.dataUpdate.mood_message !== 'undefined' ? dataRequest.dataUpdate.mood_message : modelContact.get('mood_message')),
+                    user_name: (typeof dataRequest.dataUpdate.user_name !== 'undefined' ? dataRequest.dataUpdate.user_name : modelContact.get('user_name')),
                 })
                 .then(function (model) {
                     callback(null, model);

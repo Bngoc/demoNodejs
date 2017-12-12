@@ -49,15 +49,25 @@ class ChatController extends BaseController {
 
                 let ioClone = helper.coreHelper.IO();
                 ioClone.on('connection', function (socket) {
-
+                    let conversation = [];
                     rsData.infoParticipant.forEach(function (element, indx) {
                         socket.join(element.channel_id);
+                        conversation.push({
+                            userCurrent: userCurrent.attributes.id,
+                            type: element.type,
+                            title: element.title,
+                            channel_id: element.channel_id,
+                            statusID: notiContacts.attributes.status,
+                            statusName: helper.coreHelper.app.chatStatus[notiContacts.attributes.status],
+                            listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' ')
+                        })
                     });
 
-                    socket.emit('testUser', userCurrent.attributes.id);
+                    console.log(socket.adapter.rooms);
+
+                    socket.broadcast.emit('testUser', conversation);
                     console.log(`\n-------------------------->>>>  ${JSON.stringify(socket.handshake.session)} \n`);
                 });
-
 
 
                 showResponse.userName = notiContacts ? notiContacts.attributes.middle_name : '';
@@ -153,7 +163,6 @@ class ChatController extends BaseController {
             // console.log(cookies);
 
             // var user = socket.handshake.session.user;
-
 
 
             // var userCurrent = express_session.req.user;

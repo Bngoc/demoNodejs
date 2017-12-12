@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS `contacts` (
   `gender` varchar(10) DEFAULT NULL,
   `mood_message` varchar(100) DEFAULT NULL,
   `status` TINYINT(1) NULL DEFAULT 0,
+  `is_life` TINYINT(1) NULL DEFAULT 0,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

@@ -1,4 +1,4 @@
-$('body').on('click', '#status-options .change-status', function () {
+$('body').on('click', '#status-options .channel-status', function () {
     let dataValue = $(this).attr('data-value');
     let status = $(this).attr('status');
 

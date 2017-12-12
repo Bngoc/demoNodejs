@@ -30,23 +30,26 @@ socket.on('sendDataBroadCast', function (messageSent) {
 
 
 socket.on('testUser', function (testUser) {
-    console.log('testUser', testUser);
+    testUser.forEach(function (elem) {
+        $('span[channel="status.' + elem.channel_id + '"]').removeClass(elem.listStatus).addClass(elem.statusName);
+    });
+    // console.log('testUser', 'span[channel=status.' + elem.channel_id + ']');
 });
 
 $(document).ready(function () {
 
-
     socket.emit('user_id', $('#profile-img').attr('userid'));
 
     var sendChatMessage = new SendChatMessage();
-    var sendChat = sendChatMessage.eventSendMsg();
-    var sendChat = sendChatMessage.getDefaultHeightMsgBox();
+    sendChatMessage.eventSendMsg();
+    sendChatMessage.getDefaultHeightMsgBox();
 
 
     $(window).resize(function () {
         sendChatMessage.getDefaultHeightMsgBox();
         $("#frameListMsg").animate({scrollTop: getMinHeightFrameListMsg()}, 500);
     });
+
     $("#frameListMsg").animate({scrollTop: $('#frameListMsg').height()}, 500);
 });
 
@@ -169,6 +172,7 @@ SendChatMessage.prototype.reloadContentBoxChatAjax = function () {
                 userName: userName
             }
         };
+
         callDataJS(dataRequest, function (dataResult) {
             if (dataResult.html) {
                 $('#content-chat').html(dataResult.html);

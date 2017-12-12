@@ -9,7 +9,7 @@
                     <ul>
                         <% for( var key in listStatus) { %>
                         <li id='status-<%- listStatus[key] %>' status='<%- listStatus[key] %>' data-value='<%- key %>'
-                            class='change-status <% (listStatus[key] == status) ? "active" : "" %>'><span
+                            class='channel-status <% (listStatus[key] == status) ? "active" : "" %>'><span
                                 class="status-circle"></span>
                             <p><%- listStatus[key] %></p></li>
                         <% } %>
@@ -39,8 +39,8 @@
 
                 %>
                 <li class="contact">
-                    <div class="wrap" data-changel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
-                        <span class='contact-status <%- listStatus[infoContact.attributes.status] ? listStatus[infoContact.attributes.status] : "" %>'></span>
+                    <div class="wrap" data-channel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
+                        <span channel='status.<%- element.channel_id %>' class='contact-status <%- listStatus[infoContact.attributes.status] ? listStatus[infoContact.attributes.status] : "" %>'></span>
                         <img src="http://emilcarlsson.se/assets/louislitt.png" alt=""/>
                         <div class="meta">
                             <p class="name"><%- infoContact.attributes.middle_name ? infoContact.attributes.middle_name : '&nbsp;' %></p>

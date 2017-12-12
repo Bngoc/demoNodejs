@@ -22,7 +22,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 
 const sharedSession = require("express-socket.io-session");
-var passportSocketIo = require('passport.socketio');
+// var passportSocketIo = require('passport.socketio');
 const socketIo = require('socket.io');
 
 // use hander log
