@@ -28,7 +28,16 @@ socket.on('sendDataBroadCast', function (messageSent) {
     }
 });
 
+
+socket.on('testUser', function (testUser) {
+    console.log('testUser', testUser);
+});
+
 $(document).ready(function () {
+
+
+    socket.emit('user_id', $('#profile-img').attr('userid'));
+
     var sendChatMessage = new SendChatMessage();
     var sendChat = sendChatMessage.eventSendMsg();
     var sendChat = sendChatMessage.getDefaultHeightMsgBox();

@@ -10,9 +10,10 @@ var runServer = callCoreHelper.runServer(app);
 callCoreHelper.runExpress(app);
 callCoreHelper.runRoutes(app);
 callCoreHelper.getConnect();
-callCoreHelper.runSocket(runServer);
+callCoreHelper.runSocket(runServer, app);
 
 callCoreHelper.connectKnex();
+
 
 // callCoreHelper.checkConnect(function (rsConnect) {
 //     if (rsConnect.error) {

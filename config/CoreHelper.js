@@ -10,6 +10,7 @@ const sampleConfig = require(`${paths.CONFIG}/config.json`);
 const samplePackage = require(`${paths.ROOT}/package.json`);
 const sampleApp = require(`${paths.CONFIG}/app.js`);
 var setAliasRouter = {};
+var IO = {};
 
 function CoreHelper() {
 
@@ -52,28 +53,23 @@ function CoreHelper() {
         return connection;
     };
 
-    this.runSocket = function (runServer) {
-        var Socket = require(`${paths.CONTROLLERS}/ChatController.js`);
-        // var Socket = require(`${paths.CONFIG}/socket.js`);
-        var socket = new Socket();
-        socket.configSocket(runServer, this);
+    this.runSocket = function (runServer, app) {
+        var socket = this.callModule(`${paths.MODULE}/express.js`, true);
+        let io = socket.configSocket(runServer, app);
+
+        var socketIO = this.callModule(`${paths.CONTROLLERS}ChatController.js`, true);
+        socketIO.socketIO(io);
+
+        IO = io;
     };
 
     this.runExpress = function (app) {
-        var Express = require(`${paths.MODULE}/express.js`);
-        var express = new Express();
-       return express.configExpress(app, this);
+        var express = this.callModule(`${paths.MODULE}/express.js`, true);
+        return express.configExpress(app, this);
     };
 
-    // this.runSession = function (app) {
-    //     var Express = require(`${paths.MODULE}/express.js`);
-    //     var express = new Express();
-    //    return express.configSession(app);
-    // };
-
     this.runRoutes = function (app) {
-        var Router = require(`${paths.APP}/routers.js`);
-        var router = new Router();
+        var router = this.callModule(`${paths.APP}/routers.js`, true);
         var createRouter = router.useRoutes(app, this);
         if (!setAliasRouter.length) setAliasRouter = createRouter;
 
@@ -81,11 +77,10 @@ function CoreHelper() {
     };
 
     this.passport = function (optCall) {
-        var Passport = require(`${paths.MODULE}/passport.js`);
-        var passport = new Passport();
+        var passport = this.callModule(`${paths.MODULE}/passport.js`, true);
         if (optCall === 'local') {
             var configPassport = passport.configPassport(this);
-        } else if (optCall === 'facebook'){
+        } else if (optCall === 'facebook') {
             var configPassport = passport.configPassportFB(this);
         }
 
@@ -93,8 +88,7 @@ function CoreHelper() {
     };
 
     this.runServer = function (app) {
-        var Server = require(`${paths.CONFIG}/server.js`);
-        var server = new Server();
+        var server = this.callModule(`${paths.CONFIG}/server.js`, true);
         var createServer = server.createServer(app, this.sampleConfig);
         return createServer;
     };
@@ -108,6 +102,10 @@ function CoreHelper() {
 
     this.aliasRouter = function () {
         return setAliasRouter;
+    };
+
+    this.IO = function () {
+        return IO;
     };
 }
 
@@ -175,7 +173,7 @@ class ConnectDB extends CoreHelper {
         return knex;
     };
 
-    bookshelf () {
+    bookshelf() {
         var bookshelf = require('bookshelf')(this.connectKnex());
 
         return bookshelf;
@@ -191,7 +189,7 @@ class ConnectDB extends CoreHelper {
         };
 
         connect.raw('select 1+1 as result').catch(err => {
-        console.log(err, 'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh');
+            console.log(err, 'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh');
             if (err.code === 'ECONNREFUSED') {
                 resultContion.msg = `ERR: Cannot connect to Database server ${strDB}......`;
                 resultContion.error = err.code;

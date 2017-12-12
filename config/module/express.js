@@ -21,6 +21,10 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
 
+const sharedSession = require("express-socket.io-session");
+var passportSocketIo = require('passport.socketio');
+const socketIo = require('socket.io');
+
 // use hander log
 const env = process.env.NODE_ENV || 'development';
 
@@ -109,6 +113,13 @@ class Express {
         app.use(favicon(coreHelper.paths.IMAGES + 'favicon.ico'));
     };
 
+    configSocket(server, app) {
+        let io = socketIo(server);
+        io.use(sharedSession(this.configSession(app)), {autoSave: true});
+
+        return io;
+    }
+
     configSession(app) {
         let sessionConfig =  session({
             secret: '{mySecretRequired}',
@@ -117,6 +128,7 @@ class Express {
             resave: true,
             cookie: {
                 secure: false,
+                httpOnly: true,
                 maxAge: (3600000 * 24) * 1, // * day
             }
         });
@@ -129,7 +141,6 @@ class Express {
 
         return sessionConfig;
     }
-
 }
 
 module.exports = Express;

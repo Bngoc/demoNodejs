@@ -39,7 +39,7 @@ var io;
 
 class Socket {
 
-    configSocket(server, express_session) {
+    configSocketclone(server, express_session) {
         io = socketIo(server);
         // server listening for client
         io.on('connection', function (socket) {

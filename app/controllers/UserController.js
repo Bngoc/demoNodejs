@@ -61,7 +61,7 @@ class UserController {
                         } else {
                             if (resultUser.result) {
                                 if (bcrypt.compareSync(req.body.pwd, resultUser.result.attributes.password)) {
-                                    // req.session.userCurrent = resultUser;
+                                    req.session.userCurrent = resultUser;
                                     res.status(200).send(resultUser);
                                 } else {
                                     responseData.pwd = 'Sai pass rùi .... ^_^';
