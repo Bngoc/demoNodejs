@@ -7,14 +7,14 @@
 const ViewController = require('./ViewController.js');
 const helper = new ViewController();
 
-var User = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}User.js`);
-var Contacts = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Contacts.js`);
-var BlockList = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}chat/BlockList.js`);
-var Conversation = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}chat/Conversation.js`);
-var DeletedConversations = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}chat/DeletedConversations.js`);
-var DeletedMessages = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}chat/DeletedMessages.js`);
-var Messages = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}chat/Messages.js`);
-var Reports = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}chat/Reports.js`);
+const User = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Users.js`);
+const Contacts = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Contacts.js`);
+const BlockList = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}BlockList.js`);
+const Conversation = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Conversation.js`);
+const DeletedConversations = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}DeletedConversations.js`);
+const DeletedMessages = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}DeletedMessages.js`);
+const Messages = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Messages.js`);
+const Reports = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Reports.js`);
 
 var BaseController = require('./BaseController.js');
 
@@ -106,28 +106,30 @@ class ChatController extends BaseController {
 
         if (parseInt(req.body.dataConversation) && userCurrent) {
             let conversation = new Conversation.class();
-            conversation.ConversationsListUser(parseInt(req.body.dataConversation), userCurrent.attributes.id, function (err, modelConversation) {
+            let optionRequset = {
+                id: parseInt(req.body.dataConversation),
+                userCurrentID: userCurrent.attributes.id,
+                userModel: User.model
+            }
+            conversation.ConversationsListUser(optionRequset, function (err, infoConversation) {
 
                 if (err) {
                     next(err);
                 }
-                // modelConversation.forEach(function (elem) {
-                //
-                //     let countParticipants = 0;
-                //     elem.relations.conParticipant.forEach(function (elePart) {
-                        showResponseChat.dataType = 333333;
-                //         countParticipants++;
-                //     });
-                //
-                    showResponseChat.dataChannelId = 222;
-                    showResponseChat.dataOwerId = 22222;
-                    showResponseChat.dataConversation = 2222;
-                    showResponseChat.countParticipants = 2222;
-                    showResponseChat.isTypeSingle = true;
-                // });
 
-                // console.log('------------------------------', conParticipant, conParticipant.get('type'), '------------------------------');
-                console.log('------------------------------', JSON.stringify(modelConversation), '------------------------------');
+                infoConversation.forEach(function (elem) {
+                    showResponseChat.dataType = elem.type;
+                    showResponseChat.dataChannelId = elem.channel_id;
+                    showResponseChat.dataOwerId = elem.creator_id;
+                    showResponseChat.dataConversation = elem.idConversation;
+                    showResponseChat.countParticipants = elem.count;
+                    showResponseChat.isTypeSingle = showResponseChat.dataType == helper.coreHelper.app.participants[0];
+                    showResponseChat.listParticipant = elem.infoParticipant;
+
+                    console.log('------------------------------', elem.channel_id, '------------------------------');
+                });
+
+                console.log('------------------------------', JSON.stringify(showResponseChat), '------------------------------');
 
 
                 // zender view before send data
@@ -284,7 +286,6 @@ class ChatController extends BaseController {
 ChatController.prototype.convertDataListSocket = function (infoConversation, requestOption, callback) {
     // let conversation = [];
     infoConversation.forEach(function (element) {
-        socketIO.join(element.channel_id);
         let conversationClone = {
             userCurrent: requestOption.userCurrentID,
             type: element.type,
@@ -298,8 +299,10 @@ ChatController.prototype.convertDataListSocket = function (infoConversation, req
 
         // conversation.push(conversationClone);
         if (conversationClone.isTypeSingle) {
-            socketIO.to(element.channel_id).emit('listUserConversation', conversationClone);
+            socketIO.broadcast.to(element.channel_id).emit('listUserConversation', conversationClone);
+            // socketIO.to(element.channel_id).emit('listUserConversation', conversationClone);
         }
+        socketIO.join(element.channel_id);
     });
 
     // console.log(socketIO.adapter.rooms, JSON.stringify(infoConversation));

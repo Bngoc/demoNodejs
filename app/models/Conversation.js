@@ -3,28 +3,27 @@
 const path = require('path');
 const Promise = require('bluebird');
 
-const CoreHelper = require(path.join(__dirname, '/../../../config/CoreHelper.js'));
+const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const coreHelper = new CoreHelper();
 
 const knex = coreHelper.connectKnex();
 const bookshelf = coreHelper.bookshelf();
 
 
-const Users = coreHelper.callModule(`${coreHelper.paths.MODELS}User.js`);
-// const Participants = coreHelper.callModule(`${coreHelper.paths.MODELS}chat/Participants.js`);
-// const DeletedConversations = coreHelper.callModule(`${coreHelper.paths.MODELS}chat/DeletedConversations.js`);
+// const Participants = coreHelper.callModule(`${coreHelper.paths.MODELS}Participants.js`);
+// const DeletedConversations = coreHelper.callModule(`${coreHelper.paths.MODELS}DeletedConversations.js`);
 
 var Conversations = bookshelf.Model.extend({
     tableName: 'conversation',
     hasTimestamps: true,
     conUser: function () {
-        return this.belongsTo(coreHelper.callModule(`${coreHelper.paths.MODELS}User.js`).model, 'id');
+        return this.belongsTo(coreHelper.callModule(`${coreHelper.paths.MODELS}Users.js`).model, 'id');
     },
     conDeletedConversation: function () {
-        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}chat/DeletedConversations.js`).model, 'conversation_id');
+        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}DeletedConversations.js`).model, 'conversation_id');
     },
     conParticipant: function () {
-        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}chat/Participants.js`).model, 'conversation_id', 'id'); //table , keyFK keylocal
+        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}Participants.js`).model, 'conversation_id', 'id'); //table , keyFK keylocal
     }
 });
 
@@ -51,9 +50,8 @@ Conversation.prototype.getConversations = function (id, users_id, callback) {
         });
 }
 
-Conversation.prototype.ConversationsListUser = function (id, users_id, callback) {
-    let responseData = {};
-    this.getConversations(id, users_id, function (err, modelConversation) {
+Conversation.prototype.ConversationsListUser = function (optionRequset, callback) {
+    this.getConversations(optionRequset.id, optionRequset.userCurrentID, function (err, modelConversation) {
         if (err) callback(err);
 
         let infoParticipantPromise = [];
@@ -70,11 +68,10 @@ Conversation.prototype.ConversationsListUser = function (id, users_id, callback)
                 infoParticipantPromise.push(
                     new Promise(function (resolveOne, rejectOne) {
 
-                        Users.model
-                            .forge({id: elemUser.get('users_id')})
-                            // .query(function (dq) {
-                            // .where('id', elemUser.get('users_id'))
-                            // })
+                        optionRequset.userModel
+                            .query(function (dq) {
+                                dq.where('id', elemUser.get('users_id'));
+                            })
                             .fetch({withRelated: ['useContacts'], require: true})
                             .then(function (dtModel) {
                                 resolveOne(dtModel);
@@ -96,7 +93,7 @@ Conversation.prototype.ConversationsListUser = function (id, users_id, callback)
 
         Promise.all(infoParticipantPromise)
             .then(function (resultValueAllPromise) {
-                resultValueAllPromise.forEach((element, indx) => {
+                resultValueAllPromise.forEach((element) => {
                     if (element.type === coreHelper.app.participants[0]) {
                         element.count = 1;
                         resultConversationParticipant.push(element);
@@ -105,20 +102,19 @@ Conversation.prototype.ConversationsListUser = function (id, users_id, callback)
                         let indexId = resultConversationParticipant.findIndex(x => x.idConversation == element.idConversation);
                         if (indexId !== -1) {
                             resultConversationParticipant[indexId].count += 1;
-                            resultConversationParticipant[indexId].infoAccountParticipant.push(element.infoAccountParticipant);
+                            resultConversationParticipant[indexId].infoParticipant.push(element.infoParticipant);
                         } else {
-                            let tmp = element.infoAccountParticipant;
+                            let tmp = element.infoParticipant;
                             element.count = 1;
-                            element.infoAccountParticipant = [];
-                            element.infoAccountParticipant.push(tmp);
+                            element.infoParticipant = [];
+                            element.infoParticipant.push(tmp);
 
                             resultConversationParticipant.push(element);
                         }
                     }
                 });
 
-                responseData['infoParticipant'] = resultConversationParticipant;
-                callback(null, responseData);
+                callback(null, resultConversationParticipant);
             });
     })
 };

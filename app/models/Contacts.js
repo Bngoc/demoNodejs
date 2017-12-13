@@ -23,8 +23,8 @@ let Contacts = bookshelf.Model.extend({
             return this.get('first_name') + ' ' + this.get('last_name');
         }
     },
-    conUser: function () {
-        return this.belongsTo(coreHelper.callModule(`${coreHelper.paths.MODELS}User.js`).model, 'id');
+    contactUser: function () {
+        return this.belongsTo(coreHelper.callModule(`${coreHelper.paths.MODELS}Users.js`).model, 'id');
     }
 });
 

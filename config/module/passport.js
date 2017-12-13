@@ -9,7 +9,7 @@ const flash = require('connect-flash');
 
 class Passport {
     configPassport(coreHelper) {
-        var User = coreHelper.callModule(`${coreHelper.paths.MODELS}User.js`);
+        var User = coreHelper.callModule(`${coreHelper.paths.MODELS}Users.js`);
         var newUser = new User.class({});
 
         // serialize sessions
@@ -32,7 +32,7 @@ class Passport {
     }
 
     // configPassportFB(coreHelper) {
-    //     var User = coreHelper.callModule(`${coreHelper.paths.MODELS}User.js`);
+    //     var User = coreHelper.callModule(`${coreHelper.paths.MODELS}Users.js`);
     //     var newUser = new User({});
     //
     //     // serialize sessions
@@ -58,7 +58,7 @@ class Passport {
 
             // facebook will send back the tokens and profile
             function (access_token, refresh_token, profile, done) {
-                var User = coreHelper.callModule(`${coreHelper.paths.MODELS}User.js`);
+                var User = coreHelper.callModule(`${coreHelper.paths.MODELS}Users.js`);
                 var newUser = new User({});
 
                 // asynchronous
@@ -105,7 +105,7 @@ class Passport {
             usernameField: 'loginId',
             passwordField: 'pwd',
         }, function (username, password, callback) {
-            var User = coreHelper.callModule(`${coreHelper.paths.MODELS}User.js`);
+            var User = coreHelper.callModule(`${coreHelper.paths.MODELS}Users.js`);
             var newUser = new User.class({});
             newUser.findUser({loginId: username}, function (resultUser) {
                 if (resultUser.code) {

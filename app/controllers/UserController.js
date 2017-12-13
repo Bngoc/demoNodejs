@@ -6,7 +6,7 @@ const flash = require('connect-flash');
 const ViewController = require('./ViewController.js');
 const helper = new ViewController();
 
-var User = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}User.js`);
+var User = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Users.js`);
 var Contacts = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Contacts.js`);
 var HomeController = helper.coreHelper.callModule(`${helper.coreHelper.paths.CONTROLLERS}HomeController.js`);
 

@@ -2,7 +2,7 @@
 
 const path = require('path');
 
-const CoreHelper = require(path.join(__dirname, '/../../../config/CoreHelper.js'));
+const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const coreHelper = new CoreHelper();
 
 const bookshelf = require('bookshelf')(coreHelper.connectKnex());
@@ -10,7 +10,7 @@ const bookshelf = require('bookshelf')(coreHelper.connectKnex());
 let BlockLists = bookshelf.Model.extend({
     tableName: 'block_list',
     users: function () {
-        return this.belongsTo(coreHelper.callModule(`${coreHelper.paths.MODELS}User.js`).model, 'id');
+        return this.belongsTo(coreHelper.callModule(`${coreHelper.paths.MODELS}Users.js`).model, 'id');
     }
 });
 

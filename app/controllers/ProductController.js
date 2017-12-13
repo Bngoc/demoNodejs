@@ -3,7 +3,7 @@
 const ViewController = require('./ViewController.js');
 const helperViewController = new ViewController();
 
-var User = require("./../models/User.js");
+var User = require("./../models/Users.js");
 var Product = require("./../models/Product.js");
 
 // var BaseController = require('./BaseController.js');

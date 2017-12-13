@@ -2,8 +2,6 @@
 
 // var mysqlModel = require('mysql-model');
 //https://www.npmjs.com/package/mysql-model
-
-
 // http://knexjs.org/
 // http://bookshelfjs.org/
 //https://www.npmjs.com/package/knex-model-wrapper
@@ -11,7 +9,7 @@
 const bcrypt = require('bcrypt');
 const path = require('path');
 const Promise = require('bluebird');
-var _ = require('underscore');
+const _ = require('underscore');
 
 const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const coreHelper = new CoreHelper();
@@ -19,15 +17,14 @@ const coreHelper = new CoreHelper();
 const knex = coreHelper.connectKnex();
 const bookshelf = coreHelper.bookshelf();
 
-
-const Conversations = coreHelper.callModule(`${coreHelper.paths.MODELS}chat/Conversation.js`);
-const BlockList = coreHelper.callModule(`${coreHelper.paths.MODELS}chat/BlockList.js`);
-const Participants = coreHelper.callModule(`${coreHelper.paths.MODELS}chat/Participants.js`);
+const Conversations = coreHelper.callModule(`${coreHelper.paths.MODELS}Conversation.js`);
+const BlockList = coreHelper.callModule(`${coreHelper.paths.MODELS}BlockList.js`);
+const Participants = coreHelper.callModule(`${coreHelper.paths.MODELS}Participants.js`);
 const Contacts = coreHelper.callModule(`${coreHelper.paths.MODELS}Contacts.js`);
 
 // Note - use require model other, because relationship not working
 
-let Users = bookshelf.Model.extend({
+var Users = bookshelf.Model.extend({
     tableName: 'users',
     hasTimestamps: true,
     // validations: {
@@ -44,21 +41,17 @@ let Users = bookshelf.Model.extend({
     hidden: ['password'],
 
     useContacts: function () {
-        // return this.hasOne(new Contacts.model, 'users_id');
         return this.hasOne(coreHelper.callModule(`${coreHelper.paths.MODELS}Contacts.js`).model, 'users_id');
     },
 
     useBlockList: function () {
-        // return this.hasMany(BlockList(model), 'users_id');
-        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}chat/BlockList.js`).model, 'users_id');
+        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}BlockList.js`).model, 'users_id');
     },
     useConversation: function () {
-        // return this.hasMany(Conversation(model), 'creator_id');
-        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}chat/Conversation.js`).model, 'creator_id');
+        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}Conversation.js`).model, 'creator_id');
     },
     useParticipants: function () {
-        // return this.hasMany(Participants(model), 'users_id');
-        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}chat/Participants.js`).model, 'users_id');
+        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}Participants.js`).model, 'users_id');
     },
 });
 
@@ -77,16 +70,7 @@ var resultSql = {
     result: null
 };
 
-let User = function (params) {
-    // this.id = params.id;
-    // this.email = params.email;
-    // this.phone = params.phone;
-    // this.password = params.password;
-    // this.verification_code = params.verificationCode;
-    // this.is_active = params.isActive;
-    // this.is_reported = params.isReported;
-    // this.is_blocked = params.isBlocked;
-    // this.lastactive = params.lastactive;
+var User = function () {
 };
 
 User.prototype.findById = function (id, callback) {
@@ -105,7 +89,6 @@ User.prototype.findUserFullById = function (id, callback) {
         callback(err);
     });
 };
-
 
 User.prototype.findConversation = function (id, callback) {
     let responseData = {};
@@ -274,7 +257,6 @@ User.prototype.findUser = function (dataRequest, callback) {
         });
 };
 
-
 User.prototype.checkUser = function (dataRequest, callback) {
     Users.query(function (qb) {
         qb.where('phone', '=', dataRequest.phone).orWhere('email', '=', dataRequest.email);
@@ -287,7 +269,6 @@ User.prototype.checkUser = function (dataRequest, callback) {
         callback(result);
     });
 };
-
 
 User.prototype.insertUser = function (dataRequest, callback) {
     var dtUser = {
@@ -309,7 +290,7 @@ User.prototype.insertUser = function (dataRequest, callback) {
                     }
                 ], function (info) {
                     // Some validation could take place here.
-                    return new Contacts(info).save({'users_id': useModelData.id}, {transacting: t});
+                    return new Contacts.model(info).save({'users_id': useModelData.id}, {transacting: t});
                 });
             });
     }).then(function (library) {
@@ -322,7 +303,6 @@ User.prototype.insertUser = function (dataRequest, callback) {
         callback(result);
     });
 };
-
 
 User.prototype.insert = function (connect, configDb, dataRequest, callback) {
 
