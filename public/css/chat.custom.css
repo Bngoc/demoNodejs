@@ -11,7 +11,7 @@
 #frame {
     width: 100%;
     min-width: 360px;
-    height: 92vh;
+    height: 85vh;
     min-height: 300px;
     max-height: 720px;
     background: #E6EAEA;
@@ -507,6 +507,7 @@
     }
 }
 #frame .content .contact-profile {
+position: relative;
     width: 100%;
     height: 60px;
     line-height: 60px;
@@ -518,10 +519,57 @@
     float: left;
     margin: 9px 12px 0 9px;
 }
+#frame .content .contact-profile .info-participant, #frame .content .contact-profile .info-conversation {
+    width: 70%;
+}
+
+#frame .content .contact-profile .info-participant {
+    position: absolute;
+    left: 60px;
+    top: 10px;
+}
+
+#frame .content .contact-profile .info-participant .favorite-participant {
+    position: absolute;
+    font-size: 19px;
+    cursor: pointer;
+}
+
+#frame .content .contact-profile .info-conversation .favorite-conversation {
+    position: absolute;
+    left: 4px;
+    top: 35px;
+}
+
 #frame .content .contact-profile p {
-    float: left;
-    clear: inherit;
+    line-height: initial;
+    font-size: 130%;
+    /* float: left; */
+    position: absolute;
+    left: 25px;
+    /* clear: inherit; */
     margin-bottom: inherit;
+    white-space: nowrap;
+}
+#frame .content .contact-profile .cursor {
+    cursor: pointer;
+}
+
+#frame .content .contact-profile .info-conversation {
+    position: absolute;
+    left: 60px;
+    font-size: small;
+}
+#frame .content .contact-profile .info-conversation span, #frame .content .contact-profile .info-conversation a {
+    color: #0c0d0e;
+    white-space: nowrap;
+    position: absolute;
+    left: 25px;
+    top: 12px;
+}
+
+#frame .content .contact-profile .info-conversation a:hover {
+    text-decoration: none;
 }
 
 #frame .content .contact-profile .social-media {

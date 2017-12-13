@@ -78,20 +78,28 @@ var resultSql = {
 };
 
 let User = function (params) {
-    this.id = params.id;
-    this.email = params.email;
-    this.phone = params.phone;
-    this.password = params.password;
-    this.verification_code = params.verificationCode;
-    this.is_active = params.isActive;
-    this.is_reported = params.isReported;
-    this.is_blocked = params.isBlocked;
-    this.lastactive = params.lastactive;
+    // this.id = params.id;
+    // this.email = params.email;
+    // this.phone = params.phone;
+    // this.password = params.password;
+    // this.verification_code = params.verificationCode;
+    // this.is_active = params.isActive;
+    // this.is_reported = params.isReported;
+    // this.is_blocked = params.isBlocked;
+    // this.lastactive = params.lastactive;
 };
 
 User.prototype.findById = function (id, callback) {
     Users.where({id: id}).fetch().then(function (data) {
         // Users.where({id: id}).fetch({withRelated: ['contacts']}).then(function (data) {
+        callback(null, data);
+    }).catch(function (err) {
+        callback(err);
+    });
+};
+
+User.prototype.findUserFullById = function (id, callback) {
+    Users.where({id: id}).fetch({withRelated: ['useContacts']}).then(function (data) {
         callback(null, data);
     }).catch(function (err) {
         callback(err);
@@ -199,8 +207,7 @@ User.prototype.findByIdChat = function (id, callback) {
 
             Promise.all(infoParticipantClone)
                 .then(function (resultValueAllPromise) {
-                    resultValueAllPromise.forEach((element, indx)=> {
-                        var infoAccountParticipantTemp = [];
+                    resultValueAllPromise.forEach((element, indx) => {
                         if (element.type === coreHelper.app.participants[0]) {
                             element.count = 1;
                             resultDataParticipant.push(element);

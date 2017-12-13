@@ -61,7 +61,7 @@ class UserController {
                         } else {
                             if (resultUser.result) {
                                 if (bcrypt.compareSync(req.body.pwd, resultUser.result.attributes.password)) {
-                                    req.session.userCurrent = resultUser;
+                                    // req.session.userCurrent = resultUser;
                                     res.status(200).send(resultUser);
                                 } else {
                                     responseData.pwd = 'Sai pass rùi .... ^_^';
@@ -401,7 +401,7 @@ class UserController {
                 responseData.code = 'ERR0001';
                 res.status(200).send(responseData);
             } else {
-                var newUser = new User();
+                var newUser = new User.class();
                 var dataRequest = {
                     phone: req.body.phone,
                     email: req.body.email,

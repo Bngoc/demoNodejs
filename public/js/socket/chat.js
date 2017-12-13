@@ -6,7 +6,10 @@ $('body').on('click', '#status-options .channel-status', function () {
         if (typeof dataValue !== typeof undefined && dataValue !== false) {
             var dataRequest = {
                 url: $('#status-options').attr('data-url'),
-                data: {status: dataValue, _method: 'post'}
+                data: {
+                    status: dataValue,
+                    _method: 'post'
+                }
             };
 
             callDataJS(dataRequest, function (result) {

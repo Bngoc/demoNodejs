@@ -46,7 +46,7 @@ class Routers {
         app.get("/product", productController.getIndex);
         // app.get("/chat", 'chat', chatController.getIndex);
         app.get("/chat", 'chat', useMiddleware.isAuthenticated, chatController.getIndex);
-        app.post("/chat/content-chat", chatController.postContentChat);
+        app.post("/chat/content-chat", 'chat.change.content', chatController.postContentChat);
         app.post("/chat/change-status", 'chat.change.status', chatController.postChangeStatus);
 
 

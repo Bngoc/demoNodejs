@@ -20,79 +20,76 @@ var BaseController = require('./BaseController.js');
 
 const HEIGHT_BOX_CHAT_MAX = 130;
 const HEIGHT_BOX_CHAT_MIN = 56;
+var socketIO = {};
+var isIO = {};
 
 class ChatController extends BaseController {
 
     getIndex(req, res, next) {
+        try {
+            var self = this;
+            var showResponse = helper;
+            const aliasRouter = helper.coreHelper.aliasRouter();
+            showResponse.header = showResponse.getHeader('CHAT');
+            showResponse.cssInclude = showResponse.readFileInclude(['css/chat.custom.css', 'css/chat.test.css'], 'c');
+            showResponse.title = 'Home chat';
+            showResponse.isNotIncludeSidebar = true;
+            showResponse.scriptInclude = showResponse.readFileInclude(['js/socket/client.js', 'js/socket/chat.js']);
+            showResponse.renderViews = 'chat/index.ejs';
 
-        var showResponse = helper;
-        const aliasRouter = helper.coreHelper.aliasRouter();
-        showResponse.header = showResponse.getHeader('CHAT');
-        showResponse.cssInclude = showResponse.readFileInclude(['css/chat.custom.css', 'css/chat.test.css'], 'c');
-        showResponse.title = 'Home chat';
-        showResponse.isNotIncludeSidebar = true;
-        showResponse.scriptInclude = showResponse.readFileInclude(['js/socket/client.js', 'js/socket/chat.js']);
-        showResponse.renderViews = 'chat/index.ejs';
+            let userCurrent = req.user;
 
-        let userCurrent = req.user;
+            if (userCurrent) {
+                var newUser = new User.class({});
+                newUser.findByIdChat(userCurrent.attributes.id, function (err, rsData) {
+                    if (err) {
+                        return next(err);
+                    }
 
-        if (userCurrent) {
-            var newUser = new User.class({});
-            newUser.findByIdChat(userCurrent.attributes.id, function (err, rsData) {
-                if (err) {
-                    return next(err);
-                }
+                    let notiContacts = rsData.infoAccount.relations.useContacts;
 
-                let notiContacts = rsData.infoAccount.relations.useContacts;
+                    showResponse.testData = rsData;
 
-                showResponse.testData = rsData;
+                    let requestCurrent = {
+                        userCurrentID: userCurrent.attributes.id,
+                        statusID: notiContacts.attributes.status,
+                        statusName: helper.coreHelper.app.chatStatus[notiContacts.attributes.status],
+                        listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' ')
+                    };
+                    req.session.requestCurrentStatus = requestCurrent;
 
-                let ioClone = helper.coreHelper.IO();
-                ioClone.on('connection', function (socket) {
-                    let conversation = [];
-                    rsData.infoParticipant.forEach(function (element, indx) {
-                        socket.join(element.channel_id);
-                        conversation.push({
-                            userCurrent: userCurrent.attributes.id,
-                            type: element.type,
-                            title: element.title,
-                            channel_id: element.channel_id,
-                            statusID: notiContacts.attributes.status,
-                            statusName: helper.coreHelper.app.chatStatus[notiContacts.attributes.status],
-                            listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' ')
-                        })
+                    var chatController = new ChatController();
+                    chatController.convertDataListSocket(rsData.infoParticipant, requestCurrent, function (err, done) {
                     });
 
-                    console.log(socket.adapter.rooms);
+                    showResponse.userName = notiContacts ? notiContacts.attributes.middle_name : '';
+                    showResponse.userID = notiContacts ? notiContacts.attributes.id : '';
+                    showResponse.status = notiContacts ? helper.coreHelper.app.chatStatus[notiContacts.attributes.status] : '';
+                    showResponse.listStatus = helper.coreHelper.app.chatStatus;
+                    showResponse.urlUpdareStatus = aliasRouter.build('chat.change.status');
+                    showResponse.urlChangeContent = aliasRouter.build('chat.change.content');
 
-                    socket.broadcast.emit('testUser', conversation);
-                    console.log(`\n-------------------------->>>>  ${JSON.stringify(socket.handshake.session)} \n`);
+
+                    // res.locals.listParticipants = infoParticipant ? infoParticipant : null;
+                    // req.session.listParticipants = infoParticipant ? infoParticipant : null;
+
+                    showResponse.listParticipant = rsData.infoParticipant ? rsData.infoParticipant : null;
+
+
+                    // console.log('---------------------------------', helper.coreHelper.app.chatStatus[notiContacts.attributes.status]);
+
+                    showResponse.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX;
+                    showResponse.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN;
+
+
+                    res.render(showResponse.renderViews, showResponse);
                 });
-
-
-                showResponse.userName = notiContacts ? notiContacts.attributes.middle_name : '';
-                showResponse.userID = notiContacts ? notiContacts.attributes.id : '';
-                showResponse.status = notiContacts ? helper.coreHelper.app.chatStatus[notiContacts.attributes.status] : '';
-                showResponse.listStatus = helper.coreHelper.app.chatStatus;
-                showResponse.urlUpdareStatus = aliasRouter.build('chat.change.status');
-
-
-                // res.locals.listParticipants = infoParticipant ? infoParticipant : null;
-                // req.session.listParticipants = infoParticipant ? infoParticipant : null;
-
-                showResponse.listParticipant = rsData.infoParticipant ? rsData.infoParticipant : null;
-
-
-                console.log('---------------------------------', helper.coreHelper.app.chatStatus[notiContacts.attributes.status]);
-
-                showResponse.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX;
-                showResponse.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN;
-
-
-                res.render(showResponse.renderViews, showResponse);
-            });
-        } else {
-            res.redirect('/');
+            } else {
+                res.redirect('/');
+            }
+        } catch (ex) {
+            throw ex;
+            console.log('ERROR TRY_CATCH CHAT INDEX');
         }
     }
 
@@ -103,22 +100,57 @@ class ChatController extends BaseController {
         showResponseChat.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN;
         showResponseChat.imgProfile = req.body.imgProfile;
         showResponseChat.userName = req.body.userName;
+
         showResponseChat.renderViews = 'chat/content.chat.ejs';
+        let userCurrent = req.user;
 
-        // zender view before send data
-        //{layout: 'ajax'}
-        res.render(showResponseChat.renderViews, {data: showResponseChat, layout: false}, function (err, renderHtml) {
-            if (err) {
-                res.send(err);
-            } else {
-                var response = {
-                    html: renderHtml,
-                    err: err,
-                };
+        if (parseInt(req.body.dataConversation) && userCurrent) {
+            let conversation = new Conversation.class();
+            conversation.ConversationsListUser(parseInt(req.body.dataConversation), userCurrent.attributes.id, function (err, modelConversation) {
 
-                res.status(200).send(response);
-            }
-        });
+                if (err) {
+                    next(err);
+                }
+                // modelConversation.forEach(function (elem) {
+                //
+                //     let countParticipants = 0;
+                //     elem.relations.conParticipant.forEach(function (elePart) {
+                        showResponseChat.dataType = 333333;
+                //         countParticipants++;
+                //     });
+                //
+                    showResponseChat.dataChannelId = 222;
+                    showResponseChat.dataOwerId = 22222;
+                    showResponseChat.dataConversation = 2222;
+                    showResponseChat.countParticipants = 2222;
+                    showResponseChat.isTypeSingle = true;
+                // });
+
+                // console.log('------------------------------', conParticipant, conParticipant.get('type'), '------------------------------');
+                console.log('------------------------------', JSON.stringify(modelConversation), '------------------------------');
+
+
+                // zender view before send data
+                //{layout: 'ajax'}
+                res.render(showResponseChat.renderViews, {
+                    data: showResponseChat,
+                    layout: false
+                }, function (err, renderHtml) {
+                    if (err) {
+                        res.send(err);
+                    } else {
+                        var response = {
+                            html: renderHtml,
+                            err: err,
+                        };
+
+                        res.status(200).send(response);
+                    }
+                });
+            });
+        } else {
+            res.status(500).send('ERR');
+        }
     }
 
     postChangeStatus(req, res) {
@@ -139,10 +171,34 @@ class ChatController extends BaseController {
                 newContacts.updateContact(dataRequest, function (err, rsModel) {
                     if (err) {
                         responseAjax.code = err;
+                        res.status(200).send(responseAjax);
                     } else {
-                        responseAjax.status = true;
+                        var newUser = new User.class({});
+                        newUser.findByIdChat(userCurrent.attributes.id, function (err, rsData) {
+                            if (err) {
+                                responseAjax.code = err;
+                                res.status(200).send(responseAjax);
+                            } else {
+                                let notiContacts = rsData.infoAccount.relations.useContacts;
+                                let requestCurrent = {
+                                    userCurrentID: userCurrent.attributes.id,
+                                    statusID: notiContacts.attributes.status,
+                                    statusName: helper.coreHelper.app.chatStatus[notiContacts.attributes.status],
+                                    listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' ')
+                                };
+                                let chatController = new ChatController();
+
+                                chatController.convertDataListSocket(rsData.infoParticipant, requestCurrent, function (err, done) {
+                                    if (err) {
+                                        responseAjax.code = err;
+                                    }
+                                    responseAjax.status = true;
+
+                                    res.status(200).send(responseAjax);
+                                });
+                            }
+                        });
                     }
-                    res.status(200).send(responseAjax);
                 });
             } else {
                 responseAjax.code = 'ERR0001';
@@ -156,7 +212,11 @@ class ChatController extends BaseController {
     }
 
     socketIO(io) {
+        isIO = io;
         io.on('connection', function (socket) {
+            socketIO = socket;
+
+
             // console.log(socket);
 
             // var cookies = cookie.parse(socket.handshake.headers.cookie);
@@ -220,5 +280,33 @@ class ChatController extends BaseController {
         });
     }
 }
+
+ChatController.prototype.convertDataListSocket = function (infoConversation, requestOption, callback) {
+    // let conversation = [];
+    infoConversation.forEach(function (element) {
+        socketIO.join(element.channel_id);
+        let conversationClone = {
+            userCurrent: requestOption.userCurrentID,
+            type: element.type,
+            title: element.title,
+            channel_id: element.channel_id,
+            statusID: requestOption.statusID,
+            statusName: requestOption.statusName,
+            listStatus: requestOption.listStatus,
+            isTypeSingle: element.type == helper.coreHelper.app.participants[0]
+        };
+
+        // conversation.push(conversationClone);
+        if (conversationClone.isTypeSingle) {
+            socketIO.to(element.channel_id).emit('listUserConversation', conversationClone);
+        }
+    });
+
+    // console.log(socketIO.adapter.rooms, JSON.stringify(infoConversation));
+    // socketIO.broadcast.emit('listUserConversation', conversation);
+    // isIO.sockets.emit('listUserConversation', conversation);
+
+    callback(null, true);
+};
 
 module.exports = ChatController;

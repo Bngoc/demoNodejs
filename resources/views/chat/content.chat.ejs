@@ -1,6 +1,14 @@
 <div class="contact-profile">
     <%- data.imgProfile %>
-    <p><%- data.userName %></p>
+    <div class="info-participant">
+        <i class="favorite-participant fa fa-star-o" aria-hidden="true"></i>
+        <p><%- data.userName %></p>
+    </div>
+    <div class="info-conversation cursor">
+        <i class="favorite-conversation fa fa-plus" aria-hidden="true"></i>
+        <span class="fsfgs">fsgsgsgs | fsgsgsgs</span>
+        <!--<a class="fsfgs">fsgsgsgs | fsgsgsgs </a>-->
+    </div>
     <div class="social-media">
         <i class="fa fa-facebook" aria-hidden="true"></i>
         <i class="fa fa-twitter" aria-hidden="true"></i>
@@ -30,7 +38,7 @@
         </li>
     </ul>
 </div>
-<div class="message-input" id="messageInput">
+<div class="message-input" id="messageInput" data-conversation='<%- data.dataConversation %>' data-channel='<%- data.dataChannelId %>' data-ower='<%- data.dataOwerId %>' data-type='<%- data.dataType %>'>
     <div class="wrap">
         <div class="scrollbar" id="style-box-sms" min-height="<%= data.minHeightBoxChat %>"
              max-height="<%= data.maxHeightBoxChat %>" style='max-height: <%= data.maxHeightBoxChat %>px'>

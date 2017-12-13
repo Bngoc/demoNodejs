@@ -29,7 +29,7 @@
             <label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
             <input type="text" placeholder="Search contacts..."/>
         </div>
-        <div id="contacts">
+        <div id="contacts" data-url='<%- urlChangeContent %>'>
             <ul>
                 <% if(listParticipant){
                 listParticipant.forEach((element, indx)=> {
@@ -39,7 +39,7 @@
 
                 %>
                 <li class="contact">
-                    <div class="wrap" data-channel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
+                    <div class="wrap" data-conversation='<%- element.idConversation %>' data-type='<%- element.type%>' data-channel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
                         <span channel='status.<%- element.channel_id %>' class='contact-status <%- listStatus[infoContact.attributes.status] ? listStatus[infoContact.attributes.status] : "" %>'></span>
                         <img src="http://emilcarlsson.se/assets/louislitt.png" alt=""/>
                         <div class="meta">
@@ -53,7 +53,7 @@
 
                     <% JSON.stringify(element) %>
                 <li class="contact">
-                    <div class="wrap" data-changel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
+                    <div class="wrap" data-conversation='<%- element.idConversation %>' data-type='<%- element.type%>' data-changel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
                         <span class="contact-status online"></span>
                         <img src="http://emilcarlsson.se/assets/louislitt.png" alt=""/>
                         <div class="meta">
@@ -180,7 +180,15 @@
     <div class="content" id="content-chat">
         <div class="contact-profile">
             <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
-            <p>Harvey Specter</p>
+            <div class="info-participant">
+                <i class="favorite-participant fa fa-star-o" aria-hidden="true"></i>
+                <p>Harvey Specter</p>
+            </div>
+            <div class="info-conversation cursor">
+                <i class="favorite-conversation fa fa-plus" aria-hidden="true"></i>
+                <span class="fsfgs">fsgsgsgs | fsgsgsgs</span>
+                <!--<a class="fsfgs">fsgsgsgs | fsgsgsgs </a>-->
+            </div>
             <div class="social-media">
                 <i class="fa fa-facebook" aria-hidden="true"></i>
                 <i class="fa fa-twitter" aria-hidden="true"></i>
@@ -281,7 +289,7 @@
 </div>
 
 
-<%- testData ? JSON.stringify(testData) : 111 %>
+<% testData ? JSON.stringify(testData) : 111 %>
 
 <!--
 <div class="_4pi8" role="presentation">

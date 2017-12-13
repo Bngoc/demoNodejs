@@ -23,23 +23,7 @@ var Participants = bookshelf.Model.extend({
     }
 });
 
-
-// let Conversation = bookshelf.Model.extend({
-//     tableName: 'conversation',
-//     hasTimestamps: true,
-//     users: function () {
-//         return this.belongsTo(Users, 'id');
-//     },
-//     // deletedConversations: function () {
-//     //     return this.hasMany(DeletedConversations, 'conversation_id');
-//     // },
-//     participants: function () {
-//         return this.belongsTo(Participants, 'conversation_id', 'id');
-//     }
-// });
-
 let Participant = function () {
-
 }
 
 Participant.prototype.getConversation = function (dataRes, callback) {

@@ -28,12 +28,10 @@ socket.on('sendDataBroadCast', function (messageSent) {
     }
 });
 
-
-socket.on('testUser', function (testUser) {
-    testUser.forEach(function (elem) {
-        $('span[channel="status.' + elem.channel_id + '"]').removeClass(elem.listStatus).addClass(elem.statusName);
-    });
-    // console.log('testUser', 'span[channel=status.' + elem.channel_id + ']');
+socket.on('listUserConversation', function (listConversation) {
+    if (listConversation.isTypeSingle) {
+        $('span[channel="status.' + listConversation.channel_id + '"]').removeClass(listConversation.listStatus).addClass(listConversation.statusName);
+    }
 });
 
 $(document).ready(function () {
@@ -160,16 +158,24 @@ SendChatMessage.prototype.reloadContentBoxChatAjax = function () {
     $('body').on('click', '#contacts li.contact', function () {
         $('li.contact').removeClass('active');
         $(this).addClass('active');
-        // var html = $(this).html();
-        // alert(html);
+
         let imgProfile = $(this).find('.wrap img').attr("src");
         let userName = $(this).find('.meta p.name').text();
+        let dataChannelID = $(this).find('.wrap').attr("data-channel");
+        let dataOwerID = $(this).find('.wrap').attr("data-ower");
+        let dataType = $(this).find('.wrap').attr("data-type");
+        let dataConversation = $(this).find('.wrap').attr("data-conversation");
 
         let dataRequest = {
-            url: '/chat/content-chat',
+            url: $('#contacts').attr('data-url'),
             data: {
                 imgProfile: '<img src="' + imgProfile + '" alt="">',
-                userName: userName
+                userName: userName,
+                dataChannelID: dataChannelID,
+                dataOwerID: dataOwerID,
+                dataType: dataType,
+                dataConversation: dataConversation,
+                _method: 'post'
             }
         };
 
