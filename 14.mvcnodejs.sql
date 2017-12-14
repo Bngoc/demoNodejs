@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th12 11, 2017 lúc 04:10 CH
+-- Thời gian đã tạo: Th12 14, 2017 lúc 01:39 CH
 -- Phiên bản máy phục vụ: 10.1.21-MariaDB
 -- Phiên bản PHP: 5.6.30
 
@@ -19,6 +19,8 @@ SET time_zone = "+00:00";
 --
 -- Cơ sở dữ liệu: `mvcnodejs`
 --
+CREATE DATABASE IF NOT EXISTS `mvcnodejs` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `mvcnodejs`;
 
 -- --------------------------------------------------------
 
@@ -26,6 +28,7 @@ SET time_zone = "+00:00";
 -- Cấu trúc bảng cho bảng `access`
 --
 
+DROP TABLE IF EXISTS `access`;
 CREATE TABLE `access` (
   `id` int(11) NOT NULL,
   `users_id` int(11) NOT NULL,
@@ -36,12 +39,17 @@ CREATE TABLE `access` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- RELATIONS FOR TABLE `access`:
+--
+
 -- --------------------------------------------------------
 
 --
 -- Cấu trúc bảng cho bảng `block_list`
 --
 
+DROP TABLE IF EXISTS `block_list`;
 CREATE TABLE `block_list` (
   `id` int(11) NOT NULL,
   `users_id` int(11) NOT NULL,
@@ -50,6 +58,10 @@ CREATE TABLE `block_list` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- RELATIONS FOR TABLE `block_list`:
+--
 
 --
 -- Đang đổ dữ liệu cho bảng `block_list`
@@ -65,6 +77,7 @@ INSERT INTO `block_list` (`id`, `users_id`, `participants_id`, `is_deleted`, `cr
 -- Cấu trúc bảng cho bảng `contacts`
 --
 
+DROP TABLE IF EXISTS `contacts`;
 CREATE TABLE `contacts` (
   `id` int(11) NOT NULL COMMENT 'Sync the contacts to this table',
   `users_id` int(11) NOT NULL,
@@ -77,29 +90,36 @@ CREATE TABLE `contacts` (
   `mood_message` varchar(100) DEFAULT NULL,
   `status` tinyint(1) DEFAULT '0',
   `is_life` tinyint(1) DEFAULT '0',
-  `path_img` varchar(255) NULL DEFAULT 0,
-  `path_img_group` varchar(255) NULL DEFAULT 0,
+  `path_img` text,
+  `path_img_group` text,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- RELATIONS FOR TABLE `contacts`:
+--   `users_id`
+--       `users` -> `id`
+--
 
 --
 -- Đang đổ dữ liệu cho bảng `contacts`
 --
 
 INSERT INTO `contacts` (`id`, `users_id`, `first_name`, `middle_name`, `last_name`, `user_name`, `country`, `gender`, `mood_message`, `status`, `is_life`, `path_img`, `path_img_group`, `created_at`, `updated_at`) VALUES
-(1, 1, 'bqngoc119', 'bqngoc119 undefined', NULL, NULL, NULL, NULL, '23', 3, 0,NULL, NULL, '2017-11-30 01:59:17', '2017-11-30 01:59:17'),
-(2, 2, 'bqngoc110', 'bqngoc110 undefined', NULL, NULL, NULL, NULL, '3', 0, 0,NULL, NULL, '2017-11-30 02:03:06', '2017-12-03 18:39:00'),
-(3, 3, 'bqngoc118', 'bqngoc118 undefined', NULL, NULL, NULL, NULL, '22', 3, 0,NULL, NULL, '2017-11-30 02:04:54', '2017-11-30 02:04:54'),
-(4, 4, 'bqngoc11229', 'bqngoc11229 undefine', NULL, NULL, NULL, NULL, 'r', 1, 0,NULL, NULL, '2017-11-30 02:05:28', '2017-11-30 02:05:28'),
-(5, 5, 'BuiNgoc1', 'BuiNgoc1 undefined', NULL, NULL, NULL, NULL, 'ư', 1, 0,NULL, NULL, '2017-11-30 02:07:13', '2017-12-03 18:33:55'),
-(6, 6, 'gsgewq', 'gsgewq undefined', NULL, NULL, NULL, NULL, 'r', 3, 0,NULL, NULL, '2017-11-30 02:09:07', '2017-11-30 02:09:07'),
-(7, 7, 'few4w4', 'few4w4 undefined', NULL, NULL, NULL, NULL, 'r', 4, 0,NULL, NULL, '2017-11-30 02:17:17', '2017-11-30 02:17:17'),
-(8, 8, 'ewew434', 'ewew434 undefined', NULL, NULL, NULL, NULL, 'rrw', 2, 0,NULL, NULL, '2017-11-30 02:17:39', '2017-11-30 02:17:39'),
-(9, 9, '98912315069', '98912315069 undefine', NULL, NULL, NULL, NULL, 'rưư', 4, 0,NULL, NULL, '2017-11-30 02:18:26', '2017-11-30 02:18:26'),
-(10, 10, 'BuiNgocewewe', 'BuiNgocewewe undefin', NULL, NULL, NULL, NULL, 'rử', 1, 0,NULL, NULL, '2017-11-30 02:19:35', '2017-11-30 02:19:35'),
-(11, 11, 'buingoc119', NULL, 'xxx-xx', NULL, NULL, NULL, NULL, 3, 0,NULL, NULL, '2017-11-30 15:11:51', '2017-11-30 17:11:29'),
-(12, 12, 'bqngoc119', 'bqngoc119 xxx-xx', 'xxx-xx', NULL, NULL, NULL, NULL, 0, 0,NULL, NULL, '2017-12-01 12:23:12', '2017-12-07 17:59:28');
+(1, 1, 'bqngoc119', 'bqngoc119 undefined', NULL, NULL, NULL, NULL, '23', 3, 0, '', '', '2017-11-30 01:59:17', '2017-11-30 01:59:17'),
+(2, 2, 'bqngoc110', 'bqngoc110 undefined', NULL, NULL, NULL, NULL, '3', 0, 0, '', '', '2017-11-30 02:03:06', '2017-12-03 18:39:00'),
+(3, 3, 'bqngoc118', 'bqngoc118 undefined', NULL, NULL, NULL, NULL, '22', 3, 0, '', '', '2017-11-30 02:04:54', '2017-11-30 02:04:54'),
+(4, 4, 'bqngoc11229', 'bqngoc11229 undefine', NULL, NULL, NULL, NULL, 'r', 1, 0, '', '', '2017-11-30 02:05:28', '2017-11-30 02:05:28'),
+(5, 5, 'BuiNgoc1', 'BuiNgoc1 undefined', NULL, NULL, NULL, NULL, 'ư', 1, 0, '', '', '2017-11-30 02:07:13', '2017-12-03 18:33:55'),
+(6, 6, 'gsgewq', 'gsgewq undefined', NULL, NULL, NULL, NULL, 'r', 2, 0, '', '', '2017-11-30 02:09:07', '2017-12-13 12:37:10'),
+(7, 7, 'few4w4', 'few4w4 undefined', NULL, NULL, NULL, NULL, 'r', 4, 0, '', '', '2017-11-30 02:17:17', '2017-11-30 02:17:17'),
+(8, 8, 'ewew434', 'ewew434 undefined', NULL, NULL, NULL, NULL, 'rrw', 2, 0, '', '', '2017-11-30 02:17:39', '2017-11-30 02:17:39'),
+(9, 9, '98912315069', '98912315069 undefine', NULL, NULL, NULL, NULL, 'rưư', 4, 0, '', '', '2017-11-30 02:18:26', '2017-11-30 02:18:26'),
+(10, 10, 'BuiNgocewewe', 'BuiNgocewewe undefin', NULL, NULL, NULL, NULL, 'rử', 1, 0, '', '', '2017-11-30 02:19:35', '2017-11-30 02:19:35'),
+(11, 11, 'buingoc119', NULL, 'xxx-xx', NULL, NULL, NULL, NULL, 3, 0, '', '', '2017-11-30 15:11:51', '2017-11-30 17:11:29'),
+(12, 12, 'bqngoc119', 'bqngoc119 xxx-xx', 'xxx-xx', NULL, NULL, NULL, NULL, 3, 0, '', '', '2017-12-01 12:23:12', '2017-12-13 12:36:22'),
+(13, 15, 'bqngoc119wqw', 'bqngoc119wqw xxx-xx', 'xxx-xx', NULL, NULL, NULL, NULL, 0, 0, '', '', '2017-12-13 12:03:12', '2017-12-13 12:03:12');
 
 -- --------------------------------------------------------
 
@@ -107,6 +127,7 @@ INSERT INTO `contacts` (`id`, `users_id`, `first_name`, `middle_name`, `last_nam
 -- Cấu trúc bảng cho bảng `conversation`
 --
 
+DROP TABLE IF EXISTS `conversation`;
 CREATE TABLE `conversation` (
   `id` int(11) NOT NULL,
   `title` varchar(40) DEFAULT NULL,
@@ -117,6 +138,10 @@ CREATE TABLE `conversation` (
   `is_deleted` tinyint(1) DEFAULT '0',
   `deleted_users_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- RELATIONS FOR TABLE `conversation`:
+--
 
 --
 -- Đang đổ dữ liệu cho bảng `conversation`
@@ -135,6 +160,7 @@ INSERT INTO `conversation` (`id`, `title`, `creator_id`, `channel_id`, `created_
 -- Cấu trúc bảng cho bảng `deleted_conversations`
 --
 
+DROP TABLE IF EXISTS `deleted_conversations`;
 CREATE TABLE `deleted_conversations` (
   `id` int(11) NOT NULL,
   `conversation_id` int(11) NOT NULL,
@@ -144,12 +170,17 @@ CREATE TABLE `deleted_conversations` (
   `is_deleted` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- RELATIONS FOR TABLE `deleted_conversations`:
+--
+
 -- --------------------------------------------------------
 
 --
 -- Cấu trúc bảng cho bảng `deleted_messages`
 --
 
+DROP TABLE IF EXISTS `deleted_messages`;
 CREATE TABLE `deleted_messages` (
   `id` int(11) NOT NULL,
   `messages_id` int(11) NOT NULL,
@@ -159,12 +190,17 @@ CREATE TABLE `deleted_messages` (
   `is_deleted` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- RELATIONS FOR TABLE `deleted_messages`:
+--
+
 -- --------------------------------------------------------
 
 --
 -- Cấu trúc bảng cho bảng `devices`
 --
 
+DROP TABLE IF EXISTS `devices`;
 CREATE TABLE `devices` (
   `id` int(11) NOT NULL,
   `users_id` int(11) NOT NULL,
@@ -176,17 +212,26 @@ CREATE TABLE `devices` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- RELATIONS FOR TABLE `devices`:
+--
+
 -- --------------------------------------------------------
 
 --
 -- Cấu trúc bảng cho bảng `groupmembers`
 --
 
+DROP TABLE IF EXISTS `groupmembers`;
 CREATE TABLE `groupmembers` (
   `user_id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL,
   `last_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- RELATIONS FOR TABLE `groupmembers`:
+--
 
 -- --------------------------------------------------------
 
@@ -194,10 +239,15 @@ CREATE TABLE `groupmembers` (
 -- Cấu trúc bảng cho bảng `groups`
 --
 
+DROP TABLE IF EXISTS `groups`;
 CREATE TABLE `groups` (
   `id` int(11) NOT NULL,
   `name` varchar(256) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- RELATIONS FOR TABLE `groups`:
+--
 
 -- --------------------------------------------------------
 
@@ -205,6 +255,7 @@ CREATE TABLE `groups` (
 -- Cấu trúc bảng cho bảng `messages`
 --
 
+DROP TABLE IF EXISTS `messages`;
 CREATE TABLE `messages` (
   `id` int(11) NOT NULL,
   `conversation_id` int(11) NOT NULL,
@@ -220,12 +271,17 @@ CREATE TABLE `messages` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- RELATIONS FOR TABLE `messages`:
+--
+
 -- --------------------------------------------------------
 
 --
 -- Cấu trúc bảng cho bảng `participants`
 --
 
+DROP TABLE IF EXISTS `participants`;
 CREATE TABLE `participants` (
   `id` int(11) NOT NULL,
   `conversation_id` int(11) NOT NULL,
@@ -234,6 +290,10 @@ CREATE TABLE `participants` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- RELATIONS FOR TABLE `participants`:
+--
 
 --
 -- Đang đổ dữ liệu cho bảng `participants`
@@ -256,6 +316,7 @@ INSERT INTO `participants` (`id`, `conversation_id`, `users_id`, `type`, `create
 -- Cấu trúc bảng cho bảng `product_counts`
 --
 
+DROP TABLE IF EXISTS `product_counts`;
 CREATE TABLE `product_counts` (
   `id` int(10) UNSIGNED NOT NULL,
   `color_id` int(10) UNSIGNED NOT NULL,
@@ -266,12 +327,23 @@ CREATE TABLE `product_counts` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- RELATIONS FOR TABLE `product_counts`:
+--   `color_id`
+--       `product_colors` -> `id`
+--   `product_id`
+--       `products` -> `id`
+--   `size_id`
+--       `product_sizes` -> `id`
+--
+
 -- --------------------------------------------------------
 
 --
 -- Cấu trúc bảng cho bảng `reports`
 --
 
+DROP TABLE IF EXISTS `reports`;
 CREATE TABLE `reports` (
   `id` int(11) NOT NULL,
   `users_id` int(11) NOT NULL,
@@ -283,12 +355,17 @@ CREATE TABLE `reports` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- RELATIONS FOR TABLE `reports`:
+--
+
 -- --------------------------------------------------------
 
 --
 -- Cấu trúc bảng cho bảng `users`
 --
 
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `phone` varchar(16) NOT NULL,
@@ -304,6 +381,10 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- RELATIONS FOR TABLE `users`:
+--
+
+--
 -- Đang đổ dữ liệu cho bảng `users`
 --
 
@@ -313,13 +394,14 @@ INSERT INTO `users` (`id`, `phone`, `email`, `password`, `verification_code`, `i
 (3, '98981506912', 'buingoc119@hotmail.comw', '$2a$10$Cm3mNIrptlKZcq8lDrCYAeZ/aQKY8zgxSQ0DZ/zLHcXOkuxFqufmG', NULL, 0, 0, 0, '0000-00-00 00:00:00', '2017-11-29 19:04:54', '2017-11-29 19:04:54'),
 (4, '989811506921', 'buingocc119', '$2a$10$uQFwcNr9W5uSbDNiuwUOP.NIpJxB2YyliceXhQDsQmhIvnQUEwnHu', NULL, 0, 0, 0, '2017-11-30 15:12:54', '2017-11-29 19:05:28', '2017-11-29 19:05:28'),
 (5, '9894515069', 'buins119@hotmail.com', '$2a$10$92N7a1eXoJpbvQfnJZ9FOukBRP8dltocDXhq.fAYCp1fWC6nw61Ba', NULL, 0, 0, 0, '2017-12-03 18:28:54', '2017-11-29 19:07:13', '2017-11-29 19:07:13'),
-(6, '989231815069', 'godwrm91@gmail.com', '$2a$10$DN.aTIJfCroew4.zoBAXsO06B6..W2a2i8buAI4niQULGPl02qOWS', NULL, 0, 0, 0, '0000-00-00 00:00:00', '2017-11-29 19:09:07', '2017-11-29 19:09:07'),
+(6, '989231815069', 'buingoc119', '$2a$10$92N7a1eXoJpbvQfnJZ9FOukBRP8dltocDXhq.fAYCp1fWC6nw61Ba', NULL, 0, 0, 0, '2017-12-12 15:06:30', '2017-11-29 19:09:07', '2017-11-29 19:09:07'),
 (7, '933815069', 'buineewoc119@hotmail.com', '$2a$10$2WNNLFsyVdBqJjPdT2JFWOsgT8e8AVYpt0dtVIEOqz32mU1iBAYVC', NULL, 0, 0, 0, '0000-00-00 00:00:00', '2017-11-29 19:17:17', '2017-11-29 19:17:17'),
 (8, '98981321069', 'buisgoc119@hotms.com', '$2a$10$sQTyyzZ2w2wSkPB0oam82uxDATxgea62ITEowRkUw8.MtP336UGtq', NULL, 0, 0, 0, '0000-00-00 00:00:00', '2017-11-29 19:17:39', '2017-11-29 19:17:39'),
 (9, '98912315069', 'buingo232c119@ho33email.com', '$2a$10$kzAiNk8wsP5TtDNll6YoJOB393mnYIss7b/Ax5Snim9Gv9BszFIiC', NULL, 0, 0, 0, '0000-00-00 00:00:00', '2017-11-29 19:18:26', '2017-11-29 19:18:26'),
 (10, '989815034369', 'BuiNgoce@grgwee.ewe', '$2a$10$PWBePR13Uki2Y1eO59zGte..TH3DMvVy1bLzBMtMw.ZvsDJLcrCgy', NULL, 0, 0, 0, '0000-00-00 00:00:00', '2017-11-29 19:19:35', '2017-11-29 19:19:35'),
-(11, '989815064912', 'buingoc119', '$2a$10$dOfQmospk54U2kTtFRyXLOlYgXDsD37nJlteBAFtAObQyuDbbEZcS', NULL, 0, 0, 0, '2017-11-30 15:13:24', '2017-11-30 15:11:51', '2017-11-30 15:11:51'),
-(12, '989815063439', 'bqngoc119', '$2a$10$92N7a1eXoJpbvQfnJZ9FOukBRP8dltocDXhq.fAYCp1fWC6nw61Ba', NULL, 0, 0, 0, '2017-12-01 12:23:37', '2017-12-01 12:23:12', '2017-12-01 12:23:12');
+(11, '989815064912', 'buingoc1191', '$2a$10$92N7a1eXoJpbvQfnJZ9FOukBRP8dltocDXhq.fAYCp1fWC6nw61Ba', NULL, 0, 0, 0, '2017-12-12 15:06:04', '2017-11-30 15:11:51', '2017-11-30 15:11:51'),
+(12, '989815063439', 'bqngoc119', '$2a$10$92N7a1eXoJpbvQfnJZ9FOukBRP8dltocDXhq.fAYCp1fWC6nw61Ba', NULL, 0, 0, 0, '2017-12-01 12:23:37', '2017-12-01 12:23:12', '2017-12-01 12:23:12'),
+(15, '353535069', 'ngocbfdsq02@wru.vn', '$2a$10$NAuDhcXM4jY2e3jsWWxheOTAWUhop1KrpBlxdJdo/f9bFsiFGUPwa', NULL, 0, 0, 0, '0000-00-00 00:00:00', '2017-12-13 12:03:12', '2017-12-13 12:03:12');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -436,7 +518,7 @@ ALTER TABLE `block_list`
 -- AUTO_INCREMENT cho bảng `contacts`
 --
 ALTER TABLE `contacts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Sync the contacts to this table', AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Sync the contacts to this table', AUTO_INCREMENT=14;
 --
 -- AUTO_INCREMENT cho bảng `conversation`
 --
@@ -476,7 +558,7 @@ ALTER TABLE `reports`
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 --
 -- Các ràng buộc cho các bảng đã đổ
 --

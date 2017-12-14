@@ -2,7 +2,8 @@
     <div id="sidepanel">
         <div id="profile">
             <div class="wrap">
-                <img id="profile-img" userid='<%- userID %>' src="http://emilcarlsson.se/assets/mikeross.png" class='<%- status %>' alt=""/>
+                <img id="profile-img" userid='<%- userID %>' src="http://emilcarlsson.se/assets/mikeross.png"
+                     class='<%- status %>' alt=""/>
                 <p class="user-name-chat"><%- userName %></p>
                 <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
                 <div id="status-options" data-url='<%= urlUpdareStatus %>'>
@@ -16,49 +17,54 @@
                     </ul>
                 </div>
                 <div id="expanded">
-                    <label for="twitter"><i class="fa fa-facebook fa-fw" aria-hidden="true"></i></label>
-                    <input name="twitter" type="text" value="mikeross"/>
-                    <label for="twitter"><i class="fa fa-twitter fa-fw" aria-hidden="true"></i></label>
-                    <input name="twitter" type="text" value="ross81"/>
-                    <label for="twitter"><i class="fa fa-instagram fa-fw" aria-hidden="true"></i></label>
-                    <input name="twitter" type="text" value="mike.ross"/>
+                    <label for="fa-facebook"><i class="fa fa-facebook fa-fw" aria-hidden="true"></i></label>
+                    <input id="fa-facebook" name="twitter" type="text" value="mikeross"/>
+                    <label for="fa-twitter"><i class="fa fa-twitter fa-fw" aria-hidden="true"></i></label>
+                    <input id="fa-twitter" name="twitter" type="text" value="ross81"/>
+                    <label for="fa-instagram"><i class="fa fa-instagram fa-fw" aria-hidden="true"></i></label>
+                    <input id="fa-instagram" name="twitter" type="text" value="mike.ross"/>
                 </div>
             </div>
         </div>
         <div id="search">
-            <label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
-            <input type="text" placeholder="Search contacts..."/>
+            <label for="search-contact"><i class="fa fa-search" aria-hidden="true"></i></label>
+            <input id="search-contact" type="text" placeholder="Search contacts..."/>
         </div>
         <div id="contacts" data-url='<%- urlChangeContent %>'>
             <ul>
                 <% if(listParticipant){
                 listParticipant.forEach((element, indx)=> {
 
-                if (element.count == 1) {
+                if (statusSingle == element.type) {
                 let infoContact = element.infoAccountParticipant.relations.useContacts;
-
                 %>
                 <li class="contact">
-                    <div class="wrap" data-conversation='<%- element.idConversation %>' data-type='<%- element.type%>' data-channel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
-                        <span channel='status.<%- element.channel_id %>' class='contact-status <%- listStatus[infoContact.attributes.status] ? listStatus[infoContact.attributes.status] : "" %>'></span>
-                        <img src='<%- infoContact.attributes.path_img ? infoContact.attributes.path_img : pathImgSingle %>' alt=""/>
+                    <div class="wrap" data-conversation='<%- element.idConversation %>' data-type='<%- element.type%>'
+                         data-channel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
+                        <span channel='status.<%- element.channel_id %>'
+                              class='contact-status <%- listStatus[infoContact.attributes.status] ? listStatus[infoContact.attributes.status] : "" %>'></span>
+                        <img src='<%- infoContact.attributes.path_img ? infoContact.attributes.path_img : pathImgSingle %>'
+                             alt=""/>
                         <div class="meta">
-                            <p class="name"><%- infoContact.attributes.middle_name ? infoContact.attributes.middle_name : '&nbsp;' %></p>
-                            <p class="preview mood_message"><%- infoContact.attributes.mood_message ? infoContact.attributes.mood_message : '&nbsp;' %></p>
+                            <p class="name"><%- infoContact.attributes.middle_name ? infoContact.attributes.middle_name
+                                : '&nbsp;' %></p>
+                            <p class="preview mood_message"><%- infoContact.attributes.mood_message ?
+                                infoContact.attributes.mood_message : "" %></p>
                             <!--<p class="preview"> <%- element.count %> Remove last</p>-->
                         </div>
                     </div>
                 </li>
-                <% } else { %>
-
-                    <% JSON.stringify(element) %>
+                <% } else {
+                let infoContactGroup = element.infoAccountParticipant[0].relations.useContacts;
+                %>
                 <li class="contact">
-                    <div class="wrap" data-conversation='<%- element.idConversation %>' data-type='<%- element.type%>' data-changel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
+                    <div class="wrap" data-conversation='<%- element.idConversation %>' data-type='<%- element.type%>'
+                         data-changel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
                         <span class="contact-status online"></span>
-                        <img src='<%- infoContact.attributes.path_img_group ? infoContact.attributes.path_img_group : pathImgGroup %>' alt=""/>
+                        <img src='<%- infoContactGroup.attributes.path_img_group ? infoContactGroup.attributes.path_img_group : pathImgGroup %>'
+                             alt=""/>
                         <div class="meta">
                             <p class="name"><%- element.title %></p>
-                            <!--<p class="preview mood_message">mood_message</p>-->
                             <p class="preview"> <%- element.count %> participants</p>
                         </div>
                     </div>
@@ -180,14 +186,19 @@
     <div class="content" id="content-chat">
         <div class="contact-profile">
             <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
-            <div class="info-participant">
-                <i class="favorite-participant fa fa-star-o" aria-hidden="true"></i>
-                <p>Harvey Specter</p>
-            </div>
-            <div class="info-conversation cursor">
-                <i class="favorite-conversation offline" aria-hidden="true"></i>
-                <span class="status-name">element.statusName</span><span class="status-space">|</span><span class="status-other">fsgsgsgs</span>
-                <!--<a class="fsfgs">fsgsgsgs | fsgsgsgs </a>-->
+            <div class="info-conversation-participant">
+                <div class="info-participant">
+                    <input class="star favorite-participant" type="checkbox" title="bookmark users" checked/>
+                    <p>Harvey Specter</p>
+                </div>
+                <div class="info-conversation cursor">
+                    <i class="favorite-conversation offline" aria-hidden="true"></i>
+                    <div class="info-group">
+                        <span class="status-name">element.statusName</span>
+                        <span class="status-space">|</span>
+                        <span class="status-other">fsgsgsgs</span>
+                    </div>
+                </div>
             </div>
             <div class="social-media">
                 <i class="fa fa-facebook" aria-hidden="true"></i>
@@ -235,8 +246,8 @@
         </div>
         <div class="message-input" id="messageInput">
             <div class="wrap">
-                <div class="scrollbar" id="style-box-sms" min-height="<%= minHeightBoxChat %>"
-                     max-height="<%= maxHeightBoxChat %>" style='max-height: <%= maxHeightBoxChat %>px'>
+                <div class="scrollbar" id="style-box-sms" min-height='<%= minHeightBoxChat %>'
+                     max-height='<%= maxHeightBoxChat %>' style="'max-height: <%= maxHeightBoxChat %>px'">
                     <textarea style="max-height: 100px;" id="boxChat" class="box_msg"
                               type="text" placeholder="Write your message..."></textarea>
                 </div>
@@ -288,8 +299,6 @@
     </div>
 </div>
 
-
-<% testData ? JSON.stringify(testData) : 111 %>
 
 <!--
 <div class="_4pi8" role="presentation">

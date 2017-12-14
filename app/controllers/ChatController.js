@@ -51,9 +51,6 @@ class ChatController extends BaseController {
                     }
 
                     let notiContacts = rsData.infoAccount.relations.useContacts;
-
-                    showResponse.testData = rsData;
-
                     let requestCurrent = {
                         userCurrentID: userCurrent.attributes.id,
                         statusID: notiContacts.attributes.status,
@@ -65,6 +62,7 @@ class ChatController extends BaseController {
 
                     var chatController = new ChatController();
                     chatController.convertDataListSocket(rsData.infoParticipant, requestCurrent, function (err, done) {
+                        if (err) next(err);
                     });
 
                     showResponse.userName = notiContacts ? notiContacts.attributes.middle_name : '';
@@ -73,7 +71,7 @@ class ChatController extends BaseController {
                     showResponse.listStatus = helper.coreHelper.app.chatStatus;
                     showResponse.urlUpdareStatus = aliasRouter.build('chat.change.status');
                     showResponse.urlChangeContent = aliasRouter.build('chat.change.content');
-                    showResponse.isStatusSingle = (showResponse.status == statusSingle);
+                    showResponse.statusSingle = statusSingle;
                     showResponse.pathImgSingle = defaultImgSingleUser;
                     showResponse.pathImgGroup = defaultImgGroupUser;
 
@@ -135,7 +133,6 @@ class ChatController extends BaseController {
                         showResponseChat.dataConversation = elem.idConversation;
                         showResponseChat.countParticipants = elem.count;
                         showResponseChat.isTypeSingle = showResponseChat.dataType == statusSingle;
-                        // path_img: relationsUseContacts.get('path_img') ? relationsUseContacts.get('path_img') : "/images/group.png",
 
                         let urlImagesAvatar = "";
                         let listParticipant = [];
@@ -155,7 +152,6 @@ class ChatController extends BaseController {
                                 gender: useContactsSingle.get('gender'),
                                 is_life: useContactsSingle.get('is_life'),
                                 mood_message: useContactsSingle.get('mood_message'),
-                                // path_img: useContactsSingle.get('path_img'),
                                 status: useContactsSingle.get('status'),
                                 statusName: helper.coreHelper.app.chatStatus[useContactsSingle.get('status')],
                                 strListStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
@@ -179,7 +175,6 @@ class ChatController extends BaseController {
                                     gender: relationsUseContacts.get('gender'),
                                     is_life: relationsUseContacts.get('is_life'),
                                     mood_message: relationsUseContacts.get('mood_message'),
-                                    // path_img: relationsUseContacts.get('path_img') ? relationsUseContacts.get('path_img') : "/images/group.png",
                                     status: relationsUseContacts.get('status'),
                                     statusName: helper.coreHelper.app.chatStatus[relationsUseContacts.get('status')],
                                     strListStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
