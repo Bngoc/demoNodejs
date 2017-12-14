@@ -41,7 +41,7 @@
                 <li class="contact">
                     <div class="wrap" data-conversation='<%- element.idConversation %>' data-type='<%- element.type%>' data-channel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
                         <span channel='status.<%- element.channel_id %>' class='contact-status <%- listStatus[infoContact.attributes.status] ? listStatus[infoContact.attributes.status] : "" %>'></span>
-                        <img src="http://emilcarlsson.se/assets/louislitt.png" alt=""/>
+                        <img src='<%- infoContact.attributes.path_img ? infoContact.attributes.path_img : pathImgSingle %>' alt=""/>
                         <div class="meta">
                             <p class="name"><%- infoContact.attributes.middle_name ? infoContact.attributes.middle_name : '&nbsp;' %></p>
                             <p class="preview mood_message"><%- infoContact.attributes.mood_message ? infoContact.attributes.mood_message : '&nbsp;' %></p>
@@ -55,7 +55,7 @@
                 <li class="contact">
                     <div class="wrap" data-conversation='<%- element.idConversation %>' data-type='<%- element.type%>' data-changel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
                         <span class="contact-status online"></span>
-                        <img src="http://emilcarlsson.se/assets/louislitt.png" alt=""/>
+                        <img src='<%- infoContact.attributes.path_img_group ? infoContact.attributes.path_img_group : pathImgGroup %>' alt=""/>
                         <div class="meta">
                             <p class="name"><%- element.title %></p>
                             <!--<p class="preview mood_message">mood_message</p>-->
@@ -185,8 +185,8 @@
                 <p>Harvey Specter</p>
             </div>
             <div class="info-conversation cursor">
-                <i class="favorite-conversation fa fa-plus" aria-hidden="true"></i>
-                <span class="fsfgs">fsgsgsgs | fsgsgsgs</span>
+                <i class="favorite-conversation offline" aria-hidden="true"></i>
+                <span class="status-name">element.statusName</span><span class="status-space">|</span><span class="status-other">fsgsgsgs</span>
                 <!--<a class="fsfgs">fsgsgsgs | fsgsgsgs </a>-->
             </div>
             <div class="social-media">

@@ -104,13 +104,11 @@ class UserController {
             //{"code":null,"error":"","msg":"","result":null}'
             if (infoPassport.message) {
                 let dataPassport = JSON.parse(infoPassport.message);
-                // console.log('------------------------', dataPassport.code, user, '-----------------', infoPassport)
                 if (dataPassport.code || dataPassport.result == null) {
                     req.flash('error_msg', dataPassport.code);
                     return res.redirect('/login');
                 } else {
                     if (dataPassport.result && user) {
-                        // console.log('_____________', dataPassport.result ,'_______________');
                         req.logIn(user, function (err) {
                             if (err) {
                                 return next(err);
@@ -273,7 +271,6 @@ class UserController {
 
                 // -------------------------C1 connect DB Knex vs Bookshelf -----------------------------------
                 newUser.checkUser(dataRequest, function (resultData) {
-                    console.log(resultData);
                     if (resultData.code) {
                         showResponse.header = 'Errror.......';
                         showResponse.content = JSON.stringify(resultData);

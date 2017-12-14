@@ -10,7 +10,7 @@ const knex = coreHelper.connectKnex();
 const bookshelf = coreHelper.bookshelf();
 
 
-// const Participants = coreHelper.callModule(`${coreHelper.paths.MODELS}Participants.js`);
+const Participants = coreHelper.callModule(`${coreHelper.paths.MODELS}Participants.js`);
 // const DeletedConversations = coreHelper.callModule(`${coreHelper.paths.MODELS}DeletedConversations.js`);
 
 var Conversations = bookshelf.Model.extend({
@@ -50,7 +50,7 @@ Conversation.prototype.getConversations = function (id, users_id, callback) {
         });
 }
 
-Conversation.prototype.ConversationsListUser = function (optionRequset, callback) {
+Conversation.prototype.conversationsListUser = function (optionRequset, callback) {
     this.getConversations(optionRequset.id, optionRequset.userCurrentID, function (err, modelConversation) {
         if (err) callback(err);
 
@@ -117,6 +117,41 @@ Conversation.prototype.ConversationsListUser = function (optionRequset, callback
                 callback(null, resultConversationParticipant);
             });
     })
+};
+
+Conversation.prototype.participantByUserId = function (req, callback) {
+    Participants.model
+        .where({users_id: req.userCurrentID})
+        .fetchAll()
+        .then(function (modelPart) {
+            callback(null, modelPart)
+        })
+        .catch(function (err) {
+            callback(err);
+        });
+}
+
+Conversation.prototype.conversationsListSingleUser = function (req, callback) {
+    this.participantByUserId(req, function (err, modelPartici) {
+        if (err) callback(err);
+
+        let partList = modelPartici.map(function (listItem) {
+            return listItem.get('conversation_id');
+        });
+
+        Participants.model
+            .query(function (q) {
+                q.where('type', req.statusSingle).where('users_id', '!=', req.userCurrentID)
+                    .where('conversation_id', 'IN', partList)
+            })
+            .fetchAll({withRelated: ['parConversation'], columns: ['users_id', 'conversation_id']})
+            .then(function (reModel) {
+                callback(null, reModel)
+            })
+            .catch(function (err) {
+                callback(err)
+            });
+    });
 };
 
 

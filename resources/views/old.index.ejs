@@ -35,12 +35,10 @@
 
     socket.on('message', function (message) {
         $('#showmsg').text('The server has a message for you: ' + message);
-        console.log(message);
     });
 
     socket.on('send-data-test', function (messagensp) {
         $('#showmsgt').text('messagensp for you: ' + messagensp);
-        console.log(messagensp);
     });
 
     $('#submit').on('click', function () {

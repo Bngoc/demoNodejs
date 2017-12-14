@@ -1,6 +1,5 @@
 socket.on('message', function (message) {
     $('#showmsg').text('The server has a message for you: ' + message);
-    console.log(message);
 });
 
 socket.on('sendDataPrivate', function (messageReplies) {
@@ -29,9 +28,9 @@ socket.on('sendDataBroadCast', function (messageSent) {
 });
 
 socket.on('listUserConversation', function (listConversation) {
-    if (listConversation.isTypeSingle) {
-        $('span[channel="status.' + listConversation.channel_id + '"]').removeClass(listConversation.listStatus).addClass(listConversation.statusName);
-    }
+    // if (listConversation.isTypeSingle) {
+        $('[channel="status.' + listConversation.channel_id + '"]').removeClass(listConversation.listStatus).addClass(listConversation.statusName);
+    // }
 });
 
 $(document).ready(function () {

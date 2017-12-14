@@ -77,6 +77,8 @@ CREATE TABLE `contacts` (
   `mood_message` varchar(100) DEFAULT NULL,
   `status` tinyint(1) DEFAULT '0',
   `is_life` tinyint(1) DEFAULT '0',
+  `path_img` varchar(255) NULL DEFAULT 0,
+  `path_img_group` varchar(255) NULL DEFAULT 0,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -85,19 +87,19 @@ CREATE TABLE `contacts` (
 -- Đang đổ dữ liệu cho bảng `contacts`
 --
 
-INSERT INTO `contacts` (`id`, `users_id`, `first_name`, `middle_name`, `last_name`, `user_name`, `country`, `gender`, `mood_message`, `status`, `is_life`, `created_at`, `updated_at`) VALUES
-(1, 1, 'bqngoc119', 'bqngoc119 undefined', NULL, NULL, NULL, NULL, '23', 3, 0, '2017-11-30 01:59:17', '2017-11-30 01:59:17'),
-(2, 2, 'bqngoc110', 'bqngoc110 undefined', NULL, NULL, NULL, NULL, '3', 0, 0, '2017-11-30 02:03:06', '2017-12-03 18:39:00'),
-(3, 3, 'bqngoc118', 'bqngoc118 undefined', NULL, NULL, NULL, NULL, '22', 3, 0, '2017-11-30 02:04:54', '2017-11-30 02:04:54'),
-(4, 4, 'bqngoc11229', 'bqngoc11229 undefine', NULL, NULL, NULL, NULL, 'r', 1, 0, '2017-11-30 02:05:28', '2017-11-30 02:05:28'),
-(5, 5, 'BuiNgoc1', 'BuiNgoc1 undefined', NULL, NULL, NULL, NULL, 'ư', 1, 0, '2017-11-30 02:07:13', '2017-12-03 18:33:55'),
-(6, 6, 'gsgewq', 'gsgewq undefined', NULL, NULL, NULL, NULL, 'r', 3, 0, '2017-11-30 02:09:07', '2017-11-30 02:09:07'),
-(7, 7, 'few4w4', 'few4w4 undefined', NULL, NULL, NULL, NULL, 'r', 4, 0, '2017-11-30 02:17:17', '2017-11-30 02:17:17'),
-(8, 8, 'ewew434', 'ewew434 undefined', NULL, NULL, NULL, NULL, 'rrw', 2, 0, '2017-11-30 02:17:39', '2017-11-30 02:17:39'),
-(9, 9, '98912315069', '98912315069 undefine', NULL, NULL, NULL, NULL, 'rưư', 4, 0, '2017-11-30 02:18:26', '2017-11-30 02:18:26'),
-(10, 10, 'BuiNgocewewe', 'BuiNgocewewe undefin', NULL, NULL, NULL, NULL, 'rử', 1, 0, '2017-11-30 02:19:35', '2017-11-30 02:19:35'),
-(11, 11, 'buingoc119', NULL, 'xxx-xx', NULL, NULL, NULL, NULL, 3, 0, '2017-11-30 15:11:51', '2017-11-30 17:11:29'),
-(12, 12, 'bqngoc119', 'bqngoc119 xxx-xx', 'xxx-xx', NULL, NULL, NULL, NULL, 0, 0, '2017-12-01 12:23:12', '2017-12-07 17:59:28');
+INSERT INTO `contacts` (`id`, `users_id`, `first_name`, `middle_name`, `last_name`, `user_name`, `country`, `gender`, `mood_message`, `status`, `is_life`, `path_img`, `path_img_group`, `created_at`, `updated_at`) VALUES
+(1, 1, 'bqngoc119', 'bqngoc119 undefined', NULL, NULL, NULL, NULL, '23', 3, 0,NULL, NULL, '2017-11-30 01:59:17', '2017-11-30 01:59:17'),
+(2, 2, 'bqngoc110', 'bqngoc110 undefined', NULL, NULL, NULL, NULL, '3', 0, 0,NULL, NULL, '2017-11-30 02:03:06', '2017-12-03 18:39:00'),
+(3, 3, 'bqngoc118', 'bqngoc118 undefined', NULL, NULL, NULL, NULL, '22', 3, 0,NULL, NULL, '2017-11-30 02:04:54', '2017-11-30 02:04:54'),
+(4, 4, 'bqngoc11229', 'bqngoc11229 undefine', NULL, NULL, NULL, NULL, 'r', 1, 0,NULL, NULL, '2017-11-30 02:05:28', '2017-11-30 02:05:28'),
+(5, 5, 'BuiNgoc1', 'BuiNgoc1 undefined', NULL, NULL, NULL, NULL, 'ư', 1, 0,NULL, NULL, '2017-11-30 02:07:13', '2017-12-03 18:33:55'),
+(6, 6, 'gsgewq', 'gsgewq undefined', NULL, NULL, NULL, NULL, 'r', 3, 0,NULL, NULL, '2017-11-30 02:09:07', '2017-11-30 02:09:07'),
+(7, 7, 'few4w4', 'few4w4 undefined', NULL, NULL, NULL, NULL, 'r', 4, 0,NULL, NULL, '2017-11-30 02:17:17', '2017-11-30 02:17:17'),
+(8, 8, 'ewew434', 'ewew434 undefined', NULL, NULL, NULL, NULL, 'rrw', 2, 0,NULL, NULL, '2017-11-30 02:17:39', '2017-11-30 02:17:39'),
+(9, 9, '98912315069', '98912315069 undefine', NULL, NULL, NULL, NULL, 'rưư', 4, 0,NULL, NULL, '2017-11-30 02:18:26', '2017-11-30 02:18:26'),
+(10, 10, 'BuiNgocewewe', 'BuiNgocewewe undefin', NULL, NULL, NULL, NULL, 'rử', 1, 0,NULL, NULL, '2017-11-30 02:19:35', '2017-11-30 02:19:35'),
+(11, 11, 'buingoc119', NULL, 'xxx-xx', NULL, NULL, NULL, NULL, 3, 0,NULL, NULL, '2017-11-30 15:11:51', '2017-11-30 17:11:29'),
+(12, 12, 'bqngoc119', 'bqngoc119 xxx-xx', 'xxx-xx', NULL, NULL, NULL, NULL, 0, 0,NULL, NULL, '2017-12-01 12:23:12', '2017-12-07 17:59:28');
 
 -- --------------------------------------------------------
 

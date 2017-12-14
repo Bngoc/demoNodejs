@@ -22,6 +22,10 @@ const HEIGHT_BOX_CHAT_MAX = 130;
 const HEIGHT_BOX_CHAT_MIN = 56;
 var socketIO = {};
 var isIO = {};
+let statusSingle = helper.coreHelper.app.participants[0];
+const defaultImgSingleUser = "/images/users.png";
+const defaultImgGroupUser = "/images/group.png";
+
 
 class ChatController extends BaseController {
 
@@ -54,7 +58,8 @@ class ChatController extends BaseController {
                         userCurrentID: userCurrent.attributes.id,
                         statusID: notiContacts.attributes.status,
                         statusName: helper.coreHelper.app.chatStatus[notiContacts.attributes.status],
-                        listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' ')
+                        listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
+                        statusSingle: statusSingle
                     };
                     req.session.requestCurrentStatus = requestCurrent;
 
@@ -68,16 +73,14 @@ class ChatController extends BaseController {
                     showResponse.listStatus = helper.coreHelper.app.chatStatus;
                     showResponse.urlUpdareStatus = aliasRouter.build('chat.change.status');
                     showResponse.urlChangeContent = aliasRouter.build('chat.change.content');
-
+                    showResponse.isStatusSingle = (showResponse.status == statusSingle);
+                    showResponse.pathImgSingle = defaultImgSingleUser;
+                    showResponse.pathImgGroup = defaultImgGroupUser;
 
                     // res.locals.listParticipants = infoParticipant ? infoParticipant : null;
                     // req.session.listParticipants = infoParticipant ? infoParticipant : null;
 
                     showResponse.listParticipant = rsData.infoParticipant ? rsData.infoParticipant : null;
-
-
-                    // console.log('---------------------------------', helper.coreHelper.app.chatStatus[notiContacts.attributes.status]);
-
                     showResponse.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX;
                     showResponse.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN;
 
@@ -109,45 +112,105 @@ class ChatController extends BaseController {
             let optionRequset = {
                 id: parseInt(req.body.dataConversation),
                 userCurrentID: userCurrent.attributes.id,
-                userModel: User.model
-            }
-            conversation.ConversationsListUser(optionRequset, function (err, infoConversation) {
+                userModel: User.model,
+                statusSingle: statusSingle
+            };
 
-                if (err) {
-                    next(err);
-                }
+            conversation.conversationsListSingleUser(optionRequset, function (errPart, modelListUser) {
+                if (errPart) next(err);
 
-                infoConversation.forEach(function (elem) {
-                    showResponseChat.dataType = elem.type;
-                    showResponseChat.dataChannelId = elem.channel_id;
-                    showResponseChat.dataOwerId = elem.creator_id;
-                    showResponseChat.dataConversation = elem.idConversation;
-                    showResponseChat.countParticipants = elem.count;
-                    showResponseChat.isTypeSingle = showResponseChat.dataType == helper.coreHelper.app.participants[0];
-                    showResponseChat.listParticipant = elem.infoParticipant;
-
-                    console.log('------------------------------', elem.channel_id, '------------------------------');
+                let listUserParticipant = modelListUser.map(function (listUser) {
+                    let listUserRelations = listUser.relations.parConversation;
+                    return {usersId: listUser.get('users_id'), channelId: listUserRelations.get('channel_id')};
                 });
 
-                console.log('------------------------------', JSON.stringify(showResponseChat), '------------------------------');
+                conversation.conversationsListUser(optionRequset, function (err, infoConversation) {
+                    if (err) next(err);
 
+                    infoConversation.forEach(function (elem) {
+                        showResponseChat.dataType = elem.type;
+                        showResponseChat.dataChannelId = elem.channel_id;
+                        showResponseChat.dataOwerId = elem.creator_id;
+                        showResponseChat.isCurrentOwerId = elem.creator_id == userCurrent.attributes.id;
+                        showResponseChat.dataConversation = elem.idConversation;
+                        showResponseChat.countParticipants = elem.count;
+                        showResponseChat.isTypeSingle = showResponseChat.dataType == statusSingle;
+                        // path_img: relationsUseContacts.get('path_img') ? relationsUseContacts.get('path_img') : "/images/group.png",
 
-                // zender view before send data
-                //{layout: 'ajax'}
-                res.render(showResponseChat.renderViews, {
-                    data: showResponseChat,
-                    layout: false
-                }, function (err, renderHtml) {
-                    if (err) {
-                        res.send(err);
-                    } else {
-                        var response = {
-                            html: renderHtml,
-                            err: err,
-                        };
+                        let urlImagesAvatar = "";
+                        let listParticipant = [];
+                        if (showResponseChat.isTypeSingle) {
+                            let eleSingle = elem.infoParticipant;
+                            let useContactsSingle = eleSingle.relations.useContacts;
+                            let indexFindUserSingle = listUserParticipant.findIndex(x => x.usersId == useContactsSingle.get('users_id'));
+                            urlImagesAvatar = useContactsSingle.get('path_img') ? useContactsSingle.get('path_img') : defaultImgSingleUser;
+                            let tempPartSingle = {
+                                email: eleSingle.get('email'),
+                                phone: eleSingle.get('phone'),
+                                user_name: useContactsSingle.get('user_name'),
+                                users_id: useContactsSingle.get('users_id'),
+                                first_name: useContactsSingle.get('first_name'),
+                                last_name: useContactsSingle.get('last_name'),
+                                middle_name: useContactsSingle.get('middle_name'),
+                                gender: useContactsSingle.get('gender'),
+                                is_life: useContactsSingle.get('is_life'),
+                                mood_message: useContactsSingle.get('mood_message'),
+                                // path_img: useContactsSingle.get('path_img'),
+                                status: useContactsSingle.get('status'),
+                                statusName: helper.coreHelper.app.chatStatus[useContactsSingle.get('status')],
+                                strListStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
+                                isFriendCurrent: (indexFindUserSingle !== -1),
+                                channelID: (indexFindUserSingle !== -1) ? listUserParticipant[indexFindUserSingle].channelId : null
+                            };
+                            listParticipant.push(tempPartSingle)
+                        } else {
+                            elem.infoParticipant.forEach(function (ele) {
+                                let relationsUseContacts = ele.relations.useContacts;
+                                let indexFindUser = listUserParticipant.findIndex(x => x.usersId == relationsUseContacts.get('users_id'));
+                                urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : defaultImgGroupUser;
+                                let tempPartGroup = {
+                                    email: ele.get('email'),
+                                    phone: ele.get('phone'),
+                                    user_name: relationsUseContacts.get('user_name'),
+                                    users_id: relationsUseContacts.get('users_id'),
+                                    first_name: relationsUseContacts.get('first_name'),
+                                    last_name: relationsUseContacts.get('last_name'),
+                                    middle_name: relationsUseContacts.get('middle_name'),
+                                    gender: relationsUseContacts.get('gender'),
+                                    is_life: relationsUseContacts.get('is_life'),
+                                    mood_message: relationsUseContacts.get('mood_message'),
+                                    // path_img: relationsUseContacts.get('path_img') ? relationsUseContacts.get('path_img') : "/images/group.png",
+                                    status: relationsUseContacts.get('status'),
+                                    statusName: helper.coreHelper.app.chatStatus[relationsUseContacts.get('status')],
+                                    strListStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
+                                    isFriendCurrent: (indexFindUser !== -1),
+                                    channelID: (indexFindUser !== -1) ? listUserParticipant[indexFindUser].channelId : null
+                                };
+                                listParticipant.push(tempPartGroup);
 
-                        res.status(200).send(response);
-                    }
+                            });
+                        }
+
+                        showResponseChat.listParticipant = listParticipant;
+                        showResponseChat.urlImagesAvatar = urlImagesAvatar;
+                    });
+                    // zender view before send data
+                    //{layout: 'ajax'}
+                    res.render(showResponseChat.renderViews, {
+                        data: showResponseChat,
+                        layout: false
+                    }, function (err, renderHtml) {
+                        if (err) {
+                            res.send(err);
+                        } else {
+                            var response = {
+                                html: renderHtml,
+                                err: err,
+                            };
+
+                            res.status(200).send(response);
+                        }
+                    });
                 });
             });
         } else {
@@ -186,7 +249,8 @@ class ChatController extends BaseController {
                                     userCurrentID: userCurrent.attributes.id,
                                     statusID: notiContacts.attributes.status,
                                     statusName: helper.coreHelper.app.chatStatus[notiContacts.attributes.status],
-                                    listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' ')
+                                    listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
+                                    statusSingle: statusSingle
                                 };
                                 let chatController = new ChatController();
 
@@ -294,14 +358,14 @@ ChatController.prototype.convertDataListSocket = function (infoConversation, req
             statusID: requestOption.statusID,
             statusName: requestOption.statusName,
             listStatus: requestOption.listStatus,
-            isTypeSingle: element.type == helper.coreHelper.app.participants[0]
+            isTypeSingle: element.type == requestOption.statusSingle
         };
 
         // conversation.push(conversationClone);
-        if (conversationClone.isTypeSingle) {
-            socketIO.broadcast.to(element.channel_id).emit('listUserConversation', conversationClone);
-            // socketIO.to(element.channel_id).emit('listUserConversation', conversationClone);
-        }
+        // if (conversationClone.isTypeSingle) {
+        socketIO.broadcast.to(element.channel_id).emit('listUserConversation', conversationClone);
+        // socketIO.to(element.channel_id).emit('listUserConversation', conversationClone);
+        // }
         socketIO.join(element.channel_id);
     });
 
