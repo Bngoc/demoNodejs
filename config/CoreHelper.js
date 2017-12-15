@@ -2,6 +2,8 @@
 
 const MySQL = require("mysql");
 const pg = require('pg');
+const express = require('express');
+const app = express();
 
 const sampleRequirePaths = require('./../config/paths.js');
 const paths = new sampleRequirePaths();
@@ -10,7 +12,8 @@ const sampleConfig = require(`${paths.CONFIG}/config.json`);
 const samplePackage = require(`${paths.ROOT}/package.json`);
 const sampleApp = require(`${paths.CONFIG}/app.js`);
 var setAliasRouter = {};
-var IO = {};
+var Io = {};
+var socketIo = {};
 
 function CoreHelper() {
 
@@ -53,22 +56,24 @@ function CoreHelper() {
         return connection;
     };
 
-    this.runSocket = function (runServer, app) {
-        var socket = this.callModule(`${paths.MODULE}/express.js`, true);
-        let io = socket.configSocket(runServer, app);
+    this.runSocket = function (runServer) {
+        // var socket = this.callModule(`${paths.MODULE}/express.js`, true);
+        // let io = socket.configSocket(runServer, app);
 
-        var socketIO = this.callModule(`${paths.CONTROLLERS}ChatController.js`, true);
-        socketIO.socketIO(io);
-
-        IO = io;
+        // var socketIO = this.callModule(`${paths.CONTROLLERS}ChatController.js`, true);
+        // socketIO.socketIO(io);
+        // io.on('connection', function (socketIo) {
+        //     Io = socketIo;
+        //     return io;
+        // });
     };
 
-    this.runExpress = function (app) {
+    this.runExpress = function () {
         var express = this.callModule(`${paths.MODULE}/express.js`, true);
         return express.configExpress(app, this);
     };
 
-    this.runRoutes = function (app) {
+    this.runRoutes = function () {
         var router = this.callModule(`${paths.APP}/routers.js`, true);
         var createRouter = router.useRoutes(app, this);
         if (!setAliasRouter.length) setAliasRouter = createRouter;
@@ -87,7 +92,7 @@ function CoreHelper() {
         return configPassport;
     };
 
-    this.runServer = function (app) {
+    this.runServer = function () {
         var server = this.callModule(`${paths.CONFIG}/server.js`, true);
         var createServer = server.createServer(app, this.sampleConfig);
         return createServer;
@@ -104,8 +109,18 @@ function CoreHelper() {
         return setAliasRouter;
     };
 
-    this.IO = function () {
-        return IO;
+    this.socketIoClone = function () {
+        return Io;
+    };
+
+    this.socketIo = function () {
+        // let io = this.runSocket(this.runServer());
+        // io.on('connection', function (socket) {
+        //     socketIo = socket;
+        //     callback(null, socket);
+        // });
+        // callback('###');
+        return Io;
     };
 }
 

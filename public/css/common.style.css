@@ -68,3 +68,11 @@
 .error {
     border: 1px solid red !important;
 }
+
+.display-none {
+    display: none !important;
+}
+
+.display-show {
+    display: block !important;
+}

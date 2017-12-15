@@ -34,3 +34,10 @@ $("body").on('click', '.expand-button', function () {
     $("#profile").toggleClass("expanded");
     $("#contacts").toggleClass("expanded");
 });
+
+$("body").on('click', '#extend-participant', function () {
+    if ($(this).hasClass('cursor')) {
+        $("#group-participant").toggleClass('display-show');
+        $(this).find('i:first-child').toggleClass('fa-minus');
+    }
+});

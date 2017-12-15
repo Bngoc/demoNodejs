@@ -645,6 +645,7 @@
     float: left;
     width: 70%;
     position: relative;
+    margin-top: 12px;
 }
 
 #frame .content .contact-profile img {
@@ -658,24 +659,26 @@
     width: 100%;
 }
 
-
 #frame .content .contact-profile .info-participant .star {
-    visibility:hidden;
-    font-size:30px;
-    cursor:pointer;
+    visibility: hidden;
+    font-size: 30px;
+    cursor: pointer;
     margin: 0;
     padding: 0;
     line-height: 16px;
+    color: tomato;
 }
+
 #frame .content .contact-profile .info-participant .star:before {
     content: "\2605";
-    /*position: absolute;*/
-    visibility:visible;
+    position: absolute;
+    visibility: visible;
 }
+
 #frame .content .contact-profile .info-participant .star:checked:before {
     content: "\2606";
-    /*position: absolute;*/
-    color:#eca70c
+    position: absolute;
+    color: #eca70c
 }
 
 #frame .content .contact-profile .info-participant {
@@ -687,15 +690,19 @@
 }
 
 #frame .content .contact-profile .info-participant .favorite-participant {
-    /*position: absolute;*/
-    /*font-size: 25px;*/
-    /*cursor: pointer;*/
     float: left;
 }
 
 #frame .content .contact-profile .info-conversation .favorite-conversation {
-    /*position: absolute;*/
-    top: 35px;
+    position: absolute;
+    top: 25px;
+    margin-left: 4px;
+}
+
+#frame .content .contact-profile .info-conversation i.favorite-conversation {
+    margin: -2px 0 0 6px !important;
+    color: saddlebrown;
+    font-size: 16px;
 }
 
 #frame .content .contact-profile .info-conversation span.status-name {
@@ -705,10 +712,8 @@
 #frame .content .contact-profile p {
     line-height: initial;
     font-size: 130%;
-    /* float: left; */
-    /*position: absolute;*/
+    margin-left: 32px;
     left: 25px;
-    /* clear: inherit; */
     margin-bottom: inherit;
     white-space: nowrap;
 }
@@ -736,10 +741,11 @@
     margin-left: 25px;
 }
 
-#frame .content .contact-profile .info-conversation a.info-group {
-    margin: 0px !important;
+#frame .content .contact-profile .info-conversation .info-group {
+    /*margin: 0px !important;*/
     padding: 0;
     display: block;
+    margin: 3px 0px 0px 7px;
 }
 
 #frame .content .contact-profile .info-conversation span.status-space {

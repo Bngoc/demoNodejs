@@ -33,6 +33,11 @@ socket.on('listUserConversation', function (listConversation) {
     // }
 });
 
+socket.on('send-data-test', function (listConversation) {
+    console.log(listConversation);
+});
+
+
 $(document).ready(function () {
 
     socket.emit('user_id', $('#profile-img').attr('userid'));

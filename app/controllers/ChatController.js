@@ -20,8 +20,9 @@ var BaseController = require('./BaseController.js');
 
 const HEIGHT_BOX_CHAT_MAX = 130;
 const HEIGHT_BOX_CHAT_MIN = 56;
-var socketIO = {};
-var isIO = {};
+// var socketIo = {};
+
+
 let statusSingle = helper.coreHelper.app.participants[0];
 const defaultImgSingleUser = "/images/users.png";
 const defaultImgGroupUser = "/images/group.png";
@@ -31,7 +32,6 @@ class ChatController extends BaseController {
 
     getIndex(req, res, next) {
         try {
-            var self = this;
             var showResponse = helper;
             const aliasRouter = helper.coreHelper.aliasRouter();
             showResponse.header = showResponse.getHeader('CHAT');
@@ -42,7 +42,7 @@ class ChatController extends BaseController {
             showResponse.renderViews = 'chat/index.ejs';
 
             let userCurrent = req.user;
-
+            let socketIo = req.io;
             if (userCurrent) {
                 var newUser = new User.class({});
                 newUser.findByIdChat(userCurrent.attributes.id, function (err, rsData) {
@@ -61,7 +61,7 @@ class ChatController extends BaseController {
                     req.session.requestCurrentStatus = requestCurrent;
 
                     var chatController = new ChatController();
-                    chatController.convertDataListSocket(rsData.infoParticipant, requestCurrent, function (err, done) {
+                    chatController.convertDataListSocket(rsData.infoParticipant, socketIo, requestCurrent, function (err, done) {
                         if (err) next(err);
                     });
 
@@ -272,103 +272,136 @@ class ChatController extends BaseController {
         }
     }
 
-    socketIO(io) {
-        isIO = io;
-        io.on('connection', function (socket) {
-            socketIO = socket;
+    socketIOs(io) {
+        let socket = helper.coreHelper.socketIo();
+        // io.on('connection', function (socket) {
+        // socketIO = socket;
+
+        // console.log(socket);
+
+        // var cookies = cookie.parse(socket.handshake.headers.cookie);
+        // console.log(cookies);
+
+        // var user = socket.handshake.session.user;
 
 
-            // console.log(socket);
+        // var userCurrent = express_session.req.user;
+        // console.log('express_session.req.user', socket.request);
 
-            // var cookies = cookie.parse(socket.handshake.headers.cookie);
-            // console.log(cookies);
+        // passport    = require('passport');
+        // console.log(`\n______________________________________________>>>>  ${JSON.stringify(socket.handshake.session.user)} \n`);
 
-            // var user = socket.handshake.session.user;
+        // if (userCurrent.length) {
+        //     var newUser = new User.class({});
+        //     newUser.findConversation(userCurrent.attributes.id, function (err, rsDataConversation) {
+        //         if (err) rsDataConversation = {};
+        //
+        //         socket.broadcast.emit('sendListConversation', JSON.stringify(rsDataConversation));
+        //     });
+        // }
 
-
-            // var userCurrent = express_session.req.user;
-            // console.log('express_session.req.user', socket.request);
-
-            // passport    = require('passport');
-            // console.log(`\n______________________________________________>>>>  ${JSON.stringify(socket.handshake.session.user)} \n`);
-
-            // if (userCurrent.length) {
-            //     var newUser = new User.class({});
-            //     newUser.findConversation(userCurrent.attributes.id, function (err, rsDataConversation) {
-            //         if (err) rsDataConversation = {};
-            //
-            //         socket.broadcast.emit('sendListConversation', JSON.stringify(rsDataConversation));
-            //     });
-            // }
-
-            // chi thang phat ra => socket.emit
-            socket.emit('message', {
-                content: 'You are connected server private!',
-                importance: '1',
-                'socketID': socket.id
-            });
-
-            // gui toan bo trong mang tru thang phat ra => socket.broadcast.emit
-            //socket.broadcast.emit('message', 'Another client has just connected!' + socket.id);
-
-            // all ==> io.sockets.emit
-            io.sockets.emit('message', {
-                content: 'You are connected -- all!',
-                importance: '1',
-                'socketID': socket.id
-            });
-
-            socket.on('message', function (message) {
-                console.log('A client is speaking to me! They’re saying: ' + message);
-            });
-
-            //disconnect socket by id
-            socket.on('disconnect', function () {
-                console.log(`disconnect -  ${socket.id}`);
-                socket.emit('message', {content: 'bye bye!', importance: null, 'socketID': socket.id});
-            });
-
-            socket.on('sendDataMsg', function (datasocketAll) {
-                ////private
-                socket.emit('sendDataPrivate', 'send -= private' + datasocketAll + '---' + socket.id);
-                ////all
-                // io.sockets.emit('send-data-test', 'send -= all' + datasocketAll + ' '  + socket.id);
-                //// all / private
-                socket.broadcast.emit('sendDataBroadCast', 'send -= all / private ' + datasocketAll + ' --- ' + socket.id);
-                //// io.to(socket.id).emit()
-            });
-
+        // chi thang phat ra => socket.emit
+        socket.emit('message', {
+            content: 'You are connected server private!',
+            importance: '1',
+            'socketID': socket.id
         });
+
+        // gui toan bo trong mang tru thang phat ra => socket.broadcast.emit
+        //socket.broadcast.emit('message', 'Another client has just connected!' + socket.id);
+
+        console.log('________________________', socket.id);
+
+        // all ==> io.sockets.emit
+        io.sockets.emit('message', {
+            content: 'You are connected -- all!',
+            importance: '1',
+            'socketID': socket.id
+        });
+
+        socket.on('message', function (message) {
+            console.log('A client is speaking to me! They’re saying: ' + message);
+        });
+
+        //disconnect socket by id
+        socket.on('disconnect', function () {
+            console.log(`disconnect ----------------------------------------  ${socket.id}`);
+            socket.emit('message', {content: 'bye bye!', importance: null, 'socketID': socket.id});
+        });
+
+        socket.on('sendDataMsg', function (datasocketAll) {
+            ////private
+            socket.emit('sendDataPrivate', 'send -= private' + datasocketAll + '---' + socket.id);
+            ////all
+            // io.sockets.emit('send-data-test', 'send -= all' + datasocketAll + ' '  + socket.id);
+            //// all / private
+            socket.broadcast.emit('sendDataBroadCast', 'send -= all / private ' + datasocketAll + ' --- ' + socket.id);
+            //// io.to(socket.id).emit()
+        });
+
+        // });
     }
 }
 
-ChatController.prototype.convertDataListSocket = function (infoConversation, requestOption, callback) {
+ChatController.prototype.convertDataListSocket = function (infoConversation, socketIo, requestOption, callback) {
     // let conversation = [];
-    infoConversation.forEach(function (element) {
-        let conversationClone = {
-            userCurrent: requestOption.userCurrentID,
-            type: element.type,
-            title: element.title,
-            channel_id: element.channel_id,
-            statusID: requestOption.statusID,
-            statusName: requestOption.statusName,
-            listStatus: requestOption.listStatus,
-            isTypeSingle: element.type == requestOption.statusSingle
-        };
+    // var socketIo = helper.coreHelper.socketIo();
+    console.log(socketIo);
 
-        // conversation.push(conversationClone);
-        // if (conversationClone.isTypeSingle) {
-        socketIO.broadcast.to(element.channel_id).emit('listUserConversation', conversationClone);
-        // socketIO.to(element.channel_id).emit('listUserConversation', conversationClone);
-        // }
-        socketIO.join(element.channel_id);
-    });
+    // io.on('connection', function (socketIo) {
+        let reqListRooms = infoConversation.map(function (getRoomId) {
+            return getRoomId.channel_id;
+        });
 
-    // console.log(socketIO.adapter.rooms, JSON.stringify(infoConversation));
-    // socketIO.broadcast.emit('listUserConversation', conversation);
-    // isIO.sockets.emit('listUserConversation', conversation);
+        let sendBroadcastRoom = [];
+        let listRooms = socketIo.adapter.rooms;
+        for (var idRoom in listRooms) {
+            if (reqListRooms.includes(idRoom)) {
+                let room = listRooms[idRoom]['sockets'];
+                for (var socketId in room) {
+                    if (socketId != socketIo.id) {
+                        if (!sendBroadcastRoom.includes(socketId)) sendBroadcastRoom.push(socketId);
+                    }
+                }
+            }
+        }
 
-    callback(null, true);
+        infoConversation.forEach(function (element) {
+            let conversationClone = {
+                userCurrent: requestOption.userCurrentID,
+                type: element.type,
+                title: element.title,
+                channel_id: element.channel_id,
+                statusID: requestOption.statusID,
+                statusName: requestOption.statusName,
+                listStatus: requestOption.listStatus,
+                isTypeSingle: element.type == requestOption.statusSingle
+            };
+
+            // conversation.push(conversationClone);
+            // if (conversationClone.isTypeSingle) {
+            // socketIo.broadcast.in(sendBroadcastRoom).emit('listUserConversation', conversationClone);
+            socketIo.broadcast.to(element.channel_id).emit('listUserConversation', conversationClone);
+            // socketIo.to(element.channel_id).emit('listUserConversation', conversationClone);
+            // }
+
+            socketIo.broadcast.to(element.channel_id).emit('send-data-test', 'send -= all' + "111111111111111111111111111" + ' ' + socketIo.id);
+            // Io.sockets.emit('send-data-test', 'send -= all' + "111111111111111111111111111" + ' '  + socketIo.id);
+
+            // if (socketIO.id != )
+            //     socketIO.broadcast.to(element.channel_id).emit('listUserConversation', conversationClone);
+            socketIo.join(element.channel_id);
+            // }
+        });
+
+
+        console.log('________', JSON.stringify(socketIo.adapter.rooms));
+        console.log('sendBroadcastRoom ________', JSON.stringify(sendBroadcastRoom));
+        // socketIo.broadcast.emit('listUserConversation', conversation);
+        // isIO.sockets.emit('listUserConversation', conversation);
+
+        callback(null, true);
+    // });
 };
 
 module.exports = ChatController;

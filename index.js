@@ -1,18 +1,18 @@
 const express = require('express');
-var app = express();
+// var app = express();
 
 var CoreHelper = require('./config/CoreHelper.js');
 var callCoreHelper = new CoreHelper();
 
 // ------------- Run app ----------------------
-var runServer = callCoreHelper.runServer(app);
+var runServer = callCoreHelper.runServer();
 
-callCoreHelper.runExpress(app);
-callCoreHelper.runRoutes(app);
+callCoreHelper.runExpress();
+// callCoreHelper.runRoutes();
 callCoreHelper.getConnect();
-callCoreHelper.runSocket(runServer, app);
-
 callCoreHelper.connectKnex();
+
+// callCoreHelper.runSocket(runServer);
 
 
 // callCoreHelper.checkConnect(function (rsConnect) {

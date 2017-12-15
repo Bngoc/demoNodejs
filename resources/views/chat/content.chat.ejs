@@ -5,7 +5,7 @@
             <input class="star favorite-participant" type="checkbox" title="bookmark users" checked/>
             <p><%- data.userName %></p>
         </div>
-        <div class='info-conversation <%- data.isTypeSingle ? "" : "cursor" %>'>
+        <div id="extend-participant" class='info-conversation <%- data.isTypeSingle ? "" : "cursor" %>'>
             <% if (data.isTypeSingle) {
             if (data.listParticipant.length) {
             data.listParticipant.forEach((element, index)=> {
@@ -34,7 +34,7 @@
 
 <% if (!data.isTypeSingle) { %>
 <div class="clearfix"></div>
-<div id="group-participant" class="">
+<div id="group-participant" class="display-none">
     <ul class="list-group-part">
         <% if (data.listParticipant.length) {
         data.listParticipant.forEach((ele, indz) => { %>

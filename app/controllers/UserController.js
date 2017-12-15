@@ -134,7 +134,7 @@ class UserController {
 
             if (req.body.loginId && req.body.pwd) {
                 helper.coreHelper.passport('local').authenticate('local', function (err, user, info) {
-                    if(err) return next(err);
+                    if (err) return next(err);
 
                     let infoPassport = info;
                     //{"code":null,"error":"","msg":"","result":null}'
@@ -152,10 +152,19 @@ class UserController {
                                         responseDataMap.msg = 'Login Fail....!';
                                         res.status(200).send(responseDataMap);
                                     } else {
-                                        responseDataMap.status = true;
-                                        responseDataMap.url = 'chat';
-                                        responseDataMap.msg = 'Login success';
-                                        res.status(200).send(responseDataMap);
+                                        var dataRequest = {
+                                            clause: {users_id: user.id},
+                                            dataUpdate: {is_life: 1},
+                                        };
+                                        var newContacts = new Contacts.class();
+                                        newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
+                                            if (errUpdate) next(errUpdate);
+
+                                            responseDataMap.status = true;
+                                            responseDataMap.url = 'chat';
+                                            responseDataMap.msg = 'Login success';
+                                            res.status(200).send(responseDataMap);
+                                        });
                                     }
                                 });
                             } else {
