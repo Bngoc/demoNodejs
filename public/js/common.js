@@ -1,6 +1,4 @@
 //All screen
-// var io = require('socket.io-client');
-var socket = io.connect(document.location.origin);
 
 function callDataJS(dataRequest, callback) {
     $.ajax({
@@ -101,3 +99,17 @@ function notify_auto_hide(id, type, delay) {
 function randomStringGenerate() {
     return Math.random().toString(36).substring(2);
 }
+
+function imageToBase64(img) {
+    var canvas, ctx, dataURL, base64;
+    canvas = document.createElement("canvas");
+    ctx = canvas.getContext("2d");
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+    dataURL = canvas.toDataURL("image/png");
+    base64 = dataURL.replace(/^data:image\/png;base64,/, "");
+
+    return base64;
+}
+

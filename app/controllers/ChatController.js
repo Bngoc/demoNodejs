@@ -2,10 +2,10 @@
 
 // const socketIo = require('socket.io');
 // const sharedSession = require("express-socket.io-session");
-// var io;
 
 const ViewController = require('./ViewController.js');
 const helper = new ViewController();
+const sockRouter = require('socket.io-router');
 
 const User = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Users.js`);
 const Contacts = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Contacts.js`);
@@ -20,12 +20,13 @@ var BaseController = require('./BaseController.js');
 
 const HEIGHT_BOX_CHAT_MAX = 130;
 const HEIGHT_BOX_CHAT_MIN = 56;
-// var socketIo = {};
 
-
-let statusSingle = helper.coreHelper.app.participants[0];
-const defaultImgSingleUser = "/images/users.png";
-const defaultImgGroupUser = "/images/group.png";
+const STATUS_SINGLE = helper.coreHelper.app.participants[0];
+const IMG_SINGLE_USER = "/images/users.png";
+const IMG_GROUP_USER = "/images/group.png";
+const STATUS_HIDDEN_NAME = helper.coreHelper.app.chatStatus[4];
+const STATUS_HIDDEN_NAME_REPLACE = helper.coreHelper.app.chatStatus[1];
+const CLASS_UNDEFINED = 'undefined';
 
 
 class ChatController extends BaseController {
@@ -42,13 +43,15 @@ class ChatController extends BaseController {
             showResponse.renderViews = 'chat/index.ejs';
 
             let userCurrent = req.user;
-            let socketIo = req.io;
             if (userCurrent) {
                 var newUser = new User.class({});
+                // let io = req.io;
+                // io.sockets.on('connection', function (socket) {
                 newUser.findByIdChat(userCurrent.attributes.id, function (err, rsData) {
                     if (err) {
                         return next(err);
                     }
+
 
                     let notiContacts = rsData.infoAccount.relations.useContacts;
                     let requestCurrent = {
@@ -56,24 +59,23 @@ class ChatController extends BaseController {
                         statusID: notiContacts.attributes.status,
                         statusName: helper.coreHelper.app.chatStatus[notiContacts.attributes.status],
                         listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
-                        statusSingle: statusSingle
+                        statusSingle: STATUS_SINGLE
                     };
-                    req.session.requestCurrentStatus = requestCurrent;
-
-                    var chatController = new ChatController();
-                    chatController.convertDataListSocket(rsData.infoParticipant, socketIo, requestCurrent, function (err, done) {
-                        if (err) next(err);
-                    });
+                    let statusUser = helper.coreHelper.app.chatStatus[notiContacts.attributes.status];
 
                     showResponse.userName = notiContacts ? notiContacts.attributes.middle_name : '';
+                    showResponse.moodMessage = notiContacts ? notiContacts.attributes.mood_message : '';
                     showResponse.userID = notiContacts ? notiContacts.attributes.id : '';
-                    showResponse.status = notiContacts ? helper.coreHelper.app.chatStatus[notiContacts.attributes.status] : '';
+                    showResponse.status = notiContacts ? statusUser : '';
                     showResponse.listStatus = helper.coreHelper.app.chatStatus;
-                    showResponse.urlUpdareStatus = aliasRouter.build('chat.change.status');
                     showResponse.urlChangeContent = aliasRouter.build('chat.change.content');
-                    showResponse.statusSingle = statusSingle;
-                    showResponse.pathImgSingle = defaultImgSingleUser;
-                    showResponse.pathImgGroup = defaultImgGroupUser;
+                    showResponse.statusSingle = STATUS_SINGLE;
+                    showResponse.pathImgSingle = IMG_SINGLE_USER;
+                    showResponse.pathImgGroup = IMG_GROUP_USER;
+                    showResponse.classStatusCurrent = (statusUser != STATUS_HIDDEN_NAME) ? statusUser : STATUS_HIDDEN_NAME_REPLACE;
+                    showResponse.classUndefined = CLASS_UNDEFINED;
+                    showResponse.classStatusHidden = STATUS_HIDDEN_NAME;
+                    showResponse.classReplaceStatusHidden = STATUS_HIDDEN_NAME_REPLACE;
 
                     // res.locals.listParticipants = infoParticipant ? infoParticipant : null;
                     // req.session.listParticipants = infoParticipant ? infoParticipant : null;
@@ -82,9 +84,13 @@ class ChatController extends BaseController {
                     showResponse.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX;
                     showResponse.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN;
 
+                    // save session - share socket io
+                    req.session.currentStatus = requestCurrent;
+                    req.session.infoParticipant = rsData.infoParticipant;
 
                     res.render(showResponse.renderViews, showResponse);
                 });
+                // });
             } else {
                 res.redirect('/');
             }
@@ -111,7 +117,7 @@ class ChatController extends BaseController {
                 id: parseInt(req.body.dataConversation),
                 userCurrentID: userCurrent.attributes.id,
                 userModel: User.model,
-                statusSingle: statusSingle
+                statusSingle: STATUS_SINGLE
             };
 
             conversation.conversationsListSingleUser(optionRequset, function (errPart, modelListUser) {
@@ -119,7 +125,13 @@ class ChatController extends BaseController {
 
                 let listUserParticipant = modelListUser.map(function (listUser) {
                     let listUserRelations = listUser.relations.parConversation;
-                    return {usersId: listUser.get('users_id'), channelId: listUserRelations.get('channel_id')};
+                    return {
+                        usersId: listUser.get('users_id'),
+                        is_accept_single: listUser.get('is_accept_single'),
+                        is_accept_group: listUser.get('is_accept_group'),
+                        channelId: listUserRelations.get('channel_id'),
+                        conversationID: listUser.get('conversation_id')
+                    };
                 });
 
                 conversation.conversationsListUser(optionRequset, function (err, infoConversation) {
@@ -128,11 +140,14 @@ class ChatController extends BaseController {
                     infoConversation.forEach(function (elem) {
                         showResponseChat.dataType = elem.type;
                         showResponseChat.dataChannelId = elem.channel_id;
-                        showResponseChat.dataOwerId = elem.creator_id;
-                        showResponseChat.isCurrentOwerId = elem.creator_id == userCurrent.attributes.id;
+                        showResponseChat.dataOwnerId = elem.creator_id;
+                        showResponseChat.isCurrentOwnerId = elem.creator_id == userCurrent.attributes.id;
                         showResponseChat.dataConversation = elem.idConversation;
                         showResponseChat.countParticipants = elem.count;
-                        showResponseChat.isTypeSingle = showResponseChat.dataType == statusSingle;
+                        showResponseChat.isTypeSingle = showResponseChat.dataType == STATUS_SINGLE;
+                        showResponseChat.is_accept = elem.is_accept_single;
+                        showResponseChat.hiddenStatusName = STATUS_HIDDEN_NAME;
+                        showResponseChat.replaceStatusName = STATUS_HIDDEN_NAME_REPLACE;
 
                         let urlImagesAvatar = "";
                         let listParticipant = [];
@@ -140,7 +155,24 @@ class ChatController extends BaseController {
                             let eleSingle = elem.infoParticipant;
                             let useContactsSingle = eleSingle.relations.useContacts;
                             let indexFindUserSingle = listUserParticipant.findIndex(x => x.usersId == useContactsSingle.get('users_id'));
-                            urlImagesAvatar = useContactsSingle.get('path_img') ? useContactsSingle.get('path_img') : defaultImgSingleUser;
+                            urlImagesAvatar = useContactsSingle.get('path_img') ? useContactsSingle.get('path_img') : IMG_SINGLE_USER;
+
+                            let moodMessageTemp = "";
+                            let tempClassStatus = "";
+                            let tempChatStatusName = helper.coreHelper.app.chatStatus[useContactsSingle.get('status')];
+                            if (elem.is_accept_single) {
+                                moodMessageTemp = showResponseChat.isCurrentOwnerId ? "User not share information" : "XXXXXXXXXXXXXXXXXXXXXXXXXXX";
+                                tempClassStatus = CLASS_UNDEFINED;
+                            } else {
+                                if (useContactsSingle.get('mood_message')) {
+                                    moodMessageTemp = useContactsSingle.get('mood_message');
+                                } else {
+                                    moodMessageTemp = (tempChatStatusName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusName;
+                                }
+
+                                tempClassStatus = (tempChatStatusName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusName;
+                            }
+
                             let tempPartSingle = {
                                 email: eleSingle.get('email'),
                                 phone: eleSingle.get('phone'),
@@ -153,17 +185,37 @@ class ChatController extends BaseController {
                                 is_life: useContactsSingle.get('is_life'),
                                 mood_message: useContactsSingle.get('mood_message'),
                                 status: useContactsSingle.get('status'),
-                                statusName: helper.coreHelper.app.chatStatus[useContactsSingle.get('status')],
+                                statusName: tempChatStatusName,
                                 strListStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
-                                isFriendCurrent: (indexFindUserSingle !== -1),
-                                channelID: (indexFindUserSingle !== -1) ? listUserParticipant[indexFindUserSingle].channelId : null
+                                isFriendCurrent: (indexFindUserSingle !== -1) ? (listUserParticipant[indexFindUserSingle].is_accept_single != 1) : false,
+                                channelID: (indexFindUserSingle !== -1) ? listUserParticipant[indexFindUserSingle].channelId : null,
+                                conversationID: (indexFindUserSingle !== -1) ? listUserParticipant[indexFindUserSingle].conversationID : null,
+                                moodMessageShow: moodMessageTemp,
+                                classStatus: tempClassStatus
+
                             };
                             listParticipant.push(tempPartSingle)
                         } else {
                             elem.infoParticipant.forEach(function (ele) {
                                 let relationsUseContacts = ele.relations.useContacts;
                                 let indexFindUser = listUserParticipant.findIndex(x => x.usersId == relationsUseContacts.get('users_id'));
-                                urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : defaultImgGroupUser;
+                                urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : IMG_GROUP_USER;
+                                let tempChatStatusGroupName = helper.coreHelper.app.chatStatus[relationsUseContacts.get('status')];
+                                let tempClassStatusGroup = "";
+                                let tempMoodMessageGroup = "";
+
+                                if (indexFindUser !== -1) {
+                                    if (relationsUseContacts.get('mood_message')) {
+                                        tempMoodMessageGroup = relationsUseContacts.get('mood_message');
+                                    } else {
+                                        tempMoodMessageGroup = (tempChatStatusGroupName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusGroupName;
+                                    }
+                                    tempClassStatusGroup = (tempChatStatusGroupName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusGroupName;
+                                } else {
+                                    tempMoodMessageGroup = showResponseChat.isCurrentOwnerId ? "User not share information" : "XXXXXXXXXXXXXXXXXXXXXXXXXXX";
+                                    tempClassStatusGroup = CLASS_UNDEFINED;
+                                }
+
                                 let tempPartGroup = {
                                     email: ele.get('email'),
                                     phone: ele.get('phone'),
@@ -176,10 +228,13 @@ class ChatController extends BaseController {
                                     is_life: relationsUseContacts.get('is_life'),
                                     mood_message: relationsUseContacts.get('mood_message'),
                                     status: relationsUseContacts.get('status'),
-                                    statusName: helper.coreHelper.app.chatStatus[relationsUseContacts.get('status')],
+                                    statusName: tempChatStatusGroupName,
                                     strListStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
-                                    isFriendCurrent: (indexFindUser !== -1),
-                                    channelID: (indexFindUser !== -1) ? listUserParticipant[indexFindUser].channelId : null
+                                    isFriendCurrent: (indexFindUser !== -1) ? (listUserParticipant[indexFindUser].is_accept_single != 1) : false,
+                                    channelID: (indexFindUser !== -1) ? listUserParticipant[indexFindUser].channelId : null,
+                                    conversationID: (indexFindUser !== -1) ? listUserParticipant[indexFindUser].conversationID : null,
+                                    moodMessageShow: tempMoodMessageGroup,
+                                    classStatus: tempClassStatusGroup
                                 };
                                 listParticipant.push(tempPartGroup);
 
@@ -213,158 +268,208 @@ class ChatController extends BaseController {
         }
     }
 
-    postChangeStatus(req, res) {
-        var responseAjax = {
-            status: false,
-            code: null,
-            msg: ''
-        };
-        if (req.xhr) {
-            let userCurrent = req.user;
+    socketConnection(io) {
+        io.on('connection', function (socket) {
+            io.sockets.emit('send-data-test', socket.id);
+
+            let chatController = new ChatController();
+            let userCurrent = chatController.getSessionByName(socket, 'passport');
+
             if (userCurrent) {
-                var newContacts = new Contacts.class();
-                var dataRequest = {
-                    clause: {users_id: userCurrent.attributes.id},
-                    dataUpdate: {status: parseInt(req.body.status)},
-                };
+                let currentStatus = chatController.getSessionByName(socket, 'currentStatus');
+                let infoParticipant = chatController.getSessionByName(socket, 'infoParticipant');
+                if (currentStatus && infoParticipant) {
+                    chatController.convertDataListSocket(socket, infoParticipant, currentStatus);
+                    chatController.deleteSessionByName(socket, 'infoParticipant');
+                }
 
-                newContacts.updateContact(dataRequest, function (err, rsModel) {
-                    if (err) {
-                        responseAjax.code = err;
-                        res.status(200).send(responseAjax);
-                    } else {
-                        var newUser = new User.class({});
-                        newUser.findByIdChat(userCurrent.attributes.id, function (err, rsData) {
+                socket.on('updateUser', function (reqData) {
+
+                    var newContacts = new Contacts.class();
+                    var dataRequest = {
+                        clause: {users_id: currentStatus.userCurrentID},
+                        dataUpdate: {
+                            status: parseInt(reqData.data.status)
+                            // is_life: parseInt(reqData.data.status) == defaultStatusHidden ? 0 : undefined
+                        },
+                    };
+
+                    let responsiveData = {
+                        code: null,
+                        msg: '',
+                        data: {},
+                        status: false
+                    };
+
+                    if (userCurrent) {
+                        newContacts.updateContact(dataRequest, function (err, rsModel) {
                             if (err) {
-                                responseAjax.code = err;
-                                res.status(200).send(responseAjax);
+                                responsiveData['msg'] = err;
+                                responsiveData['code'] = 'ERR0002';
                             } else {
-                                let notiContacts = rsData.infoAccount.relations.useContacts;
-                                let requestCurrent = {
-                                    userCurrentID: userCurrent.attributes.id,
-                                    statusID: notiContacts.attributes.status,
-                                    statusName: helper.coreHelper.app.chatStatus[notiContacts.attributes.status],
-                                    listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
-                                    statusSingle: statusSingle
-                                };
-                                let chatController = new ChatController();
 
-                                chatController.convertDataListSocket(rsData.infoParticipant, requestCurrent, function (err, done) {
+                                var newUser = new User.class({});
+                                newUser.findByIdChat(currentStatus.userCurrentID, function (err, modelData) {
                                     if (err) {
-                                        responseAjax.code = err;
-                                    }
-                                    responseAjax.status = true;
+                                        responsiveData['msg'] = err;
+                                        responsiveData['code'] = 'ERR0002';
+                                    } else {
+                                        let notiContacts = modelData.infoAccount.relations.useContacts;
+                                        let updateStatusCurrent = helper.coreHelper.app.chatStatus[notiContacts.attributes.status];
+                                        let requestCurrent = {
+                                            userCurrentID: currentStatus.userCurrentID,
+                                            statusID: notiContacts.attributes.status,
+                                            statusName: updateStatusCurrent,
+                                            listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
+                                            statusSingle: STATUS_SINGLE,
+                                            classCurrentStatus: (STATUS_HIDDEN_NAME == updateStatusCurrent) ? STATUS_HIDDEN_NAME_REPLACE : updateStatusCurrent,
+                                        };
 
-                                    res.status(200).send(responseAjax);
+                                        let isStatus = chatController.convertDataListSocket(socket, modelData.infoParticipant, requestCurrent);
+                                        responsiveData['msg'] = !isStatus ? 'Done' : responsiveData['msg'];
+                                        responsiveData['code'] = !isStatus ? 'ERR0003' : responsiveData['code'];
+                                        responsiveData['status'] = isStatus;
+                                        responsiveData['data'] = {
+                                            statusName: requestCurrent.statusName,
+                                            listStatus: requestCurrent.listStatus,
+                                            classCurrentStatus: requestCurrent.classCurrentStatus
+                                        };
+
+                                        socket.emit('resUpdateUserPrivate', responsiveData);
+                                    }
                                 });
                             }
                         });
+                    } else {
+                        responsiveData['code'] = 'ERR0001';
+                        responsiveData['msg'] = 'Request Error';
+                        socket.emit('resUpdateUserPrivate', responsiveData);
                     }
                 });
-            } else {
-                responseAjax.code = 'ERR0001';
-                responseAjax.msg = 'Account current is empty';
-                res.status(200).send(responseAjax);
+
+                socket.on('sendDataMsg', function (dataSendChat) {
+
+                    if (dataSendChat) {
+
+                        dataSendChat.channelId = dataSendChat.dataChannel;
+                        dataSendChat.valueMsg = dataSendChat.dataValueMsg;
+
+                        socket.emit('sendDataPrivate', dataSendChat);
+
+                        if (dataSendChat.dataChannel) {
+                            socket.broadcast.to(dataSendChat.dataChannel).emit('sendDataBroadCast', dataSendChat);
+                        }
+                    }
+                });
+
+
+                // if (userCurrent.length) {
+                //     var newUser = new User.class({});
+                //     newUser.findConversation(userCurrent.attributes.id, function (err, rsDataConversation) {
+                //         if (err) rsDataConversation = {};
+                //
+                //         socket.broadcast.emit('sendListConversation', JSON.stringify(rsDataConversation));
+                //     });
+                // }
+
+                // chi thang phat ra => socket.emit
+                socket.emit('message', {
+                    content: 'You are connected server private!',
+                    importance: '1',
+                    'socketID': socket.id
+                });
+
+                // gui toan bo trong mang tru thang phat ra => socket.broadcast.emit
+                //socket.broadcast.emit('message', 'Another client has just connected!' + socket.id);
+
+                console.log('________________________', socket.id);
+
+                // all ==> io.sockets.emit
+                io.sockets.emit('message', {
+                    content: 'You are connected -- all!',
+                    importance: '1',
+                    'socketID': socket.id
+                });
+
+                socket.on('message', function (message) {
+                    console.log('A client is speaking to me! They’re saying: ' + message);
+                });
+
+                //disconnect socket by id
+                socket.on('disconnect', function () {
+                    console.log(`disconnect ----------------------------------------  ${socket.id}`);
+                    socket.emit('message', {content: 'bye bye!', importance: null, 'socketID': socket.id});
+                });
+
+
             }
-        } else {
-            responseAjax.code = 'ERR0000';
-            res.status(500).send(responseAjax);
-        }
-    }
-
-    socketIOs(io) {
-        let socket = helper.coreHelper.socketIo();
-        // io.on('connection', function (socket) {
-        // socketIO = socket;
-
-        // console.log(socket);
-
-        // var cookies = cookie.parse(socket.handshake.headers.cookie);
-        // console.log(cookies);
-
-        // var user = socket.handshake.session.user;
-
-
-        // var userCurrent = express_session.req.user;
-        // console.log('express_session.req.user', socket.request);
-
-        // passport    = require('passport');
-        // console.log(`\n______________________________________________>>>>  ${JSON.stringify(socket.handshake.session.user)} \n`);
-
-        // if (userCurrent.length) {
-        //     var newUser = new User.class({});
-        //     newUser.findConversation(userCurrent.attributes.id, function (err, rsDataConversation) {
-        //         if (err) rsDataConversation = {};
-        //
-        //         socket.broadcast.emit('sendListConversation', JSON.stringify(rsDataConversation));
-        //     });
-        // }
-
-        // chi thang phat ra => socket.emit
-        socket.emit('message', {
-            content: 'You are connected server private!',
-            importance: '1',
-            'socketID': socket.id
         });
-
-        // gui toan bo trong mang tru thang phat ra => socket.broadcast.emit
-        //socket.broadcast.emit('message', 'Another client has just connected!' + socket.id);
-
-        console.log('________________________', socket.id);
-
-        // all ==> io.sockets.emit
-        io.sockets.emit('message', {
-            content: 'You are connected -- all!',
-            importance: '1',
-            'socketID': socket.id
-        });
-
-        socket.on('message', function (message) {
-            console.log('A client is speaking to me! They’re saying: ' + message);
-        });
-
-        //disconnect socket by id
-        socket.on('disconnect', function () {
-            console.log(`disconnect ----------------------------------------  ${socket.id}`);
-            socket.emit('message', {content: 'bye bye!', importance: null, 'socketID': socket.id});
-        });
-
-        socket.on('sendDataMsg', function (datasocketAll) {
-            ////private
-            socket.emit('sendDataPrivate', 'send -= private' + datasocketAll + '---' + socket.id);
-            ////all
-            // io.sockets.emit('send-data-test', 'send -= all' + datasocketAll + ' '  + socket.id);
-            //// all / private
-            socket.broadcast.emit('sendDataBroadCast', 'send -= all / private ' + datasocketAll + ' --- ' + socket.id);
-            //// io.to(socket.id).emit()
-        });
-
-        // });
     }
 }
 
-ChatController.prototype.convertDataListSocket = function (infoConversation, socketIo, requestOption, callback) {
-    // let conversation = [];
-    // var socketIo = helper.coreHelper.socketIo();
-    console.log(socketIo);
+ChatController.prototype.getSessionUser = function (socket) {
+    return socket.handshake.session ? socket.handshake.session : false;
+};
 
-    // io.on('connection', function (socketIo) {
-        let reqListRooms = infoConversation.map(function (getRoomId) {
-            return getRoomId.channel_id;
-        });
-
-        let sendBroadcastRoom = [];
-        let listRooms = socketIo.adapter.rooms;
-        for (var idRoom in listRooms) {
-            if (reqListRooms.includes(idRoom)) {
-                let room = listRooms[idRoom]['sockets'];
-                for (var socketId in room) {
-                    if (socketId != socketIo.id) {
-                        if (!sendBroadcastRoom.includes(socketId)) sendBroadcastRoom.push(socketId);
-                    }
-                }
-            }
+ChatController.prototype.getSessionByName = function (socket, nameSession) {
+    let resultSession = false;
+    if (nameSession) {
+        let sessionByName = socket.handshake.session[nameSession] ? socket.handshake.session[nameSession] : false;
+        if (sessionByName) {
+            resultSession = socket.handshake.session[nameSession];
         }
+    }
+
+    return resultSession;
+};
+
+ChatController.prototype.saveSessionByName = function (socket, nameSession, dataSave) {
+    let resultSession = false;
+    if (nameSession) {
+        let sessionByName = socket.handshake.session[nameSession] ? socket.handshake.session[nameSession] : false;
+        if (sessionByName) {
+            socket.handshake.session[nameSession] = dataSave;
+            socket.handshake.session.save();
+            resultSession = true;
+        }
+    }
+
+    return resultSession;
+};
+
+ChatController.prototype.deleteSessionByName = function (socket, nameSession) {
+    let resultDelete = false;
+    if (nameSession) {
+        let sessionByName = socket.handshake.session[nameSession] ? socket.handshake.session[nameSession] : false;
+        if (sessionByName) {
+            delete socket.handshake.session[nameSession];
+            socket.handshake.session.save();
+            resultDelete = true;
+        }
+    }
+
+    return resultDelete;
+};
+
+
+ChatController.prototype.convertDataListSocket = function (socket, infoConversation, requestOption) {
+    try {
+        // let reqListRooms = infoConversation.map(function (getRoomId) {
+        //     return getRoomId.channel_id;
+        // });
+        //
+        // let sendBroadcastRoom = [];
+        // let listRooms = socket.adapter.rooms;
+        // for (var idRoom in listRooms) {
+        //     if (reqListRooms.includes(idRoom)) {
+        //         let room = listRooms[idRoom]['sockets'];
+        //         for (var socketId in room) {
+        //             if (socketId != socket.id) {
+        //                 if (!sendBroadcastRoom.includes(socketId)) sendBroadcastRoom.push(socketId);
+        //             }
+        //         }
+        //     }
+        // }
 
         infoConversation.forEach(function (element) {
             let conversationClone = {
@@ -375,33 +480,24 @@ ChatController.prototype.convertDataListSocket = function (infoConversation, soc
                 statusID: requestOption.statusID,
                 statusName: requestOption.statusName,
                 listStatus: requestOption.listStatus,
-                isTypeSingle: element.type == requestOption.statusSingle
+                isTypeSingle: element.type == requestOption.statusSingle,
+                classCurrentStatus: requestOption.classCurrentStatus
             };
-
-            // conversation.push(conversationClone);
-            // if (conversationClone.isTypeSingle) {
-            // socketIo.broadcast.in(sendBroadcastRoom).emit('listUserConversation', conversationClone);
-            socketIo.broadcast.to(element.channel_id).emit('listUserConversation', conversationClone);
-            // socketIo.to(element.channel_id).emit('listUserConversation', conversationClone);
-            // }
-
-            socketIo.broadcast.to(element.channel_id).emit('send-data-test', 'send -= all' + "111111111111111111111111111" + ' ' + socketIo.id);
-            // Io.sockets.emit('send-data-test', 'send -= all' + "111111111111111111111111111" + ' '  + socketIo.id);
-
-            // if (socketIO.id != )
-            //     socketIO.broadcast.to(element.channel_id).emit('listUserConversation', conversationClone);
-            socketIo.join(element.channel_id);
-            // }
+            socket.join(element.channel_id);
+            // C1
+            socket.broadcast.to(element.channel_id).emit('listUserConversation', conversationClone);
+            // C2
+            // socket.broadcast.in(sendBroadcastRoom).emit('listUserConversation', conversationClone);
         });
 
+        // console.log('________', JSON.stringify(socket.adapter.rooms));
+        // console.log('sendBroadcastRoom ________', JSON.stringify(sendBroadcastRoom));
+        // socket.broadcast.emit('listUserConversation', conversation);
 
-        console.log('________', JSON.stringify(socketIo.adapter.rooms));
-        console.log('sendBroadcastRoom ________', JSON.stringify(sendBroadcastRoom));
-        // socketIo.broadcast.emit('listUserConversation', conversation);
-        // isIO.sockets.emit('listUserConversation', conversation);
-
-        callback(null, true);
-    // });
+        return true;
+    } catch (ex) {
+        return false;
+    }
 };
 
 module.exports = ChatController;

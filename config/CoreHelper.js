@@ -12,8 +12,6 @@ const sampleConfig = require(`${paths.CONFIG}/config.json`);
 const samplePackage = require(`${paths.ROOT}/package.json`);
 const sampleApp = require(`${paths.CONFIG}/app.js`);
 var setAliasRouter = {};
-var Io = {};
-var socketIo = {};
 
 function CoreHelper() {
 
@@ -57,20 +55,16 @@ function CoreHelper() {
     };
 
     this.runSocket = function (runServer) {
-        // var socket = this.callModule(`${paths.MODULE}/express.js`, true);
-        // let io = socket.configSocket(runServer, app);
+        var socket = this.callModule(`${paths.MODULE}/express.js`, true);
+        let io = socket.configSocket(runServer, app);
 
-        // var socketIO = this.callModule(`${paths.CONTROLLERS}ChatController.js`, true);
-        // socketIO.socketIO(io);
-        // io.on('connection', function (socketIo) {
-        //     Io = socketIo;
-        //     return io;
-        // });
+        var chatController = this.callModule(`${paths.CONTROLLERS}ChatController.js`, true);
+        chatController.socketConnection(io);
     };
 
-    this.runExpress = function () {
+    this.runExpress = function (runServer) {
         var express = this.callModule(`${paths.MODULE}/express.js`, true);
-        return express.configExpress(app, this);
+        return express.configExpress(app, runServer, this);
     };
 
     this.runRoutes = function () {
@@ -94,7 +88,7 @@ function CoreHelper() {
 
     this.runServer = function () {
         var server = this.callModule(`${paths.CONFIG}/server.js`, true);
-        var createServer = server.createServer(app, this.sampleConfig);
+        var createServer = server.createServer(app, sampleConfig);
         return createServer;
     };
 
@@ -107,20 +101,6 @@ function CoreHelper() {
 
     this.aliasRouter = function () {
         return setAliasRouter;
-    };
-
-    this.socketIoClone = function () {
-        return Io;
-    };
-
-    this.socketIo = function () {
-        // let io = this.runSocket(this.runServer());
-        // io.on('connection', function (socket) {
-        //     socketIo = socket;
-        //     callback(null, socket);
-        // });
-        // callback('###');
-        return Io;
     };
 }
 

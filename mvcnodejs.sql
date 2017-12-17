@@ -108,6 +108,8 @@ CREATE TABLE IF NOT EXISTS `participants` (
   `conversation_id` INT NOT NULL,
   `users_id` INT NOT NULL,
   `type` ENUM('single', 'group') NULL,
+  `is_accept_single` tinyint(1) NULL DEFAULT 1,
+  `is_accept_group` tinyint(1) NULL DEFAULT 0,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

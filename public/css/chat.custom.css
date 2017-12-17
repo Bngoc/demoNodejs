@@ -64,7 +64,7 @@
 }
 
 #frame #sidepanel #profile.expanded .wrap p.user-name-chat {
-    margin-top: 20px;
+    margin-top: 0px;
 }
 
 #frame #sidepanel #profile.expanded .wrap i.expand-button {
@@ -95,6 +95,7 @@
 #frame #sidepanel #profile .wrap img {
     width: 50px;
     border-radius: 50%;
+    display: block;
     padding: 3px;
     border: 2px solid #e74c3c;
     height: auto;
@@ -113,6 +114,25 @@
     }
 }
 
+#frame #sidepanel #profile .wrap #accCurrent {
+    position: relative;
+}
+
+#profile .wrap #accCurrent .btn-status-use {
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    margin: 45px 0 0 45px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+#profile .wrap #accCurrent .status-hover,
+#profile .wrap #accCurrent .btn-status-use:hover {
+    background-image: url("./../images/play-green.png") !important;
+
+}
+
 #frame #sidepanel #profile .wrap img.online {
     border: 2px solid #2ecc71;
 }
@@ -129,14 +149,38 @@
     border: 2px solid #95a5a6;
 }
 
-#frame #sidepanel #profile .wrap p {
+#frame #sidepanel #profile .wrap .info-current {
+    white-space: nowrap;
     float: left;
+    margin-top: 14px;
+}
+
+#frame #sidepanel #profile .wrap p {
+    clear: unset;
     margin-left: 15px;
+}
+
+#frame #sidepanel #profile .wrap .info-current p.user-name-chat {
+    line-height: initial;
+    cursor: pointer;
+}
+
+#frame #sidepanel #profile .wrap .info-current .mood-msg-current {
+    clear: unset;
+    float: left;
+    line-height: normal;
+    margin-left: 15px;
+    white-space: nowrap;
+    margin-top: 7px;
 }
 
 @media screen and (max-width: 735px) {
     #frame #sidepanel #profile .wrap p {
         display: none;
+    }
+
+    #profile .wrap #accCurrent .btn-status-use {
+        margin: 38px 0 0 38px;
     }
 }
 
@@ -212,7 +256,7 @@
 }
 
 #frame #sidepanel #profile .wrap #status-options ul li {
-    padding: 15px 0 30px 18px;
+    padding: 10px 0 10px 18px;
     display: block;
     cursor: pointer;
 }
@@ -294,10 +338,12 @@
     border: 1px solid #e74c3c;
 }
 
+#frame #sidepanel #profile .wrap #status-options ul li#status-hidden span.status-circle,
 #frame #sidepanel #profile .wrap #status-options ul li#status-offline span.status-circle {
     background: #95a5a6;
 }
 
+#frame #sidepanel #profile .wrap #status-options ul li#status-hidden.active span.status-circle:before,
 #frame #sidepanel #profile .wrap #status-options ul li#status-offline.active span.status-circle:before {
     border: 1px solid #95a5a6;
 }
@@ -446,56 +492,62 @@
     }
 }
 
-#frame #sidepanel #contacts ul li.contact .wrap span {
+#frame #sidepanel #contacts ul li.contact .wrap span.list-icon-status {
     position: absolute;
     left: 0;
-    margin: -2px 0 0 -2px;
-    width: 15px;
-    height: 15px;
+    margin: -2px 0px 0 -2px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     border: 1px solid #2c3e50;
 }
 
-#frame #sidepanel #contacts ul li.contact .wrap span,
+/* current --- list user --- detail user*/
+#profile .wrap #accCurrent span.offline,
+#frame #sidepanel #contacts ul li.contact .wrap span.list-icon-status,
 #frame .content .contact-profile .info-conversation i.offline,
 #frame .content #group-participant .list-group-part .info-part span.offline {
     /*background: #95a5a6;*/
     background-image: url("./../images/offline.png");
-    background-size: 15px 15px;
+    background-size: 12px 12px;
     background-repeat: no-repeat;
 }
 
+#profile .wrap #accCurrent span.online,
 #frame #sidepanel #contacts ul li.contact .wrap span.online,
 #frame .content .contact-profile .info-conversation i.online,
 #frame .content #group-participant .list-group-part .info-part span.online {
     /*background: #2ecc71;*/
     background-image: url("./../images/online.png");
-    background-size: 15px 15px;
+    background-size: 12px 12px;
     background-repeat: no-repeat;
 }
 
+#profile .wrap #accCurrent span.away,
 #frame #sidepanel #contacts ul li.contact .wrap span.away,
 #frame .content .contact-profile .info-conversation i.away,
 #frame .content #group-participant .list-group-part .info-part span.away {
     /*background: #f1c40f;*/
     background-image: url("./../images/away.png");
-    background-size: 15px 15px;
+    background-size: 12px 12px;
     background-repeat: no-repeat;
 }
 
+#profile .wrap #accCurrent span.busy,
 #frame #sidepanel #contacts ul li.contact .wrap span.busy,
 #frame .content .contact-profile .info-conversation i.busy,
 #frame .content #group-participant .list-group-part .info-part span.busy {
     /*background: #e74c3c;*/
     background-image: url("./../images/busy.png");
-    background-size: 15px 15px;
+    background-size: 12px 12px;
     background-repeat: no-repeat;
 }
 
+#frame #sidepanel #contacts ul li.contact .wrap span.undefined,
+#frame .content .contact-profile .info-conversation i.undefined,
 #frame .content #group-participant .list-group-part .info-part span.undefined {
-    /*background: red;*/
     background-image: url("./../images/undefined.png");
-    background-size: 15px 15px;
+    background-size: 12px 12px;
     background-repeat: no-repeat;
 }
 
@@ -524,6 +576,17 @@
 
 #frame #sidepanel #contacts ul li.contact .wrap .meta .name {
     font-weight: 600;
+}
+
+#frame #sidepanel #contacts ul li.contact .wrap .meta .name .badges-notify {
+    float: right;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: red;
+    padding: 3px 10px;
+    text-align: center;
+    margin-left: 0px;
 }
 
 #frame #sidepanel #contacts ul li.contact .wrap .meta .preview {
@@ -653,6 +716,7 @@
     border-radius: 50%;
     float: left;
     margin: 9px 12px 0 9px;
+    cursor: pointer;
 }
 
 #frame .content .contact-profile .info-participant, #frame .content .contact-profile .info-conversation {
@@ -682,9 +746,6 @@
 }
 
 #frame .content .contact-profile .info-participant {
-    /*position: absolute;*/
-    /*left: 60px;*/
-    /*top: 10px;*/
     line-height: normal;
     line-height: 0px;
 }
@@ -763,6 +824,7 @@
 #frame .content .contact-profile .social-media i {
     margin-left: 14px;
     cursor: pointer;
+    font-size: 20px;
 }
 
 #frame .content .contact-profile .social-media i:nth-last-child(1) {
@@ -771,6 +833,22 @@
 
 #frame .content .contact-profile .social-media i:hover {
     color: #435f7a;
+}
+
+#frame .content .contact-profile .social-media .plus-user {
+    background-image: url("./../images/plus-user.png");
+    background-size: 19px 19px;
+    background-repeat: round;
+    width: 19px;
+    height: 19px;
+}
+
+#frame .content .contact-profile .social-media .plus-group {
+    background-image: url(./../images/plus-group.png);
+    background-size: 19px 19px;
+    background-repeat: round;
+    width: 19px;
+    height: 19px;
 }
 
 #frame .content #group-participant {
@@ -786,6 +864,28 @@
 
 }
 
+#frame .content #group-participant .list-group-part .info-part {
+    margin-left: 6px;
+}
+
+#frame .content #group-participant .list-group-part .info-part:first-child{
+    margin-left: 0;
+}
+
+#frame .content #group-participant .list-group-part .show-info-participants{
+    border: 1px solid aquamarine;
+    background: aquamarine;
+    border-radius: 9px 10px;
+    padding: 2px 13px 2px 11px;
+    font-weight: 500;
+}
+
+#frame .content #group-participant .list-group-part .check-participant{
+    background: #077db4 !important;
+    color: white;
+    border: 1px solid #077db4;
+}
+
 #frame .content #group-participant .list-group-part li {
     padding: 0px 17px 0 11px;
     list-style: none;
@@ -793,20 +893,24 @@
     cursor: pointer;
 }
 
+#profile .wrap #accCurrent .btn-status-use,
 #frame .content .contact-profile .info-conversation .favorite-conversation,
 #frame .content #group-participant .list-group-part .status-info-part {
     width: 15px;
     height: 15px;
     border-radius: 50%;
+    background-size: 15px 15px !important;
+    display: block;
 }
 
 #frame .content #group-participant .list-group-part .info-part .stype-list {
     position: absolute;
     left: 0px;
+    margin-left: 3px;
 }
 
 #frame .content #group-participant .list-group-part .info-part span.status-info-name {
-    margin-left: 10px;
+    margin-left: 12px;
 }
 
 #frame .content .messages {
@@ -892,6 +996,10 @@
     #frame .content .messages ul li p {
         max-width: 72%;
     }
+
+    #frame .content .contact-profile .info-conversation-participant {
+        width: 65%;
+    }
 }
 
 #frame .content .message-input {
@@ -915,7 +1023,6 @@
     font-family: "proxima-nova", "Source Sans Pro", sans-serif;
     float: left;
     border: none;
-    /*border: 1px solid;*/
     display: block;
     width: 80%;
     font-size: 1em;
@@ -933,7 +1040,6 @@
 
 @media screen and (max-width: 735px) {
     #frame .content .message-input .wrap .box_msg {
-        /*padding: 9px 113px 9px 3px;*/
         width: 86%;
     }
 }

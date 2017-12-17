@@ -50,8 +50,8 @@ Conversation.prototype.getConversations = function (id, users_id, callback) {
         });
 }
 
-Conversation.prototype.conversationsListUser = function (optionRequset, callback) {
-    this.getConversations(optionRequset.id, optionRequset.userCurrentID, function (err, modelConversation) {
+Conversation.prototype.conversationsListUser = function (optionRequest, callback) {
+    this.getConversations(optionRequest.id, optionRequest.userCurrentID, function (err, modelConversation) {
         if (err) callback(err);
 
         let infoParticipantPromise = [];
@@ -64,11 +64,13 @@ Conversation.prototype.conversationsListUser = function (optionRequset, callback
                 infoParticipant['creator_id'] = elem.get('creator_id');
                 infoParticipant['channel_id'] = elem.get('channel_id');
                 infoParticipant['type'] = elemUser.get('type');
+                infoParticipant['is_accept_single'] = elemUser.get('is_accept_single');
+                infoParticipant['is_accept_group'] = elemUser.get('is_accept_group');
 
                 infoParticipantPromise.push(
                     new Promise(function (resolveOne, rejectOne) {
 
-                        optionRequset.userModel
+                        optionRequest.userModel
                             .query(function (dq) {
                                 dq.where('id', elemUser.get('users_id'));
                             })
@@ -94,7 +96,7 @@ Conversation.prototype.conversationsListUser = function (optionRequset, callback
         Promise.all(infoParticipantPromise)
             .then(function (resultValueAllPromise) {
                 resultValueAllPromise.forEach((element) => {
-                    if (element.type === coreHelper.app.participants[0]) {
+                    if (element.type === optionRequest.statusSingle) {
                         element.count = 1;
                         resultConversationParticipant.push(element);
                     } else {
@@ -144,7 +146,7 @@ Conversation.prototype.conversationsListSingleUser = function (req, callback) {
                 q.where('type', req.statusSingle).where('users_id', '!=', req.userCurrentID)
                     .where('conversation_id', 'IN', partList)
             })
-            .fetchAll({withRelated: ['parConversation'], columns: ['users_id', 'conversation_id']})
+            .fetchAll({withRelated: ['parConversation'], columns: ['users_id', 'conversation_id', 'is_accept_single', 'is_accept_group']})
             .then(function (reModel) {
                 callback(null, reModel)
             })

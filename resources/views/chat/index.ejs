@@ -2,11 +2,17 @@
     <div id="sidepanel">
         <div id="profile">
             <div class="wrap">
-                <img id="profile-img" userid='<%- userID %>' src="http://emilcarlsson.se/assets/mikeross.png"
-                     class='<%- status %>' alt=""/>
-                <p class="user-name-chat"><%- userName %></p>
+                <div id="accCurrent" class="aboutCurrent">
+                    <span class='btn-status-use <%- classStatusCurrent %>' id="user-status-current" title="Change status"></span>
+                    <img id="profile-img" userid='<%- userID %>' src="http://emilcarlsson.se/assets/mikeross.png"
+                     class='<%- classStatusCurrent %>' alt="your profile" title="your profile"/>
+                    </div>
+                <div class="info-current">
+                    <p class="user-name-chat"><%- userName %></p>
+                    <span class="mood-msg-current"><%- moodMessage %></span>
+                </div>
                 <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
-                <div id="status-options" data-url='<%= urlUpdareStatus %>'>
+                <div id="status-options">
                     <ul>
                         <% for( var key in listStatus) { %>
                         <li id='status-<%- listStatus[key] %>' status='<%- listStatus[key] %>' data-value='<%- key %>'
@@ -37,17 +43,19 @@
 
                 if (statusSingle == element.type) {
                 let infoContact = element.infoAccountParticipant.relations.useContacts;
+                let statusPart = listStatus[infoContact.attributes.status] ? listStatus[infoContact.attributes.status] : "";
+                let classStatusPart = statusPart ? ((statusPart == classStatusHidden) ? classReplaceStatusHidden : statusPart) : statusPart;
                 %>
                 <li class="contact">
                     <div class="wrap" data-conversation='<%- element.idConversation %>' data-type='<%- element.type%>'
-                         data-channel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
+                         data-channel='<%- element.channel_id %>' data-owner='<%- element.creator_id %>'>
                         <span channel='status.<%- element.channel_id %>'
-                              class='contact-status <%- (infoContact.attributes.is_life && listStatus[infoContact.attributes.status]) ? listStatus[infoContact.attributes.status] : "" %>'></span>
+                              class='list-icon-status contact-status <%- element.is_accept_single ? classUndefined : (infoContact.attributes.is_life && classStatusPart) ? classStatusPart : "" %>'></span>
                         <img src='<%- infoContact.attributes.path_img ? infoContact.attributes.path_img : pathImgSingle %>'
                              alt=""/>
                         <div class="meta">
                             <p class="name"><%- infoContact.attributes.middle_name ? infoContact.attributes.middle_name
-                                : '&nbsp;' %></p>
+                                : '&nbsp;' %><i class="badges-notify">132</i></p>
                             <p class="preview mood_message"><%- infoContact.attributes.mood_message ?
                                 infoContact.attributes.mood_message : "" %></p>
                             <!--<p class="preview"> <%- element.count %> Remove last</p>-->
@@ -59,12 +67,12 @@
                 %>
                 <li class="contact">
                     <div class="wrap" data-conversation='<%- element.idConversation %>' data-type='<%- element.type%>'
-                         data-changel='<%- element.channel_id %>' data-ower='<%- element.creator_id %>'>
-                        <spans class=""></spans>
+                         data-changel='<%- element.channel_id %>' data-owner='<%- element.creator_id %>'>
+                        <span channel='status.<%- element.channel_id %>' class=""></span>
                         <img src='<%- infoContactGroup.attributes.path_img_group ? infoContactGroup.attributes.path_img_group : pathImgGroup %>'
                              alt=""/>
                         <div class="meta">
-                            <p class="name"><%- element.title %></p>
+                            <p class="name"><%- element.title %><i class="badges-notify">132</i></p>
                             <p class="preview"> <%- element.count %> participants</p>
                         </div>
                     </div>
@@ -185,7 +193,7 @@
     </div>
     <div class="content" id="content-chat">
         <div class="contact-profile">
-            <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
+            <img id="participant-profile" src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
             <div class="info-conversation-participant">
                 <div class="info-participant">
                     <input class="star favorite-participant" type="checkbox" title="bookmark users" checked/>
@@ -204,6 +212,7 @@
                 <i class="fa fa-facebook" aria-hidden="true"></i>
                 <i class="fa fa-twitter" aria-hidden="true"></i>
                 <i class="fa fa-instagram" aria-hidden="true"></i>
+                <i class='fa plus-group' aria-hidden="true" title='Create group'></i>
             </div>
         </div>
         <div class="messages" id="frameListMsg" box-raw-msg="<%= minHeightBoxChat %>"

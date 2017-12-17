@@ -22,11 +22,16 @@ const session = require('express-session');
 const flash = require('connect-flash');
 
 const sharedSession = require("express-socket.io-session");
-// var passportSocketIo = require('passport.socketio');
 const socketIo = require('socket.io');
+const sessionStore = new session.MemoryStore();
 
 // use hander log
 const env = process.env.NODE_ENV || 'development';
+
+const SECRET = '{mySecretRequired}';
+const KEY = 'express.sid';
+
+
 
 
 /**
@@ -53,7 +58,7 @@ const env = process.env.NODE_ENV || 'development';
 
 class Express {
 
-    configExpress(app, coreHelper) {
+    configExpress(app, server, coreHelper) {
 
         app.set('view engine', 'ejs');
         app.engine('html', ejs.renderFile);
@@ -84,11 +89,6 @@ class Express {
         // app.use(passport.initialize());
         // app.use(passport.session());
         // app.use(flash());
-        let io = this.configSocket(coreHelper.runServer(), app);
-        io.on('connection', function (socket) {
-            console.log('---------------------------------client connect');
-            io.sockets.emit('send-data-test', 1111111111111111111111111111111111);
-        });
 
         this.configSession(app);
 
@@ -99,7 +99,7 @@ class Express {
             res.locals.warning_msg = req.flash('warning_msg');
             res.locals.notify_msg = req.flash('notify_msg');
             res.locals.user = req.user || null;
-            res.locals.io = io;
+
             next();
         });
 
@@ -128,8 +128,9 @@ class Express {
 
     configSession(app) {
         let sessionConfig = session({
-            secret: '{mySecretRequired}',
-            name: 'session_id',
+            secret: SECRET,
+            name: KEY,
+            store: sessionStore,
             saveUninitialized: true,
             resave: true,
             cookie: {

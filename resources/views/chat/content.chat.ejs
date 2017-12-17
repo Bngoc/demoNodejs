@@ -1,5 +1,6 @@
 <div class="contact-profile">
-    <img src='<%- data.urlImagesAvatar %>' alt=""/>
+    <img id="participant-profile" src='<%- data.urlImagesAvatar %>' alt="" data-toggle="modal"
+         data-target="#show-information-conversation"/>
     <div class="info-conversation-participant">
         <div class="info-participant">
             <input class="star favorite-participant" type="checkbox" title="bookmark users" checked/>
@@ -10,11 +11,11 @@
             if (data.listParticipant.length) {
             data.listParticipant.forEach((element, index)=> {
             %>
-            <i channel='status.<%- data.dataChannelId %>' class='favorite-conversation <%- element.statusName %>'
+            <i channel='status.<%- data.dataChannelId %>' class='favorite-conversation <%- element.classStatus %>'
                aria-hidden="true"></i>
             <div class="info-group">
-            <span class="status-name"><%- element.statusName %></span><span class="status-space">|</span><span
-                class="status-other">fsgsgsgs</span> </div>
+                <span class="status-name"><%- element.moodMessageShow %></span><span class="status-space">|</span><span
+                    class="status-other">fsgsgsgs</span></div>
             <% });
             }
             } else {
@@ -29,6 +30,9 @@
         <i class="fa fa-facebook" aria-hidden="true"></i>
         <i class="fa fa-twitter" aria-hidden="true"></i>
         <i class="fa fa-instagram" aria-hidden="true"></i>
+        <i class='fa <%- data.isTypeSingle ? (data.listParticipant[0].isFriendCurrent ? "plus-group" : "") : "plus-user" %>' aria-hidden="true"
+           title='<%- data.isTypeSingle ? "Create group" : "Add user" %>' data-toggle="modal"
+           data-target="#list-friend-your"></i>
     </div>
 </div>
 
@@ -38,9 +42,9 @@
     <ul class="list-group-part">
         <% if (data.listParticipant.length) {
         data.listParticipant.forEach((ele, indz) => { %>
-        <li class="info-part">
-            <span channel='status.<%- ele.isFriendCurrent ? ele.channelID : "" %>'
-                  class='status-info-part stype-list <%- (ele.isFriendCurrent) ? ele.statusName : "undefined" %>'></span>
+        <li class="info-part show-info-participants" data-toggle="modal" data-target="#myModal">
+            <span data-conversation='<%- ele.conversationID %>' channel='status.<%- ele.isFriendCurrent ? ele.channelID : "" %>'
+                  class='status-info-part stype-list <%- ele.classStatus %>'></span>
             <span class="status-info-name"><%- ele.middle_name %></span></li>
         <% });
         } %>
@@ -68,10 +72,39 @@
             <p>Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you do any
                 one of a hundred and forty six other things.</p>
         </li>
+        <li class="replies">
+            <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
+            <p>When you're backed against the wall, break the god damn thing down.</p>
+        </li>
+        <li class="replies">
+            <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
+            <p>Excuses don't win championships.</p>
+        </li>
+        <li class="sent">
+            <img src="http://emilcarlsson.se/assets/mikeross.png" alt=""/>
+            <p>Oh yeah, did Michael Jordan tell you that?</p>
+        </li>
+        <li class="replies">
+            <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
+            <p>No, I told him that.</p>
+        </li>
+        <li class="replies">
+            <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
+            <p>What are your choices when someone puts a gun to your head?</p>
+        </li>
+        <li class="sent">
+            <img src="http://emilcarlsson.se/assets/mikeross.png" alt=""/>
+            <p>What are you talking about? You do what they say or they shoot you.</p>
+        </li>
+        <li class="replies">
+            <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
+            <p>Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you do any
+                one of a hundred and forty six other things.</p>
+        </li>
     </ul>
 </div>
 <div class="message-input" id="messageInput" data-conversation='<%- data.dataConversation %>'
-     data-channel='<%- data.dataChannelId %>' data-ower='<%- data.dataOwerId %>' data-type='<%- data.dataType %>'>
+     data-channel='<%- data.dataChannelId %>' data-owner='<%- data.dataOwnerId %>' data-type='<%- data.dataType %>'>
     <div class="wrap">
         <div class="scrollbar" id="style-box-sms" min-height="<%= data.minHeightBoxChat %>"
              max-height="<%= data.maxHeightBoxChat %>" style='max-height: <%= data.maxHeightBoxChat %>px'>
@@ -123,4 +156,80 @@
 
 <div id="newMsgChat" style="display: none">
     <div class="bs"><a id="notifyNewsSms" title="news message">news message</a></div>
+</div>
+
+<% if (!data.isTypeSingle) { %>
+
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Modal Heading</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                Modal body..
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<% } %>
+
+<div class="modal fade" id="show-information-conversation">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Modal Heading</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                Modal body..
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="list-friend-your">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Modal Heading</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                Modal body..
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
 </div>

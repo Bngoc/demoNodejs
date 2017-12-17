@@ -163,6 +163,8 @@ User.prototype.findByIdChat = function (id, callback) {
                     infoParticipant['creator_id'] = elem.get('creator_id');
                     infoParticipant['channel_id'] = elem.get('channel_id');
                     infoParticipant['type'] = elemUser.get('type');
+                    infoParticipant['is_accept_single'] = elemUser.get('is_accept_single');
+                    infoParticipant['is_accept_group'] = elemUser.get('is_accept_group');
 
                     infoParticipantClone.push(
                         new Promise(function (resolveOne, rejectOne) {

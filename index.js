@@ -7,12 +7,12 @@ var callCoreHelper = new CoreHelper();
 // ------------- Run app ----------------------
 var runServer = callCoreHelper.runServer();
 
-callCoreHelper.runExpress();
-// callCoreHelper.runRoutes();
+callCoreHelper.runExpress(runServer);
+callCoreHelper.runRoutes();
 callCoreHelper.getConnect();
 callCoreHelper.connectKnex();
 
-// callCoreHelper.runSocket(runServer);
+callCoreHelper.runSocket(runServer);
 
 
 // callCoreHelper.checkConnect(function (rsConnect) {

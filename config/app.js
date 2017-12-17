@@ -3,7 +3,8 @@ const app = {
         0: 'online',
         1: 'offline',
         2: 'away',
-        3: 'busy'
+        3: 'busy',
+        4: 'hidden'
     },
     messageType: {
         1: 'text',
