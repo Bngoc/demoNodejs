@@ -85,7 +85,9 @@ var SendChatMessage = function () {
             });
         };
 
-        this.reloadContentBoxChatAjax();
+        this.clickContactContentChat();
+        this.clickListContactContentChat();
+        this.clickRightContactContentChat();
     };
 };
 
@@ -209,7 +211,88 @@ SendChatMessage.prototype.scrollEndShowBoxChat = function (timeAnimal) {
     $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, timeAnimate);
 };
 
-SendChatMessage.prototype.reloadContentBoxChatAjax = function () {
+SendChatMessage.prototype.clickRightContactContentChat = function () {
+    $('body')
+        .on("mousedown", "#group-participant", function (ev) {
+            if ($(this).find('li.check-participant').length) {
+                if (ev.which == 3) {
+                    alert("Right mouse button clicked on element with id myId");
+                }
+            }
+        });
+
+}
+
+SendChatMessage.prototype.clickContactContentChat = function () {
+    var _this = this;
+    let count = 0;
+    $('body')
+        .on('click', '.show-info-participants', function (e) {
+            e.preventDefault();
+            // $('#myModal').show().on('shown', function() {
+            //     $('#myModal').modal('hide')
+            // });
+
+            $('.show-info-participants').removeClass('check-participant');
+            $(this).addClass('check-participant');
+            count = 0;
+            setTimeout(function () {
+                _this.gdgd(count);
+            }, 450);
+        })
+        .on('dblclick', '.show-info-participants', function (e) {
+
+            // counts.push({count: ++count});
+            _this.gdgd(++count);
+            // $('li.contact').removeClass('active');
+            // $(this).addClass('active');
+            //
+            // let imgProfile = $(this).find('.wrap img').attr("src");
+            // let userName = $(this).find('.meta p.name').text();
+            // let dataChannelID = $(this).find('.wrap').attr("data-channel");
+            // let dataOwnerID = $(this).find('.wrap').attr("data-owner");
+            // let dataType = $(this).find('.wrap').attr("data-type");
+            // let dataConversation = $(this).find('.wrap').attr("data-conversation");
+            //
+            // let dataRequest = {
+            //     url: $('#contacts').attr('data-url'),
+            //     data: {
+            //         imgProfile: '<img src="' + imgProfile + '" alt="">',
+            //         userName: userName,
+            //         dataChannelID: dataChannelID,
+            //         dataOwnerID: dataOwnerID,
+            //         dataType: dataType,
+            //         dataConversation: dataConversation,
+            //         _method: 'post'
+            //     }
+            // };
+            // _this.reloadContentBoxChatAjax(dataRequest);
+            // e.stopPropagation();
+            // e.preventDefault();
+        });
+
+    // console.log(count, '-------');
+}
+
+// let kj = [];
+SendChatMessage.prototype.gdgd = function (boolean) {
+    console.log(boolean);
+    // kj['count'] = boolean;
+    if(boolean){
+        // setTimeout(function () {
+        //     if (kj.length == 1) {
+                alert("dblclick");
+                // kj = [];
+            // }
+        // }, 3000);
+    } else {
+        $('#myModal').modal({
+            show: 'false'
+        });
+    }
+}
+
+SendChatMessage.prototype.clickListContactContentChat = function () {
     var _this = this;
     $('body').on('click', '#contacts li.contact', function () {
         $('li.contact').removeClass('active');
@@ -234,15 +317,19 @@ SendChatMessage.prototype.reloadContentBoxChatAjax = function () {
                 _method: 'post'
             }
         };
+        _this.reloadContentBoxChatAjax(dataRequest);
+    });
+}
 
-        callDataJS(dataRequest, function (dataResult) {
-            if (dataResult.html) {
-                $('#content-chat').html(dataResult.html);
+SendChatMessage.prototype.reloadContentBoxChatAjax = function (dataRequest) {
+    let _this = this;
+    callDataJS(dataRequest, function (dataResult) {
+        if (dataResult.html) {
+            $('#content-chat').html(dataResult.html);
 
-                _this.getDefaultHeightMsgBox();
-                _this.scrollEndShowBoxChat(2300);
-            }
-        });
+            _this.getDefaultHeightMsgBox();
+            _this.scrollEndShowBoxChat(2300);
+        }
     });
 };
 

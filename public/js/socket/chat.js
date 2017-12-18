@@ -37,7 +37,3 @@ $("body").on('click', '#extend-participant', function () {
     }
 });
 
-$('body').on('click', '.show-info-participants', function () {
-    $('.show-info-participants').removeClass('check-participant');
-    $(this).addClass('check-participant');
-})

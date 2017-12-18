@@ -43,7 +43,7 @@
     <ul class="list-group-part">
         <% if (data.listParticipant.length) {
         data.listParticipant.forEach((ele, indz) => { %>
-        <li class="info-part show-info-participants" data-toggle="modal" data-target="#myModal">
+        <li class="info-part show-info-participants">
             <span data-conversation='<%- ele.conversationID %>'
                   channel='status.<%- ele.isFriendCurrent ? ele.channelID : "" %>'
                   class='status-info-part stype-list <%- ele.classStatus %>'></span>
@@ -261,4 +261,20 @@
 
         </div>
     </div>
+</div>
+
+<div id="menu">
+    <a href="#">
+        <img src="http://puu.sh/nr60s/42df867bf3.png" /> AdBlock Plus <span>Ctrl + ?!</span>
+    </a>
+    <a href="#">
+        <img src="http://puu.sh/nr5Z6/4360098fc1.png" /> SNTX <span>Ctrl + ?!</span>
+    </a>
+    <hr />
+    <a href="#">
+        <i class="fa fa-fort-awesome"></i> Fort Awesome <span>Ctrl + ?!</span>
+    </a>
+    <a href="#">
+        <i class="fa fa-flag"></i> Font Awesome <span>Ctrl + ?!</span>
+    </a>
 </div>

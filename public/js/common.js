@@ -113,3 +113,90 @@ function imageToBase64(img) {
     return base64;
 }
 
+// var i = document.getElementById("menu").style;
+// if (document.addEventListener) {
+//     document.addEventListener('contextmenu', function(e) {
+//         var posX = e.clientX;
+//         var posY = e.clientY;
+//         menu(posX, posY);
+//         e.preventDefault();
+//     }, false);
+//     document.addEventListener('click', function(e) {
+//         i.opacity = "0";
+//         setTimeout(function() {
+//             i.visibility = "hidden";
+//         }, 501);
+//     }, false);
+// } else { // IE < 9
+//     document.attachEvent('oncontextmenu', function(e) {
+//         var posX = e.clientX;
+//         var posY = e.clientY;
+//         menu(posX, posY);
+//         e.preventDefault();
+//     });
+//     document.attachEvent('onclick', function(e) {
+//         i.opacity = "0";
+//         setTimeout(function() {
+//             i.visibility = "hidden";
+//         }, 501);
+//     });
+// }
+//
+// function menu(x, y) {
+//     i.top = y + "px";
+//     i.left = x + "px";
+//     i.visibility = "visible";
+//     i.opacity = "1";
+// }
+
+$(function() {
+    var doubleClicked = false;
+    $(document).on("contextmenu", function (e) {
+        if(doubleClicked == false) {
+            e.preventDefault(); // To prevent the default context menu.
+            var windowHeight = $(window).height()/2;
+            var windowWidth = $(window).width()/2;
+            //When user click on bottom-left part of window
+            if(e.clientY > windowHeight && e.clientX <= windowWidth) {
+                $("#menu").css("left", e.clientX);
+                $("#menu").css("bottom", $(window).height()-e.clientY);
+                $("#menu").css("right", "auto");
+                $("#menu").css("top", "auto");
+            } else if(e.clientY > windowHeight && e.clientX > windowWidth) {
+                //When user click on bottom-right part of window
+                $("#menu").css("right", $(window).width()-e.clientX);
+                $("#menu").css("bottom", $(window).height()-e.clientY);
+                $("#menu").css("left", "auto");
+                $("#menu").css("top", "auto");
+            } else if(e.clientY <= windowHeight && e.clientX <= windowWidth) {
+                //When user click on top-left part of window
+                $("#menu").css("left", e.clientX);
+                $("#menu").css("top", e.clientY);
+                $("#menu").css("right", "auto");
+                $("#menu").css("bottom", "auto");
+            } else {
+                //When user click on top-right part of window
+                $("#menu").css("right", $(window).width()-e.clientX);
+                $("#menu").css("top", e.clientY);
+                $("#menu").css("left", "auto");
+                $("#menu").css("bottom", "auto");
+            }
+            $("#menu").fadeIn(500, FocusContextOut());
+            doubleClicked = true;
+        } else {
+            e.preventDefault();
+            doubleClicked = false;
+            $("#menu").fadeOut(500);
+        }
+    });
+
+    function FocusContextOut() {
+        $(document).on("click", function () {
+            doubleClicked = false;
+            $("#group-participant").fadeOut(500);
+            $(document).off("click");
+        });
+    }
+});
+
+//https://stackoverflow.com/questions/4909167/how-to-add-a-custom-right-click-menu-to-a-webpage
