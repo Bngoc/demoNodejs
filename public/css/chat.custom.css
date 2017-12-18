@@ -576,17 +576,29 @@
 
 #frame #sidepanel #contacts ul li.contact .wrap .meta .name {
     font-weight: 600;
+    width: 77%;
+    white-space: nowrap;
+    position: relative;
 }
 
 #frame #sidepanel #contacts ul li.contact .wrap .meta .name .badges-notify {
-    float: right;
-    width: 15px;
     height: 15px;
     border-radius: 50%;
-    background: red;
     padding: 3px 10px;
     text-align: center;
     margin-left: 0px;
+    position: absolute;
+    right: 0;
+    margin-right: -35px;
+    bottom: -2pt;
+}
+
+#frame #sidepanel #contacts ul li.contact .wrap .meta .name .badges-color {
+    background: red;
+}
+
+#frame #sidepanel #contacts ul li.active .wrap .meta .name .badges-notify {
+    right: -4.2762px !important;
 }
 
 #frame #sidepanel #contacts ul li.contact .wrap .meta .preview {
@@ -676,7 +688,7 @@
 
 #frame .content {
     float: right;
-    width: 66%;
+    width: 67.7%;
     height: 100%;
     overflow: hidden;
     position: relative;
@@ -868,11 +880,11 @@
     margin-left: 6px;
 }
 
-#frame .content #group-participant .list-group-part .info-part:first-child{
+#frame .content #group-participant .list-group-part .info-part:first-child {
     margin-left: 0;
 }
 
-#frame .content #group-participant .list-group-part .show-info-participants{
+#frame .content #group-participant .list-group-part .show-info-participants {
     border: 1px solid aquamarine;
     background: aquamarine;
     border-radius: 9px 10px;
@@ -880,7 +892,7 @@
     font-weight: 500;
 }
 
-#frame .content #group-participant .list-group-part .check-participant{
+#frame .content #group-participant .list-group-part .check-participant {
     background: #077db4 !important;
     color: white;
     border: 1px solid #077db4;
@@ -1024,7 +1036,7 @@
     float: left;
     border: none;
     display: block;
-    width: 80%;
+    width: 82%;
     font-size: 1em;
     resize: none;
     color: #32465a;
@@ -1040,7 +1052,7 @@
 
 @media screen and (max-width: 735px) {
     #frame .content .message-input .wrap .box_msg {
-        width: 86%;
+        width: 87%;
     }
 }
 

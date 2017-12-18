@@ -1,11 +1,7 @@
 'use strict';
 
-// const socketIo = require('socket.io');
-// const sharedSession = require("express-socket.io-session");
-
 const ViewController = require('./ViewController.js');
 const helper = new ViewController();
-const sockRouter = require('socket.io-router');
 
 const User = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Users.js`);
 const Contacts = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Contacts.js`);
@@ -19,6 +15,7 @@ const Reports = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}R
 var BaseController = require('./BaseController.js');
 
 const HEIGHT_BOX_CHAT_MAX = 130;
+const HEIGHT_INPUT_BOX_MAX = 100;
 const HEIGHT_BOX_CHAT_MIN = 56;
 
 const STATUS_SINGLE = helper.coreHelper.app.participants[0];
@@ -45,13 +42,8 @@ class ChatController extends BaseController {
             let userCurrent = req.user;
             if (userCurrent) {
                 var newUser = new User.class({});
-                // let io = req.io;
-                // io.sockets.on('connection', function (socket) {
                 newUser.findByIdChat(userCurrent.attributes.id, function (err, rsData) {
-                    if (err) {
-                        return next(err);
-                    }
-
+                    if (err) return next(err);
 
                     let notiContacts = rsData.infoAccount.relations.useContacts;
                     let requestCurrent = {
@@ -77,11 +69,9 @@ class ChatController extends BaseController {
                     showResponse.classStatusHidden = STATUS_HIDDEN_NAME;
                     showResponse.classReplaceStatusHidden = STATUS_HIDDEN_NAME_REPLACE;
 
-                    // res.locals.listParticipants = infoParticipant ? infoParticipant : null;
-                    // req.session.listParticipants = infoParticipant ? infoParticipant : null;
-
                     showResponse.listParticipant = rsData.infoParticipant ? rsData.infoParticipant : null;
                     showResponse.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX;
+                    showResponse.maxHeightInputBoxChat = HEIGHT_INPUT_BOX_MAX;
                     showResponse.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN;
 
                     // save session - share socket io
@@ -90,7 +80,6 @@ class ChatController extends BaseController {
 
                     res.render(showResponse.renderViews, showResponse);
                 });
-                // });
             } else {
                 res.redirect('/');
             }
@@ -104,6 +93,7 @@ class ChatController extends BaseController {
         var showResponseChat = {};
 
         showResponseChat.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX;
+        showResponseChat.maxHeightInputBoxChat = HEIGHT_INPUT_BOX_MAX;
         showResponseChat.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN;
         showResponseChat.imgProfile = req.body.imgProfile;
         showResponseChat.userName = req.body.userName;
@@ -121,7 +111,7 @@ class ChatController extends BaseController {
             };
 
             conversation.conversationsListSingleUser(optionRequset, function (errPart, modelListUser) {
-                if (errPart) next(err);
+                if (errPart) return next(errPart);
 
                 let listUserParticipant = modelListUser.map(function (listUser) {
                     let listUserRelations = listUser.relations.parConversation;
@@ -135,7 +125,7 @@ class ChatController extends BaseController {
                 });
 
                 conversation.conversationsListUser(optionRequset, function (err, infoConversation) {
-                    if (err) next(err);
+                    if (err) return next(err);
 
                     infoConversation.forEach(function (elem) {
                         showResponseChat.dataType = elem.type;
@@ -169,7 +159,6 @@ class ChatController extends BaseController {
                                 } else {
                                     moodMessageTemp = (tempChatStatusName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusName;
                                 }
-
                                 tempClassStatus = (tempChatStatusName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusName;
                             }
 
@@ -191,9 +180,10 @@ class ChatController extends BaseController {
                                 channelID: (indexFindUserSingle !== -1) ? listUserParticipant[indexFindUserSingle].channelId : null,
                                 conversationID: (indexFindUserSingle !== -1) ? listUserParticipant[indexFindUserSingle].conversationID : null,
                                 moodMessageShow: moodMessageTemp,
-                                classStatus: tempClassStatus
-
+                                classStatus: tempClassStatus,
                             };
+
+                            showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
                             listParticipant.push(tempPartSingle)
                         } else {
                             elem.infoParticipant.forEach(function (ele) {
@@ -237,8 +227,8 @@ class ChatController extends BaseController {
                                     classStatus: tempClassStatusGroup
                                 };
                                 listParticipant.push(tempPartGroup);
-
                             });
+                            showResponseChat.isFriendCurrentSingle = true;
                         }
 
                         showResponseChat.listParticipant = listParticipant;
@@ -400,8 +390,6 @@ class ChatController extends BaseController {
                     console.log(`disconnect ----------------------------------------  ${socket.id}`);
                     socket.emit('message', {content: 'bye bye!', importance: null, 'socketID': socket.id});
                 });
-
-
             }
         });
     }

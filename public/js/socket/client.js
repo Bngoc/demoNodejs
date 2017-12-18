@@ -15,7 +15,9 @@ socket.on('sendDataPrivate', function (messageReplies) {
 });
 
 socket.on('sendDataBroadCast', function (messageSent) {
-    if ($('[channel="status.' + messageSent.channelId + '"]').closest('li').hasClass('active')) {
+    let searchDomChannel = $('[channel="status.' + messageSent.channelId + '"]');
+
+    if (searchDomChannel.closest('li').hasClass('active')) {
 
         var msg = '<li class="sent">'
             + '<img src="http://emilcarlsson.se/assets/donnapaulsen.png" alt="">'
@@ -29,7 +31,10 @@ socket.on('sendDataBroadCast', function (messageSent) {
             $('#newMsgChat').delay(100).css("display", "block");
         }
     } else {
-
+        let badgesNotify = searchDomChannel.closest('.wrap').find('i.badges-notify');
+        if (badgesNotify.length) {
+            badgesNotify.addClass('badges-color').text('211');
+        }
     }
 });
 
@@ -94,7 +99,7 @@ SendChatMessage.prototype.diffHeightMsg = function () {
     $('#frameListMsg').css({'min-height': minHeightFrameListMsg});
     $('#frameListMsg').attr('box-change-msg', $('#frameListMsg').attr('box-raw-msg'));
 
-    $('.scrollbar').attr('realheghitchange', $('.scrollbar').attr('realHeightRaw'));
+    $('.scrollbar').attr('realheightchange', $('.scrollbar').attr('realHeightRaw'));
     $('#boxChat').val('');
 
     return false;
@@ -108,16 +113,18 @@ SendChatMessage.prototype.sendMsg = function () {
     var dataValueMsg = $.trim($('#boxChat').val());
     if (dataValueMsg.length) {
         let messageInput = $('#messageInput');
-        let dataSendChat = {
-            dataConversation: messageInput.attr('data-conversation'),
-            dataChannel: messageInput.attr('data-channel'),
-            dataOwer: messageInput.attr('data-owner'),
-            dataType: messageInput.attr('data-type'),
-            dataValueMsg: dataValueMsg
-        };
+        if (window.dataFriend === 'true') {
+            let dataSendChat = {
+                dataConversation: messageInput.attr('data-conversation'),
+                dataChannel: messageInput.attr('data-channel'),
+                dataOwer: messageInput.attr('data-owner'),
+                dataType: messageInput.attr('data-type'),
+                dataValueMsg: dataValueMsg
+            };
 
-        socket.emit('sendDataMsg', dataSendChat);
-        this.diffHeightMsg();
+            socket.emit('sendDataMsg', dataSendChat);
+            this.diffHeightMsg();
+        }
     }
 };
 

@@ -1,0 +1,8 @@
+.disabled-element {
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+.remove-scrollbar::-webkit-scrollbar {
+    width: 0px !important;
+}
