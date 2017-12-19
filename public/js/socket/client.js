@@ -227,10 +227,11 @@ SendChatMessage.prototype.clickRightContactContentChat = function () {
 
 SendChatMessage.prototype.clickContactContentChat = function () {
     var _this = this;
-    let click = 0, delay = 500, timer = null;
+    let click = 0;
     $('body')
         .on('click', '.show-info-participants', function (e) {
             e.preventDefault();
+            let delay = 500, timer = null;
             click++;
             if (click === 1) {
                 // $('.show-info-participants').removeClass('check-participant');
@@ -295,7 +296,7 @@ SendChatMessage.prototype.clickListContactContentChat = function () {
         $('li.contact').removeClass('active');
         $(this).addClass('active');
 
-        let userName = $(this).find('.meta p.name').text();
+        let userName = $(this).find('.meta p.name').contents().get(0).nodeValue;
         let dataChannelID = $(this).find('.wrap').attr("data-channel");
         let dataOwnerID = $(this).find('.wrap').attr("data-owner");
         let dataType = $(this).find('.wrap').attr("data-type");
