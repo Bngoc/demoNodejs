@@ -1,0 +1,68 @@
+<div class="contact-profile">
+    <img id="participant-profile" src='<%- data.urlImagesAvatar %>' alt="" data-toggle="modal"
+         data-target="#show-information-conversation"/>
+    <div class="info-conversation-participant">
+        <div class="info-participant">
+            <input class="star favorite-participant" type="checkbox" title="bookmark users" checked/>
+            <p><%- data.userName %></p>
+        </div>
+        <div id="extend-participant" class='info-conversation'>
+            <% if (data.infoParticipant.length) {
+            data.infoParticipant.forEach((element, index)=> {
+            %>
+            <i channel='status.' class='favorite-conversation <%- data.classStatus %>'
+               aria-hidden="true"></i>
+            <div class="info-group">
+                <span class="status-name"><%- data.moodMessageShow %></span><span class="status-space">|</span><span
+                    class="status-other">fsgsgsgs</span></div>
+            <% });
+            } %>
+        </div>
+    </div>
+    <div class="social-media">
+        <i class="fa fa-facebook" aria-hidden="true"></i>
+        <i class="fa fa-twitter" aria-hidden="true"></i>
+        <i class="fa fa-instagram" aria-hidden="true"></i>
+        <i class='fa ' aria-hidden="true" title='' data-toggle="modal" data-target="#list-friend-your"></i>
+    </div>
+</div>
+
+<div class="messages" id="frameListMsg" box-raw-msg="<%= data.minHeightBoxChat %>"
+     box-change-msg="<%= data.minHeightBoxChat %>">
+
+    <div class="clearfix"></div>
+    <div class="" id="request-area">
+        <div class="accept-request-user">
+            <div class="d-block md-col-12" align="center">
+                <span><p class="name-partici-req"><%- data.userName %></p> is not in your contacts</span>
+                <button class="btn btn-primary" id="add-contact-user">Add to contacts</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="message-input" id="messageInput" data-conversation='<- data.dataConversation %>'
+     data-channel='<- data.dataChannelId %>' data-owner='<- data.dataOwnerId %>' data-type='<- data.dataType %>'>
+    <div class="wrap">
+        <div class="scrollbar" id="style-box-sms" max-height='<%- data.maxHeightBoxChat %>'
+             min-height='<%= data.minHeightBoxChat %>'>
+            <textarea id="boxChat" class="box_msg" type="text" placeholder="Write your message..."></textarea>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#boxChat').css({"max-height": parseInt('<%- data.maxHeightInputBoxChat %>')});
+        $('#style-box-sms').css({"max-height": parseInt('<%- data.maxHeightBoxChat %>')});
+
+
+        $("#messageInput").addClass("disabled-element");
+        $("#frameListMsg").addClass("remove-scrollbar");
+        $("#boxChat").attr("placeholder", 'Messsaging disabled until request is accepted');
+
+        //css box chat with not friend
+        $('#messageInput .btn-controler-act').remove();
+        $('#boxChat').addClass('cuts-box-chat-clear center-placeholder');
+    });
+</script>

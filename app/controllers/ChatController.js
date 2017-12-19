@@ -24,6 +24,9 @@ const IMG_GROUP_USER = "/images/group.png";
 const STATUS_HIDDEN_NAME = helper.coreHelper.app.chatStatus[4];
 const STATUS_HIDDEN_NAME_REPLACE = helper.coreHelper.app.chatStatus[1];
 const CLASS_UNDEFINED = 'undefined';
+const MOOD_MESSAGE_REQUEST = 'User not share information';
+const MOOD_MESSAGE_RESPONSIVE = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+
 
 
 class ChatController extends BaseController {
@@ -91,151 +94,184 @@ class ChatController extends BaseController {
 
     postContentChat(req, res, next) {
         var showResponseChat = {};
-
-        showResponseChat.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX;
-        showResponseChat.maxHeightInputBoxChat = HEIGHT_INPUT_BOX_MAX;
-        showResponseChat.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN;
-        showResponseChat.imgProfile = req.body.imgProfile;
-        showResponseChat.userName = req.body.userName;
-
-        showResponseChat.renderViews = 'chat/content.chat.ejs';
         let userCurrent = req.user;
 
-        if (parseInt(req.body.dataConversation) && userCurrent) {
-            let conversation = new Conversation.class();
-            let optionRequset = {
-                id: parseInt(req.body.dataConversation),
-                userCurrentID: userCurrent.attributes.id,
-                userModel: User.model,
-                statusSingle: STATUS_SINGLE
-            };
+        try {
+            showResponseChat.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX;
+            showResponseChat.maxHeightInputBoxChat = HEIGHT_INPUT_BOX_MAX;
+            showResponseChat.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN;
+            showResponseChat.userName = req.body.userName;
 
-            conversation.conversationsListSingleUser(optionRequset, function (errPart, modelListUser) {
-                if (errPart) return next(errPart);
+            if (parseInt(req.body.dataConversation) && userCurrent) {
+                showResponseChat.renderViews = 'chat/content.chat.ejs';
+                let conversation = new Conversation.class();
+                let optionRequset = {
+                    id: parseInt(req.body.dataConversation),
+                    userCurrentID: userCurrent.attributes.id,
+                    userModel: User.model,
+                    statusSingle: STATUS_SINGLE
+                };
 
-                let listUserParticipant = modelListUser.map(function (listUser) {
-                    let listUserRelations = listUser.relations.parConversation;
-                    return {
-                        usersId: listUser.get('users_id'),
-                        is_accept_single: listUser.get('is_accept_single'),
-                        is_accept_group: listUser.get('is_accept_group'),
-                        channelId: listUserRelations.get('channel_id'),
-                        conversationID: listUser.get('conversation_id')
-                    };
-                });
+                conversation.conversationsListSingleUser(optionRequset, function (errPart, modelListUser) {
+                    if (errPart) return next(errPart);
 
-                conversation.conversationsListUser(optionRequset, function (err, infoConversation) {
-                    if (err) return next(err);
+                    let listUserParticipant = modelListUser.map(function (listUser) {
+                        let listUserRelations = listUser.relations.parConversation;
+                        return {
+                            usersId: listUser.get('users_id'),
+                            is_accept_single: listUser.get('is_accept_single'),
+                            is_accept_group: listUser.get('is_accept_group'),
+                            channelId: listUserRelations.get('channel_id'),
+                            conversationID: listUser.get('conversation_id')
+                        };
+                    });
 
-                    infoConversation.forEach(function (elem) {
-                        showResponseChat.dataType = elem.type;
-                        showResponseChat.dataChannelId = elem.channel_id;
-                        showResponseChat.dataOwnerId = elem.creator_id;
-                        showResponseChat.isCurrentOwnerId = elem.creator_id == userCurrent.attributes.id;
-                        showResponseChat.dataConversation = elem.idConversation;
-                        showResponseChat.countParticipants = elem.count;
-                        showResponseChat.isTypeSingle = showResponseChat.dataType == STATUS_SINGLE;
-                        showResponseChat.is_accept = elem.is_accept_single;
-                        showResponseChat.hiddenStatusName = STATUS_HIDDEN_NAME;
-                        showResponseChat.replaceStatusName = STATUS_HIDDEN_NAME_REPLACE;
+                    conversation.conversationsListUser(optionRequset, function (err, infoConversation) {
+                        if (err) return next(err);
 
-                        let urlImagesAvatar = "";
-                        let listParticipant = [];
-                        if (showResponseChat.isTypeSingle) {
-                            let eleSingle = elem.infoParticipant;
-                            let useContactsSingle = eleSingle.relations.useContacts;
-                            let indexFindUserSingle = listUserParticipant.findIndex(x => x.usersId == useContactsSingle.get('users_id'));
-                            urlImagesAvatar = useContactsSingle.get('path_img') ? useContactsSingle.get('path_img') : IMG_SINGLE_USER;
+                        infoConversation.forEach(function (elem) {
+                            showResponseChat.dataType = elem.type;
+                            showResponseChat.dataChannelId = elem.channel_id;
+                            showResponseChat.dataOwnerId = elem.creator_id;
+                            showResponseChat.isCurrentOwnerId = elem.creator_id == userCurrent.attributes.id;
+                            showResponseChat.dataConversation = elem.idConversation;
+                            showResponseChat.countParticipants = elem.count;
+                            showResponseChat.isTypeSingle = showResponseChat.dataType == STATUS_SINGLE;
+                            showResponseChat.is_accept = elem.is_accept_single;
+                            showResponseChat.hiddenStatusName = STATUS_HIDDEN_NAME;
+                            showResponseChat.replaceStatusName = STATUS_HIDDEN_NAME_REPLACE;
 
-                            let moodMessageTemp = "";
-                            let tempClassStatus = "";
-                            let tempChatStatusName = helper.coreHelper.app.chatStatus[useContactsSingle.get('status')];
-                            if (elem.is_accept_single) {
-                                moodMessageTemp = showResponseChat.isCurrentOwnerId ? "User not share information" : "XXXXXXXXXXXXXXXXXXXXXXXXXXX";
-                                tempClassStatus = CLASS_UNDEFINED;
-                            } else {
-                                if (useContactsSingle.get('mood_message')) {
-                                    moodMessageTemp = useContactsSingle.get('mood_message');
+                            let urlImagesAvatar = "";
+                            let listParticipant = [];
+                            if (showResponseChat.isTypeSingle) {
+                                let eleSingle = elem.infoParticipant;
+                                let useContactsSingle = eleSingle.relations.useContacts;
+                                let indexFindUserSingle = listUserParticipant.findIndex(x => x.usersId == useContactsSingle.get('users_id'));
+                                let booleanFindUserSingle = (indexFindUserSingle !== -1);
+                                let moodMessageTemp = "";
+                                let tempClassStatus = "";
+                                let tempChatStatusName = helper.coreHelper.app.chatStatus[useContactsSingle.get('status')];
+                                if (elem.is_accept_single) {
+                                    moodMessageTemp = showResponseChat.isCurrentOwnerId ? MOOD_MESSAGE_REQUEST : MOOD_MESSAGE_RESPONSIVE;
+                                    tempClassStatus = CLASS_UNDEFINED;
                                 } else {
-                                    moodMessageTemp = (tempChatStatusName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusName;
+                                    if (useContactsSingle.get('mood_message')) {
+                                        moodMessageTemp = useContactsSingle.get('mood_message');
+                                    } else {
+                                        moodMessageTemp = (tempChatStatusName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusName;
+                                    }
+                                    tempClassStatus = (tempChatStatusName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusName;
                                 }
-                                tempClassStatus = (tempChatStatusName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusName;
+
+                                let tempPartSingle = {
+                                    email: eleSingle.get('email'),
+                                    phone: eleSingle.get('phone'),
+                                    user_name: useContactsSingle.get('user_name'),
+                                    users_id: useContactsSingle.get('users_id'),
+                                    first_name: useContactsSingle.get('first_name'),
+                                    last_name: useContactsSingle.get('last_name'),
+                                    middle_name: useContactsSingle.get('middle_name'),
+                                    gender: useContactsSingle.get('gender'),
+                                    is_life: useContactsSingle.get('is_life'),
+                                    mood_message: useContactsSingle.get('mood_message'),
+                                    status: useContactsSingle.get('status'),
+                                    statusName: tempChatStatusName,
+                                    strListStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
+                                    isFriendCurrent: booleanFindUserSingle ? (listUserParticipant[indexFindUserSingle].is_accept_single != 1) : false,
+                                    channelID: booleanFindUserSingle ? listUserParticipant[indexFindUserSingle].channelId : null,
+                                    conversationID: booleanFindUserSingle ? listUserParticipant[indexFindUserSingle].conversationID : null,
+                                    moodMessageShow: moodMessageTemp,
+                                    classStatus: tempClassStatus,
+                                };
+
+                                showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
+                                listParticipant.push(tempPartSingle);
+                                urlImagesAvatar = useContactsSingle.get('path_img') ? useContactsSingle.get('path_img') : IMG_SINGLE_USER;
+                            } else {
+                                elem.infoParticipant.forEach(function (ele) {
+                                    let relationsUseContacts = ele.relations.useContacts;
+                                    let indexFindUser = listUserParticipant.findIndex(x => x.usersId == relationsUseContacts.get('users_id'));
+                                    let booleanFindUser = (indexFindUser !== -1);
+                                    let tempChatStatusGroupName = helper.coreHelper.app.chatStatus[relationsUseContacts.get('status')];
+                                    let tempClassStatusGroup = "";
+                                    let tempMoodMessageGroup = "";
+                                    let isFriendCurrent = booleanFindUser ? (listUserParticipant[indexFindUser].is_accept_single != 1) : false;
+
+                                    if (booleanFindUser) {
+                                        if (relationsUseContacts.get('mood_message')) {
+                                            tempMoodMessageGroup = relationsUseContacts.get('mood_message');
+                                        } else {
+                                            tempMoodMessageGroup = (tempChatStatusGroupName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusGroupName;
+                                        }
+                                        tempClassStatusGroup = isFriendCurrent ? ((tempChatStatusGroupName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusGroupName) : CLASS_UNDEFINED;
+                                    } else {
+                                        tempMoodMessageGroup = showResponseChat.isCurrentOwnerId ? MOOD_MESSAGE_REQUEST : MOOD_MESSAGE_RESPONSIVE;
+                                        tempClassStatusGroup = CLASS_UNDEFINED;
+                                    }
+
+                                    let tempPartGroup = {
+                                        email: ele.get('email'),
+                                        phone: ele.get('phone'),
+                                        user_name: relationsUseContacts.get('user_name'),
+                                        users_id: relationsUseContacts.get('users_id'),
+                                        first_name: relationsUseContacts.get('first_name'),
+                                        last_name: relationsUseContacts.get('last_name'),
+                                        middle_name: relationsUseContacts.get('middle_name'),
+                                        gender: relationsUseContacts.get('gender'),
+                                        is_life: relationsUseContacts.get('is_life'),
+                                        mood_message: relationsUseContacts.get('mood_message'),
+                                        status: relationsUseContacts.get('status'),
+                                        statusName: tempChatStatusGroupName,
+                                        strListStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
+                                        isFriendCurrent: isFriendCurrent,
+                                        channelID: booleanFindUser ? listUserParticipant[indexFindUser].channelId : null,
+                                        conversationID: booleanFindUser ? listUserParticipant[indexFindUser].conversationID : null,
+                                        moodMessageShow: tempMoodMessageGroup,
+                                        classStatus: tempClassStatusGroup
+                                    };
+                                    listParticipant.push(tempPartGroup);
+                                    urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : IMG_GROUP_USER;
+                                });
+                                showResponseChat.isFriendCurrentSingle = true;
                             }
 
-                            let tempPartSingle = {
-                                email: eleSingle.get('email'),
-                                phone: eleSingle.get('phone'),
-                                user_name: useContactsSingle.get('user_name'),
-                                users_id: useContactsSingle.get('users_id'),
-                                first_name: useContactsSingle.get('first_name'),
-                                last_name: useContactsSingle.get('last_name'),
-                                middle_name: useContactsSingle.get('middle_name'),
-                                gender: useContactsSingle.get('gender'),
-                                is_life: useContactsSingle.get('is_life'),
-                                mood_message: useContactsSingle.get('mood_message'),
-                                status: useContactsSingle.get('status'),
-                                statusName: tempChatStatusName,
-                                strListStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
-                                isFriendCurrent: (indexFindUserSingle !== -1) ? (listUserParticipant[indexFindUserSingle].is_accept_single != 1) : false,
-                                channelID: (indexFindUserSingle !== -1) ? listUserParticipant[indexFindUserSingle].channelId : null,
-                                conversationID: (indexFindUserSingle !== -1) ? listUserParticipant[indexFindUserSingle].conversationID : null,
-                                moodMessageShow: moodMessageTemp,
-                                classStatus: tempClassStatus,
-                            };
+                            showResponseChat.listParticipant = listParticipant;
+                            showResponseChat.urlImagesAvatar = urlImagesAvatar;
+                        });
 
-                            showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
-                            listParticipant.push(tempPartSingle)
-                        } else {
-                            elem.infoParticipant.forEach(function (ele) {
-                                let relationsUseContacts = ele.relations.useContacts;
-                                let indexFindUser = listUserParticipant.findIndex(x => x.usersId == relationsUseContacts.get('users_id'));
-                                urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : IMG_GROUP_USER;
-                                let tempChatStatusGroupName = helper.coreHelper.app.chatStatus[relationsUseContacts.get('status')];
-                                let tempClassStatusGroup = "";
-                                let tempMoodMessageGroup = "";
-
-                                if (indexFindUser !== -1) {
-                                    if (relationsUseContacts.get('mood_message')) {
-                                        tempMoodMessageGroup = relationsUseContacts.get('mood_message');
-                                    } else {
-                                        tempMoodMessageGroup = (tempChatStatusGroupName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusGroupName;
-                                    }
-                                    tempClassStatusGroup = (tempChatStatusGroupName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusGroupName;
-                                } else {
-                                    tempMoodMessageGroup = showResponseChat.isCurrentOwnerId ? "User not share information" : "XXXXXXXXXXXXXXXXXXXXXXXXXXX";
-                                    tempClassStatusGroup = CLASS_UNDEFINED;
-                                }
-
-                                let tempPartGroup = {
-                                    email: ele.get('email'),
-                                    phone: ele.get('phone'),
-                                    user_name: relationsUseContacts.get('user_name'),
-                                    users_id: relationsUseContacts.get('users_id'),
-                                    first_name: relationsUseContacts.get('first_name'),
-                                    last_name: relationsUseContacts.get('last_name'),
-                                    middle_name: relationsUseContacts.get('middle_name'),
-                                    gender: relationsUseContacts.get('gender'),
-                                    is_life: relationsUseContacts.get('is_life'),
-                                    mood_message: relationsUseContacts.get('mood_message'),
-                                    status: relationsUseContacts.get('status'),
-                                    statusName: tempChatStatusGroupName,
-                                    strListStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
-                                    isFriendCurrent: (indexFindUser !== -1) ? (listUserParticipant[indexFindUser].is_accept_single != 1) : false,
-                                    channelID: (indexFindUser !== -1) ? listUserParticipant[indexFindUser].channelId : null,
-                                    conversationID: (indexFindUser !== -1) ? listUserParticipant[indexFindUser].conversationID : null,
-                                    moodMessageShow: tempMoodMessageGroup,
-                                    classStatus: tempClassStatusGroup
+                        // zender view before send data
+                        //{layout: 'ajax'}
+                        res.render(showResponseChat.renderViews, {
+                            data: showResponseChat,
+                            layout: false
+                        }, function (err, renderHtml) {
+                            if (err) {
+                                res.send(err);
+                            } else {
+                                var response = {
+                                    html: renderHtml,
+                                    err: err,
                                 };
-                                listParticipant.push(tempPartGroup);
-                            });
-                            showResponseChat.isFriendCurrentSingle = true;
-                        }
 
-                        showResponseChat.listParticipant = listParticipant;
-                        showResponseChat.urlImagesAvatar = urlImagesAvatar;
+                                res.status(200).send(response);
+                            }
+                        });
                     });
-                    // zender view before send data
-                    //{layout: 'ajax'}
+                });
+            } else if ((req.body.dataConversation === "") && parseInt(req.body.valAuthor) && userCurrent) {
+                // NOT FRIEND AND NOT REQUEST
+                showResponseChat.renderViews = 'chat/request.chat.ejs';
+                let user = new User.class();
+
+                user.findUserFullById(parseInt(req.body.valAuthor), function (err, modelUser) {
+                    if(err) return next(err);
+
+                    let useContacts =  modelUser.relations.useContacts;
+                    showResponseChat.infoParticipant = modelUser;
+                    showResponseChat.classStatus = CLASS_UNDEFINED;
+                    showResponseChat.moodMessageShow = MOOD_MESSAGE_REQUEST;
+                    showResponseChat.urlImagesAvatar = useContacts.get('path_img') ? useContacts.get('path_img')  : IMG_SINGLE_USER;
+
                     res.render(showResponseChat.renderViews, {
                         data: showResponseChat,
                         layout: false
@@ -252,8 +288,10 @@ class ChatController extends BaseController {
                         }
                     });
                 });
-            });
-        } else {
+            } else {
+                res.status(500).send('ERR');
+            }
+        } catch (ex) {
             res.status(500).send('ERR');
         }
     }

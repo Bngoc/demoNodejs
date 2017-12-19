@@ -43,8 +43,8 @@
     <ul class="list-group-part">
         <% if (data.listParticipant.length) {
         data.listParticipant.forEach((ele, indz) => { %>
-        <li class="info-part show-info-participants">
-            <span data-conversation='<%- ele.conversationID %>'
+        <li class="info-part show-info-participants" >
+            <span data-conversation='<%- ele.conversationID %>' data-channel='<%- ele.channelID %>' data-author="<%- ele.users_id %>" data-username="<%- ele.middle_name %>"
                   channel='status.<%- ele.isFriendCurrent ? ele.channelID : "" %>'
                   class='status-info-part stype-list <%- ele.classStatus %>'></span>
             <span class="status-info-name"><%- ele.middle_name %></span></li>
@@ -180,10 +180,16 @@
     $(document).ready(function () {
         $('#boxChat').css({"max-height": parseInt('<%- data.maxHeightInputBoxChat %>')});
         $('#style-box-sms').css({"max-height": parseInt('<%- data.maxHeightBoxChat %>')});
+
         window.dataFriend = '<%- data.isFriendCurrentSingle %>';
         if (window.dataFriend === 'false') {
             $("#messageInput").addClass("disabled-element");
             $("#frameListMsg").addClass("remove-scrollbar");
+            $("#boxChat").attr("placeholder", 'Messsaging disabled until request is accepted');
+
+            //css box chat with not friend
+            $('#messageInput .btn-controler-act').remove();
+            $('#boxChat').addClass('cuts-box-chat-clear center-placeholder');
         }
     });
 </script>

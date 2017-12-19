@@ -793,6 +793,7 @@
 
 #frame .content .contact-profile .cursor {
     cursor: pointer;
+    height: 24px;
 }
 
 #frame .content .contact-profile .info-conversation {

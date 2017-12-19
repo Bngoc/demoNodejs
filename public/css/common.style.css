@@ -85,3 +85,38 @@
 .remove-scrollbar::-webkit-scrollbar {
     width: 0px !important;
 }
+.remove-scrollbar:-moz-scrollbar {
+    width: 0px !important;
+}
+.remove-scrollbar::-moz-scrollbar {
+    width: 0px !important;
+}
+.remove-scrollbar::-ms-scrollbar {
+    width: 0px !important;
+}
+
+.center-placeholder::-webkit-input-placeholder {
+    text-align: center;
+    color: #002a80;
+}
+
+.center-placeholder:-moz-placeholder { /* Firefox 18- */
+    text-align: center;
+    color: #002a80;
+}
+
+.center-placeholder::-moz-placeholder { /* Firefox 19+ */
+    text-align: center;
+    color: #002a80;
+}
+
+.center-placeholder:-ms-input-placeholder {
+    text-align: center;
+    color: #002a80;
+}
+
+.cuts-box-chat-clear {
+    width: 100% !important;
+    margin: 5px 0px !important;
+    padding: 9px 0px !important;
+}
