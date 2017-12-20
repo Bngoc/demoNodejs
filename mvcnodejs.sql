@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS `contacts` (
   `is_life` TINYINT(1) NULL DEFAULT 0,
   `path_img` text,
   `path_img_group` text,
+  `bookmarks` tinytext,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

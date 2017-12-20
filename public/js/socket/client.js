@@ -211,7 +211,9 @@ SendChatMessage.prototype.scrollEndShowBoxChat = function (timeAnimal) {
     $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, timeAnimate);
 };
 
+
 SendChatMessage.prototype.clickRightContactContentChat = function () {
+    let _this = this;
     $('body')
         .on("mousedown", "#group-participant .show-info-participants", function (ev) {
             if (ev.which == 1 || ev.which == 3) {
@@ -220,9 +222,44 @@ SendChatMessage.prototype.clickRightContactContentChat = function () {
             }
 
             if (ev.which == 3) {
-                alert("Right mouse button clicked on element with id myId");
+                let menuElement = document.getElementById("menu").style;
+                if (document.addEventListener) {
+                    document.addEventListener('contextmenu', function (e) {
+                        var posX = e.clientX;
+                        var posY = e.clientY;
+                        _this.contextMenu(menuElement, posX, posY);
+                        e.preventDefault();
+                    }, false);
+                    document.addEventListener('click', function (e) {
+                        menuElement.opacity = "0";
+                        setTimeout(function () {
+                            menuElement.visibility = "hidden";
+                        }, 501);
+                    }, false);
+                } else { // IE < 9
+                    document.attachEvent('oncontextmenu', function (e) {
+                        var posX = e.clientX;
+                        var posY = e.clientY;
+                        _this.contextMenu(menuElement, posX, posY);
+                        e.preventDefault();
+                    });
+                    document.attachEvent('onclick', function (e) {
+                        menuElement.opacity = "0";
+                        setTimeout(function () {
+                            menuElement.visibility = "hidden";
+                        }, 501);
+                    });
+                }
+                // alert("Right mouse button clicked on element with id myId");
             }
         });
+}
+
+SendChatMessage.prototype.contextMenu = function (menuElement, x, y) {
+    menuElement.top = y + "px";
+    menuElement.left = x + "px";
+    menuElement.visibility = "visible";
+    menuElement.opacity = "1";
 }
 
 SendChatMessage.prototype.clickContactContentChat = function () {

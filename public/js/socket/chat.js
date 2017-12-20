@@ -31,6 +31,7 @@ $("body").on('click', '.expand-button', function () {
 
 $("body").on('click', '#extend-participant', function () {
     if ($(this).hasClass('cursor')) {
+        $("#frameListMsg").css({"float": "left"});
         $("#group-participant").toggleClass('display-show');
         $(this).find('i:first-child').toggleClass('fa-minus');
         $('#frameListMsg').trigger('changeBoxMsg');

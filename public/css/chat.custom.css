@@ -866,15 +866,19 @@
 
 #frame .content #group-participant {
     background: white;
-    display: block;
-    padding: 5px 20px;
+    /*display: block;*/
+    /*padding: 5px 20px;*/
     border-bottom: 1px solid brown;
     border-top: 1px solid brown;
+    position: absolute;
+    width: 100%;
 }
 
 #frame .content #group-participant .list-group-part {
-    display: inline-flex;
-
+    /*display: inline-flex;*/
+    display: block;
+    width: 90%;
+    padding: 5px 20px;
 }
 
 #frame .content #group-participant .list-group-part .info-part {
@@ -882,7 +886,7 @@
 }
 
 #frame .content #group-participant .list-group-part .info-part:first-child {
-    margin-left: 0;
+    /*margin-left: 0;*/
 }
 
 #frame .content #group-participant .list-group-part .show-info-participants {
@@ -891,6 +895,9 @@
     border-radius: 9px 10px;
     padding: 2px 13px 2px 11px;
     font-weight: 500;
+    display: block;
+    float: left;
+    margin-bottom: 5px;
 }
 
 #frame .content #group-participant .list-group-part .check-participant {

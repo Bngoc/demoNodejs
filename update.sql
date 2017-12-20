@@ -7,11 +7,10 @@ FOR EACH ROW
 BEGIN
 	CASE new.type
 		WHEN 'single' THEN
-			SET NEW.is_accept_single = 1;
+			SET NEW.is_accept_single = 1, NEW.is_accept_group = 0;
 		WHEN 'group' THEN
 			SET NEW.is_accept_single = 0;
 		ELSE
 			begin end;
 	END CASE;
-
 END

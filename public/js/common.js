@@ -142,12 +142,13 @@ function imageToBase64(img) {
 //     });
 // }
 //
-// function menu(x, y) {
-//     i.top = y + "px";
-//     i.left = x + "px";
-//     i.visibility = "visible";
-//     i.opacity = "1";
-// }
+
+function menu(x, y) {
+    i.top = y + "px";
+    i.left = x + "px";
+    i.visibility = "visible";
+    i.opacity = "1";
+}
 
 $(function() {
     var doubleClicked = false;

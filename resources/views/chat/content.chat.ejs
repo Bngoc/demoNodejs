@@ -182,6 +182,7 @@
         $('#style-box-sms').css({"max-height": parseInt('<%- data.maxHeightBoxChat %>')});
 
         window.dataFriend = '<%- data.isFriendCurrentSingle %>';
+        window.isSingle = '<%- data.isTypeSingle %>';
         if (window.dataFriend === 'false') {
             $("#messageInput").addClass("disabled-element");
             $("#frameListMsg").addClass("remove-scrollbar");
@@ -191,6 +192,7 @@
             $('#messageInput .btn-controler-act').remove();
             $('#boxChat').addClass('cuts-box-chat-clear center-placeholder');
         }
+
     });
 </script>
 

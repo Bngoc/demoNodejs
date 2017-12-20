@@ -75,6 +75,8 @@
 
 .display-show {
     display: block !important;
+    position: inherit !important;
+    float: left;
 }
 
 .disabled-element {

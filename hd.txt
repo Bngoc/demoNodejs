@@ -1,0 +1,5 @@
+1. tao nhom thi  dk add single + (acc add vao bocklock - tai khoan # khong) + acc co dong y hay ko dong y jon?
+2. tao fiend thi single thi = 1, ca 2 tao khoan, acc tao thi add table conversation 
+3. tao freind thi co check block acc nao ko
+4. search thi bo block acc ko?
+5. thoat .... check is_life = 0
