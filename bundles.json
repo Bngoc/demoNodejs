@@ -13,6 +13,7 @@
     "main": {
       "files": [
         "css/font-awesome.min.css",
+        "css/reset/reset.css",
         "css/bootstrap.css",
         "css/main.test.css",
         "css/style.css",
@@ -24,6 +25,7 @@
     },
     "admin_main": {
       "files": [
+        "css/reset/reset.css",
         "css/font-awesome/css/font-awesome.min.css",
         "css/admin/bower_components/metisMenu/dist/metisMenu.min.css",
         "css/admin/bower_components/font-awesome/css/font-awesome.min.css",
@@ -43,6 +45,7 @@
           "js/common.js"
         ],
         "body": [
+          "js/contextMenu/main.js",
           "js/bootstrap.js",
           "js/respond.min.js",
           "js/bootstrap-tooltip.js",
@@ -67,6 +70,7 @@
           "js/common.js"
         ],
         "body": [
+          "js/contextMenu/main.js",
           "js/bootstrap.js",
           "js/respond.min.js",
           "js/application.js",

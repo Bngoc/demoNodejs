@@ -222,34 +222,34 @@ SendChatMessage.prototype.clickRightContactContentChat = function () {
             }
 
             if (ev.which == 3) {
-                let menuElement = document.getElementById("menu").style;
-                if (document.addEventListener) {
-                    document.addEventListener('contextmenu', function (e) {
-                        var posX = e.clientX;
-                        var posY = e.clientY;
-                        _this.contextMenu(menuElement, posX, posY);
-                        e.preventDefault();
-                    }, false);
-                    document.addEventListener('click', function (e) {
-                        menuElement.opacity = "0";
-                        setTimeout(function () {
-                            menuElement.visibility = "hidden";
-                        }, 501);
-                    }, false);
-                } else { // IE < 9
-                    document.attachEvent('oncontextmenu', function (e) {
-                        var posX = e.clientX;
-                        var posY = e.clientY;
-                        _this.contextMenu(menuElement, posX, posY);
-                        e.preventDefault();
-                    });
-                    document.attachEvent('onclick', function (e) {
-                        menuElement.opacity = "0";
-                        setTimeout(function () {
-                            menuElement.visibility = "hidden";
-                        }, 501);
-                    });
-                }
+                // let menuElement = document.getElementById("menu").style;
+                // if (document.addEventListener) {
+                //     $(document).on('contextmenu', '#group-participant .info-contextmenu', function (e) {
+                //         var posX = e.clientX;
+                //         var posY = e.clientY;
+                //         _this.contextMenu(menuElement, posX, posY);
+                //         e.preventDefault();
+                //     }, false);
+                //     $(document).on('click', "#group-participant .info-contextmenu", function (e) {
+                //         menuElement.opacity = "0";
+                //         setTimeout(function () {
+                //             menuElement.visibility = "hidden";
+                //         }, 501);
+                //     }, false);
+                // } else { // IE < 9
+                //     document.attachEvent('oncontextmenu', function (e) {
+                //         var posX = e.clientX;
+                //         var posY = e.clientY;
+                //         _this.contextMenu(menuElement, posX, posY);
+                //         e.preventDefault();
+                //     });
+                //     document.attachEvent('onclick', function (e) {
+                //         menuElement.opacity = "0";
+                //         setTimeout(function () {
+                //             menuElement.visibility = "hidden";
+                //         }, 501);
+                //     });
+                // }
                 // alert("Right mouse button clicked on element with id myId");
             }
         });
@@ -263,25 +263,22 @@ SendChatMessage.prototype.contextMenu = function (menuElement, x, y) {
 }
 
 SendChatMessage.prototype.clickContactContentChat = function () {
-    var _this = this;
-    let click = 0;
+let _this = this;
+    let click = 0, delay = 500, timer = null;
     $('body')
         .on('click', '.show-info-participants', function (e) {
             e.preventDefault();
-            let delay = 500, timer = null;
             click++;
             if (click === 1) {
-                // $('.show-info-participants').removeClass('check-participant');
-                // $(this).addClass('check-participant');
                 timer = setTimeout(function () {
                     $('#myModal').modal({
                         show: 'false'
                     });
+                    click = 0;
                 }, delay);
             } else {
                 clearTimeout(timer);
                 click = 0;
-
                 let userName = $(this).find('span.status-info-part').attr("data-username");
                 let dataChannelID = $(this).find('span.status-info-part').attr("data-channel");
                 let valAuthor = $(this).find('span.status-info-part').attr("data-author");
@@ -300,32 +297,16 @@ SendChatMessage.prototype.clickContactContentChat = function () {
                         _method: 'post'
                     }
                 };
+
                 _this.reloadContentBoxChatAjax(dataRequest);
             }
         })
         .on('dblclick', '.show-info-participants', function (e) {
-            // e.stopPropagation();
+            e.stopPropagation();
             e.preventDefault();
         });
 }
 
-// let kj = [];
-SendChatMessage.prototype.gdgd = function (boolean) {
-    console.log(boolean);
-    // kj['count'] = boolean;
-    if (boolean) {
-        // setTimeout(function () {
-        //     if (kj.length == 1) {
-        alert("dblclick");
-        // kj = [];
-        // }
-        // }, 3000);
-    } else {
-        $('#myModal').modal({
-            show: 'false'
-        });
-    }
-}
 
 SendChatMessage.prototype.clickListContactContentChat = function () {
     var _this = this;
