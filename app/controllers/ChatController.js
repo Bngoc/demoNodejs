@@ -1,5 +1,9 @@
 'use strict';
 
+//https://github.com/Automattic/kue
+const kue = require('kue');
+const queue = kue.createQueue();
+
 const ViewController = require('./ViewController.js');
 const helper = new ViewController();
 
@@ -17,7 +21,6 @@ var BaseController = require('./BaseController.js');
 const HEIGHT_BOX_CHAT_MAX = 130;
 const HEIGHT_INPUT_BOX_MAX = 100;
 const HEIGHT_BOX_CHAT_MIN = 56;
-
 const STATUS_SINGLE = helper.coreHelper.app.participants[0];
 const IMG_SINGLE_USER = "/images/users.png";
 const IMG_GROUP_USER = "/images/group.png";
@@ -26,7 +29,6 @@ const STATUS_HIDDEN_NAME_REPLACE = helper.coreHelper.app.chatStatus[1];
 const CLASS_UNDEFINED = 'undefined';
 const MOOD_MESSAGE_REQUEST = 'User not share information';
 const MOOD_MESSAGE_RESPONSIVE = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-
 
 
 class ChatController extends BaseController {
@@ -54,7 +56,8 @@ class ChatController extends BaseController {
                         statusID: notiContacts.attributes.status,
                         statusName: helper.coreHelper.app.chatStatus[notiContacts.attributes.status],
                         listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
-                        statusSingle: STATUS_SINGLE
+                        statusSingle: STATUS_SINGLE,
+                        infoAccount: rsData.infoAccount
                     };
                     let statusUser = helper.coreHelper.app.chatStatus[notiContacts.attributes.status];
 
@@ -264,13 +267,13 @@ class ChatController extends BaseController {
                 let user = new User.class();
 
                 user.findUserFullById(parseInt(req.body.valAuthor), function (err, modelUser) {
-                    if(err) return next(err);
+                    if (err) return next(err);
 
-                    let useContacts =  modelUser.relations.useContacts;
+                    let useContacts = modelUser.relations.useContacts;
                     showResponseChat.infoParticipant = modelUser;
                     showResponseChat.classStatus = CLASS_UNDEFINED;
                     showResponseChat.moodMessageShow = MOOD_MESSAGE_REQUEST;
-                    showResponseChat.urlImagesAvatar = useContacts.get('path_img') ? useContacts.get('path_img')  : IMG_SINGLE_USER;
+                    showResponseChat.urlImagesAvatar = useContacts.get('path_img') ? useContacts.get('path_img') : IMG_SINGLE_USER;
 
                     res.render(showResponseChat.renderViews, {
                         data: showResponseChat,
@@ -304,6 +307,9 @@ class ChatController extends BaseController {
             let userCurrent = chatController.getSessionByName(socket, 'passport');
 
             if (userCurrent) {
+                let chatController = new ChatController();
+                let newContacts = new Contacts.class();
+                let newUser = new User.class();
                 let currentStatus = chatController.getSessionByName(socket, 'currentStatus');
                 let infoParticipant = chatController.getSessionByName(socket, 'infoParticipant');
                 if (currentStatus && infoParticipant) {
@@ -311,9 +317,18 @@ class ChatController extends BaseController {
                     chatController.deleteSessionByName(socket, 'infoParticipant');
                 }
 
+                var dataRequest = {
+                    clause: {users_id: socket.users_id},
+                    dataUpdate: {
+                        is_life: 1
+                    },
+                };
+
+                //add to queue
+                chatController.queueUpdateContact(socket, dataRequest, currentStatus);
+
                 socket.on('updateUser', function (reqData) {
 
-                    var newContacts = new Contacts.class();
                     var dataRequest = {
                         clause: {users_id: currentStatus.userCurrentID},
                         dataUpdate: {
@@ -321,62 +336,10 @@ class ChatController extends BaseController {
                             // is_life: parseInt(reqData.data.status) == defaultStatusHidden ? 0 : undefined
                         },
                     };
-
-                    let responsiveData = {
-                        code: null,
-                        msg: '',
-                        data: {},
-                        status: false
-                    };
-
-                    if (userCurrent) {
-                        newContacts.updateContact(dataRequest, function (err, rsModel) {
-                            if (err) {
-                                responsiveData['msg'] = err;
-                                responsiveData['code'] = 'ERR0002';
-                            } else {
-
-                                var newUser = new User.class({});
-                                newUser.findByIdChat(currentStatus.userCurrentID, function (err, modelData) {
-                                    if (err) {
-                                        responsiveData['msg'] = err;
-                                        responsiveData['code'] = 'ERR0002';
-                                    } else {
-                                        let notiContacts = modelData.infoAccount.relations.useContacts;
-                                        let updateStatusCurrent = helper.coreHelper.app.chatStatus[notiContacts.attributes.status];
-                                        let requestCurrent = {
-                                            userCurrentID: currentStatus.userCurrentID,
-                                            statusID: notiContacts.attributes.status,
-                                            statusName: updateStatusCurrent,
-                                            listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
-                                            statusSingle: STATUS_SINGLE,
-                                            classCurrentStatus: (STATUS_HIDDEN_NAME == updateStatusCurrent) ? STATUS_HIDDEN_NAME_REPLACE : updateStatusCurrent,
-                                        };
-
-                                        let isStatus = chatController.convertDataListSocket(socket, modelData.infoParticipant, requestCurrent);
-                                        responsiveData['msg'] = !isStatus ? 'Done' : responsiveData['msg'];
-                                        responsiveData['code'] = !isStatus ? 'ERR0003' : responsiveData['code'];
-                                        responsiveData['status'] = isStatus;
-                                        responsiveData['data'] = {
-                                            statusName: requestCurrent.statusName,
-                                            listStatus: requestCurrent.listStatus,
-                                            classCurrentStatus: requestCurrent.classCurrentStatus
-                                        };
-
-                                        socket.emit('resUpdateUserPrivate', responsiveData);
-                                    }
-                                });
-                            }
-                        });
-                    } else {
-                        responsiveData['code'] = 'ERR0001';
-                        responsiveData['msg'] = 'Request Error';
-                        socket.emit('resUpdateUserPrivate', responsiveData);
-                    }
+                    chatController.queueUpdateContact(socket, dataRequest, currentStatus);
                 });
 
                 socket.on('sendDataMsg', function (dataSendChat) {
-
                     if (dataSendChat) {
 
                         dataSendChat.channelId = dataSendChat.dataChannel;
@@ -410,8 +373,6 @@ class ChatController extends BaseController {
                 // gui toan bo trong mang tru thang phat ra => socket.broadcast.emit
                 //socket.broadcast.emit('message', 'Another client has just connected!' + socket.id);
 
-                console.log('________________________', socket.id);
-
                 // all ==> io.sockets.emit
                 io.sockets.emit('message', {
                     content: 'You are connected -- all!',
@@ -423,12 +384,24 @@ class ChatController extends BaseController {
                     console.log('A client is speaking to me! They’re saying: ' + message);
                 });
 
-                //disconnect socket by id
-                socket.on('disconnect', function () {
-                    console.log(`disconnect ----------------------------------------  ${socket.id}`);
-                    socket.emit('message', {content: 'bye bye!', importance: null, 'socketID': socket.id});
-                });
             }
+
+            //disconnect socket by id
+            socket.on('disconnect', function () {
+                if (userCurrent) {
+                    var dataRequest = {
+                        clause: {users_id: socket.users_id},
+                        dataUpdate: {
+                            is_life: 0
+                        },
+                    };
+
+                    chatController.queueUpdateContact(socket, dataRequest, chatController.getSessionByName(socket, 'currentStatus'));
+                }
+
+                console.log(`disconnect ----------------------------------------  ${socket.id}`);
+                socket.emit('messageDisconnect', {content: 'bye bye!', importance: null, 'socketID': socket.id});
+            });
         });
     }
 }
@@ -477,6 +450,19 @@ ChatController.prototype.deleteSessionByName = function (socket, nameSession) {
     return resultDelete;
 };
 
+ChatController.prototype.updateSessionByName = function (socket, nameSession, dataUpdate) {
+    // let resultDelete = false;
+    // if (nameSession) {
+    //     let sessionByName = socket.handshake.session[nameSession] ? socket.handshake.session[nameSession] : false;
+    //     if (sessionByName) {
+    //         delete socket.handshake.session[nameSession];
+    //         socket.handshake.session.save();
+    //         resultDelete = true;
+    //     }
+    // }
+    //
+    // return resultDelete;
+};
 
 ChatController.prototype.convertDataListSocket = function (socket, infoConversation, requestOption) {
     try {
@@ -497,6 +483,7 @@ ChatController.prototype.convertDataListSocket = function (socket, infoConversat
         //     }
         // }
 
+        socket.users_id = requestOption.userCurrentID;
         infoConversation.forEach(function (element) {
             let conversationClone = {
                 userCurrent: requestOption.userCurrentID,
@@ -509,6 +496,7 @@ ChatController.prototype.convertDataListSocket = function (socket, infoConversat
                 isTypeSingle: element.type == requestOption.statusSingle,
                 classCurrentStatus: requestOption.classCurrentStatus
             };
+
             socket.join(element.channel_id);
             // C1
             socket.broadcast.to(element.channel_id).emit('listUserConversation', conversationClone);
@@ -525,5 +513,103 @@ ChatController.prototype.convertDataListSocket = function (socket, infoConversat
         return false;
     }
 };
+
+ChatController.prototype.updateUserListSocket = function (socket, dataRequest, currentStatus, done) {
+    let responsiveData = {
+        code: null,
+        msg: '',
+        data: {},
+        status: false
+    };
+
+    try {
+        let newContacts = new Contacts.class();
+        let newUser = new User.class();
+        let chatController = new ChatController();
+
+        newContacts.updateContact(dataRequest, function (err, rsModel) {
+            if (err) {
+                responsiveData['msg'] = err;
+                responsiveData['code'] = 'ERR0002';
+                done(err, responsiveData);
+            } else {
+                newUser.findByIdChat(currentStatus.userCurrentID, function (err, modelData) {
+                    if (err) {
+                        responsiveData['msg'] = err;
+                        responsiveData['code'] = 'ERR0002';
+                        done(err, responsiveData);
+                    } else {
+                        let notiContacts = modelData.infoAccount.relations.useContacts;
+                        let updateStatusCurrent = helper.coreHelper.app.chatStatus[notiContacts.attributes.status];
+                        let requestCurrent = {
+                            userCurrentID: currentStatus.userCurrentID,
+                            statusID: notiContacts.attributes.status,
+                            statusName: updateStatusCurrent,
+                            listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
+                            statusSingle: STATUS_SINGLE,
+                            classCurrentStatus: (STATUS_HIDDEN_NAME == updateStatusCurrent) ? STATUS_HIDDEN_NAME_REPLACE : updateStatusCurrent,
+                        };
+
+                        let isStatus = chatController.convertDataListSocket(socket, modelData.infoParticipant, requestCurrent);
+                        responsiveData['msg'] = !isStatus ? 'Done' : responsiveData['msg'];
+                        responsiveData['code'] = !isStatus ? 'ERR0003' : responsiveData['code'];
+                        responsiveData['status'] = isStatus;
+                        responsiveData['data'] = {
+                            statusName: requestCurrent.statusName,
+                            listStatus: requestCurrent.listStatus,
+                            classCurrentStatus: requestCurrent.classCurrentStatus
+                        };
+
+                        socket.emit('resUpdateUserPrivate', responsiveData);
+                        // chatController.updateSessionByName(socket, 'currentStatus', []);
+
+                        done(null, responsiveData);
+                    }
+                });
+            }
+        });
+    } catch (ex) {
+        responsiveData['code'] = 'ERR0001';
+        responsiveData['msg'] = 'Request Error';
+        socket.emit('resUpdateUserPrivate', responsiveData);
+        done(ex, responsiveData);
+    }
+};
+
+ChatController.prototype.queueUpdateContact = function (socket, dataRequest, currentStatus) {
+    var chatController = new ChatController();
+
+    let newJob = {
+        dataRequest: dataRequest,
+        currentStatus: currentStatus
+    };
+
+    queue.create('updateContact', newJob).priority('medium').attempts(5).save(function (err) {
+        if (!err) return queue.id + ' - updateContact';
+    }).on('updateContact complete', function (id, result) {
+        kue.Job.get(id, function (err, job) {
+            if (err) return;
+            job.remove(function (err) {
+                if (err) throw err;
+                console.log('removed completed job #%d', job.id);
+            });
+        });
+    });
+
+    queue.process('updateContact', function (job, done) {
+        chatController.updateUserListSocket(socket, job.data.dataRequest, job.data.currentStatus, function (err, resultData) {
+            console.log(err, resultData, '-------------');
+        });
+    });
+}
+
+
+kue.Job.rangeByState('complete', 0, 0, 'asc', function (err, jobs) {
+    jobs.forEach(function (job) {
+        job.remove(function () {
+            console.log('removed ', job.id);
+        });
+    });
+});
 
 module.exports = ChatController;
