@@ -29,6 +29,7 @@ const STATUS_HIDDEN_NAME_REPLACE = helper.coreHelper.app.chatStatus[1];
 const CLASS_UNDEFINED = 'undefined';
 const MOOD_MESSAGE_REQUEST = 'User not share information';
 const MOOD_MESSAGE_RESPONSIVE = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+var allClients = [];
 
 
 class ChatController extends BaseController {
@@ -320,6 +321,7 @@ class ChatController extends BaseController {
                     chatController.deleteSessionByName(socket, 'infoParticipant');
                 }
 
+                allClients.push(socket.id);
                 var dataRequest = {
                     clause: {users_id: socket.users_id},
                     dataUpdate: {
@@ -390,7 +392,7 @@ class ChatController extends BaseController {
             }
 
             let isReconnectionOn = false;
-            var interval_obj = setInterval(function(){
+            var interval_obj = setInterval(function () {
                 isReconnectionOn = socket.connected;
                 clearInterval(interval_obj);
                 console.log("10x________________________", userCurrent, isReconnectionOn);
@@ -399,22 +401,25 @@ class ChatController extends BaseController {
 
             //disconnect socket by id
             socket.on('disconnect', function () {
+                let indexSocketIDDisconnect = allClients.indexOf(socket);
+                allClients.splice(indexSocketIDDisconnect, 1);
+
                 let isReconnectionOff = socket.connected;
-                var interval_obj = setInterval(function(){
+                var interval_obj = setInterval(function () {
                     isReconnectionOff = false
                     clearInterval(interval_obj);
                     console.log("8x________________________", userCurrent, isReconnectionOff);
                 }, 8000);
 
                 let isReconnectionOffEnd = true;
-                var intervalObjEnd = setInterval(function(){
+                var intervalObjEnd = setInterval(function () {
                     isReconnectionOffEnd = false;
                     clearInterval(intervalObjEnd);
                     console.log("12x________________________", userCurrent, isReconnectionOffEnd);
                 }, 12000);
 
-                setTimeout(function(){
-                    let isReconnection =  isReconnectionOn ? true : isReconnectionOffEnd ;
+                setTimeout(function () {
+                    let isReconnection = isReconnectionOn ? true : isReconnectionOffEnd;
                     console.log('_______15s_________________', userCurrent, isReconnection);
                     // socket.disconnect();
                 }, 15000);
@@ -426,14 +431,19 @@ class ChatController extends BaseController {
                 }
 
 
-                if (!reconnection) {
+                // if (!reconnection) {
                     if (userCurrent) {
+
+                        let indexSocketIDDisconnect = allClients.indexOf(socket);
+                        allClients.splice(indexSocketIDDisconnect, 1);
+
                         var dataRequest = {
                             clause: {users_id: socket.users_id},
                             dataUpdate: {
                                 is_life: 0
                             },
-                            milliSecond: 1000
+                            milliSecond: 1000,
+                            updateLastMinute: 2
                         };
 
                         chatController.queueUpdateContact(socket, dataRequest, chatController.getSessionByName(socket, 'currentStatus'));
@@ -441,7 +451,7 @@ class ChatController extends BaseController {
 
                     console.log(`disconnect ----------------------------------------  ${socket.id}`);
                     socket.emit('messageDisconnect', {content: 'bye bye!', importance: null, 'socketID': socket.id});
-                }
+                // }
             });
 
         });
@@ -620,29 +630,32 @@ ChatController.prototype.updateUserListSocket = function (socket, dataRequest, c
 
 ChatController.prototype.queueUpdateContact = function (socket, dataRequest, currentStatus) {
     var chatController = new ChatController();
-    let milliSeconds = dataRequest.milliSecond ? dataRequest.milliSecond : 0;
+    let milliSeconds = dataRequest.milliSecond ? dataRequest.milliSecond : 1;
+    let updateLastMinute = dataRequest.updateLastMinute ? (parseInt(dataRequest.updateLastMinute) * 60) : 0;
+
     let newJob = {
         dataRequest: dataRequest,
         currentStatus: currentStatus
     };
-
-    queue.create('updateContact', newJob).priority('medium').attempts(5).save(function (err) {
-        if (!err) return queue.id + ' - updateContact';
-    }).on('updateContact complete', function (id, result) {
-        kue.Job.get(id, function (err, job) {
-            if (err) return;
-            job.remove(function (err) {
-                if (err) throw err;
-                console.log('removed completed job #%d', job.id);
+    setTimeout(function () {
+        queue.create('updateContact', newJob).delay(milliSeconds).priority('medium').attempts(5).save(function (err) {
+            if (!err) return queue.id + ' - updateContact';
+        }).on('updateContact complete', function (id, result) {
+            kue.Job.get(id, function (err, job) {
+                if (err) return;
+                job.remove(function (err) {
+                    if (err) throw err;
+                    console.log('removed completed job #%d', job.id);
+                });
             });
         });
-    });
 
-    queue.process('updateContact', function (job, done) {
-        chatController.updateUserListSocket(socket, job.data.dataRequest, job.data.currentStatus, function (err, resultData) {
-            if (err) console.log('NOT UPDATE USER', err)
+        queue.process('updateContact', function (job, done) {
+            chatController.updateUserListSocket(socket, job.data.dataRequest, job.data.currentStatus, function (err, resultData) {
+                if (err) console.log('NOT UPDATE USER', err)
+            });
         });
-    });
+    }, updateLastMinute);
 }
 
 
