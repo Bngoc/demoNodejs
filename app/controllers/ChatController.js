@@ -302,6 +302,9 @@ class ChatController extends BaseController {
     socketConnection(io) {
         io.on('connection', function (socket) {
             io.sockets.emit('send-data-test', socket.id);
+            var reconnection = true,
+                reconnectionDelay = 5000,
+                reconnectionTry = 0;
 
             let chatController = new ChatController();
             let userCurrent = chatController.getSessionByName(socket, 'passport');
@@ -386,22 +389,63 @@ class ChatController extends BaseController {
 
             }
 
+            let isReconnectionOn = false;
+            var interval_obj = setInterval(function(){
+                isReconnectionOn = socket.connected;
+                clearInterval(interval_obj);
+                console.log("10x________________________", userCurrent, isReconnectionOn);
+            }, 10000);
+
+
             //disconnect socket by id
             socket.on('disconnect', function () {
-                if (userCurrent) {
-                    var dataRequest = {
-                        clause: {users_id: socket.users_id},
-                        dataUpdate: {
-                            is_life: 0
-                        },
-                    };
+                let isReconnectionOff = socket.connected;
+                var interval_obj = setInterval(function(){
+                    isReconnectionOff = false
+                    clearInterval(interval_obj);
+                    console.log("8x________________________", userCurrent, isReconnectionOff);
+                }, 8000);
 
-                    chatController.queueUpdateContact(socket, dataRequest, chatController.getSessionByName(socket, 'currentStatus'));
+                let isReconnectionOffEnd = true;
+                var intervalObjEnd = setInterval(function(){
+                    isReconnectionOffEnd = false;
+                    clearInterval(intervalObjEnd);
+                    console.log("12x________________________", userCurrent, isReconnectionOffEnd);
+                }, 12000);
+
+                setTimeout(function(){
+                    let isReconnection =  isReconnectionOn ? true : isReconnectionOffEnd ;
+                    console.log('_______15s_________________', userCurrent, isReconnection);
+                    // socket.disconnect();
+                }, 15000);
+
+
+
+                if (reconnection === true) {
+                    setTimeout(function () {
+                        reconnection = false;
+                    }, reconnectionDelay);
                 }
 
-                console.log(`disconnect ----------------------------------------  ${socket.id}`);
-                socket.emit('messageDisconnect', {content: 'bye bye!', importance: null, 'socketID': socket.id});
+
+                if (!reconnection) {
+                    if (userCurrent) {
+                        var dataRequest = {
+                            clause: {users_id: socket.users_id},
+                            dataUpdate: {
+                                is_life: 0
+                            },
+                            milliSecond: 1000
+                        };
+
+                        chatController.queueUpdateContact(socket, dataRequest, chatController.getSessionByName(socket, 'currentStatus'));
+                    }
+
+                    console.log(`disconnect ----------------------------------------  ${socket.id}`);
+                    socket.emit('messageDisconnect', {content: 'bye bye!', importance: null, 'socketID': socket.id});
+                }
             });
+
         });
     }
 }
@@ -547,7 +591,7 @@ ChatController.prototype.updateUserListSocket = function (socket, dataRequest, c
                             statusName: updateStatusCurrent,
                             listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
                             statusSingle: STATUS_SINGLE,
-                            classCurrentStatus: (STATUS_HIDDEN_NAME == updateStatusCurrent) ? STATUS_HIDDEN_NAME_REPLACE : updateStatusCurrent,
+                            classCurrentStatus: (dataRequest.dataUpdate.is_life == 0 || (STATUS_HIDDEN_NAME == updateStatusCurrent) ? STATUS_HIDDEN_NAME_REPLACE : updateStatusCurrent)
                         };
 
                         let isStatus = chatController.convertDataListSocket(socket, modelData.infoParticipant, requestCurrent);
@@ -578,7 +622,7 @@ ChatController.prototype.updateUserListSocket = function (socket, dataRequest, c
 
 ChatController.prototype.queueUpdateContact = function (socket, dataRequest, currentStatus) {
     var chatController = new ChatController();
-
+    let milliSeconds = dataRequest.milliSecond ? dataRequest.milliSecond : 0;
     let newJob = {
         dataRequest: dataRequest,
         currentStatus: currentStatus
@@ -598,7 +642,7 @@ ChatController.prototype.queueUpdateContact = function (socket, dataRequest, cur
 
     queue.process('updateContact', function (job, done) {
         chatController.updateUserListSocket(socket, job.data.dataRequest, job.data.currentStatus, function (err, resultData) {
-            console.log(err, resultData, '-------------');
+            if (err) console.log('NOT UPDATE USER', err)
         });
     });
 }

@@ -1,4 +1,19 @@
+// var  reconnection = true,
+//     reconnectionDelay = 5000,
+//     reconnectionTry = 0;
+
 var socket = io.connect(document.location.origin);
+
+// socket.on('disconnect', function () {
+//     socket.disconnect();
+//     console.log("client disconnected");
+//     if (reconnection === true) {
+//         setTimeout(function () {
+//             console.log("client trying reconnect");
+//             connectClient();
+//         }, reconnectionDelay);
+//     }
+// });
 
 socket.on('message', function (message) {
     $('#showmsg').text('The server has a message for you: ' + message);
@@ -263,7 +278,7 @@ SendChatMessage.prototype.contextMenu = function (menuElement, x, y) {
 }
 
 SendChatMessage.prototype.clickContactContentChat = function () {
-let _this = this;
+    let _this = this;
     let click = 0, delay = 500, timer = null;
     $('body')
         .on('click', '.show-info-participants', function (e) {

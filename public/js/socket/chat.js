@@ -13,7 +13,6 @@ $('body').on('changeBoxMsg', '#frameListMsg', function () {
         $("#frameListMsg").animate({scrollTop: getMinHeightFrameListMsg()}, 500);
 });
 
-
 function getMinHeightFrameListMsg() {
     let outerHeightParticipant = $("#group-participant").hasClass('display-show') ? $("#group-participant").outerHeight() : 0;
     return $(".content").outerHeight() - $(".contact-profile").outerHeight() - outerHeightParticipant - $("#messageInput").outerHeight() - 1;
