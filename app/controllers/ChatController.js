@@ -419,8 +419,6 @@ class ChatController extends BaseController {
                     // socket.disconnect();
                 }, 15000);
 
-
-
                 if (reconnection === true) {
                     setTimeout(function () {
                         reconnection = false;
