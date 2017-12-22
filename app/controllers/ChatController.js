@@ -30,6 +30,7 @@ const CLASS_UNDEFINED = 'undefined';
 const MOOD_MESSAGE_REQUEST = 'User not share information';
 const MOOD_MESSAGE_RESPONSIVE = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 var allClients = [];
+var userStatus = [];
 
 
 class ChatController extends BaseController {
@@ -301,6 +302,7 @@ class ChatController extends BaseController {
     }
 
     socketConnection(io) {
+
         io.on('connection', function (socket) {
             io.sockets.emit('send-data-test', socket.id);
             var reconnection = true,
@@ -309,8 +311,13 @@ class ChatController extends BaseController {
 
             let chatController = new ChatController();
             let userCurrent = chatController.getSessionByName(socket, 'passport');
+            chatController.setSessionByName(socket, 'isActiveCurrent', userCurrent.user ? userCurrent.user : null);
+            socket.isActiveLoadPageCurrent = userCurrent.user ? userCurrent.user : null;
+            // allClients.push(socket.id);
 
             if (userCurrent) {
+                userStatus.push({'isCheck': true, 'user_id': userCurrent.user});
+
                 let chatController = new ChatController();
                 let newContacts = new Contacts.class();
                 let newUser = new User.class();
@@ -321,7 +328,7 @@ class ChatController extends BaseController {
                     chatController.deleteSessionByName(socket, 'infoParticipant');
                 }
 
-                allClients.push(socket.id);
+
                 var dataRequest = {
                     clause: {users_id: socket.users_id},
                     dataUpdate: {
@@ -389,53 +396,83 @@ class ChatController extends BaseController {
                     console.log('A client is speaking to me! They’re saying: ' + message);
                 });
 
+
+                // var interval_obj = setInterval(function () {
+                //     isReconnectionOn = socket.connected;
+                //     // clearInterval(interval_obj);
+                //     console.log("10x________________________", userCurrent, isReconnectionOn);
+                // }, 10000);
+
+                console.log('xxxxxxxxxxxxxx -> ', JSON.stringify(userStatus), socket.isActiveLoadPageCurrent);
+
+                socket.on('pingServer', (data) => {
+                    let indexFindUser = userStatus.findIndex(x => x.user_id == socket.users_id);
+                    if (indexFindUser === -1) {
+                        userStatus.push({'isCheck': true, 'user_id': userCurrent.user});
+                    }
+                });
+
+
+                // 30 minutine - reload page
+                setTimeout(function () {
+                    if (socket.isActiveLoadPageCurrent) {
+                        socket.isActiveLoadPageCurrent = null;
+                        console.log('com..................', socket.isActiveLoadPageCurrent);
+                        io.sockets.emit('reload', {});
+                    }
+                }, 1000*60*30);
             }
-
-            let isReconnectionOn = false;
-            var interval_obj = setInterval(function () {
-                isReconnectionOn = socket.connected;
-                clearInterval(interval_obj);
-                console.log("10x________________________", userCurrent, isReconnectionOn);
-            }, 10000);
-
 
             //disconnect socket by id
             socket.on('disconnect', function () {
                 let indexSocketIDDisconnect = allClients.indexOf(socket);
-                allClients.splice(indexSocketIDDisconnect, 1);
+                // allClients.splice(indexSocketIDDisconnect, 1);
 
-                let isReconnectionOff = socket.connected;
-                var interval_obj = setInterval(function () {
-                    isReconnectionOff = false
-                    clearInterval(interval_obj);
-                    console.log("8x________________________", userCurrent, isReconnectionOff);
-                }, 8000);
+                // let isReconnectionOff = socket.connected;
+                // var interval_obj = setInterval(function () {
+                //     isReconnectionOff = false
+                //     clearInterval(interval_obj);
+                //     console.log("8x________________________", userCurrent, isReconnectionOff);
+                // }, 8000);
+                //
+                // let isReconnectionOffEnd = true;
+                // var intervalObjEnd = setInterval(function () {
+                //     isReconnectionOffEnd = false;
+                //     clearInterval(intervalObjEnd);
+                //     console.log("12x________________________", userCurrent, isReconnectionOffEnd);
+                // }, 12000);
 
-                let isReconnectionOffEnd = true;
-                var intervalObjEnd = setInterval(function () {
-                    isReconnectionOffEnd = false;
-                    clearInterval(intervalObjEnd);
-                    console.log("12x________________________", userCurrent, isReconnectionOffEnd);
-                }, 12000);
+                // setTimeout(function () {
+                //     let isReconnection = isReconnectionOn ? true : isReconnectionOffEnd;
+                //     console.log('_______15s_________________', userCurrent, isReconnection);
+                //     // socket.disconnect();
+                // }, 15000);
+
+                // if (reconnection === true) {
+                //     setTimeout(function () {
+                //         reconnection = false;
+                //     }, reconnectionDelay);
+                // }
 
                 setTimeout(function () {
-                    let isReconnection = isReconnectionOn ? true : isReconnectionOffEnd;
-                    console.log('_______15s_________________', userCurrent, isReconnection);
-                    // socket.disconnect();
-                }, 15000);
+                    if (socket.isActiveCurrent) {
+                        // chatController.deleteSessionByName(socket, 'isActiveCurrent');
+                        socket.isActiveLoadPageCurrent = null;
+                        console.log('--------------------------------11111111111111', socket.isActiveLoadPageCurrent);
 
-                if (reconnection === true) {
-                    setTimeout(function () {
-                        reconnection = false;
-                    }, reconnectionDelay);
-                }
+                    }
+                }, 180000);
+
+                console.log('18S --------------------------------', socket.isActiveLoadPageCurrent);
 
 
-                // if (!reconnection) {
+                // let indexSocketIdConnect = allClients.indexOf(socket.id);
+                // if (indexSocketIdConnect !== -1)
+                //     allClients.splice(indexSocketIdConnect, 1);
+                // console.log('xxxxxxxxxxxxxx ----> ', indexSocketIdConnect, JSON.stringify(allClients));
+
+                if (socket.isActiveCurrent == null) {
                     if (userCurrent) {
-
-                        let indexSocketIDDisconnect = allClients.indexOf(socket);
-                        allClients.splice(indexSocketIDDisconnect, 1);
 
                         var dataRequest = {
                             clause: {users_id: socket.users_id},
@@ -446,12 +483,13 @@ class ChatController extends BaseController {
                             updateLastMinute: 2
                         };
 
-                        chatController.queueUpdateContact(socket, dataRequest, chatController.getSessionByName(socket, 'currentStatus'));
+                        // chatController.queueUpdateContact(socket, dataRequest, chatController.getSessionByName(socket, 'currentStatus'));
+                        socket.emit('reload', {});
                     }
+                }
+                console.log(`disconnect ----------------------------------------  ${socket.id}`);
+                socket.emit('messageDisconnect', {content: 'bye bye!', importance: null, 'socketID': socket.id});
 
-                    console.log(`disconnect ----------------------------------------  ${socket.id}`);
-                    socket.emit('messageDisconnect', {content: 'bye bye!', importance: null, 'socketID': socket.id});
-                // }
             });
 
         });
@@ -469,6 +507,20 @@ ChatController.prototype.getSessionByName = function (socket, nameSession) {
         if (sessionByName) {
             resultSession = socket.handshake.session[nameSession];
         }
+    }
+
+    return resultSession;
+};
+
+ChatController.prototype.setSessionByName = function (socket, nameSession, dataSave) {
+    let resultSession = false;
+    if (nameSession) {
+        // let sessionByName = socket.handshake.session[nameSession] ? socket.handshake.session[nameSession] : false;
+        // if (sessionByName) {
+        socket.handshake.session[nameSession] = dataSave;
+        socket.handshake.session.save();
+        resultSession = true;
+        // }
     }
 
     return resultSession;
@@ -503,17 +555,17 @@ ChatController.prototype.deleteSessionByName = function (socket, nameSession) {
 };
 
 ChatController.prototype.updateSessionByName = function (socket, nameSession, dataUpdate) {
-    // let resultDelete = false;
-    // if (nameSession) {
-    //     let sessionByName = socket.handshake.session[nameSession] ? socket.handshake.session[nameSession] : false;
-    //     if (sessionByName) {
-    //         delete socket.handshake.session[nameSession];
-    //         socket.handshake.session.save();
-    //         resultDelete = true;
-    //     }
-    // }
-    //
-    // return resultDelete;
+    let resultDelete = false;
+    if (nameSession) {
+        let sessionByName = socket.handshake.session[nameSession] ? socket.handshake.session[nameSession] : false;
+        if (sessionByName) {
+            socket.handshake.session[nameSession] = dataUpdate;
+            socket.handshake.session.save();
+            resultDelete = true;
+        }
+    }
+
+    return resultDelete;
 };
 
 ChatController.prototype.convertDataListSocket = function (socket, infoConversation, requestOption) {
@@ -637,25 +689,25 @@ ChatController.prototype.queueUpdateContact = function (socket, dataRequest, cur
         dataRequest: dataRequest,
         currentStatus: currentStatus
     };
-    setTimeout(function () {
-        queue.create('updateContact', newJob).delay(milliSeconds).priority('medium').attempts(5).save(function (err) {
-            if (!err) return queue.id + ' - updateContact';
-        }).on('updateContact complete', function (id, result) {
-            kue.Job.get(id, function (err, job) {
-                if (err) return;
-                job.remove(function (err) {
-                    if (err) throw err;
-                    console.log('removed completed job #%d', job.id);
-                });
+    // setTimeout(function () {
+    queue.create('updateContact', newJob).priority('medium').attempts(5).save(function (err) {
+        if (!err) return queue.id + ' - updateContact';
+    }).on('updateContact complete', function (id, result) {
+        kue.Job.get(id, function (err, job) {
+            if (err) return;
+            job.remove(function (err) {
+                if (err) throw err;
+                console.log('removed completed job #%d', job.id);
             });
         });
+    });
 
-        queue.process('updateContact', function (job, done) {
-            chatController.updateUserListSocket(socket, job.data.dataRequest, job.data.currentStatus, function (err, resultData) {
-                if (err) console.log('NOT UPDATE USER', err)
-            });
+    queue.process('updateContact', function (job, done) {
+        chatController.updateUserListSocket(socket, job.data.dataRequest, job.data.currentStatus, function (err, resultData) {
+            if (err) console.log('NOT UPDATE USER', err)
         });
-    }, updateLastMinute);
+    });
+    // }, updateLastMinute);
 }
 
 

@@ -2,7 +2,15 @@
 //     reconnectionDelay = 5000,
 //     reconnectionTry = 0;
 
-var socket = io.connect(document.location.origin);
+var socket = io.connect(document.location.origin, {
+    rememberTransport: false,
+    'reconnect': true,
+    'reconnection delay': 500,
+    'max reconnection attempts': 10,
+    'secure': true,
+    'pingInterval': 2000,
+    'pingTimeout': 5000
+});
 
 // socket.on('disconnect', function () {
 //     socket.disconnect();
@@ -15,8 +23,17 @@ var socket = io.connect(document.location.origin);
 //     }
 // });
 
+
 socket.on('message', function (message) {
     $('#showmsg').text('The server has a message for you: ' + message);
+});
+
+setInterval(function () {
+    socket.emit('pingServer', {isCheck: true, ttl: 3000});
+}, 60000);
+
+socket.on('reload', function (data) {
+    location.reload();
 });
 
 socket.on('sendDataPrivate', function (messageReplies) {

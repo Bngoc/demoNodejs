@@ -57,7 +57,6 @@ function CoreHelper() {
     this.runSocket = function (runServer) {
         var socket = this.callModule(`${paths.MODULE}/express.js`, true);
         let io = socket.configSocket(runServer, app);
-
         var chatController = this.callModule(`${paths.CONTROLLERS}ChatController.js`, true);
         chatController.socketConnection(io);
     };
