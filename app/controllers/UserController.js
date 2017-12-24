@@ -451,9 +451,18 @@ class UserController {
     }
 
     getLogout(req, res, next) {
-        req.session.destroy();
-        req.logOut();
-        res.redirect('/login');
+        var dataRequest = {
+            clause: {users_id: req.session.passport.user},
+            dataUpdate: {is_life: 0},
+        };
+        var newContacts = new Contacts.class();
+        newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
+            if (errUpdate) next(errUpdate);
+
+            req.session.destroy();
+            req.logOut();
+            res.redirect('/login');
+        });
     }
 }
 

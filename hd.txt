@@ -3,3 +3,14 @@
 3. tao freind thi co check block acc nao ko
 4. search thi bo block acc ko?
 5. thoat .... check is_life = 0
+6. tooltip
+    - hover img
+    - hover msg - time chat
+
+7. https://www.npmjs.com/package/node-emoji
+8. sau 1' mà user ko có hd -> away -> list contact
+9. logout .... -> list contact
+//-------------------------------------------
+option
+color: #frame .content .messages ul li.replies p ..
+1. moi thang co the mau # ~ bookmart

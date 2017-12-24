@@ -84,6 +84,7 @@ class ChatController extends BaseController {
 
                     // save session - share socket io
                     req.session.currentStatus = requestCurrent;
+                    req.session.isLife = notiContacts ? (notiContacts.attributes.is_life == 1) : false;
                     req.session.infoParticipant = rsData.infoParticipant;
 
                     res.render(showResponse.renderViews, showResponse);
@@ -106,6 +107,7 @@ class ChatController extends BaseController {
             showResponseChat.maxHeightInputBoxChat = HEIGHT_INPUT_BOX_MAX;
             showResponseChat.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN;
             showResponseChat.userName = req.body.userName;
+            showResponseChat.hexCodeId = userCurrent.attributes.id ? 'hex-' + userCurrent.attributes.id : null;
 
             if (parseInt(req.body.dataConversation) && userCurrent) {
                 showResponseChat.renderViews = 'chat/content.chat.ejs';
@@ -123,6 +125,7 @@ class ChatController extends BaseController {
                     let listUserParticipant = modelListUser.map(function (listUser) {
                         let listUserRelations = listUser.relations.parConversation;
                         return {
+                            codePartId: listUser.get('id'),
                             usersId: listUser.get('users_id'),
                             is_accept_single: listUser.get('is_accept_single'),
                             is_accept_group: listUser.get('is_accept_group'),
@@ -187,6 +190,7 @@ class ChatController extends BaseController {
                                     conversationID: booleanFindUserSingle ? listUserParticipant[indexFindUserSingle].conversationID : null,
                                     moodMessageShow: moodMessageTemp,
                                     classStatus: tempClassStatus,
+                                    codePartId: booleanFindUserSingle ? listUserParticipant[indexFindUserSingle].codePartId : null,
                                 };
 
                                 showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
@@ -232,7 +236,8 @@ class ChatController extends BaseController {
                                         channelID: booleanFindUser ? listUserParticipant[indexFindUser].channelId : null,
                                         conversationID: booleanFindUser ? listUserParticipant[indexFindUser].conversationID : null,
                                         moodMessageShow: tempMoodMessageGroup,
-                                        classStatus: tempClassStatusGroup
+                                        classStatus: tempClassStatusGroup,
+                                        codePartId: booleanFindUser ? listUserParticipant[indexFindUser].codePartId : null,
                                     };
                                     listParticipant.push(tempPartGroup);
                                     urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : IMG_GROUP_USER;
@@ -302,7 +307,7 @@ class ChatController extends BaseController {
     }
 
     socketConnection(io) {
-
+        var s60 = 1000 * 60 * 1;
         io.on('connection', function (socket) {
             io.sockets.emit('send-data-test', socket.id);
             var reconnection = true,
@@ -326,18 +331,18 @@ class ChatController extends BaseController {
                 if (currentStatus && infoParticipant) {
                     chatController.convertDataListSocket(socket, infoParticipant, currentStatus);
                     chatController.deleteSessionByName(socket, 'infoParticipant');
+
+                    if (!chatController.getSessionByName(socket, 'isLife')) {
+                        var dataRequest = {
+                            clause: {users_id: socket.users_id},
+                            dataUpdate: {
+                                is_life: 1
+                            },
+                        };
+                        chatController.queueUpdateContact(socket, dataRequest, currentStatus);
+                        chatController.updateSessionByName(socket, 'isLife', true);
+                    }
                 }
-
-
-                var dataRequest = {
-                    clause: {users_id: socket.users_id},
-                    dataUpdate: {
-                        is_life: 1
-                    },
-                };
-
-                //add to queue
-                chatController.queueUpdateContact(socket, dataRequest, currentStatus);
 
                 socket.on('updateUser', function (reqData) {
 
@@ -403,24 +408,56 @@ class ChatController extends BaseController {
                 //     console.log("10x________________________", userCurrent, isReconnectionOn);
                 // }, 10000);
 
-                console.log('xxxxxxxxxxxxxx -> ', JSON.stringify(userStatus), socket.isActiveLoadPageCurrent);
+                console.log('xxxxxxxxxxxxxx -> ', JSON.stringify(socket.handshake.session), socket.isActiveLoadPageCurrent);
 
-                socket.on('pingServer', (data) => {
-                    let indexFindUser = userStatus.findIndex(x => x.user_id == socket.users_id);
-                    if (indexFindUser === -1) {
-                        userStatus.push({'isCheck': true, 'user_id': userCurrent.user});
-                    }
-                });
-
-
-                // 30 minutine - reload page
-                setTimeout(function () {
+                let s60Revert =  setTimeout(function () {
                     if (socket.isActiveLoadPageCurrent) {
                         socket.isActiveLoadPageCurrent = null;
+
                         console.log('com..................', socket.isActiveLoadPageCurrent);
-                        io.sockets.emit('reload', {});
+
+                        var dataRequest = {
+                            clause: {users_id: socket.users_id},
+                            dataUpdate: {
+                                status: 2
+                            }
+                        };
+
+                        chatController.queueUpdateContact(socket, dataRequest, chatController.getSessionByName(socket, 'currentStatus'));
+                        io.sockets.emit('expiresTime60', "het 1 minute");
                     }
-                }, 1000*60*30);
+                }, s60);
+
+                // 3s
+                socket.on('pingServer', (data) => {
+                    clearTimeout(s60Revert);
+                });
+
+                socket.on('pong', (data) => {
+                    // if (socket.isActiveLoadPageCurrent)
+                    // if (gh)
+                    //     io.emit('ping', userCurrent);
+
+                    // socket.isActiveLoadPageCurrent = userCurrent.user;
+                });
+
+                // // 30 minutine - reload page
+                // setTimeout(function () {
+                //     if (socket.isActiveLoadPageCurrent) {
+                //         socket.isActiveLoadPageCurrent = null;
+                //         console.log('com...xxxx..................', socket.isActiveLoadPageCurrent);
+                //         // io.sockets.emit('reload', {});
+                //         socket.emit('expiresTime60', "het 30 minute");
+                //     }
+                // }, 1000 * 60 * 30);
+
+
+                setInterval(function () {
+
+
+                    socket.emit('expiresTime60', "--------test------- 3s -> " + socket.isActiveLoadPageCurrent);
+                }, 3000)
+
             }
 
             //disconnect socket by id
@@ -454,14 +491,14 @@ class ChatController extends BaseController {
                 //     }, reconnectionDelay);
                 // }
 
-                setTimeout(function () {
-                    if (socket.isActiveCurrent) {
-                        // chatController.deleteSessionByName(socket, 'isActiveCurrent');
-                        socket.isActiveLoadPageCurrent = null;
-                        console.log('--------------------------------11111111111111', socket.isActiveLoadPageCurrent);
-
-                    }
-                }, 180000);
+                // setTimeout(function () {
+                //     if (socket.isActiveCurrent) {
+                //         // chatController.deleteSessionByName(socket, 'isActiveCurrent');
+                //         socket.isActiveLoadPageCurrent = null;
+                //         console.log('--------------------------------11111111111111', socket.isActiveLoadPageCurrent);
+                //
+                //     }
+                // }, 180000);
 
                 console.log('18S --------------------------------', socket.isActiveLoadPageCurrent);
 
@@ -489,6 +526,12 @@ class ChatController extends BaseController {
                 }
                 console.log(`disconnect ----------------------------------------  ${socket.id}`);
                 socket.emit('messageDisconnect', {content: 'bye bye!', importance: null, 'socketID': socket.id});
+
+
+                // // logout
+                // if (chatController.getSessionByName(socket, 'isLogout') === true) {
+                //     console.log('logout');
+                // }
 
             });
 
@@ -651,7 +694,8 @@ ChatController.prototype.updateUserListSocket = function (socket, dataRequest, c
                             statusName: updateStatusCurrent,
                             listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
                             statusSingle: STATUS_SINGLE,
-                            classCurrentStatus: (dataRequest.dataUpdate.is_life == 0 || (STATUS_HIDDEN_NAME == updateStatusCurrent) ? STATUS_HIDDEN_NAME_REPLACE : updateStatusCurrent)
+                            classCurrentStatus: (dataRequest.dataUpdate.is_life == 0 || (STATUS_HIDDEN_NAME == updateStatusCurrent) ? STATUS_HIDDEN_NAME_REPLACE : updateStatusCurrent),
+                            classCurrentStatusPrivate: (STATUS_HIDDEN_NAME == updateStatusCurrent) ? STATUS_HIDDEN_NAME_REPLACE : updateStatusCurrent,
                         };
 
                         let isStatus = chatController.convertDataListSocket(socket, modelData.infoParticipant, requestCurrent);
@@ -661,7 +705,7 @@ ChatController.prototype.updateUserListSocket = function (socket, dataRequest, c
                         responsiveData['data'] = {
                             statusName: requestCurrent.statusName,
                             listStatus: requestCurrent.listStatus,
-                            classCurrentStatus: requestCurrent.classCurrentStatus
+                            classCurrentStatus: requestCurrent.classCurrentStatusPrivate
                         };
 
                         socket.emit('resUpdateUserPrivate', responsiveData);
@@ -690,7 +734,7 @@ ChatController.prototype.queueUpdateContact = function (socket, dataRequest, cur
         currentStatus: currentStatus
     };
     // setTimeout(function () {
-    queue.create('updateContact', newJob).priority('medium').attempts(5).save(function (err) {
+    queue.create('updateContact', newJob).priority('high').attempts(5).save(function (err) {
         if (!err) return queue.id + ' - updateContact';
     }).on('updateContact complete', function (id, result) {
         kue.Job.get(id, function (err, job) {

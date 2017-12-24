@@ -24,39 +24,76 @@ var socket = io.connect(document.location.origin, {
 // });
 
 
+socket.on('pong', (data) => {
+    console.log('Receive "pong"', data);
+});
+
+socket.on('expiresTime60', (str) => {
+    console.log('-----------------------', str);
+});
+
+socket.emit('ping', "xxxx");
+
+
 socket.on('message', function (message) {
     $('#showmsg').text('The server has a message for you: ' + message);
 });
 
+let s60 = 15000;
+
 setInterval(function () {
     socket.emit('pingServer', {isCheck: true, ttl: 3000});
-}, 60000);
+}, s60);
 
 socket.on('reload', function (data) {
     location.reload();
 });
 
 socket.on('sendDataPrivate', function (messageReplies) {
-    var msg = '<li class="replies">'
-        + '<img src="http://emilcarlsson.se/assets/mikeross.png" alt=""/>'
-        + '<p>' + convertHtmlToPlainText(messageReplies.valueMsg) + '</p></li>';
+    let domLi = $('#boxMsgChat li:last-child');
+    if (domLi.hasClass('replies')) {
+        domLi.find('._5wd4:last-child').css({"margin-bottom": "1px"});
+        domLi.find('p').css({"border-bottom-right-radius": "0px"});
+        let appendMsg = '<div class="_5wd4 _1nc6">'
+            + '<p style="border-top-right-radius: 0px;">' + convertHtmlToPlainText(messageReplies.valueMsg) + '</p></div>';
 
-    $('#boxMsgChat').append(msg);
-    // $('.contact.active .preview').html('<span>You: </span>' + convertHtmlToPlainText(messageReplies.valueMsg));
+        domLi.find('._ua2').append(appendMsg);
+    } else {
+
+        var msg = '<li class="_4tdt replies">'
+            + '<div class="_ua2"><div class="_5wd4 _1nc6">'
+            + '<p>' + convertHtmlToPlainText(messageReplies.valueMsg) + '</p></div></div></li>';
+
+        $('#boxMsgChat').append(msg);
+        // $('.contact.active .preview').html('<span>You: </span>' + convertHtmlToPlainText(messageReplies.valueMsg));
+    }
     $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, 500);
 });
 
 socket.on('sendDataBroadCast', function (messageSent) {
     let searchDomChannel = $('[channel="status.' + messageSent.channelId + '"]');
-
     if (searchDomChannel.closest('li').hasClass('active')) {
+        let domLi = $('#boxMsgChat li:last-child');
+        if (domLi.hasClass('author-' + messageSent.hexClassSend)) {
+            domLi.find('._5wd4:last-child').css({"margin-bottom": "1px"});
+            domLi.find('p').css({"border-bottom-left-radius": "0px"});
 
-        var msg = '<li class="sent">'
-            + '<img src="http://emilcarlsson.se/assets/donnapaulsen.png" alt="">'
-            + '<p>' + convertHtmlToPlainText(messageSent.valueMsg) + '</p></li>';
+            let appendMsg = '<div class="_5wd4">'
+                + '<p style="border-top-left-radius: 0px;">' + convertHtmlToPlainText(messageSent.valueMsg) + '</p></div>';
 
-        $('#boxMsgChat').append(msg);
+            domLi.find('._ua2').append(appendMsg);
+        } else {
+            var msg = '<li class="_4tdt sent author-' + messageSent.hexClassSend + '">'
+                + '<div class="_31o4">'
+                + '<img src="http://emilcarlsson.se/assets/donnapaulsen.png" alt=""></div>'
+                + '<div class="_ua2">'
+                + ((messageSent.dataType === 'group') ? ('<div class="_4tdx">' + messageSent.hexClassNameSend + '</div>') : "")
+                + '<div class="_5wd4">'
+                + '<p>' + convertHtmlToPlainText(messageSent.valueMsg) + '</p>'
+                + '</div></div></li>';
 
+            $('#boxMsgChat').append(msg);
+        }
         if ($('#boxMsgChat').is(':focus')) {
             $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, 200);
         } else {
@@ -153,6 +190,8 @@ SendChatMessage.prototype.sendMsg = function () {
                 dataChannel: messageInput.attr('data-channel'),
                 dataOwer: messageInput.attr('data-owner'),
                 dataType: messageInput.attr('data-type'),
+                hexClassSend: $('#profile-img').attr('user-code-id'),
+                hexClassNameSend: $('#profile .user-name-chat').contents().get(0).nodeValue,
                 dataValueMsg: dataValueMsg
             };
 

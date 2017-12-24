@@ -146,7 +146,7 @@ Conversation.prototype.conversationsListSingleUser = function (req, callback) {
                 q.where('type', req.statusSingle).where('users_id', '!=', req.userCurrentID)
                     .where('conversation_id', 'IN', partList)
             })
-            .fetchAll({withRelated: ['parConversation'], columns: ['users_id', 'conversation_id', 'is_accept_single', 'is_accept_group']})
+            .fetchAll({withRelated: ['parConversation'], columns: ['id', 'users_id', 'conversation_id', 'is_accept_single', 'is_accept_group']})
             .then(function (reModel) {
                 callback(null, reModel)
             })

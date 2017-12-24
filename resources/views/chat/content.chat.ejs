@@ -11,7 +11,7 @@
             if (data.listParticipant.length) {
             data.listParticipant.forEach((element, index)=> {
             %>
-            <i channel='status.<%- data.dataChannelId %>' class='favorite-conversation <%- element.classStatus %>'
+            <i channel='status.<%- data.dataChannelId %>' class='favorite-conversation <%- element.classStatus %>' codePartId='<%- element.codePartId %>'
                aria-hidden="true"></i>
             <div class="info-group">
                 <span class="status-name"><%- element.moodMessageShow %></span><span class="status-space">|</span><span
@@ -44,7 +44,8 @@
         <% if (data.listParticipant.length) {
         data.listParticipant.forEach((ele, indz) => { %>
         <li class="task info-contextmenu info-part show-info-participants">
-            <span data-conversation='<%- ele.conversationID %>' data-channel='<%- ele.channelID %>' data-author="<%- ele.users_id %>" data-username="<%- ele.middle_name %>"
+            <span data-conversation='<%- ele.conversationID %>' data-channel='<%- ele.channelID %>'
+                  data-author="<%- ele.users_id %>" data-username="<%- ele.middle_name %>" codePartId='<%- ele.codePartId %>'
                   channel='status.<%- ele.isFriendCurrent ? ele.channelID : "" %>'
                   class='status-info-part stype-list <%- ele.classStatus %>'></span>
             <span class="status-info-name"><%- ele.middle_name %></span></li>
@@ -56,58 +57,91 @@
 <div class="messages" id="frameListMsg" box-raw-msg="<%= data.minHeightBoxChat %>"
      box-change-msg="<%= data.minHeightBoxChat %>">
     <% if (data.isFriendCurrentSingle) { %>
-        <ul id="boxMsgChat">
-            <li class="sent">
-                <img src="http://emilcarlsson.se/assets/mikeross.png" alt=""/>
-                <p>How the hell am I supposed to get a jury to believe you when I am not even sure that I do?!</p>
-            </li>
-            <li class="replies">
-                <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
-                <p>When you're backed against the wall, break the god damn thing down.</p>
-            </li>
-            <li class="replies">
-                <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
-                <p>Excuses don't win championships.</p>
-            </li>
+    <ul id="boxMsgChat">
+        <li class="_4tdt sent">
+            <div class="_31o4">
+                <img src="http://emilcarlsson.se/assets/mikeross.png" alt="">
+            </div>
+            <div class="_ua2">
+                <div class="_5wd4" style="margin-bottom: 1px">
+                    <p style="border-bottom-left-radius: 0px;">Oh yeah, did Michael Jordan tell you that?</p>
+                </div>
+                <div class="_5wd4">
+                    <p style="border-top-left-radius: 0px;">Ohfsgsgat?</p>
+                </div>
+            </div>
 
-            <li class="replies">
-                <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
-                <p>Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you do any
-                    one of a hundred and forty six other things.</p>
-            </li>
-            <li class="replies">
-                <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
-                <p>When you're backed against the wall, break the god damn thing down.</p>
-            </li>
-            <li class="replies">
-                <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
-                <p>Excuses don't win championships.</p>
-            </li>
-            <li class="sent">
-                <img src="http://emilcarlsson.se/assets/mikeross.png" alt=""/>
-                <p>Oh yeah, did Michael Jordan tell you that?</p>
-            </li>
-            <li class="replies">
-                <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
-                <p>No, I told him that.</p>
-            </li>
-            <li class="replies">
-                <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
-                <p>What are your choices when someone puts a gun to your head?</p>
-            </li>
-            <li class="sent">
-                <img src="http://emilcarlsson.se/assets/mikeross.png" alt=""/>
-                <p>What are you talking about? You do what they say or they shoot you.</p>
-            </li>
-            <li class="replies">
-                <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
-                <p>Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you do any
-                    one of a hundred and forty six other things.</p>
-            </li>
-        </ul>
+        </li>
+        <li class="_4tdt replies">
+            <div class="_ua2">
+                <div class="_5wd4 _1nc6" style="margin-bottom: 1px">
+                    <p style="border-radius: 20px 20px 0px 20px;">Wrong. You take the gun, or you pull out a bigger one.
+                        Or, you
+                        call their bluff. Or, you do any
+                        one of a hundred and forty six other things.</p>
+                </div>
+                <div class="_5wd4 _1nc6" style="margin-bottom: 1px">
+                    <p style="border-radius: 20px 0 0 20px;">When you're backed against the wall, break the god damn
+                        thing down.</p>
+                </div>
+                <div class="_5wd4 _1nc6">
+                    <p style="border-radius: 20px 0px 20px 20px;">Excuses don't win championships.</p>
+                </div>
+            </div>
+        </li>
+        <li class="_4tdt sent">
+            <div class="_31o4">
+                <img src="http://emilcarlsson.se/assets/mikeross.png" alt="">
+            </div>
+            <div class="_ua2">
+                <div class="_5wd4" style="margin-bottom: 1px">
+                    <p style="border-bottom-left-radius: 0px;">Oh yeah, dkjn kjl youh, dkjn kjl youh, dkjn kjl youh, dkjn kjl you that?</p>
+                </div>
+                <div class="_5wd4" style="margin-bottom: 1px">
+                    <p style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;">cccccccccccccc?</p>
+                </div>
+                <div class="_5wd4">
+                    <p style="border-top-left-radius: 0px;">23456789?</p>
+                </div>
+            </div>
+
+        </li>
+        <li class="_4tdt replies">
+            <div class="_ua2">
+                <div class="_5wd4 _1nc6 _1nc6" style="margin-bottom: 1px">
+                    <p>No, I told him that.</p>
+                </div>
+                <div class="_5wd4 _1nc6" >
+                    <p>What are your choices when someone puts a gun to your head?</p>
+                </div>
+            </div>
+        </li>
+        <li class="_4tdt sent">
+            <div class="_31o4">
+                <img src="http://emilcarlsson.se/assets/mikeross.png" alt="">
+            </div>
+            <div class="_ua2">
+                <div class="_4tdx">Bích</div>
+                <div class="_5wd4" style="margin-bottom: 1px">
+                    <p style="border-bottom-left-radius: 0px;">Oh yeah, did Michael Jordan tell you that?</p>
+                </div>
+                <div class="_5wd4">
+                    <p style="border-top-left-radius: 0px;">Ohfsgsgat?</p>
+                </div>
+            </div>
+
+        </li>
+        <li class="_4tdt replies">
+            <div class="_ua2">
+                <div class="_5wd4 _1nc6">
+                    <p>Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you do any
+                        one of a hundred and forty six other things.</p></div>
+            </div>
+        </li>
+    </ul>
     <% } else {
     if (data.isCurrentOwnerId) { %>
-        <div class="send-request-user">contact request sent - <a class="">Resend contact request</a></div>
+    <div class="send-request-user">contact request sent - <a class="">Resend contact request</a></div>
     <% } else { %>
     <div class="clearfix"></div>
     <div class="" id="request-area">
@@ -118,11 +152,11 @@
                 <button class="btn btn-primary" id="reply-accept-user">accept</button>
             </div>
         </div>
-        </div>
+    </div>
     <% }
     } %>
 </div>
-<div class="message-input" id="messageInput" data-conversation='<%- data.dataConversation %>'
+<div class="message-input" id="messageInput" data-conversation='<%- data.dataConversation %>' data-hex='<%- data.hexCodeId %>'
      data-channel='<%- data.dataChannelId %>' data-owner='<%- data.dataOwnerId %>' data-type='<%- data.dataType %>'>
     <div class="wrap">
         <div class="scrollbar" id="style-box-sms" max-height='<%- data.maxHeightBoxChat %>'
@@ -271,14 +305,25 @@
     </div>
 </div>
 
+<div class="uiContextualLayerPositioner uiLayer hidden_elemd" data-testid="undefined"
+     style="width: 877px; top: 199px; opacity: 1; right: 252px;" data-ownerid="js_273">
+    <div class="uiContextualLayer uiContextualLayerLeft" style="right: 0px;">
+        <div class="uiTooltipX">
+            <div class="tooltipContent" data-testid="tooltip_testid" id="js_4g">
+                <div class="tooltipText"><span>Võ Hải Yến 3:41pm</span></div>
+            </div>
+            <i class="arrow"></i></div>
+    </div>
+</div>
+
 <div id="menu">
     <a href="#">
-        <img src="http://puu.sh/nr60s/42df867bf3.png" /> AdBlock Plus <span>Ctrl + ?!</span>
+        <img src="http://puu.sh/nr60s/42df867bf3.png"/> AdBlock Plus <span>Ctrl + ?!</span>
     </a>
     <a href="#">
-        <img src="http://puu.sh/nr5Z6/4360098fc1.png" /> SNTX <span>Ctrl + ?!</span>
+        <img src="http://puu.sh/nr5Z6/4360098fc1.png"/> SNTX <span>Ctrl + ?!</span>
     </a>
-    <hr />
+    <hr/>
     <a href="#">
         <i class="fa fa-fort-awesome"></i> Fort Awesome <span>Ctrl + ?!</span>
     </a>

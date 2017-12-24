@@ -169,3 +169,89 @@ input {
 #status-options .change-status p:first-letter {
     text-transform:capitalize;
 }
+
+/* ----- S - tootip ---- */
+.uiContextualLayer {
+    position: absolute;
+}
+
+ ._-kb div {
+    font-family: inherit;
+}
+.uiTooltipX {
+    max-width: 334px;
+    word-wrap: break-word;
+    position: relative;
+    zoom: 1;
+}
+
+.uiContextualLayerLeft>.uiTooltipX {
+    margin-right: 1px;
+    padding-right: 4px;
+}
+
+.uiTooltipX .tooltipContent {
+    background-color: #282828;
+    border-radius: 2px;
+    color: #fff;
+    font-size: 12px;
+    line-height: 16px;
+    padding: 6px 8px;
+    text-align: left;
+}
+
+.fbNub._50mz .tooltipText {
+    line-height: 1.5;
+}
+
+.uiTooltipX .tooltipText span {
+    zoom: 1;
+}
+
+.hidden_elem {
+     /*display: none !important; */
+}
+/* ----- E - tootip ---- */
+
+._31o4 {
+    position: relative;
+}
+._4tdt {
+    align-items: flex-end;
+    display: flex;
+    margin: 10px 9px 10px 8px;
+    position: relative;
+}
+
+._4tdt ._ua2 {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+}
+
+._5wd4 {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    line-height: 1.28;
+    padding: 0 0 1px 0;
+    text-align: initial;
+}
+._1nc6 {
+    flex-direction: row-reverse;
+}
+
+._4tdt ._4tdx {
+    color: #90949c;
+    display: block;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    line-height: 1.28;
+    margin-bottom: 1px;
+    margin-left: 16px;
+    max-width: 201px;
+    min-height: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
