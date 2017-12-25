@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `id` INT NOT NULL,
   `conversation_id` INT NOT NULL,
   `sender_id` INT NOT NULL,
-  `participants_id` INT NOT NULL,
+  `participants_id` tinytext NOT NULL,
   `message_type` ENUM('text', 'image', 'vedio', 'audio') NULL,
   `message` VARCHAR(255) NULL,
   `attachment_thumb_url` VARCHAR(255) NULL,
@@ -138,8 +138,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `group_id` int(11) NOT NULL DEFAULT '0',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `group_sender_partic_UNIQUE` (`group_id`, `sender_id`, `participants_id`))
+  PRIMARY KEY (`id`)
 ENGINE = InnoDB;
 
 SHOW WARNINGS;

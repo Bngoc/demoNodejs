@@ -34,7 +34,6 @@ socket.on('expiresTime60', (str) => {
 
 socket.emit('ping', "xxxx");
 
-
 socket.on('message', function (message) {
     $('#showmsg').text('The server has a message for you: ' + message);
 });
@@ -408,9 +407,18 @@ SendChatMessage.prototype.clickListContactContentChat = function () {
 
 SendChatMessage.prototype.reloadContentBoxChatAjax = function (dataRequest) {
     let _this = this;
+
+
     callDataJS(dataRequest, function (dataResult) {
         if (dataResult.html) {
             $('#content-chat').html(dataResult.html);
+
+            socket.emit('msgComtentChat', dataRequest);
+
+            socket.on('msgContent', function (dataMessage) {
+                console.log(JSON.stringify(dataMessage));
+                let tempHtml = _this.htmlContentBoxChat(dataMessage);
+            });
 
             _this.getDefaultHeightMsgBox();
             _this.scrollEndShowBoxChat(2300);
@@ -418,3 +426,13 @@ SendChatMessage.prototype.reloadContentBoxChatAjax = function (dataRequest) {
     });
 };
 
+SendChatMessage.prototype.htmlContentBoxChat = function (resultDataMsg) {
+    let html = '';
+
+    resultDataMsg.forEach(function (element, index) {
+        console.log(element, index);
+    });
+
+
+    return html;
+}

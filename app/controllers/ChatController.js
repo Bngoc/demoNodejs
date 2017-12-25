@@ -101,6 +101,7 @@ class ChatController extends BaseController {
     postContentChat(req, res, next) {
         var showResponseChat = {};
         let userCurrent = req.user;
+        req.session.dataChannelID = null;
 
         try {
             showResponseChat.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX;
@@ -329,6 +330,11 @@ class ChatController extends BaseController {
                 let currentStatus = chatController.getSessionByName(socket, 'currentStatus');
                 let infoParticipant = chatController.getSessionByName(socket, 'infoParticipant');
                 if (currentStatus && infoParticipant) {
+                    let reqListRooms = infoParticipant.map(function (getRoomId) {
+                        return getRoomId.channel_id;
+                    });
+                    chatController.setSessionByName(socket, 'listRooms', reqListRooms);
+
                     chatController.convertDataListSocket(socket, infoParticipant, currentStatus);
                     chatController.deleteSessionByName(socket, 'infoParticipant');
 
@@ -343,6 +349,46 @@ class ChatController extends BaseController {
                         chatController.updateSessionByName(socket, 'isLife', true);
                     }
                 }
+
+                socket.on('msgComtentChat', function (reqData) {
+                    console.log(reqData);
+
+                    let conversationId = reqData.data.dataConversation ? parseInt(reqData.data.dataConversation) : null;
+                    if (conversationId) {
+                        let message = new Messages.class();
+                        let requestMessage = {
+                            id: conversationId,
+                            limit: 200,
+                            userCurrentID: userCurrent.user
+                        }
+
+                        message.getMessageConversation(requestMessage, function (errMessage, modelMessage) {
+                            if (errMessage) {
+                                return 1;
+                            } else {
+                                if (modelMessage.length) {
+                                    // let dataChannelID = chatController.getSessionByName(socket, 'dataChannelID');
+                                    // if (dataChannelID) {
+                                    //     socket.broadcast.to(reqData.data.channelID).emit('msgContent', modelMessage);
+                                    // let resListMessage = [];
+                                    //
+                                    // modelMessage.forEach(function (element, index) {
+                                    //     let msgBox = JSON.stringify(element.attributes);
+                                    //     let deletedMessages = JSON.stringify(element.relations.deletedMessages);
+                                    //     resListMessage.push({msg: msgBox, deletedMessages: deletedMessages});
+                                    // });
+
+// console.log(resListMessage);
+                                    socket.emit('msgContent', modelMessage.toJSON());
+                                    // }
+                                } else {
+
+                                }
+                            }
+                        });
+                    }
+                });
+
 
                 socket.on('updateUser', function (reqData) {
 
@@ -410,7 +456,7 @@ class ChatController extends BaseController {
 
                 console.log('xxxxxxxxxxxxxx -> ', JSON.stringify(socket.handshake.session), socket.isActiveLoadPageCurrent);
 
-                let s60Revert =  setTimeout(function () {
+                let s60Revert = setTimeout(function () {
                     if (socket.isActiveLoadPageCurrent) {
                         socket.isActiveLoadPageCurrent = null;
 
@@ -616,7 +662,6 @@ ChatController.prototype.convertDataListSocket = function (socket, infoConversat
         // let reqListRooms = infoConversation.map(function (getRoomId) {
         //     return getRoomId.channel_id;
         // });
-        //
         // let sendBroadcastRoom = [];
         // let listRooms = socket.adapter.rooms;
         // for (var idRoom in listRooms) {
