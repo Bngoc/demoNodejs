@@ -14,3 +14,15 @@ BEGIN
 			begin end;
 	END CASE;
 END
+
+CREATE DEFINER = CURRENT_USER TRIGGER `mvcnodejs`.`messages_BEFORE_INSERT` BEFORE INSERT ON `messages` FOR EACH ROW
+BEGIN
+CASE new.guid
+WHEN 'single' THEN
+SET NEW.is_single_group = 0;
+WHEN 'group' THEN
+SET NEW.is_single_group = 1;
+ELSE
+begin end;
+END CASE;
+END

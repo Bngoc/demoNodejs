@@ -113,6 +113,14 @@ function imageToBase64(img) {
     return base64;
 }
 
+function swap(json){
+    var ret = {};
+    for(var key in json){
+        ret[json[key]] = key;
+    }
+    return ret;
+}
+
 // var i = document.getElementById("menu").style;
 // if (document.addEventListener) {
 //     document.addEventListener('contextmenu', function(e) {

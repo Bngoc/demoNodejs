@@ -134,8 +134,8 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `message` VARCHAR(255) NULL,
   `attachment_thumb_url` VARCHAR(255) NULL,
   `attachment_url` VARCHAR(255) NULL,
-  `guid` VARCHAR(100) NULL,
-  `group_id` int(11) NOT NULL DEFAULT '0',
+  `guid` ENUM('single', 'group') NULL,
+  `is_single_group` tinyint(1) NULL DEFAULT '0',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)

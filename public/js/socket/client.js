@@ -135,28 +135,28 @@ var SendChatMessage = function () {
         this.eventScrollTopBoxMsg();
         this.eventChangeStatusUser();
 
-        this.getDefaultHeightMsgBox = function () {
-            let heightDefault = this.diffHeightBoxMsg();
-            let realHeightRaw = $("#messageInput").outerHeight(true);
-            let minHeightBoxChat = $('#style-box-sms').attr('min-height');
-
-            $(".scrollbar").attr({'realHeightRaw': realHeightRaw, 'realHeghitChange': realHeightRaw});
-
-            $("#boxChat").attr({'height_default': heightDefault});
-            $("#boxChat").attr({'auto_height_box_msg': heightDefault});
-            $("#boxChat").css({'min-height': minHeightBoxChat + 'px'});
-
-            var minHeightFrameListMsg = getMinHeightFrameListMsg();
-            $('#frameListMsg').css({
-                'min-height': minHeightFrameListMsg,
-                'height': minHeightFrameListMsg
-            });
-        };
-
         this.clickContactContentChat();
         this.clickListContactContentChat();
         this.clickRightContactContentChat();
     };
+};
+
+SendChatMessage.prototype.getDefaultHeightMsgBox = function () {
+    let heightDefault = this.diffHeightBoxMsg();
+    let realHeightRaw = $("#messageInput").outerHeight(true);
+    let minHeightBoxChat = $('#style-box-sms').attr('min-height');
+
+    $(".scrollbar").attr({'realHeightRaw': realHeightRaw, 'realHeghitChange': realHeightRaw});
+
+    $("#boxChat").attr({'height_default': heightDefault});
+    $("#boxChat").attr({'auto_height_box_msg': heightDefault});
+    $("#boxChat").css({'min-height': minHeightBoxChat + 'px'});
+
+    var minHeightFrameListMsg = getMinHeightFrameListMsg();
+    $('#frameListMsg').css({
+        'min-height': minHeightFrameListMsg,
+        'height': minHeightFrameListMsg
+    });
 };
 
 SendChatMessage.prototype.diffHeightMsg = function () {
@@ -368,7 +368,9 @@ SendChatMessage.prototype.clickContactContentChat = function () {
                     }
                 };
 
-                _this.reloadContentBoxChatAjax(dataRequest);
+                _this.reloadContentBoxChatAjax(dataRequest, function () {
+                    socket.emit('msgContentChat', dataRequest);
+                });
             }
         })
         .on('dblclick', '.show-info-participants', function (e) {
@@ -401,30 +403,29 @@ SendChatMessage.prototype.clickListContactContentChat = function () {
                 _method: 'post'
             }
         };
-        _this.reloadContentBoxChatAjax(dataRequest);
+        _this.reloadContentBoxChatAjax(dataRequest, function () {
+            socket.emit('msgContentChat', dataRequest);
+        });
     });
 }
 
-SendChatMessage.prototype.reloadContentBoxChatAjax = function (dataRequest) {
-    let _this = this;
-
-
+SendChatMessage.prototype.reloadContentBoxChatAjax = function (dataRequest, callback) {
     callDataJS(dataRequest, function (dataResult) {
         if (dataResult.html) {
             $('#content-chat').html(dataResult.html);
-
-            socket.emit('msgComtentChat', dataRequest);
-
-            socket.on('msgContent', function (dataMessage) {
-                console.log(JSON.stringify(dataMessage));
-                let tempHtml = _this.htmlContentBoxChat(dataMessage);
-            });
-
-            _this.getDefaultHeightMsgBox();
-            _this.scrollEndShowBoxChat(2300);
+            callback();
         }
     });
 };
+
+socket.on('msgContent', function (dataMessage) {
+    var sendChatMessage = new SendChatMessage();
+    let tempHtml = sendChatMessage.htmlContentBoxChat(dataMessage);
+
+    sendChatMessage.getDefaultHeightMsgBox();
+    sendChatMessage.scrollEndShowBoxChat(2300);
+});
+
 
 SendChatMessage.prototype.htmlContentBoxChat = function (resultDataMsg) {
     let html = '';

@@ -11,8 +11,8 @@ const User = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}User
 const Contacts = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Contacts.js`);
 const BlockList = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}BlockList.js`);
 const Conversation = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Conversation.js`);
-const DeletedConversations = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}DeletedConversations.js`);
-const DeletedMessages = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}DeletedMessages.js`);
+// const DeletedConversations = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}DeletedConversations.js`);
+// const DeletedMessages = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}DeletedMessages.js`);
 const Messages = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Messages.js`);
 const Reports = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Reports.js`);
 
@@ -350,7 +350,7 @@ class ChatController extends BaseController {
                     }
                 }
 
-                socket.on('msgComtentChat', function (reqData) {
+                socket.on('msgContentChat', function (reqData) {
                     console.log(reqData);
 
                     let conversationId = reqData.data.dataConversation ? parseInt(reqData.data.dataConversation) : null;
@@ -360,9 +360,10 @@ class ChatController extends BaseController {
                             id: conversationId,
                             limit: 200,
                             userCurrentID: userCurrent.user
-                        }
+                        };
 
                         message.getMessageConversation(requestMessage, function (errMessage, modelMessage) {
+
                             if (errMessage) {
                                 return 1;
                             } else {
@@ -377,10 +378,9 @@ class ChatController extends BaseController {
                                     //     let deletedMessages = JSON.stringify(element.relations.deletedMessages);
                                     //     resListMessage.push({msg: msgBox, deletedMessages: deletedMessages});
                                     // });
-
-// console.log(resListMessage);
-                                    socket.emit('msgContent', modelMessage.toJSON());
-                                    // }
+                                    process.nextTick(function () {
+                                        socket.emit('msgContent', modelMessage.toJSON());
+                                    });
                                 } else {
 
                                 }

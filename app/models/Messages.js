@@ -10,8 +10,11 @@ const knex = coreHelper.connectKnex();
 let Messages = bookshelf.Model.extend({
     tableName: 'messages',
     hasTimestamps: true,
-    deletedMessages: function () {
-        return this.hasOne(coreHelper.callModule(`${coreHelper.paths.MODELS}DeletedMessages.js`).model, 'messages_id');
+    // deletedMessages: function () {
+    //     return this.hasOne(coreHelper.callModule(`${coreHelper.paths.MODELS}DeletedMessages.js`).model, 'messages_id');
+    // }
+    contactMessage: function () {
+        return this.hasOne(coreHelper.callModule(`${coreHelper.paths.MODELS}Contacts.js`).model, 'users_id', 'sender_id');
     }
 });
 
@@ -21,22 +24,30 @@ var Message = function () {
 
 Message.prototype.getMessageConversation = function (req, callback) {
     Messages
-        .query(function (q) {
-            q.where('conversation_id', req.id)
+        .query(function (qb) {
+            qb.where('conversation_id', req.id)
+                .andWhere(function () {
+                    this.orWhere('is_deleted', '!=', 1)
+                        .orWhere(function () {
+                            this.where('sender_id', '!=', req.userCurrentID)
+                                .where('is_deleted', '=', 1)
+                        })
+                })
                 .orderBy('created_at', 'ASC')
+                .orderBy('id', 'ASC')
                 .limit(req.limit);
         })
-        // .where({id: id})
-        // .fetchAll({withRelated: ['deletedMessages']})
-        .fetchAll({
-            withRelated: [
-                {
-                    'deletedMessages': function (qb) {
-                        qb.where('is_deleted', 1).where('users_id', req.userCurrentID);
-                    }
-                }
-            ]
-        })
+        // .fetchAll()
+        .fetchAll({withRelated: ['contactMessage']})
+        // .fetchAll({
+        //     withRelated: [
+        //         {
+        //             'contactMessage': function (qb) {
+        //                 qb.where('is_deleted', 1).where('users_id', req.userCurrentID);
+        //             }
+        //         }
+        //     ]
+        // })
         .then(function (data) {
             callback(null, data);
         }).catch(function (err) {

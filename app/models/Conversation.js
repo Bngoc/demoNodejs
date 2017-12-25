@@ -19,9 +19,9 @@ var Conversations = bookshelf.Model.extend({
     conUser: function () {
         return this.belongsTo(coreHelper.callModule(`${coreHelper.paths.MODELS}Users.js`).model, 'id');
     },
-    conDeletedConversation: function () {
-        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}DeletedConversations.js`).model, 'conversation_id');
-    },
+    // conDeletedConversation: function () {
+    //     return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}DeletedConversations.js`).model, 'conversation_id');
+    // },
     conParticipant: function () {
         return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}Participants.js`).model, 'conversation_id', 'id'); //table , keyFK keylocal
     }
