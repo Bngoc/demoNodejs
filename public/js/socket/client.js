@@ -86,7 +86,7 @@ socket.on('sendDataBroadCast', function (messageSent) {
                 + '<div class="_31o4">'
                 + '<img src="http://emilcarlsson.se/assets/donnapaulsen.png" alt=""></div>'
                 + '<div class="_ua2">'
-                + ((messageSent.dataType === 'group') ? ('<div class="_4tdx">' + messageSent.hexClassNameSend + '</div>') : "")
+                + ((messageSent.dataType === 'group') ? ('<div class="_4tdx">' + messageSent.hexClassNameSend.split(' ')[0] + '</div>') : "")
                 + '<div class="_5wd4">'
                 + '<p>' + convertHtmlToPlainText(messageSent.valueMsg) + '</p>'
                 + '</div></div></li>';
@@ -183,6 +183,10 @@ SendChatMessage.prototype.sendMsg = function () {
     var dataValueMsg = $.trim($('#boxChat').val());
     if (dataValueMsg.length) {
         let messageInput = $('#messageInput');
+        let listPart = $.map($('[code-participant-id]'), function (ele) {
+            return $(ele).attr("code-participant-id");
+        });
+
         if (window.dataFriend === 'true') {
             let dataSendChat = {
                 dataConversation: messageInput.attr('data-conversation'),
@@ -191,7 +195,8 @@ SendChatMessage.prototype.sendMsg = function () {
                 dataType: messageInput.attr('data-type'),
                 hexClassSend: $('#profile-img').attr('user-code-id'),
                 hexClassNameSend: $('#profile .user-name-chat').contents().get(0).nodeValue,
-                dataValueMsg: dataValueMsg
+                dataValueMsg: dataValueMsg,
+                listCodePart: listPart.join(',')
             };
 
             socket.emit('sendDataMsg', dataSendChat);
@@ -419,12 +424,13 @@ SendChatMessage.prototype.reloadContentBoxChatAjax = function (dataRequest, call
 };
 
 socket.on('msgContent', function (dataMessage) {
-    let messageTypesWapKeyValue = swap(dataMessage.messageType);
-
     var sendChatMessage = new SendChatMessage();
-    let tempHtml = sendChatMessage.htmlContentBoxChat(dataMessage);
-    $('#boxMsgChat').append(tempHtml);
+    if (dataMessage.isLength) {
+        let tempHtml = sendChatMessage.htmlContentBoxChat(dataMessage);
+        $('#boxMsgChat').append(tempHtml);
+    } else {
 
+    }
     sendChatMessage.getDefaultHeightMsgBox();
     sendChatMessage.scrollEndShowBoxChat(2300);
 });

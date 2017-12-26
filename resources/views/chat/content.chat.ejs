@@ -11,7 +11,8 @@
             if (data.listParticipant.length) {
             data.listParticipant.forEach((element, index)=> {
             %>
-            <i channel='status.<%- data.dataChannelId %>' class='favorite-conversation <%- element.classStatus %>' codePartId='<%- element.codePartId %>'
+            <i channel='status.<%- data.dataChannelId %>' class='favorite-conversation <%- element.classStatus %>'
+               codePartId='<%- element.codePartId %>' code-participant-id='<%- element.users_id %>'
                aria-hidden="true"></i>
             <div class="info-group">
                 <span class="status-name"><%- element.moodMessageShow %></span><span class="status-space">|</span><span
@@ -45,7 +46,8 @@
         data.listParticipant.forEach((ele, indz) => { %>
         <li class="task info-contextmenu info-part show-info-participants">
             <span data-conversation='<%- ele.conversationID %>' data-channel='<%- ele.channelID %>'
-                  data-author="<%- ele.users_id %>" data-username="<%- ele.middle_name %>" codePartId='<%- ele.codePartId %>'
+                  data-author="<%- ele.users_id %>" data-username="<%- ele.middle_name %>"
+                  codePartId='<%- ele.codePartId %>' code-participant-id='<%- ele.users_id %>'
                   channel='status.<%- ele.isFriendCurrent ? ele.channelID : "" %>'
                   class='status-info-part stype-list <%- ele.classStatus %>'></span>
             <span class="status-info-name"><%- ele.middle_name %></span></li>
@@ -58,86 +60,87 @@
      box-change-msg="<%= data.minHeightBoxChat %>">
     <% if (data.isFriendCurrentSingle) { %>
     <ul id="boxMsgChat">
-        <li class="_4tdt sent">
-            <div class="_31o4">
-                <img src="http://emilcarlsson.se/assets/mikeross.png" alt="">
-            </div>
-            <div class="_ua2">
-                <div class="_5wd4" style="margin-bottom: 1px">
-                    <p style="border-bottom-left-radius: 0px;">Oh yeah, did Michael Jordan tell you that?</p>
-                </div>
-                <div class="_5wd4">
-                    <p style="border-top-left-radius: 0px;">Ohfsgsgat?</p>
-                </div>
-            </div>
+        <!--<li class="_4tdt sent">-->
+        <!--<div class="_31o4">-->
+        <!--<img src="http://emilcarlsson.se/assets/mikeross.png" alt="">-->
+        <!--</div>-->
+        <!--<div class="_ua2">-->
+        <!--<div class="_5wd4" style="margin-bottom: 1px">-->
+        <!--<p style="border-bottom-left-radius: 0px;">Oh yeah, did Michael Jordan tell you that?</p>-->
+        <!--</div>-->
+        <!--<div class="_5wd4">-->
+        <!--<p style="border-top-left-radius: 0px;">Ohfsgsgat?</p>-->
+        <!--</div>-->
+        <!--</div>-->
 
-        </li>
-        <li class="_4tdt replies">
-            <div class="_ua2">
-                <div class="_5wd4 _1nc6" style="margin-bottom: 1px">
-                    <p style="border-radius: 20px 20px 0px 20px;">Wrong. You take the gun, or you pull out a bigger one.
-                        Or, you
-                        call their bluff. Or, you do any
-                        one of a hundred and forty six other things.</p>
-                </div>
-                <div class="_5wd4 _1nc6" style="margin-bottom: 1px">
-                    <p style="border-radius: 20px 0 0 20px;">When you're backed against the wall, break the god damn
-                        thing down.</p>
-                </div>
-                <div class="_5wd4 _1nc6">
-                    <p style="border-radius: 20px 0px 20px 20px;">Excuses don't win championships.</p>
-                </div>
-            </div>
-        </li>
-        <li class="_4tdt sent">
-            <div class="_31o4">
-                <img src="http://emilcarlsson.se/assets/mikeross.png" alt="">
-            </div>
-            <div class="_ua2">
-                <div class="_5wd4" style="margin-bottom: 1px">
-                    <p style="border-bottom-left-radius: 0px;">Oh yeah, dkjn kjl youh, dkjn kjl youh, dkjn kjl youh, dkjn kjl you that?</p>
-                </div>
-                <div class="_5wd4" style="margin-bottom: 1px">
-                    <p style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;">cccccccccccccc?</p>
-                </div>
-                <div class="_5wd4">
-                    <p style="border-top-left-radius: 0px;">23456789?</p>
-                </div>
-            </div>
+        <!--</li>-->
+        <!--<li class="_4tdt replies">-->
+        <!--<div class="_ua2">-->
+        <!--<div class="_5wd4 _1nc6" style="margin-bottom: 1px">-->
+        <!--<p style="border-radius: 20px 20px 0px 20px;">Wrong. You take the gun, or you pull out a bigger one.-->
+        <!--Or, you-->
+        <!--call their bluff. Or, you do any-->
+        <!--one of a hundred and forty six other things.</p>-->
+        <!--</div>-->
+        <!--<div class="_5wd4 _1nc6" style="margin-bottom: 1px">-->
+        <!--<p style="border-radius: 20px 0 0 20px;">When you're backed against the wall, break the god damn-->
+        <!--thing down.</p>-->
+        <!--</div>-->
+        <!--<div class="_5wd4 _1nc6">-->
+        <!--<p style="border-radius: 20px 0px 20px 20px;">Excuses don't win championships.</p>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</li>-->
+        <!--<li class="_4tdt sent">-->
+        <!--<div class="_31o4">-->
+        <!--<img src="http://emilcarlsson.se/assets/mikeross.png" alt="">-->
+        <!--</div>-->
+        <!--<div class="_ua2">-->
+        <!--<div class="_5wd4" style="margin-bottom: 1px">-->
+        <!--<p style="border-bottom-left-radius: 0px;">Oh yeah, dkjn kjl youh, dkjn kjl youh, dkjn kjl youh,-->
+        <!--dkjn kjl you that?</p>-->
+        <!--</div>-->
+        <!--<div class="_5wd4" style="margin-bottom: 1px">-->
+        <!--<p style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;">cccccccccccccc?</p>-->
+        <!--</div>-->
+        <!--<div class="_5wd4">-->
+        <!--<p style="border-top-left-radius: 0px;">23456789?</p>-->
+        <!--</div>-->
+        <!--</div>-->
 
-        </li>
-        <li class="_4tdt replies">
-            <div class="_ua2">
-                <div class="_5wd4 _1nc6 _1nc6" style="margin-bottom: 1px">
-                    <p>No, I told him that.</p>
-                </div>
-                <div class="_5wd4 _1nc6" >
-                    <p>What are your choices when someone puts a gun to your head?</p>
-                </div>
-            </div>
-        </li>
-        <li class="_4tdt sent">
-            <div class="_31o4">
-                <img src="http://emilcarlsson.se/assets/mikeross.png" alt="">
-            </div>
-            <div class="_ua2">
-                <div class="_4tdx">Bích</div>
-                <div class="_5wd4" style="margin-bottom: 1px">
-                    <p style="border-bottom-left-radius: 0px;">Oh yeah, did Michael Jordan tell you that?</p>
-                </div>
-                <div class="_5wd4">
-                    <p style="border-top-left-radius: 0px;">Ohfsgsgat?</p>
-                </div>
-            </div>
+        <!--</li>-->
+        <!--<li class="_4tdt replies">-->
+        <!--<div class="_ua2">-->
+        <!--<div class="_5wd4 _1nc6 _1nc6" style="margin-bottom: 1px">-->
+        <!--<p>No, I told him that.</p>-->
+        <!--</div>-->
+        <!--<div class="_5wd4 _1nc6">-->
+        <!--<p>What are your choices when someone puts a gun to your head?</p>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</li>-->
+        <!--<li class="_4tdt sent">-->
+        <!--<div class="_31o4">-->
+        <!--<img src="http://emilcarlsson.se/assets/mikeross.png" alt="">-->
+        <!--</div>-->
+        <!--<div class="_ua2">-->
+        <!--<div class="_4tdx">Bích</div>-->
+        <!--<div class="_5wd4" style="margin-bottom: 1px">-->
+        <!--<p style="border-bottom-left-radius: 0px;">Oh yeah, did Michael Jordan tell you that?</p>-->
+        <!--</div>-->
+        <!--<div class="_5wd4">-->
+        <!--<p style="border-top-left-radius: 0px;">Ohfsgsgat?</p>-->
+        <!--</div>-->
+        <!--</div>-->
 
-        </li>
-        <li class="_4tdt replies">
-            <div class="_ua2">
-                <div class="_5wd4 _1nc6">
-                    <p>Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you do any
-                        one of a hundred and forty six other things.</p></div>
-            </div>
-        </li>
+        <!--</li>-->
+        <!--<li class="_4tdt replies">-->
+        <!--<div class="_ua2">-->
+        <!--<div class="_5wd4 _1nc6">-->
+        <!--<p>Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you do any-->
+        <!--one of a hundred and forty six other things.</p></div>-->
+        <!--</div>-->
+        <!--</li>-->
     </ul>
     <% } else {
     if (data.isCurrentOwnerId) { %>
@@ -156,7 +159,8 @@
     <% }
     } %>
 </div>
-<div class="message-input" id="messageInput" data-conversation='<%- data.dataConversation %>' data-hex='<%- data.hexCodeId %>'
+<div class="message-input" id="messageInput" data-conversation='<%- data.dataConversation %>'
+     data-hex='<%- data.hexCodeId %>'
      data-channel='<%- data.dataChannelId %>' data-owner='<%- data.dataOwnerId %>' data-type='<%- data.dataType %>'>
     <div class="wrap">
         <div class="scrollbar" id="style-box-sms" max-height='<%- data.maxHeightBoxChat %>'

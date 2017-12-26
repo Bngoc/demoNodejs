@@ -55,5 +55,17 @@ Message.prototype.getMessageConversation = function (req, callback) {
     });
 };
 
+Message.prototype.insert = function (dataInsert, callback) {
+    bookshelf.transaction(function (transaction) {
+        return new Messages(dataInsert)
+            .save(null, {transacting: transaction})
+            .then(function (modelMessage) {
+                callback(null, modelMessage);
+            })
+            .catch(function (err) {
+                callback(err)
+            })
+    });
+}
 
 module.exports = {model: Messages, class: Message};

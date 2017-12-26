@@ -49,11 +49,11 @@ let LibCommonChat = function () {
     }
 
     this.supportHtmlTextOther = function (contactMessage, reqOption) {
-        let htmlOpen = '<li class="_4tdt sent author-' + 1111 + '">'
+        let htmlOpen = '<li class="_4tdt sent author-' + contactMessage.id + '">'
             + '<div class="_31o4">'
             + '<img src="http://emilcarlsson.se/assets/donnapaulsen.png" alt=""></div>'
-            + '<div class="_ua2">';
-        +((reqOption.isSingle === false) ? ('<div class="_4tdx">' + 11111 + '</div>') : "");
+            + '<div class="_ua2">'
+            + ((reqOption.isSingle === false) ? ('<div class="_4tdx">' + contactMessage.middle_name.split(' ')[0] + '</div>') : "");
 
         let htmlClose = '</div></li>';
 
@@ -125,7 +125,8 @@ let LibCommonChat = function () {
             }
         }
 
-        return '<div class="_5wd4 ' + (reqOption.isUserCurrent ? "_1nc6" : "") + ' ' + (reqOption.isUserFuture ? "bottom-m1" : "") + '">'
+        let dataAttr = (reqOption.isUserCurrent) ? ('data-msg="' + obj.id + '"') : "";
+        return '<div ' + dataAttr + ' class="_5wd4 ' + (reqOption.isUserCurrent ? "_1nc6" : "") + ' ' + (reqOption.isUserFuture ? "bottom-m1" : "") + '">'
             + '<p class="' + listClass + '">' + this.convertHtmlToPlainText(obj.message) + '</p></div>';
     }
 };

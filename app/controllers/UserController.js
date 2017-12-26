@@ -451,18 +451,22 @@ class UserController {
     }
 
     getLogout(req, res, next) {
-        var dataRequest = {
-            clause: {users_id: req.session.passport.user},
-            dataUpdate: {is_life: 0},
-        };
-        var newContacts = new Contacts.class();
-        newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
-            if (errUpdate) next(errUpdate);
+        if (req.session.passport.user) {
+            var dataRequest = {
+                clause: {users_id: req.session.passport.user},
+                dataUpdate: {is_life: 0},
+            };
+            var newContacts = new Contacts.class();
+            newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
+                if (errUpdate) next(errUpdate);
 
-            req.session.destroy();
-            req.logOut();
+                req.session.destroy();
+                req.logOut();
+                res.redirect('/login');
+            });
+        } else {
             res.redirect('/login');
-        });
+        }
     }
 }
 

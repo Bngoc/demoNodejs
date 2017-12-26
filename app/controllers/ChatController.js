@@ -313,10 +313,10 @@ class ChatController extends BaseController {
     socketConnection(io) {
         var s60 = 1000 * 60 * 1;
         io.on('connection', function (socket) {
-            io.sockets.emit('send-data-test', socket.id);
-            var reconnection = true,
-                reconnectionDelay = 5000,
-                reconnectionTry = 0;
+            // io.sockets.emit('send-data-test', socket.id);
+            // var reconnection = true,
+            //     reconnectionDelay = 5000,
+            //     reconnectionTry = 0;
 
             let chatController = new ChatController();
             let userCurrent = chatController.getSessionByName(socket, 'passport');
@@ -364,13 +364,14 @@ class ChatController extends BaseController {
                         };
 
                         message.getMessageConversation(requestMessage, function (errMessage, modelMessage) {
-
                             if (errMessage) {
                                 return 1;
                             } else {
-                                if (modelMessage.length) {
-                                    process.nextTick(function () {
-                                        let resModelMessage = {};
+                                process.nextTick(function () {
+                                    let resModelMessage = {};
+                                    resModelMessage.isLength = modelMessage.length;
+                                    if (modelMessage.length) {
+
                                         resModelMessage.inversTypeMsg = typeMsgSwapKeyValue;
                                         resModelMessage.inversTypeGuid = typeConversationSwapKeyValue;
                                         // resModelMessage.data = modelMessage.toJSON();
@@ -403,11 +404,11 @@ class ChatController extends BaseController {
                                             }
                                         });
                                         resModelMessage.listMsg = resultListMessage;
-                                        socket.emit('msgContent', resModelMessage);
-                                    });
-                                } else {
+                                    } else {
 
-                                }
+                                    }
+                                    socket.emit('msgContent', resModelMessage);
+                                });
                             }
                         });
                     }
@@ -428,15 +429,28 @@ class ChatController extends BaseController {
 
                 socket.on('sendDataMsg', function (dataSendChat) {
                     if (dataSendChat) {
-
+                        let message = new Messages.class();
                         dataSendChat.channelId = dataSendChat.dataChannel;
                         dataSendChat.valueMsg = dataSendChat.dataValueMsg;
 
-                        socket.emit('sendDataPrivate', dataSendChat);
+                        let reqDataInsert = {
+                            conversation_id: dataSendChat.dataConversation,
+                            sender_id: userCurrent.user,
+                            participants_id: dataSendChat.listCodePart,
+                            message_type: messageType[1],
+                            message: dataSendChat.dataValueMsg,
+                            guid: dataSendChat.dataType
+                        };
 
-                        if (dataSendChat.dataChannel) {
-                            socket.broadcast.to(dataSendChat.dataChannel).emit('sendDataBroadCast', dataSendChat);
-                        }
+                        message.insert(reqDataInsert, function (err, modelMsg) {
+                            if (err) return 1;
+
+                            socket.emit('sendDataPrivate', dataSendChat);
+
+                            if (dataSendChat.dataChannel) {
+                                socket.broadcast.to(dataSendChat.dataChannel).emit('sendDataBroadCast', dataSendChat);
+                            }
+                        });
                     }
                 });
 
