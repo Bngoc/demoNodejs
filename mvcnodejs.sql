@@ -126,7 +126,7 @@ DROP TABLE IF EXISTS `messages` ;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `messages` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `conversation_id` INT NOT NULL,
   `sender_id` INT NOT NULL,
   `participants_id` tinytext NOT NULL,

@@ -40,14 +40,18 @@ function callDataJS(dataRequest, callback) {
 }
 
 //convert html tag to plain text
-function convertHtmlToPlainText(strHtml = '') {
-    return strHtml.replace(/&/g, '&amp;')
+function convertHtmlToPlainText(strHtml) {
+    var stringHtml = strHtml !== undefined ? strHtml : '';
+    if (stringHtml === '') return;
+
+    return stringHtml.replace(/&/g, '&amp;')
         .replace(/>/g, '&gt;')
         .replace(/</g, '&lt;')
         .replace(/\n/g, '<br>');
 }
 
-function cnMessagesShow(arrNotify, notify, optionMulti = false) {
+function cnMessagesShow(arrNotify, notify, optionMultis) {
+    var optionMulti = optionMultis !== undefined ? optionMultis : false;
     var delay = 7500;
     var result = '';
     var date = new Date();

@@ -419,8 +419,11 @@ SendChatMessage.prototype.reloadContentBoxChatAjax = function (dataRequest, call
 };
 
 socket.on('msgContent', function (dataMessage) {
+    let messageTypesWapKeyValue = swap(dataMessage.messageType);
+
     var sendChatMessage = new SendChatMessage();
     let tempHtml = sendChatMessage.htmlContentBoxChat(dataMessage);
+    $('#boxMsgChat').append(tempHtml);
 
     sendChatMessage.getDefaultHeightMsgBox();
     sendChatMessage.scrollEndShowBoxChat(2300);
@@ -428,12 +431,55 @@ socket.on('msgContent', function (dataMessage) {
 
 
 SendChatMessage.prototype.htmlContentBoxChat = function (resultDataMsg) {
-    let html = '';
+    let libCommonChat = new LibCommonChat();
+    let resultHtml = '';
+    let lengthModel = resultDataMsg.listMsg.length;
+    resultDataMsg.listMsg.forEach(function (element, index) {
+        let lengthMsg = element.data.length;
 
-    resultDataMsg.forEach(function (element, index) {
-        console.log(element, index);
+        let option = {
+            isSingle: element.isSingle,
+            isUserCurrent: element.isUserCurrent
+        };
+        let fsfText = '';
+        if (option.isUserCurrent) {
+            var htmlText = libCommonChat.supportHtmlTextPrivate(element.contactMessage, option);
+        } else {
+            var htmlText = libCommonChat.supportHtmlTextOther(element.contactMessage, option);
+        }
+        element.data.forEach((ele, indx) => {
+
+            let isExitsTypeMsg = resultDataMsg.inversTypeMsg[ele.message_type];
+            if (isExitsTypeMsg) {
+                let reqOption = {
+                    isUserCurrent: option.isUserCurrent,
+                    isUserCurrentTemp: (resultDataMsg.option.userCurrentId === ele.sender_id),
+                    isLoad: resultDataMsg.option.isLoad,
+                    isUserFuture: ((indx + 1) >= lengthMsg) ? false : (element.data[(indx + 1)].sender_id === ele.sender_id),
+                    isUserPass: (indx && (indx - 1) < lengthMsg) ? (element.data[(indx - 1)].sender_id === ele.sender_id) : false,
+                    isSingle: (resultDataMsg.inversTypeGuid[ele.guid] == 0)
+                };
+                switch (parseInt(isExitsTypeMsg)) {
+                    case 1:
+                        fsfText += libCommonChat.zenderHtmlMessageText(ele, reqOption);
+                        break;
+                    case 2:
+                        resultHtml += libCommonChat.zenderHtmlMessageImage();
+                        break;
+                    case 3:
+                        resultHtml += libCommonChat.zenderHtmlMessageVideo();
+                        break;
+                    case 4:
+                        resultHtml += libCommonChat.zenderHtmlMessageAudio();
+                        break;
+                    default:
+                        resultHtml += "";
+                }
+            }
+        });
+
+        resultHtml += htmlText.htmlOpen + fsfText + htmlText.htmlClose;
     });
 
-
-    return html;
+    return resultHtml;
 }

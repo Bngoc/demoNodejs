@@ -15,7 +15,7 @@ const Conversation = helper.coreHelper.callModule(`${helper.coreHelper.paths.MOD
 // const DeletedMessages = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}DeletedMessages.js`);
 const Messages = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Messages.js`);
 const Reports = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Reports.js`);
-
+const libFunction = helper.coreHelper.callModule(`${helper.coreHelper.paths.LIB}LibFunction.js`, true);
 var BaseController = require('./BaseController.js');
 
 const HEIGHT_BOX_CHAT_MAX = 130;
@@ -31,7 +31,10 @@ const MOOD_MESSAGE_REQUEST = 'User not share information';
 const MOOD_MESSAGE_RESPONSIVE = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 var allClients = [];
 var userStatus = [];
-
+var messageType = helper.coreHelper.app.messageType;
+var conversationType = helper.coreHelper.app.participants;
+let typeMsgSwapKeyValue = libFunction.swap(messageType);
+let typeConversationSwapKeyValue = libFunction.swap(conversationType);
 
 class ChatController extends BaseController {
 
@@ -43,7 +46,7 @@ class ChatController extends BaseController {
             showResponse.cssInclude = showResponse.readFileInclude(['css/chat.custom.css', 'css/chat.test.css'], 'c');
             showResponse.title = 'Home chat';
             showResponse.isNotIncludeSidebar = true;
-            showResponse.scriptInclude = showResponse.readFileInclude(['js/socket/client.js', 'js/socket/chat.js']);
+            showResponse.scriptInclude = showResponse.readFileInclude(['js/socket/client.js', 'js/socket/chat.js', "js/libCommonChat.js"]);
             showResponse.renderViews = 'chat/index.ejs';
 
             let userCurrent = req.user;
@@ -351,8 +354,6 @@ class ChatController extends BaseController {
                 }
 
                 socket.on('msgContentChat', function (reqData) {
-                    console.log(reqData);
-
                     let conversationId = reqData.data.dataConversation ? parseInt(reqData.data.dataConversation) : null;
                     if (conversationId) {
                         let message = new Messages.class();
@@ -368,18 +369,41 @@ class ChatController extends BaseController {
                                 return 1;
                             } else {
                                 if (modelMessage.length) {
-                                    // let dataChannelID = chatController.getSessionByName(socket, 'dataChannelID');
-                                    // if (dataChannelID) {
-                                    //     socket.broadcast.to(reqData.data.channelID).emit('msgContent', modelMessage);
-                                    // let resListMessage = [];
-                                    //
-                                    // modelMessage.forEach(function (element, index) {
-                                    //     let msgBox = JSON.stringify(element.attributes);
-                                    //     let deletedMessages = JSON.stringify(element.relations.deletedMessages);
-                                    //     resListMessage.push({msg: msgBox, deletedMessages: deletedMessages});
-                                    // });
                                     process.nextTick(function () {
-                                        socket.emit('msgContent', modelMessage.toJSON());
+                                        let resModelMessage = {};
+                                        resModelMessage.inversTypeMsg = typeMsgSwapKeyValue;
+                                        resModelMessage.inversTypeGuid = typeConversationSwapKeyValue;
+                                        // resModelMessage.data = modelMessage.toJSON();
+
+                                        resModelMessage.option = {
+                                            userCurrentId: userCurrent.user,
+                                            isLoad: false
+                                        };
+                                        let lengthModel = modelMessage.length;
+                                        let resultListMessage = [];
+                                        let listMessage = {};
+                                        let listMsgTemp = [];
+
+                                        modelMessage.forEach(function (element, index) {
+                                            let isUserFuture = ((index + 1) >= lengthModel) ? false : (modelMessage.models[(index + 1)].attributes.sender_id === element.attributes.sender_id);
+
+                                            if (isUserFuture === false) {
+                                                listMsgTemp.push(element.attributes);
+
+                                                listMessage.data = listMsgTemp;
+                                                listMessage.contactMessage = element.relations.contactMessage.toJSON();
+                                                listMessage.isSingle = (typeConversationSwapKeyValue[reqData.data.dataType] == 0);
+                                                listMessage.isUserCurrent = (element.attributes.sender_id == userCurrent.user);
+                                                resultListMessage.push(listMessage);
+                                                listMsgTemp = [];
+                                                listMessage = {};
+
+                                            } else {
+                                                listMsgTemp.push(element.attributes);
+                                            }
+                                        });
+                                        resModelMessage.listMsg = resultListMessage;
+                                        socket.emit('msgContent', resModelMessage);
                                     });
                                 } else {
 
