@@ -47,11 +47,13 @@ let LibCommonChat = function () {
 
         return htmlText;
     }
-
+//
     this.supportHtmlTextOther = function (contactMessage, reqOption) {
+
         let htmlOpen = '<li class="_4tdt sent author-' + contactMessage.id + '">'
             + '<div class="_31o4">'
-            + '<img src="http://emilcarlsson.se/assets/donnapaulsen.png" alt=""></div>'
+            + '<a aria-label="" class="_4tdw" data-hover="tooltip" data-tooltip-content="' + contactMessage.middle_name + ' ' + customDateTime(reqOption.lastCreatedAt) + '" data-tooltip-position="left" href="#" id="js_13j">'
+            + '<img src="http://emilcarlsson.se/assets/donnapaulsen.png" alt="" class="img"></a></div>'
             + '<div class="_ua2">'
             + ((reqOption.isSingle === false) ? ('<div class="_4tdx">' + contactMessage.middle_name.split(' ')[0] + '</div>') : "");
 
@@ -69,39 +71,38 @@ let LibCommonChat = function () {
         return {htmlOpen: htmlOpen, htmlClose: htmlClose};
     };
 
-    this.supportHtmlTextAdd = function (obj, reqOption) {
-        let html = '<li class="_4tdt sent author-' + obj.sender_id + '">'
-            + '<div class="_31o4">'
-            + '<img src="http://emilcarlsson.se/assets/donnapaulsen.png" alt=""></div>'
-            + '<div class="_ua2">'
-            + ((reqOption.isSingle === false) ? ('<div class="_4tdx">' + obj.sender_id + '</div>') : "");
-
-        let classBoxMsg = '';
-        switch (reqOption.numMsg) {
-            case 1:
-                classBoxMsg = '';
-                break;
-            case 2:
-                classBoxMsg = 'top-left';
-                break;
-            case 3:
-                classBoxMsg = 'bottom-left top-left';
-                break;
-            default:
-                classBoxMsg = "";
-        }
-
-        reqOption.classBoxMsg = classBoxMsg;
-        let appendHtml = this.supportHtmlTextAppend(obj, reqOption);
-
-        // + '<div class="_5wd4">'
-        // + '<p>' + this.convertHtmlToPlainText(obj.message) + '</p>'
-        // + '</div>';
-
-        html += '</div></li>';
-
-        return html;
-    }
+    // this.supportHtmlTextAdd = function (obj, reqOption) {
+    //     let html = '<li class="_4tdt sent author-' + obj.sender_id + '">'
+    //         + '<div class="_31o4"><img src="http://emilcarlsson.se/assets/donnapaulsen.png" alt=""></div>'
+    //         + '<div class="_ua2">'
+    //         + ((reqOption.isSingle === false) ? ('<div class="_4tdx">' + obj.sender_id + '</div>') : "");
+    //
+    //     let classBoxMsg = '';
+    //     switch (reqOption.numMsg) {
+    //         case 1:
+    //             classBoxMsg = '';
+    //             break;
+    //         case 2:
+    //             classBoxMsg = 'top-left';
+    //             break;
+    //         case 3:
+    //             classBoxMsg = 'bottom-left top-left';
+    //             break;
+    //         default:
+    //             classBoxMsg = "";
+    //     }
+    //
+    //     reqOption.classBoxMsg = classBoxMsg;
+    //     let appendHtml = this.supportHtmlTextAppend(obj, reqOption);
+    //
+    //     // + '<div class="_5wd4">'
+    //     // + '<p>' + this.convertHtmlToPlainText(obj.message) + '</p>'
+    //     // + '</div>';
+    //
+    //     html += '</div></li>';
+    //
+    //     return html;
+    // }
 
     this.supportHtmlTextAppend = function (obj, reqOption) {
         let listClass = '';
@@ -126,7 +127,10 @@ let LibCommonChat = function () {
         }
 
         let dataAttr = (reqOption.isUserCurrent) ? ('data-msg="' + obj.id + '"') : "";
-        return '<div ' + dataAttr + ' class="_5wd4 ' + (reqOption.isUserCurrent ? "_1nc6" : "") + ' ' + (reqOption.isUserFuture ? "bottom-m1" : "") + '">'
+        // October 23rd, 10:12pm
+        let dataTooltipContent = (reqOption.isUserCurrent) ? ('data-tooltip-content="' + customDateTime(obj.created_at) + '"') : "";
+
+        return '<div ' + dataTooltipContent + dataAttr + ' class="_5wd4 ' + (reqOption.isUserCurrent ? "_1nc6" : "") + ' ' + (reqOption.isUserFuture ? "bottom-m1" : "") + '">'
             + '<p class="' + listClass + '">' + this.convertHtmlToPlainText(obj.message) + '</p></div>';
     }
 };

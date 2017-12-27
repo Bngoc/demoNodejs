@@ -1,5 +1,51 @@
 //All screen
 
+$(function () {
+    // $(document).on('mouseenter', '.cus-tooltip', function (event) {
+    $(document).on('mouseenter', '[data-hover="tooltip"]', function (event) {
+        let tooltipContent = $(this).attr('data-tooltip-content');
+        let tooltipPosition = $(this).attr('data-tooltip-position');
+
+        console.log('111111111111111111', event.pageX, event.pageY, event.clientX, event.clientY, $(this).height(), $(this).parent('div').outerHeight(), $(this).parent('div').parent().outerHeight());
+        let tooltipText = $('#create-tooltip .tooltiptext');
+        let fs = event.clientY - $(this).parent('div').outerHeight();
+        // let fs = event.pageY - $(this).parent('div').outerHeight();
+        tooltipText.text(tooltipContent);
+        tooltipText.css({top: fs})
+
+        console.log('2222222222222222222222222', fs, event.clientY, event.pageY)
+
+    }).on('mouseleave', '[data-hover="tooltip"]', function () {
+        $('#create-tooltip .tooltiptext').text('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+        console.log('rrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+    });
+})
+// $('.cus-tooltip').hover(function () {
+//     console.log('111111111111111111')
+//     // var title = $(this).attr('data-tooltip');
+//     // $(this).data('tipText', title);
+//     // if (title == '') {
+//     // } else {
+//     //     $('<p class="tooltip"></p>').fadeIn(200).text(title).appendTo('body');
+//     // }
+// }, function () {
+//     console.log('222222222222222222222222')
+//     // $(this).attr('data-tooltip', $(this).data('tipText'));
+//     // $('.tooltip').fadeOut(200);
+// })
+
+
+function customDateTime(dateTime) {
+    if (dateTime == undefined) return '';
+
+    let objDate = new Date(dateTime);
+    return objDate.toLocaleString("en-us", {month: "long"}) + ' ' + objDate.getDate() + ', ' + objDate.toLocaleString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+}
+
 function callDataJS(dataRequest, callback) {
     $.ajax({
         url: dataRequest.url,
@@ -117,9 +163,9 @@ function imageToBase64(img) {
     return base64;
 }
 
-function swap(json){
+function swap(json) {
     var ret = {};
-    for(var key in json){
+    for (var key in json) {
         ret[json[key]] = key;
     }
     return ret;

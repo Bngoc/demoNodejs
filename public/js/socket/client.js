@@ -451,6 +451,7 @@ SendChatMessage.prototype.htmlContentBoxChat = function (resultDataMsg) {
         if (option.isUserCurrent) {
             var htmlText = libCommonChat.supportHtmlTextPrivate(element.contactMessage, option);
         } else {
+            option.lastCreatedAt = element.data[element.data.length - 1].created_at;
             var htmlText = libCommonChat.supportHtmlTextOther(element.contactMessage, option);
         }
         element.data.forEach((ele, indx) => {

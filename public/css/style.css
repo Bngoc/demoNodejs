@@ -52,22 +52,21 @@
     border-bottom: 0;
 }
 
-
 /*.tasks {*/
-    /*list-style: none;*/
-    /*margin: 0;*/
-    /*padding: 0;*/
+/*list-style: none;*/
+/*margin: 0;*/
+/*padding: 0;*/
 /*}*/
 
 /*.task {*/
-    /*display: flex;*/
-    /*justify-content: space-between;*/
-    /*padding: 12px 0;*/
-    /*border-bottom: solid 1px #dfdfdf;*/
+/*display: flex;*/
+/*justify-content: space-between;*/
+/*padding: 12px 0;*/
+/*border-bottom: solid 1px #dfdfdf;*/
 /*}*/
 
 /*.task:last-child {*/
-    /*border-bottom: none;*/
+/*border-bottom: none;*/
 /*}*/
 
 /* context menu */
@@ -114,3 +113,97 @@
     background-color: #0066aa;
     text-decoration: none;
 }
+
+/*--------------------S tooltip------------------------*/
+.cus-tooltip {
+    position: unset;
+    display: inline-block;
+    /*border-bottom: 1px dotted black;*/
+}
+
+.cus-tooltip .tooltiptext {
+    /*visibility: hidden;*/
+    white-space: nowrap;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 10px;
+    position: absolute;
+    z-index: 1000;
+}
+
+.cus-tooltip:hover .tooltiptext {
+    /*visibility: visible;*/
+    /*display: block;*/
+
+}
+
+.tooltip-right {
+    top: -5px;
+    left: 120%;
+}
+
+.tooltip-right::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #555 transparent transparent;
+}
+
+.tooltip-bottom {
+    top: 135%;
+    left: 50%;
+    margin-left: -60px;
+}
+
+.tooltip-bottom::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #555 transparent;
+}
+
+.tooltip-top {
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+}
+
+.tooltip-top::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+.tooltip-left {
+    top: -5px;
+    bottom: auto;
+    right: 128%;
+}
+
+.tooltip-left::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent transparent #555;
+}
+
+/*--------------------E tooltip------------------------*/
