@@ -229,6 +229,12 @@ input {
     flex-direction: column;
 }
 
+._4tdw {
+    display: block;
+    margin: 0 7px 0 0;
+    width: 33px;
+}
+
 ._5wd4 {
     display: flex;
     flex-direction: row;

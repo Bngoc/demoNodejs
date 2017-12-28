@@ -192,7 +192,7 @@ User.prototype.findByIdChat = function (id, callback) {
 
             Promise.all(infoParticipantClone)
                 .then(function (resultValueAllPromise) {
-                    resultValueAllPromise.forEach((element, indx) => {
+                    resultValueAllPromise.forEach((element) => {
                         if (element.type === coreHelper.app.participants[0]) {
                             element.count = 1;
                             resultDataParticipant.push(element);
@@ -268,6 +268,7 @@ User.prototype.checkUser = function (dataRequest, callback) {
     }).catch(function (err) {
         result.error = err;
         result.code = err.code;
+        callback(result);
         callback(result);
     });
 };

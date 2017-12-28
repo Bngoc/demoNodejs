@@ -133,18 +133,18 @@
         <!--</div>-->
         <!--</div>-->
 
-        </li>
-        <li class="_4tdt sent">
-            <div class="_31o4 cus-tooltip">
-                <img src="http://emilcarlsson.se/assets/mikeross.png" alt="">
-            </div>
-            <div class="_ua2">
-                <div class="_5wd4">
-                    <p class="">Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you
-                        do any
-                        one of a hundred and forty six other things.</p></div>
-            </div>
-        </li>
+        <!--</li>-->
+        <!--<li class="_4tdt sent">-->
+        <!--<div class="_31o4 cus-tooltip">-->
+        <!--<img src="http://emilcarlsson.se/assets/mikeross.png" alt="">-->
+        <!--</div>-->
+        <!--<div class="_ua2">-->
+        <!--<div class="_5wd4">-->
+        <!--<p class="">Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you-->
+        <!--do any-->
+        <!--one of a hundred and forty six other things.</p></div>-->
+        <!--</div>-->
+        <!--</li>-->
     </ul>
     <% } else {
     if (data.isCurrentOwnerId) { %>
@@ -218,14 +218,16 @@
     <div class="bs"><a id="notifyNewsSms" title="news message">news message</a></div>
 </div>
 
-<div id="create-tooltip" class="cus-tooltip">Hover over me
-    <span class="tooltiptext">Tooltip text</span>
+<div id="create-tooltip" class="cus-tooltip">
+    <div class="uiContextualLayer">
+        <span class="tooltiptext">Tooltip text</span>
+    </div>
 </div>
 <script>
     $(document).ready(function () {
         $('#boxChat').css({"max-height": parseInt('<%- data.maxHeightInputBoxChat %>')});
         $('#style-box-sms').css({"max-height": parseInt('<%- data.maxHeightBoxChat %>')});
-
+        $('#create-tooltip .tooltiptext').css({display: 'none'});
         window.dataFriend = '<%- data.isFriendCurrentSingle %>';
         window.isSingle = '<%- data.isTypeSingle %>';
         if (window.dataFriend === 'false') {
@@ -317,16 +319,16 @@
 </div>
 
 
-<div class="uiContextualLayerPositioner uiLayer hidden_elemd" data-testid="undefined"
-     style="width: 877px; top: 199px; opacity: 1; right: 252px;" data-ownerid="js_273">
-    <div class="uiContextualLayer uiContextualLayerLeft" style="right: 0px;">
-        <div class="uiTooltipX">
-            <div class="tooltipContent" data-testid="tooltip_testid" id="js_4g">
-                <div class="tooltipText"><span>Võ Hải Yến 3:41pm</span></div>
-            </div>
-            <i class="arrow"></i></div>
-    </div>
-</div>
+<!--<div class="uiContextualLayerPositioner uiLayer hidden_elemd" data-testid="undefined"-->
+<!--style="width: 877px; top: 199px; opacity: 1; right: 252px;" data-ownerid="js_273">-->
+<!--<div class="uiContextualLayer uiContextualLayerLeft" style="right: 0px;">-->
+<!--<div class="uiTooltipX">-->
+<!--<div class="tooltipContent" data-testid="tooltip_testid" id="js_4g">-->
+<!--<div class="tooltipText"><span>Võ Hải Yến 3:41pm</span></div>-->
+<!--</div>-->
+<!--<i class="arrow"></i></div>-->
+<!--</div>-->
+<!--</div>-->
 
 <div id="menu">
     <a href="#">

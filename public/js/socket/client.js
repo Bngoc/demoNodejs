@@ -24,80 +24,85 @@ var socket = io.connect(document.location.origin, {
 // });
 
 
-socket.on('pong', (data) => {
-    console.log('Receive "pong"', data);
-});
+// socket.on('pong', (data) => {
+//     console.log('Receive "pong"', data);
+// });
 
 socket.on('expiresTime60', (str) => {
     console.log('-----------------------', str);
 });
 
-socket.emit('ping', "xxxx");
+// socket.emit('ping', "xxxx");
 
 socket.on('message', function (message) {
     $('#showmsg').text('The server has a message for you: ' + message);
 });
 
-let s60 = 15000;
-
-setInterval(function () {
-    socket.emit('pingServer', {isCheck: true, ttl: 3000});
-}, s60);
+// let s60 = 15000;
+//
+// setInterval(function () {
+//     socket.emit('pingServer', {isCheck: true, ttl: 3000});
+// }, s60);
 
 socket.on('reload', function (data) {
     location.reload();
 });
 
 socket.on('sendDataPrivate', function (messageReplies) {
-    let domLi = $('#boxMsgChat li:last-child');
-    if (domLi.hasClass('replies')) {
-        domLi.find('._5wd4:last-child').css({"margin-bottom": "1px"});
-        domLi.find('p').css({"border-bottom-right-radius": "0px"});
-        let appendMsg = '<div class="_5wd4 _1nc6">'
-            + '<p style="border-top-right-radius: 0px;">' + convertHtmlToPlainText(messageReplies.valueMsg) + '</p></div>';
+    let sendChatMessage = new SendChatMessage();
+    let tempHtml = sendChatMessage.htmlContentBoxChat(messageReplies);
 
-        domLi.find('._ua2').append(appendMsg);
-    } else {
-
-        var msg = '<li class="_4tdt replies">'
-            + '<div class="_ua2"><div class="_5wd4 _1nc6">'
-            + '<p>' + convertHtmlToPlainText(messageReplies.valueMsg) + '</p></div></div></li>';
-
-        $('#boxMsgChat').append(msg);
-        // $('.contact.active .preview').html('<span>You: </span>' + convertHtmlToPlainText(messageReplies.valueMsg));
-    }
+    // let domLi = $('#boxMsgChat li:last-child');
+    // if (domLi.hasClass('replies')) {
+    //     domLi.find('._5wd4:last-child').css({"margin-bottom": "1px"});
+    //     domLi.find('p').css({"border-bottom-right-radius": "0px"});
+    //     let appendMsg = '<div class="_5wd4 _1nc6">'
+    //         + '<p style="border-top-right-radius: 0px;">' + convertHtmlToPlainText(messageReplies.valueMsg) + '</p></div>';
+    //
+    //     domLi.find('._ua2').append(appendMsg);
+    // } else {
+    //
+    //     var msg = '<li class="_4tdt replies">'
+    //         + '<div class="_ua2"><div class="_5wd4 _1nc6">'
+    //         + '<p>' + convertHtmlToPlainText(messageReplies.valueMsg) + '</p></div></div></li>';
+    //
+    //     $('#boxMsgChat').append(msg);
+    //     // $('.contact.active .preview').html('<span>You: </span>' + convertHtmlToPlainText(messageReplies.valueMsg));
+    // }
     $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, 500);
 });
 
 socket.on('sendDataBroadCast', function (messageSent) {
     let searchDomChannel = $('[channel="status.' + messageSent.channelId + '"]');
     if (searchDomChannel.closest('li').hasClass('active')) {
-        let domLi = $('#boxMsgChat li:last-child');
-        if (domLi.hasClass('author-' + messageSent.hexClassSend)) {
-            domLi.find('._5wd4:last-child').css({"margin-bottom": "1px"});
-            domLi.find('p').css({"border-bottom-left-radius": "0px"});
-
-            let appendMsg = '<div class="_5wd4">'
-                + '<p style="border-top-left-radius: 0px;">' + convertHtmlToPlainText(messageSent.valueMsg) + '</p></div>';
-
-            domLi.find('._ua2').append(appendMsg);
-        } else {
-            var msg = '<li class="_4tdt sent author-' + messageSent.hexClassSend + '">'
-                + '<div class="_31o4">'
-                + '<img src="http://emilcarlsson.se/assets/donnapaulsen.png" alt=""></div>'
-                + '<div class="_ua2">'
-                + ((messageSent.dataType === 'group') ? ('<div class="_4tdx">' + messageSent.hexClassNameSend.split(' ')[0] + '</div>') : "")
-                + '<div class="_5wd4">'
-                + '<p>' + convertHtmlToPlainText(messageSent.valueMsg) + '</p>'
-                + '</div></div></li>';
-
-            $('#boxMsgChat').append(msg);
-        }
-        if ($('#boxMsgChat').is(':focus')) {
-            $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, 200);
-        } else {
-            $('#newMsgChat').delay(100).css("display", "block");
-        }
+        let sendChatMessage = new SendChatMessage();
+        let tempHtml = sendChatMessage.htmlContentBoxChat(messageSent);
+        // let domLi = $('#boxMsgChat li:last-child');
+        // if (domLi.hasClass('author-' + messageSent.hexClassSend)) {
+        //     domLi.find('._5wd4:last-child').css({"margin-bottom": "1px"});
+        //     domLi.find('p').css({"border-bottom-left-radius": "0px"});
+        //
+        //     let appendMsg = '<div class="_5wd4">'
+        //         + '<p style="border-top-left-radius: 0px;">' + convertHtmlToPlainText(messageSent.valueMsg) + '</p></div>';
+        //
+        //     domLi.find('._ua2').append(appendMsg);
+        // } else {
+        //     var msg = '<li class="_4tdt sent author-' + messageSent.hexClassSend + '">'
+        //         + '<div class="_31o4">'
+        //         + '<img src="http://emilcarlsson.se/assets/donnapaulsen.png" alt=""></div>'
+        //         + '<div class="_ua2">'
+        //         + ((messageSent.dataType === 'group') ? ('<div class="_4tdx">' + messageSent.hexClassNameSend.split(' ')[0] + '</div>') : "")
+        //         + '<div class="_5wd4">'
+        //         + '<p>' + convertHtmlToPlainText(messageSent.valueMsg) + '</p>'
+        //         + '</div></div></li>';
+        //
+        //     $('#boxMsgChat').append(msg);
+        // }
+        // if ($('#boxMsgChat').is(':focus')) {
+        //     $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, 200);
+        // } else {
+        //     $('#newMsgChat').delay(100).css("display", "block");
+        // }
     } else {
         let badgesNotify = searchDomChannel.closest('.wrap').find('i.badges-notify');
         if (badgesNotify.length) {
@@ -427,7 +432,7 @@ socket.on('msgContent', function (dataMessage) {
     var sendChatMessage = new SendChatMessage();
     if (dataMessage.isLength) {
         let tempHtml = sendChatMessage.htmlContentBoxChat(dataMessage);
-        $('#boxMsgChat').append(tempHtml);
+        // $('#boxMsgChat').append(tempHtml);
     } else {
 
     }
@@ -440,7 +445,11 @@ SendChatMessage.prototype.htmlContentBoxChat = function (resultDataMsg) {
     let libCommonChat = new LibCommonChat();
     let resultHtml = '';
     let lengthModel = resultDataMsg.listMsg.length;
-    resultDataMsg.listMsg.forEach(function (element, index) {
+
+    let msgLastElementsMsg = $('#boxMsgChat li:last-child');
+    let msgFirstElementsMsg = $('#boxMsgChat li:first-child');
+
+    resultDataMsg.listMsg.forEach(function (element) {
         let lengthMsg = element.data.length;
 
         let option = {
@@ -449,21 +458,30 @@ SendChatMessage.prototype.htmlContentBoxChat = function (resultDataMsg) {
         };
         let fsfText = '';
         if (option.isUserCurrent) {
-            var htmlText = libCommonChat.supportHtmlTextPrivate(element.contactMessage, option);
+            // var htmlText = {};
+            // if (msgLastPrivate) {
+            //     htmlText.htmlOpen ='';
+            //     htmlText.htmlClose =''
+            // } else {
+            //     var htmlText = libCommonChat.supportHtmlTextPrivate(element.contactMessage, option);
+            // }
         } else {
-            option.lastCreatedAt = element.data[element.data.length - 1].created_at;
-            var htmlText = libCommonChat.supportHtmlTextOther(element.contactMessage, option);
+            // option.lastCreatedAt = element.data[element.data.length - 1].created_at;
+            // var htmlText = libCommonChat.supportHtmlTextOther(element.contactMessage, option);
         }
+        let isExitsElements = element.isUserCurrent ? msgLastElementsMsg.hasClass('replies') : msgLastElementsMsg.hasClass('author-' + element.contactMessage.id);
         element.data.forEach((ele, indx) => {
 
             let isExitsTypeMsg = resultDataMsg.inversTypeMsg[ele.message_type];
             if (isExitsTypeMsg) {
                 let reqOption = {
                     isUserCurrent: option.isUserCurrent,
-                    isUserCurrentTemp: (resultDataMsg.option.userCurrentId === ele.sender_id),
+                    // isUserCurrentTemp: (resultDataMsg.option.userCurrentId === ele.sender_id),
                     isLoad: resultDataMsg.option.isLoad,
-                    isUserFuture: ((indx + 1) >= lengthMsg) ? false : (element.data[(indx + 1)].sender_id === ele.sender_id),
-                    isUserPass: (indx && (indx - 1) < lengthMsg) ? (element.data[(indx - 1)].sender_id === ele.sender_id) : false,
+                    // isUserFuture: ((indx + 1) >= lengthMsg) ? false : (element.data[(indx + 1)].sender_id === ele.sender_id),
+                    isUserFuture: (indx < (lengthMsg - 1)) ? true : false,
+                    isUserPass: ((indx && indx <= (lengthMsg - 1)) || isExitsElements) ? true : false,
+                    // isUserPass: (indx && (indx - 1) < lengthMsg) ? (element.data[(indx - 1)].sender_id === ele.sender_id) : false,
                     isSingle: (resultDataMsg.inversTypeGuid[ele.guid] == 0)
                 };
                 switch (parseInt(isExitsTypeMsg)) {
@@ -485,7 +503,30 @@ SendChatMessage.prototype.htmlContentBoxChat = function (resultDataMsg) {
             }
         });
 
-        resultHtml += htmlText.htmlOpen + fsfText + htmlText.htmlClose;
+        if (option.isUserCurrent) {
+            if (msgLastElementsMsg.hasClass('replies')) {
+                msgLastElementsMsg.find('p').addClass('bottom-right');
+                msgLastElementsMsg.find('._ua2').append(fsfText);
+            } else if (!true) {
+
+            } else {
+                var htmlText = libCommonChat.supportHtmlTextPrivate(element.contactMessage, option);
+                $('#boxMsgChat').append(htmlText.htmlOpen + fsfText + htmlText.htmlClose);
+            }
+        } else {
+            if (msgLastElementsMsg.hasClass('author-' + element.contactMessage.id)) {
+                msgLastElementsMsg.find('p').addClass('bottom-left');
+                msgLastElementsMsg.find('._ua2').append(fsfText);
+            } else if (!true) {
+
+            } else {
+                option.lastCreatedAt = element.data[element.data.length - 1].created_at;
+                var htmlText = libCommonChat.supportHtmlTextOther(element.contactMessage, option);
+                $('#boxMsgChat').append(htmlText.htmlOpen + fsfText + htmlText.htmlClose);
+            }
+        }
+
+        // resultHtml += htmlText.htmlOpen + fsfText + htmlText.htmlClose;
     });
 
     return resultHtml;

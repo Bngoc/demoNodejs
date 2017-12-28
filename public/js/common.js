@@ -1,38 +1,58 @@
 //All screen
 
 $(function () {
-    // $(document).on('mouseenter', '.cus-tooltip', function (event) {
-    $(document).on('mouseenter', '[data-hover="tooltip"]', function (event) {
-        let tooltipContent = $(this).attr('data-tooltip-content');
-        let tooltipPosition = $(this).attr('data-tooltip-position');
+    $(document)
+        .on('mouseenter', '[data-hover="tooltip"]', function (event) {
 
-        console.log('111111111111111111', event.pageX, event.pageY, event.clientX, event.clientY, $(this).height(), $(this).parent('div').outerHeight(), $(this).parent('div').parent().outerHeight());
-        let tooltipText = $('#create-tooltip .tooltiptext');
-        let fs = event.clientY - $(this).parent('div').outerHeight();
-        // let fs = event.pageY - $(this).parent('div').outerHeight();
-        tooltipText.text(tooltipContent);
-        tooltipText.css({top: fs})
+            let tooltipContent = $(this).attr('data-tooltip-content');
+            let tooltipPosition = $(this).attr('data-tooltip-position');
+            let tooltipPrivate = $(this).attr('data-tooltip-private');
+            let classTooltipHover = $(this).attr('class-tooltip-hover');
+            let isPrivate = (typeof tooltipPrivate !== typeof undefined && tooltipPrivate !== false);
+            let tooltipText = $('#create-tooltip .tooltiptext');
 
-        console.log('2222222222222222222222222', fs, event.clientY, event.pageY)
+            tooltipText.text(tooltipContent);
 
-    }).on('mouseleave', '[data-hover="tooltip"]', function () {
-        $('#create-tooltip .tooltiptext').text('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-        console.log('rrrrrrrrrrrrrrrrrrrrrrrrrrrr');
-    });
-})
-// $('.cus-tooltip').hover(function () {
-//     console.log('111111111111111111')
-//     // var title = $(this).attr('data-tooltip');
-//     // $(this).data('tipText', title);
-//     // if (title == '') {
-//     // } else {
-//     //     $('<p class="tooltip"></p>').fadeIn(200).text(title).appendTo('body');
-//     // }
-// }, function () {
-//     console.log('222222222222222222222222')
-//     // $(this).attr('data-tooltip', $(this).data('tipText'));
-//     // $('.tooltip').fadeOut(200);
-// })
+            var offset = $(this).offset();
+            var offsetCreateTooltip = $('#create-tooltip').offset();
+            var offsetframeListMsg = $('#frameListMsg').offset();
+
+            // let heightNormal = offset.top - offsetframeListMsg.top + $(this).parent().innerHeight() + tooltipText.innerHeight() / 2 - 1;
+            // let heightNormal = offset.top - offsetframeListMsg.top - $(this).parent().outerHeight() /2  - tooltipText.outerHeight();
+            let heightNormal = offset.top - offsetCreateTooltip.top;//offsetframeListMsg.top;
+            // let heightNormal = offset.top - offsetframeListMsg.top  + tooltipText.innerHeight() / 2 - 1;
+            let heightNormalTop = 0;
+            let withNormal = 0;
+            let addCenterPrivate = (isPrivate ? ($(this).closest('.' + classTooltipHover).height() / 2 - tooltipText.innerHeight() / 2) : 0);
+            let addRightPrivate = isPrivate ? ($(this).closest('.' + classTooltipHover).width() + 25) : tooltipText.width() + 20;
+            switch (tooltipPosition) {
+                case 'left':
+                    withNormal = (tooltipText.width() + 15) * (-1);
+                    heightNormalTop = heightNormal + addCenterPrivate;
+                    break;
+                case 'right':
+                    withNormal = addRightPrivate;
+                    heightNormalTop = heightNormal + addCenterPrivate;
+                    break;
+                default:
+            }
+            tooltipText.addClass('tooltip-' + tooltipPosition);
+            tooltipText.css({display: 'block', top: heightNormalTop, left: withNormal});
+
+            window.isCheckHover = true;
+            console.log('2222222222222222222222222', event.pageY, offsetCreateTooltip.top, offset.top);
+
+        })
+        .on('mouseleave', '[data-hover="tooltip"]', function () {
+            let tooltipTextLeave = $('#create-tooltip .tooltiptext');
+
+            tooltipTextLeave.text('xxxxxxx');
+            tooltipTextLeave.css({display: 'none'});
+            tooltipTextLeave.removeClass(function (index, className) {
+                return (className.match(/(^|\s)tooltip-\S+/g) || []).join(' ');
+            });
+        })
+});
 
 
 function customDateTime(dateTime) {

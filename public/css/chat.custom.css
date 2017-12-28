@@ -972,7 +972,7 @@
 }
 
 #frame .content .messages ul li.sent img {
-    margin: 4px 8px 0 0;
+    /*margin: 4px 8px 0 0;*/
 }
 
 #frame .content .messages ul li.sent p {
@@ -1001,7 +1001,7 @@
 }
 
 #frame .content .messages ul li img {
-    width: 27px;
+    width: 33px;
     border-radius: 50%;
     float: left;
 }

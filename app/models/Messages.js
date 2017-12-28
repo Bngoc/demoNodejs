@@ -60,7 +60,15 @@ Message.prototype.insert = function (dataInsert, callback) {
         return new Messages(dataInsert)
             .save(null, {transacting: transaction})
             .then(function (modelMessage) {
-                callback(null, modelMessage);
+                Messages
+                    .forge({id: modelMessage.id})
+                    .fetch({withRelated: ['contactMessage']})
+                    .then(function (selectMessage) {
+                        callback(null, selectMessage);
+                    })
+                    .catch((errMsg)=> {
+                        callback(errMsg)
+                    });
             })
             .catch(function (err) {
                 callback(err)

@@ -359,7 +359,7 @@ class ChatController extends BaseController {
                         let message = new Messages.class();
                         let requestMessage = {
                             id: conversationId,
-                            limit: 200,
+                            limit: 10,
                             userCurrentID: userCurrent.user
                         };
 
@@ -368,45 +368,56 @@ class ChatController extends BaseController {
                                 return 1;
                             } else {
                                 process.nextTick(function () {
-                                    let resModelMessage = {};
-                                    resModelMessage.isLength = modelMessage.length;
-                                    if (modelMessage.length) {
+                                    let reqOption = {
+                                        dataType: reqData.data.dataType,
+                                        userCurrent: userCurrent
+                                    };
+                                    let modelMsgArray = [];
+                                    modelMessage.models.forEach(function (eleModel) {
+                                        modelMsgArray.push(eleModel);
+                                    });
 
-                                        resModelMessage.inversTypeMsg = typeMsgSwapKeyValue;
-                                        resModelMessage.inversTypeGuid = typeConversationSwapKeyValue;
-                                        // resModelMessage.data = modelMessage.toJSON();
+                                    let resModelMessage = chatController.convertListMessage(modelMsgArray, reqOption);
 
-                                        resModelMessage.option = {
-                                            userCurrentId: userCurrent.user,
-                                            isLoad: false
-                                        };
-                                        let lengthModel = modelMessage.length;
-                                        let resultListMessage = [];
-                                        let listMessage = {};
-                                        let listMsgTemp = [];
-
-                                        modelMessage.forEach(function (element, index) {
-                                            let isUserFuture = ((index + 1) >= lengthModel) ? false : (modelMessage.models[(index + 1)].attributes.sender_id === element.attributes.sender_id);
-
-                                            if (isUserFuture === false) {
-                                                listMsgTemp.push(element.attributes);
-
-                                                listMessage.data = listMsgTemp;
-                                                listMessage.contactMessage = element.relations.contactMessage.toJSON();
-                                                listMessage.isSingle = (typeConversationSwapKeyValue[reqData.data.dataType] == 0);
-                                                listMessage.isUserCurrent = (element.attributes.sender_id == userCurrent.user);
-                                                resultListMessage.push(listMessage);
-                                                listMsgTemp = [];
-                                                listMessage = {};
-
-                                            } else {
-                                                listMsgTemp.push(element.attributes);
-                                            }
-                                        });
-                                        resModelMessage.listMsg = resultListMessage;
-                                    } else {
-
-                                    }
+                                    // let resModelMessage = {};
+                                    // resModelMessage.isLength = modelMessage.length;
+                                    // if (modelMessage.length) {
+                                    //
+                                    //     resModelMessage.inversTypeMsg = typeMsgSwapKeyValue;
+                                    //     resModelMessage.inversTypeGuid = typeConversationSwapKeyValue;
+                                    //     // resModelMessage.data = modelMessage.toJSON();
+                                    //
+                                    //     resModelMessage.option = {
+                                    //         userCurrentId: userCurrent.user,
+                                    //         isLoad: false
+                                    //     };
+                                    //     let lengthModel = modelMessage.length;
+                                    //     let resultListMessage = [];
+                                    //     let listMessage = {};
+                                    //     let listMsgTemp = [];
+                                    //
+                                    //     modelMessage.forEach(function (element, index) {
+                                    //         let isUserFuture = ((index + 1) >= lengthModel) ? false : (modelMessage.models[(index + 1)].attributes.sender_id === element.attributes.sender_id);
+                                    //
+                                    //         if (isUserFuture === false) {
+                                    //             listMsgTemp.push(element.attributes);
+                                    //
+                                    //             listMessage.data = listMsgTemp;
+                                    //             listMessage.contactMessage = element.relations.contactMessage.toJSON();
+                                    //             listMessage.isSingle = (typeConversationSwapKeyValue[reqData.data.dataType] == 0);
+                                    //             listMessage.isUserCurrent = (element.attributes.sender_id == userCurrent.user);
+                                    //             resultListMessage.push(listMessage);
+                                    //             listMsgTemp = [];
+                                    //             listMessage = {};
+                                    //
+                                    //         } else {
+                                    //             listMsgTemp.push(element.attributes);
+                                    //         }
+                                    //     });
+                                    //     resModelMessage.listMsg = resultListMessage;
+                                    // } else {
+                                    //
+                                    // }
                                     socket.emit('msgContent', resModelMessage);
                                 });
                             }
@@ -414,24 +425,23 @@ class ChatController extends BaseController {
                     }
                 });
 
-
-                socket.on('updateUser', function (reqData) {
-
-                    var dataRequest = {
-                        clause: {users_id: currentStatus.userCurrentID},
-                        dataUpdate: {
-                            status: parseInt(reqData.data.status)
-                            // is_life: parseInt(reqData.data.status) == defaultStatusHidden ? 0 : undefined
-                        },
-                    };
-                    chatController.queueUpdateContact(socket, dataRequest, currentStatus);
-                });
-
                 socket.on('sendDataMsg', function (dataSendChat) {
                     if (dataSendChat) {
                         let message = new Messages.class();
                         dataSendChat.channelId = dataSendChat.dataChannel;
                         dataSendChat.valueMsg = dataSendChat.dataValueMsg;
+
+
+                        // {
+                        //        isLength: 11
+                        //     listMsg: [{data: [], contactMessage: {}, isSingle: true,  isUserCurrent: true }],
+                        //         option: {
+                        //         userCurrentId: userCurrent.user,
+                        //         isLoad: false
+                        //     },
+                        //     inversTypeMsg: 1111,
+                        //         inversTypeGuid: 2222
+                        // }
 
                         let reqDataInsert = {
                             conversation_id: dataSendChat.dataConversation,
@@ -445,15 +455,39 @@ class ChatController extends BaseController {
                         message.insert(reqDataInsert, function (err, modelMsg) {
                             if (err) return 1;
 
-                            socket.emit('sendDataPrivate', dataSendChat);
+                            process.nextTick(function () {
+                                let reqOption = {
+                                    dataType: dataSendChat.dataType,
+                                    userCurrent: userCurrent
+                                };
+                                let modelMsgArray = [];
+                                modelMsgArray.push(modelMsg);
+                                let resModelMessage = chatController.convertListMessage(modelMsgArray, reqOption);
 
-                            if (dataSendChat.dataChannel) {
-                                socket.broadcast.to(dataSendChat.dataChannel).emit('sendDataBroadCast', dataSendChat);
-                            }
+                                socket.emit('sendDataPrivate', resModelMessage);
+
+                                if (dataSendChat.dataChannel) {
+                                    // not user current because show for other user
+                                    resModelMessage.listMsg[0].isUserCurrent = false;
+                                    resModelMessage.channelId = dataSendChat.dataChannel;
+                                    socket.broadcast.to(dataSendChat.dataChannel).emit('sendDataBroadCast', resModelMessage);
+                                }
+                            });
                         });
                     }
                 });
 
+                socket.on('updateUser', function (reqData) {
+
+                    var dataRequest = {
+                        clause: {users_id: currentStatus.userCurrentID},
+                        dataUpdate: {
+                            status: parseInt(reqData.data.status)
+                            // is_life: parseInt(reqData.data.status) == defaultStatusHidden ? 0 : undefined
+                        },
+                    };
+                    chatController.queueUpdateContact(socket, dataRequest, currentStatus);
+                });
 
                 // if (userCurrent.length) {
                 //     var newUser = new User.class({});
@@ -508,13 +542,13 @@ class ChatController extends BaseController {
                         };
 
                         chatController.queueUpdateContact(socket, dataRequest, chatController.getSessionByName(socket, 'currentStatus'));
-                        io.sockets.emit('expiresTime60', "het 1 minute");
+                        // io.sockets.emit('expiresTime60', "het 1 minute");
                     }
                 }, s60);
 
                 // 3s
                 socket.on('pingServer', (data) => {
-                    clearTimeout(s60Revert);
+                    // clearTimeout(s60Revert);
                 });
 
                 socket.on('pong', (data) => {
@@ -539,7 +573,7 @@ class ChatController extends BaseController {
                 setInterval(function () {
 
 
-                    socket.emit('expiresTime60', "--------test------- 3s -> " + socket.isActiveLoadPageCurrent);
+                    // socket.emit('expiresTime60', "--------test------- 3s -> " + socket.isActiveLoadPageCurrent);
                 }, 3000)
 
             }
@@ -621,6 +655,7 @@ class ChatController extends BaseController {
 
         });
     }
+
 }
 
 ChatController.prototype.getSessionUser = function (socket) {
@@ -837,6 +872,47 @@ ChatController.prototype.queueUpdateContact = function (socket, dataRequest, cur
     // }, updateLastMinute);
 }
 
+ChatController.prototype.convertListMessage = function (modelArrayMessage, reqOption) {
+    let resModelMessage = {};
+    let lengthModel = modelArrayMessage.length;
+    resModelMessage.isLength = lengthModel;
+    resModelMessage.inversTypeMsg = typeMsgSwapKeyValue;
+    resModelMessage.inversTypeGuid = typeConversationSwapKeyValue;
+
+    if (modelArrayMessage.length) {
+        resModelMessage.option = {
+            userCurrentId: reqOption.userCurrent.user,
+            isLoad: false
+        };
+
+        let resultListMessage = [];
+        let listMessage = {};
+        let listMsgTemp = [];
+
+        modelArrayMessage.forEach(function (element, index) {
+            let isUserFuture = ((index + 1) >= lengthModel) ? false : (modelArrayMessage[(index + 1)].attributes.sender_id === element.attributes.sender_id);
+
+            if (isUserFuture === false) {
+                listMsgTemp.push(element.attributes);
+
+                listMessage.data = listMsgTemp;
+                listMessage.contactMessage = element.relations.contactMessage.toJSON();
+                listMessage.isSingle = (typeConversationSwapKeyValue[reqOption.dataType] == 0);
+                listMessage.isUserCurrent = (element.attributes.sender_id == reqOption.userCurrent.user);
+                resultListMessage.push(listMessage);
+                listMsgTemp = [];
+                listMessage = {};
+
+            } else {
+                listMsgTemp.push(element.attributes);
+            }
+        });
+        resModelMessage.listMsg = resultListMessage;
+    } else {
+
+    }
+    return resModelMessage;
+}
 
 kue.Job.rangeByState('complete', 0, 0, 'asc', function (err, jobs) {
     jobs.forEach(function (job) {
