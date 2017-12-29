@@ -24,102 +24,6 @@ var socket = io.connect(document.location.origin, {
 // });
 
 
-// socket.on('pong', (data) => {
-//     console.log('Receive "pong"', data);
-// });
-
-socket.on('expiresTime60', (str) => {
-    console.log('-----------------------', str);
-});
-
-// socket.emit('ping', "xxxx");
-
-socket.on('message', function (message) {
-    $('#showmsg').text('The server has a message for you: ' + message);
-});
-
-// let s60 = 15000;
-//
-// setInterval(function () {
-//     socket.emit('pingServer', {isCheck: true, ttl: 3000});
-// }, s60);
-
-socket.on('reload', function (data) {
-    location.reload();
-});
-
-socket.on('sendDataPrivate', function (messageReplies) {
-    let sendChatMessage = new SendChatMessage();
-    let tempHtml = sendChatMessage.htmlContentBoxChat(messageReplies);
-
-    // let domLi = $('#boxMsgChat li:last-child');
-    // if (domLi.hasClass('replies')) {
-    //     domLi.find('._5wd4:last-child').css({"margin-bottom": "1px"});
-    //     domLi.find('p').css({"border-bottom-right-radius": "0px"});
-    //     let appendMsg = '<div class="_5wd4 _1nc6">'
-    //         + '<p style="border-top-right-radius: 0px;">' + convertHtmlToPlainText(messageReplies.valueMsg) + '</p></div>';
-    //
-    //     domLi.find('._ua2').append(appendMsg);
-    // } else {
-    //
-    //     var msg = '<li class="_4tdt replies">'
-    //         + '<div class="_ua2"><div class="_5wd4 _1nc6">'
-    //         + '<p>' + convertHtmlToPlainText(messageReplies.valueMsg) + '</p></div></div></li>';
-    //
-    //     $('#boxMsgChat').append(msg);
-    //     // $('.contact.active .preview').html('<span>You: </span>' + convertHtmlToPlainText(messageReplies.valueMsg));
-    // }
-    $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, 500);
-});
-
-socket.on('sendDataBroadCast', function (messageSent) {
-    let searchDomChannel = $('[channel="status.' + messageSent.channelId + '"]');
-    if (searchDomChannel.closest('li').hasClass('active')) {
-        let sendChatMessage = new SendChatMessage();
-        let tempHtml = sendChatMessage.htmlContentBoxChat(messageSent);
-        // let domLi = $('#boxMsgChat li:last-child');
-        // if (domLi.hasClass('author-' + messageSent.hexClassSend)) {
-        //     domLi.find('._5wd4:last-child').css({"margin-bottom": "1px"});
-        //     domLi.find('p').css({"border-bottom-left-radius": "0px"});
-        //
-        //     let appendMsg = '<div class="_5wd4">'
-        //         + '<p style="border-top-left-radius: 0px;">' + convertHtmlToPlainText(messageSent.valueMsg) + '</p></div>';
-        //
-        //     domLi.find('._ua2').append(appendMsg);
-        // } else {
-        //     var msg = '<li class="_4tdt sent author-' + messageSent.hexClassSend + '">'
-        //         + '<div class="_31o4">'
-        //         + '<img src="http://emilcarlsson.se/assets/donnapaulsen.png" alt=""></div>'
-        //         + '<div class="_ua2">'
-        //         + ((messageSent.dataType === 'group') ? ('<div class="_4tdx">' + messageSent.hexClassNameSend.split(' ')[0] + '</div>') : "")
-        //         + '<div class="_5wd4">'
-        //         + '<p>' + convertHtmlToPlainText(messageSent.valueMsg) + '</p>'
-        //         + '</div></div></li>';
-        //
-        //     $('#boxMsgChat').append(msg);
-        // }
-        // if ($('#boxMsgChat').is(':focus')) {
-        //     $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, 200);
-        // } else {
-        //     $('#newMsgChat').delay(100).css("display", "block");
-        // }
-    } else {
-        let badgesNotify = searchDomChannel.closest('.wrap').find('i.badges-notify');
-        if (badgesNotify.length) {
-            badgesNotify.addClass('badges-color').text('211');
-        }
-    }
-});
-
-socket.on('listUserConversation', function (listConversation) {
-    $('[channel="status.' + listConversation.channel_id + '"]').removeClass(listConversation.listStatus).addClass(listConversation.classCurrentStatus);
-});
-
-socket.on('send-data-test', function (listConversation) {
-    console.log(listConversation);
-});
-
-
 $(document).ready(function () {
     var sendChatMessage = new SendChatMessage();
     sendChatMessage.eventSendMsg();
@@ -428,19 +332,6 @@ SendChatMessage.prototype.reloadContentBoxChatAjax = function (dataRequest, call
     });
 };
 
-socket.on('msgContent', function (dataMessage) {
-    var sendChatMessage = new SendChatMessage();
-    if (dataMessage.isLength) {
-        let tempHtml = sendChatMessage.htmlContentBoxChat(dataMessage);
-        // $('#boxMsgChat').append(tempHtml);
-    } else {
-
-    }
-    sendChatMessage.getDefaultHeightMsgBox();
-    sendChatMessage.scrollEndShowBoxChat(2300);
-});
-
-
 SendChatMessage.prototype.htmlContentBoxChat = function (resultDataMsg) {
     let libCommonChat = new LibCommonChat();
     let resultHtml = '';
@@ -529,5 +420,121 @@ SendChatMessage.prototype.htmlContentBoxChat = function (resultDataMsg) {
         // resultHtml += htmlText.htmlOpen + fsfText + htmlText.htmlClose;
     });
 
-    return resultHtml;
+    return true;
 }
+
+// socket.on('pong', (data) => {
+//     console.log('Receive "pong"', data);
+// });
+
+socket.on('expiresTime60', (str) => {
+    console.log('-----------------------', str);
+});
+
+// socket.emit('ping', "xxxx");
+
+socket.on('message', function (message) {
+    $('#showmsg').text('The server has a message for you: ' + message);
+});
+
+// let s60 = 15000;
+//
+// setInterval(function () {
+//     socket.emit('pingServer', {isCheck: true, ttl: 3000});
+// }, s60);
+
+socket.on('reload', function (data) {
+    location.reload();
+});
+
+socket.on('sendDataPrivate', function (messageReplies) {
+    let sendChatMessage = new SendChatMessage();
+    let tempHtml = sendChatMessage.htmlContentBoxChat(messageReplies);
+
+    // let domLi = $('#boxMsgChat li:last-child');
+    // if (domLi.hasClass('replies')) {
+    //     domLi.find('._5wd4:last-child').css({"margin-bottom": "1px"});
+    //     domLi.find('p').css({"border-bottom-right-radius": "0px"});
+    //     let appendMsg = '<div class="_5wd4 _1nc6">'
+    //         + '<p style="border-top-right-radius: 0px;">' + convertHtmlToPlainText(messageReplies.valueMsg) + '</p></div>';
+    //
+    //     domLi.find('._ua2').append(appendMsg);
+    // } else {
+    //
+    //     var msg = '<li class="_4tdt replies">'
+    //         + '<div class="_ua2"><div class="_5wd4 _1nc6">'
+    //         + '<p>' + convertHtmlToPlainText(messageReplies.valueMsg) + '</p></div></div></li>';
+    //
+    //     $('#boxMsgChat').append(msg);
+    //     // $('.contact.active .preview').html('<span>You: </span>' + convertHtmlToPlainText(messageReplies.valueMsg));
+    // }
+
+    sendChatMessage.scrollEndShowBoxChat(1000);
+    // $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, 500);
+    // $('#frameListMsg').trigger('changeBoxMsg');
+});
+
+socket.on('sendDataBroadCast', function (messageSent) {
+    let searchDomChannel = $('[channel="status.' + messageSent.channelId + '"]');
+    if (searchDomChannel.closest('li').hasClass('active')) {
+        let sendChatMessage = new SendChatMessage();
+        let tempHtml = sendChatMessage.htmlContentBoxChat(messageSent);
+        // let domLi = $('#boxMsgChat li:last-child');
+        // if (domLi.hasClass('author-' + messageSent.hexClassSend)) {
+        //     domLi.find('._5wd4:last-child').css({"margin-bottom": "1px"});
+        //     domLi.find('p').css({"border-bottom-left-radius": "0px"});
+        //
+        //     let appendMsg = '<div class="_5wd4">'
+        //         + '<p style="border-top-left-radius: 0px;">' + convertHtmlToPlainText(messageSent.valueMsg) + '</p></div>';
+        //
+        //     domLi.find('._ua2').append(appendMsg);
+        // } else {
+        //     var msg = '<li class="_4tdt sent author-' + messageSent.hexClassSend + '">'
+        //         + '<div class="_31o4">'
+        //         + '<img src="http://emilcarlsson.se/assets/donnapaulsen.png" alt=""></div>'
+        //         + '<div class="_ua2">'
+        //         + ((messageSent.dataType === 'group') ? ('<div class="_4tdx">' + messageSent.hexClassNameSend.split(' ')[0] + '</div>') : "")
+        //         + '<div class="_5wd4">'
+        //         + '<p>' + convertHtmlToPlainText(messageSent.valueMsg) + '</p>'
+        //         + '</div></div></li>';
+        //
+        //     $('#boxMsgChat').append(msg);
+        // }
+        if ($('#boxMsgChat').is(':focus')) {
+            sendChatMessage.scrollEndShowBoxChat(1000);
+            // $('#frameListMsg').trigger('changeBoxMsg');
+            //     $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, 200);
+        } else {
+            $('#newMsgChat').delay(100).css("display", "block");
+        }
+    } else {
+        let badgesNotify = searchDomChannel.closest('.wrap').find('i.badges-notify');
+        if (badgesNotify.length) {
+            badgesNotify.addClass('badges-color').text('211');
+        }
+    }
+});
+
+socket.on('listUserConversation', function (listConversation) {
+    $('[channel="status.' + listConversation.channel_id + '"]').removeClass(listConversation.listStatus).addClass(listConversation.classCurrentStatus);
+});
+
+socket.on('send-data-test', function (listConversation) {
+    console.log(listConversation);
+});
+
+socket.on('msgContent', function (dataMessage) {
+    var sendChatMessage = new SendChatMessage();
+    if (dataMessage.isLength) {
+        let tempHtml = sendChatMessage.htmlContentBoxChat(dataMessage);
+        // $('#boxMsgChat').append(tempHtml);
+    } else {
+
+    }
+    sendChatMessage.getDefaultHeightMsgBox();
+    sendChatMessage.scrollEndShowBoxChat(2300);
+});
+
+
+
+

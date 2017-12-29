@@ -289,6 +289,7 @@ User.prototype.insertUser = function (dataRequest, callback) {
                         first_name: dataRequest.first_name,
                         last_name: dataRequest.last_name,
                         middle_name: (dataRequest.first_name + ' ' + dataRequest.last_name),
+                        cfg_chat: dataRequest.cfg_chat,
                         // country: 'vn'
                     }
                 ], function (info) {

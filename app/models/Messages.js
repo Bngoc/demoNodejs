@@ -33,9 +33,10 @@ Message.prototype.getMessageConversation = function (req, callback) {
                                 .where('is_deleted', '=', 1)
                         })
                 })
-                .orderBy('created_at', 'ASC')
+                .orderBy('created_at', req.sort)
                 .orderBy('id', 'ASC')
-                .limit(req.limit);
+                .limit(req.limit)
+                .offset(req.offset);
         })
         // .fetchAll()
         .fetchAll({withRelated: ['contactMessage']})

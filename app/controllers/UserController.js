@@ -160,6 +160,7 @@ class UserController {
                                         newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
                                             if (errUpdate) next(errUpdate);
 
+                                            req.session.cfg_chat = rsModel.get('cfg_chat');
                                             responseDataMap.status = true;
                                             responseDataMap.url = 'chat';
                                             responseDataMap.msg = 'Login success';
@@ -262,6 +263,7 @@ class UserController {
                 showResponse.content = '';
                 showResponse.name = '';
                 showResponse.renderViews = 'errors/error.ejs';
+                let cfgChat = helper.coreHelper.callModule(`${helper.coreHelper.paths.CONFIG}cfgChat.js`);
 
                 var dataRequest = {
                     phone: req.body.phone,
@@ -269,14 +271,14 @@ class UserController {
                     password: req.body.password,
                     first_name: req.body.name,
                     last_name: 'xxxx',
-                    repassword: req.body.repassword
+                    repassword: req.body.repassword,
+                    cfg_chat: cfgChat
                 };
 
                 var newUser = new User();
 
                 req.showResponse = showResponse;
-
-                const aliasRouter = helper.coreHelper.aliasRouter();
+                // const aliasRouter = helper.coreHelper.aliasRouter();
 
                 // -------------------------C1 connect DB Knex vs Bookshelf -----------------------------------
                 newUser.checkUser(dataRequest, function (resultData) {
@@ -408,13 +410,20 @@ class UserController {
                 res.status(200).send(responseData);
             } else {
                 var newUser = new User.class();
+                let cfgChat = helper.coreHelper.callModule(`${helper.coreHelper.paths.CONFIG}cfgChat.js`);
+                cfgChat.status_single = helper.coreHelper.app.participants[0];
+                cfgChat.status_hidden_name = helper.coreHelper.app.chatStatus[4];
+                cfgChat.status_hidden_name_replace = helper.coreHelper.app.chatStatus[1];
+
+
                 var dataRequest = {
                     phone: req.body.phone,
                     email: req.body.email,
                     password: req.body.password,
                     first_name: req.body.name,
                     last_name: 'xxx-xx',
-                    repassword: req.body.repassword
+                    repassword: req.body.repassword,
+                    cfg_chat: JSON.stringify(cfgChat)
                 };
 
                 newUser.checkUser(dataRequest, function (resultData) {

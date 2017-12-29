@@ -18,28 +18,35 @@ const Reports = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}R
 const libFunction = helper.coreHelper.callModule(`${helper.coreHelper.paths.LIB}LibFunction.js`, true);
 var BaseController = require('./BaseController.js');
 
+
+//config chat
+const PAGE_SIZE_NUMBER = 10;
 const HEIGHT_BOX_CHAT_MAX = 130;
 const HEIGHT_INPUT_BOX_MAX = 100;
 const HEIGHT_BOX_CHAT_MIN = 56;
-const STATUS_SINGLE = helper.coreHelper.app.participants[0];
-const IMG_SINGLE_USER = "/images/users.png";
-const IMG_GROUP_USER = "/images/group.png";
-const STATUS_HIDDEN_NAME = helper.coreHelper.app.chatStatus[4];
-const STATUS_HIDDEN_NAME_REPLACE = helper.coreHelper.app.chatStatus[1];
-const CLASS_UNDEFINED = 'undefined';
-const MOOD_MESSAGE_REQUEST = 'User not share information';
-const MOOD_MESSAGE_RESPONSIVE = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-var allClients = [];
-var userStatus = [];
-var messageType = helper.coreHelper.app.messageType;
-var conversationType = helper.coreHelper.app.participants;
-let typeMsgSwapKeyValue = libFunction.swap(messageType);
-let typeConversationSwapKeyValue = libFunction.swap(conversationType);
+
+const chatStatus = helper.coreHelper.app.chatStatus;
+const messageType = helper.coreHelper.app.messageType;
+const conversationType = helper.coreHelper.app.participants;
+const typeMsgSwapKeyValue = libFunction.swap(messageType);
+const typeConversationSwapKeyValue = libFunction.swap(conversationType);
+
+// let IMG_SINGLE_USER = "/images/users.png";
+// let IMG_GROUP_USER = "/images/group.png";
+// let STATUS_SINGLE = helper.coreHelper.app.participants[0];
+// let STATUS_HIDDEN_NAME = helper.coreHelper.app.chatStatus[4];
+// let STATUS_HIDDEN_NAME_REPLACE = helper.coreHelper.app.chatStatus[1];
+// let CLASS_UNDEFINED = 'undefined';
+// let MOOD_MESSAGE_REQUEST = 'User not share information';
+// let MOOD_MESSAGE_RESPONSIVE = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+// let allClients = [];
+
 
 class ChatController extends BaseController {
 
     getIndex(req, res, next) {
         try {
+            let chatController = new ChatController();
             var showResponse = helper;
             const aliasRouter = helper.coreHelper.aliasRouter();
             showResponse.header = showResponse.getHeader('CHAT');
@@ -51,6 +58,7 @@ class ChatController extends BaseController {
 
             let userCurrent = req.user;
             if (userCurrent) {
+                let cfgChat = chatController.supportConfigChat(req.session.cfg_chat);
                 var newUser = new User.class({});
                 newUser.findByIdChat(userCurrent.attributes.id, function (err, rsData) {
                     if (err) return next(err);
@@ -59,26 +67,26 @@ class ChatController extends BaseController {
                     let requestCurrent = {
                         userCurrentID: userCurrent.attributes.id,
                         statusID: notiContacts.attributes.status,
-                        statusName: helper.coreHelper.app.chatStatus[notiContacts.attributes.status],
-                        listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
-                        statusSingle: STATUS_SINGLE,
+                        statusName: chatStatus[notiContacts.attributes.status],
+                        listStatus: Object.values(chatStatus).join(' '),
+                        statusSingle: cfgChat.status_single,
                         infoAccount: rsData.infoAccount
                     };
-                    let statusUser = helper.coreHelper.app.chatStatus[notiContacts.attributes.status];
+                    let statusUser = chatStatus[notiContacts.attributes.status];
 
                     showResponse.userName = notiContacts ? notiContacts.attributes.middle_name : '';
                     showResponse.moodMessage = notiContacts ? notiContacts.attributes.mood_message : '';
                     showResponse.userID = notiContacts ? notiContacts.attributes.id : '';
                     showResponse.status = notiContacts ? statusUser : '';
-                    showResponse.listStatus = helper.coreHelper.app.chatStatus;
+                    showResponse.listStatus = chatStatus;
                     showResponse.urlChangeContent = aliasRouter.build('chat.change.content');
-                    showResponse.statusSingle = STATUS_SINGLE;
-                    showResponse.pathImgSingle = IMG_SINGLE_USER;
-                    showResponse.pathImgGroup = IMG_GROUP_USER;
-                    showResponse.classStatusCurrent = (statusUser != STATUS_HIDDEN_NAME) ? statusUser : STATUS_HIDDEN_NAME_REPLACE;
-                    showResponse.classUndefined = CLASS_UNDEFINED;
-                    showResponse.classStatusHidden = STATUS_HIDDEN_NAME;
-                    showResponse.classReplaceStatusHidden = STATUS_HIDDEN_NAME_REPLACE;
+                    showResponse.statusSingle = cfgChat.status_single;
+                    showResponse.pathImgSingle = cfgChat.img_single_user;
+                    showResponse.pathImgGroup = cfgChat.img_group_user;
+                    showResponse.classStatusCurrent = (statusUser != cfgChat.status_hidden_name) ? statusUser : cfgChat.status_hidden_name_replace;
+                    showResponse.classUndefined = cfgChat.class_undefined;
+                    showResponse.classStatusHidden = cfgChat.status_hidden_name;
+                    showResponse.classReplaceStatusHidden = cfgChat.status_hidden_name_replace;
 
                     showResponse.listParticipant = rsData.infoParticipant ? rsData.infoParticipant : null;
                     showResponse.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX;
@@ -114,13 +122,15 @@ class ChatController extends BaseController {
             showResponseChat.hexCodeId = userCurrent.attributes.id ? 'hex-' + userCurrent.attributes.id : null;
 
             if (parseInt(req.body.dataConversation) && userCurrent) {
+                let chatController = new ChatController();
+                let cfgChat = chatController.supportConfigChat(req.session.cfg_chat);
                 showResponseChat.renderViews = 'chat/content.chat.ejs';
                 let conversation = new Conversation.class();
                 let optionRequset = {
                     id: parseInt(req.body.dataConversation),
                     userCurrentID: userCurrent.attributes.id,
                     userModel: User.model,
-                    statusSingle: STATUS_SINGLE
+                    statusSingle: cfgChat.status_single
                 };
 
                 conversation.conversationsListSingleUser(optionRequset, function (errPart, modelListUser) {
@@ -148,10 +158,10 @@ class ChatController extends BaseController {
                             showResponseChat.isCurrentOwnerId = elem.creator_id == userCurrent.attributes.id;
                             showResponseChat.dataConversation = elem.idConversation;
                             showResponseChat.countParticipants = elem.count;
-                            showResponseChat.isTypeSingle = showResponseChat.dataType == STATUS_SINGLE;
+                            showResponseChat.isTypeSingle = showResponseChat.dataType == cfgChat.status_single;
                             showResponseChat.is_accept = elem.is_accept_single;
-                            showResponseChat.hiddenStatusName = STATUS_HIDDEN_NAME;
-                            showResponseChat.replaceStatusName = STATUS_HIDDEN_NAME_REPLACE;
+                            showResponseChat.hiddenStatusName = cfgChat.status_hidden_name;
+                            showResponseChat.replaceStatusName = cfgChat.status_hidden_name_replace;
 
                             let urlImagesAvatar = "";
                             let listParticipant = [];
@@ -162,17 +172,17 @@ class ChatController extends BaseController {
                                 let booleanFindUserSingle = (indexFindUserSingle !== -1);
                                 let moodMessageTemp = "";
                                 let tempClassStatus = "";
-                                let tempChatStatusName = helper.coreHelper.app.chatStatus[useContactsSingle.get('status')];
+                                let tempChatStatusName = chatStatus[useContactsSingle.get('status')];
                                 if (elem.is_accept_single) {
-                                    moodMessageTemp = showResponseChat.isCurrentOwnerId ? MOOD_MESSAGE_REQUEST : MOOD_MESSAGE_RESPONSIVE;
-                                    tempClassStatus = CLASS_UNDEFINED;
+                                    moodMessageTemp = showResponseChat.isCurrentOwnerId ? cfgChat.mood_message_request : cfgChat.mood_message_responsive;
+                                    tempClassStatus = cfgChat.class_undefined;
                                 } else {
                                     if (useContactsSingle.get('mood_message')) {
                                         moodMessageTemp = useContactsSingle.get('mood_message');
                                     } else {
-                                        moodMessageTemp = (tempChatStatusName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusName;
+                                        moodMessageTemp = (tempChatStatusName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusName;
                                     }
-                                    tempClassStatus = (tempChatStatusName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusName;
+                                    tempClassStatus = (tempChatStatusName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusName;
                                 }
 
                                 let tempPartSingle = {
@@ -188,7 +198,7 @@ class ChatController extends BaseController {
                                     mood_message: useContactsSingle.get('mood_message'),
                                     status: useContactsSingle.get('status'),
                                     statusName: tempChatStatusName,
-                                    strListStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
+                                    strListStatus: Object.values(chatStatus).join(' '),
                                     isFriendCurrent: booleanFindUserSingle ? (listUserParticipant[indexFindUserSingle].is_accept_single != 1) : false,
                                     channelID: booleanFindUserSingle ? listUserParticipant[indexFindUserSingle].channelId : null,
                                     conversationID: booleanFindUserSingle ? listUserParticipant[indexFindUserSingle].conversationID : null,
@@ -199,13 +209,13 @@ class ChatController extends BaseController {
 
                                 showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
                                 listParticipant.push(tempPartSingle);
-                                urlImagesAvatar = useContactsSingle.get('path_img') ? useContactsSingle.get('path_img') : IMG_SINGLE_USER;
+                                urlImagesAvatar = useContactsSingle.get('path_img') ? useContactsSingle.get('path_img') : cfgChat.img_single_user;
                             } else {
                                 elem.infoParticipant.forEach(function (ele) {
                                     let relationsUseContacts = ele.relations.useContacts;
                                     let indexFindUser = listUserParticipant.findIndex(x => x.usersId == relationsUseContacts.get('users_id'));
                                     let booleanFindUser = (indexFindUser !== -1);
-                                    let tempChatStatusGroupName = helper.coreHelper.app.chatStatus[relationsUseContacts.get('status')];
+                                    let tempChatStatusGroupName = chatStatus[relationsUseContacts.get('status')];
                                     let tempClassStatusGroup = "";
                                     let tempMoodMessageGroup = "";
                                     let isFriendCurrent = booleanFindUser ? (listUserParticipant[indexFindUser].is_accept_single != 1) : false;
@@ -214,12 +224,12 @@ class ChatController extends BaseController {
                                         if (relationsUseContacts.get('mood_message')) {
                                             tempMoodMessageGroup = relationsUseContacts.get('mood_message');
                                         } else {
-                                            tempMoodMessageGroup = (tempChatStatusGroupName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusGroupName;
+                                            tempMoodMessageGroup = (tempChatStatusGroupName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusGroupName;
                                         }
-                                        tempClassStatusGroup = isFriendCurrent ? ((tempChatStatusGroupName == STATUS_HIDDEN_NAME) ? STATUS_HIDDEN_NAME_REPLACE : tempChatStatusGroupName) : CLASS_UNDEFINED;
+                                        tempClassStatusGroup = isFriendCurrent ? ((tempChatStatusGroupName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusGroupName) : cfgChat.class_undefined;
                                     } else {
-                                        tempMoodMessageGroup = showResponseChat.isCurrentOwnerId ? MOOD_MESSAGE_REQUEST : MOOD_MESSAGE_RESPONSIVE;
-                                        tempClassStatusGroup = CLASS_UNDEFINED;
+                                        tempMoodMessageGroup = showResponseChat.isCurrentOwnerId ? cfgChat.mood_message_request : cfgChat.mood_message_responsive;
+                                        tempClassStatusGroup = cfgChat.class_undefined;
                                     }
 
                                     let tempPartGroup = {
@@ -235,7 +245,7 @@ class ChatController extends BaseController {
                                         mood_message: relationsUseContacts.get('mood_message'),
                                         status: relationsUseContacts.get('status'),
                                         statusName: tempChatStatusGroupName,
-                                        strListStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
+                                        strListStatus: Object.values(chatStatus).join(' '),
                                         isFriendCurrent: isFriendCurrent,
                                         channelID: booleanFindUser ? listUserParticipant[indexFindUser].channelId : null,
                                         conversationID: booleanFindUser ? listUserParticipant[indexFindUser].conversationID : null,
@@ -244,7 +254,7 @@ class ChatController extends BaseController {
                                         codePartId: booleanFindUser ? listUserParticipant[indexFindUser].codePartId : null,
                                     };
                                     listParticipant.push(tempPartGroup);
-                                    urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : IMG_GROUP_USER;
+                                    urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : cfgChat.img_group_user;
                                 });
                                 showResponseChat.isFriendCurrentSingle = true;
                             }
@@ -276,15 +286,17 @@ class ChatController extends BaseController {
                 // NOT FRIEND AND NOT REQUEST
                 showResponseChat.renderViews = 'chat/request.chat.ejs';
                 let user = new User.class();
+                let chatController = new ChatController();
+                let cfgChat = chatController.supportConfigChat(req.session.cfg_chat);
 
                 user.findUserFullById(parseInt(req.body.valAuthor), function (err, modelUser) {
                     if (err) return next(err);
 
                     let useContacts = modelUser.relations.useContacts;
                     showResponseChat.infoParticipant = modelUser;
-                    showResponseChat.classStatus = CLASS_UNDEFINED;
-                    showResponseChat.moodMessageShow = MOOD_MESSAGE_REQUEST;
-                    showResponseChat.urlImagesAvatar = useContacts.get('path_img') ? useContacts.get('path_img') : IMG_SINGLE_USER;
+                    showResponseChat.classStatus = cfgChat.class_undefined;
+                    showResponseChat.moodMessageShow = cfgChat.mood_message_request;
+                    showResponseChat.urlImagesAvatar = useContacts.get('path_img') ? useContacts.get('path_img') : cfgChat.img_single_user;
 
                     res.render(showResponseChat.renderViews, {
                         data: showResponseChat,
@@ -320,13 +332,12 @@ class ChatController extends BaseController {
 
             let chatController = new ChatController();
             let userCurrent = chatController.getSessionByName(socket, 'passport');
+            let cfgChat = chatController.getSessionByName(socket, 'cfg_chat');
             chatController.setSessionByName(socket, 'isActiveCurrent', userCurrent.user ? userCurrent.user : null);
             socket.isActiveLoadPageCurrent = userCurrent.user ? userCurrent.user : null;
             // allClients.push(socket.id);
 
             if (userCurrent) {
-                userStatus.push({'isCheck': true, 'user_id': userCurrent.user});
-
                 let chatController = new ChatController();
                 let newContacts = new Contacts.class();
                 let newUser = new User.class();
@@ -355,12 +366,16 @@ class ChatController extends BaseController {
 
                 socket.on('msgContentChat', function (reqData) {
                     let conversationId = reqData.data.dataConversation ? parseInt(reqData.data.dataConversation) : null;
+                    let page = false ? 1 : 1;
                     if (conversationId) {
                         let message = new Messages.class();
                         let requestMessage = {
                             id: conversationId,
-                            limit: 10,
-                            userCurrentID: userCurrent.user
+                            userCurrentID: userCurrent.user,
+                            limit: cfgChat.page_size_number,
+                            offset: cfgChat.page_size_number * (page - 1),
+                            sort: 'DESC'
+
                         };
 
                         message.getMessageConversation(requestMessage, function (errMessage, modelMessage) {
@@ -377,6 +392,7 @@ class ChatController extends BaseController {
                                         modelMsgArray.push(eleModel);
                                     });
 
+                                    modelMsgArray.reverse();
                                     let resModelMessage = chatController.convertListMessage(modelMsgArray, reqOption);
 
                                     // let resModelMessage = {};
@@ -507,7 +523,6 @@ class ChatController extends BaseController {
 
                 // gui toan bo trong mang tru thang phat ra => socket.broadcast.emit
                 //socket.broadcast.emit('message', 'Another client has just connected!' + socket.id);
-
                 // all ==> io.sockets.emit
                 io.sockets.emit('message', {
                     content: 'You are connected -- all!',
@@ -519,46 +534,39 @@ class ChatController extends BaseController {
                     console.log('A client is speaking to me! They’re saying: ' + message);
                 });
 
-
                 // var interval_obj = setInterval(function () {
                 //     isReconnectionOn = socket.connected;
                 //     // clearInterval(interval_obj);
                 //     console.log("10x________________________", userCurrent, isReconnectionOn);
                 // }, 10000);
 
-                console.log('xxxxxxxxxxxxxx -> ', JSON.stringify(socket.handshake.session), socket.isActiveLoadPageCurrent);
+                // let s60Revert = setTimeout(function () {
+                //     if (socket.isActiveLoadPageCurrent) {
+                //         socket.isActiveLoadPageCurrent = null;
+                //
+                //         console.log('com..................', socket.isActiveLoadPageCurrent);
+                //
+                //         var dataRequest = {
+                //             clause: {users_id: socket.users_id},
+                //             dataUpdate: {
+                //                 status: 2
+                //             }
+                //         };
+                //         chatController.queueUpdateContact(socket, dataRequest, chatController.getSessionByName(socket, 'currentStatus'));
+                //         // io.sockets.emit('expiresTime60', "het 1 minute");
+                //     }
+                // }, s60);
 
-                let s60Revert = setTimeout(function () {
-                    if (socket.isActiveLoadPageCurrent) {
-                        socket.isActiveLoadPageCurrent = null;
-
-                        console.log('com..................', socket.isActiveLoadPageCurrent);
-
-                        var dataRequest = {
-                            clause: {users_id: socket.users_id},
-                            dataUpdate: {
-                                status: 2
-                            }
-                        };
-
-                        chatController.queueUpdateContact(socket, dataRequest, chatController.getSessionByName(socket, 'currentStatus'));
-                        // io.sockets.emit('expiresTime60', "het 1 minute");
-                    }
-                }, s60);
-
-                // 3s
-                socket.on('pingServer', (data) => {
+                //// 3s
+                // socket.on('pingServer', (data) => {
                     // clearTimeout(s60Revert);
-                });
-
-                socket.on('pong', (data) => {
+                // });
+                // socket.on('pong', (data) => {
                     // if (socket.isActiveLoadPageCurrent)
                     // if (gh)
                     //     io.emit('ping', userCurrent);
-
                     // socket.isActiveLoadPageCurrent = userCurrent.user;
-                });
-
+                // });
                 // // 30 minutine - reload page
                 // setTimeout(function () {
                 //     if (socket.isActiveLoadPageCurrent) {
@@ -568,19 +576,14 @@ class ChatController extends BaseController {
                 //         socket.emit('expiresTime60', "het 30 minute");
                 //     }
                 // }, 1000 * 60 * 30);
-
-
-                setInterval(function () {
-
-
+                // setInterval(function () {
                     // socket.emit('expiresTime60', "--------test------- 3s -> " + socket.isActiveLoadPageCurrent);
-                }, 3000)
-
+                // }, 3000)
             }
 
             //disconnect socket by id
             socket.on('disconnect', function () {
-                let indexSocketIDDisconnect = allClients.indexOf(socket);
+                // let indexSocketIDDisconnect = allClients.indexOf(socket);
                 // allClients.splice(indexSocketIDDisconnect, 1);
 
                 // let isReconnectionOff = socket.connected;
@@ -791,6 +794,7 @@ ChatController.prototype.updateUserListSocket = function (socket, dataRequest, c
         let newContacts = new Contacts.class();
         let newUser = new User.class();
         let chatController = new ChatController();
+        let cfgChat = chatController.supportConfigChat(chatController.getSessionByName(socket, 'cfg_chat'));
 
         newContacts.updateContact(dataRequest, function (err, rsModel) {
             if (err) {
@@ -805,15 +809,15 @@ ChatController.prototype.updateUserListSocket = function (socket, dataRequest, c
                         done(err, responsiveData);
                     } else {
                         let notiContacts = modelData.infoAccount.relations.useContacts;
-                        let updateStatusCurrent = helper.coreHelper.app.chatStatus[notiContacts.attributes.status];
+                        let updateStatusCurrent = chatStatus[notiContacts.attributes.status];
                         let requestCurrent = {
                             userCurrentID: currentStatus.userCurrentID,
                             statusID: notiContacts.attributes.status,
                             statusName: updateStatusCurrent,
-                            listStatus: Object.values(helper.coreHelper.app.chatStatus).join(' '),
-                            statusSingle: STATUS_SINGLE,
-                            classCurrentStatus: (dataRequest.dataUpdate.is_life == 0 || (STATUS_HIDDEN_NAME == updateStatusCurrent) ? STATUS_HIDDEN_NAME_REPLACE : updateStatusCurrent),
-                            classCurrentStatusPrivate: (STATUS_HIDDEN_NAME == updateStatusCurrent) ? STATUS_HIDDEN_NAME_REPLACE : updateStatusCurrent,
+                            listStatus: Object.values(chatStatus).join(' '),
+                            statusSingle: cfgChat.status_single,
+                            classCurrentStatus: (dataRequest.dataUpdate.is_life == 0 || (cfgChat.status_hidden_name == updateStatusCurrent) ? cfgChat.status_hidden_name_replace : updateStatusCurrent),
+                            classCurrentStatusPrivate: (cfgChat.status_hidden_name == updateStatusCurrent) ? cfgChat.status_hidden_name_replace : updateStatusCurrent,
                         };
 
                         let isStatus = chatController.convertDataListSocket(socket, modelData.infoParticipant, requestCurrent);
@@ -912,6 +916,10 @@ ChatController.prototype.convertListMessage = function (modelArrayMessage, reqOp
 
     }
     return resModelMessage;
+}
+
+ChatController.prototype.supportConfigChat = function (jsonConfigChat) {
+    return JSON.parse(jsonConfigChat);
 }
 
 kue.Job.rangeByState('complete', 0, 0, 'asc', function (err, jobs) {
