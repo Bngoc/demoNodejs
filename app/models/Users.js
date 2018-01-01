@@ -47,6 +47,9 @@ var Users = bookshelf.Model.extend({
     useBlockList: function () {
         return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}BlockList.js`).model, 'users_id');
     },
+    usePreventParticipants: function () {
+        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}BlockList.js`).model, 'prevent_participant');
+    },
     useConversation: function () {
         return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}Conversation.js`).model, 'creator_id');
     },
@@ -90,63 +93,71 @@ User.prototype.findUserFullById = function (id, callback) {
     });
 };
 
-User.prototype.findConversation = function (id, callback) {
+User.prototype.findConversation = function (request, callback) {
+    let _this = this;
     let responseData = {};
-    Users.where({id: id}).fetch({withRelated: ['useContacts', 'useBlockList']}).then(function (data) {
+    Users.where({id: request.userCurrentID}).fetch({withRelated: ['useContacts']}).then(function (data) {
         responseData['infoAccount'] = data;
+        let blockList = new BlockList.class();
+        blockList.getListBlockParticipant(request.userCurrentID, function (errBlockList, blockListConversation) {
+            if (errBlockList) callback(errBlockList);
+            // let getBlockList = data.relations.useBlockList
+            //     .filter(function (isDelete) {
+            //         if (isDelete.get('is_deleted') != 0) {
+            //             return isDelete.get('prevent_participant');
+            //         }
+            //     })
+            //     .map(function (listItem) {
+            //         return listItem.get('prevent_participant');
+            //     });
 
-        let getBlockList = data.relations.useBlockList
-            .filter(function (isDelete) {
-                if (isDelete.get('is_deleted') != 0) {
-                    return isDelete.get('participants_id');
-                }
-            })
-            .map(function (listItem) {
-                return listItem.get('participants_id');
-            });
-
-        Participants.model
-            .query(function (qd) {
-                qd.where('id', 'not in', getBlockList).where({"users_id": data.get('id')})
-            })
-            .fetchAll({columns: ['id', 'conversation_id', 'users_id']})
-            // .fetchAll({columns: ['id', 'title', 'creator_id', 'channel_id']})
-            .then(function (modelParticipants) {
-                let getParticipantsList = modelParticipants.map(function (listItem) {
-                    return listItem.get('conversation_id');
-                });
-
-                Conversations.model
-                    .query(function (dq) {
-                        dq.where('id', 'in', getParticipantsList).where('is_deleted', '=', '0');
-                    })
-                    // .fetchAll({withRelated: ['cccccc', {'conParticipant': function(db){ qb.where('status', 'enabled'); }}]})
-                    .fetchAll({
-                        withRelated: [{
-                            'conParticipant': function (qb) {
-                                qb.where('users_id', '!=', id)
-                            }
-                        }]
-                    })
-                    .then(function (modelConver) {
-                        responseData['modelConversation'] = modelConver;
-
-                        callback(null, responseData);
-                    })
-                    .catch(function (errPartici) {
-                        callback(errPartici);
+            Participants.model
+                .query(function (qd) {
+                    // qd.where('id', 'not in', blockList);
+                    qd.where('conversation_id', 'not in', blockListConversation);
+                    qd.where({"users_id": data.get('id')});
+                    qd.where("type", 'in', request.conversationType);//single vs group
+                })
+                .fetchAll({columns: ['id', 'conversation_id', 'users_id']})
+                // .fetchAll({columns: ['id', 'title', 'creator_id', 'channel_id']})
+                .then(function (modelParticipants) {
+                    let getParticipantsList = modelParticipants.map(function (listItem) {
+                        return listItem.get('conversation_id');
                     });
-            }).catch(function (errPartici) {
-            callback(errPartici);
+
+                    Conversations.model
+                        .query(function (dq) {
+                            dq.where('id', 'in', getParticipantsList).where('is_deleted', '=', '0');
+                        })
+                        // .fetchAll({withRelated: ['cccccc', {'conParticipant': function(db){ qb.where('status', 'enabled'); }}]})
+                        .fetchAll({
+                            withRelated: [{
+                                'conParticipant': function (qb) {
+                                    qb.where('users_id', '!=', request.userCurrentID)
+                                }
+                            }]
+                        })
+                        .then(function (modelConver) {
+                            responseData['modelConversation'] = modelConver;
+
+                            callback(null, responseData);
+                        })
+                        .catch(function (errPartici) {
+                            callback(errPartici);
+                        });
+
+                }).catch(function (errPartici) {
+                callback(errPartici);
+            });
         });
     }).catch(function (err) {
         callback(err);
     });
-}
+};
 
-User.prototype.findByIdChat = function (id, callback) {
+User.prototype.findByIdChat = function (request, callback) {
     let responseData = {};
-    this.findConversation(id, function (err, modelConversation) {
+    this.findConversation(request, function (err, modelConversation) {
 
         if (err) {
             callback(err)

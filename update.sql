@@ -30,3 +30,14 @@ BEGIN
     BEGIN END;
   END CASE;
 END
+
+
+# ---------------------------
+SELECT *
+FROM participants p LEFT JOIN block_list b ON (p.id = b.participants_id)
+WHERE conversation_id IN (
+  SELECT conversation_id
+  FROM participants
+  WHERE users_id = 12 AND type = 'single' AND is_accept_single = 0)
+
+      AND (b.is_deleted != 1 OR b.is_deleted IS NULL) AND p.users_id != 12

@@ -67,7 +67,7 @@
                 %>
                 <li class="contact">
                     <div class="wrap" data-conversation='<%- element.idConversation %>' data-type='<%- element.type%>'
-                         data-changel='<%- element.channel_id %>' data-owner='<%- element.creator_id %>'>
+                         data-channel='<%- element.channel_id %>' data-owner='<%- element.creator_id %>'>
                         <span channel='status.<%- element.channel_id %>' class=""></span>
                         <img src='<%- infoContactGroup.attributes.path_img_group ? infoContactGroup.attributes.path_img_group : pathImgGroup %>'
                              alt=""/>
@@ -191,182 +191,20 @@
             <button id="settings"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Settings</span></button>
         </div>
     </div>
-    <div class="content" id="content-chat">
-        <div class="contact-profile">
-            <img id="participant-profile" src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>
-            <div class="info-conversation-participant">
-                <div class="info-participant">
-                    <input class="star favorite-participant" type="checkbox" title="bookmark users" checked/>
-                    <p>Harvey Specter</p>
-                </div>
-                <div class="info-conversation cursor">
-                    <i class="favorite-conversation offline" aria-hidden="true"></i>
-                    <div class="info-group">
-                        <span class="status-name">element.statusName</span>
-                        <span class="status-space">|</span>
-                        <span class="status-other">fsgsgsgs</span>
-                    </div>
-                </div>
-            </div>
-            <div class="social-media">
-                <i class="fa fa-facebook" aria-hidden="true"></i>
-                <i class="fa fa-twitter" aria-hidden="true"></i>
-                <i class="fa fa-instagram" aria-hidden="true"></i>
-                <i class='fa plus-group' aria-hidden="true" title='Create group'></i>
-            </div>
-        </div>
-        <div class="messages" id="frameListMsg" box-raw-msg="<%= minHeightBoxChat %>"
-             box-change-msg="<%= minHeightBoxChat %>">
-            <ul id="boxMsgChat">
-                <li class="_4tdt sent">
-                    <div class="_31o4">
-                        <img src="http://emilcarlsson.se/assets/mikeross.png" alt="">
-                    </div>
-                    <div class="_ua2">
-                        <div class="_5wd4" style="margin-bottom: 1px">
-                            <p style="border-bottom-left-radius: 0px;">Oh yeah, did Michael Jordan tell you that?</p>
-                        </div>
-                        <div class="_5wd4">
-                            <p style="border-top-left-radius: 0px;">Ohfsgsgat?</p>
-                        </div>
-                    </div>
-
-                </li>
-                <li class="_4tdt replies">
-                    <div class="_ua2">
-                        <div class="_5wd4 _1nc6" style="margin-bottom: 1px">
-                            <p style="border-radius: 20px 20px 0px 20px;">Wrong. You take the gun, or you pull out a bigger one.
-                                Or, you
-                                call their bluff. Or, you do any
-                                one of a hundred and forty six other things.</p>
-                        </div>
-                        <div class="_5wd4 _1nc6" style="margin-bottom: 1px">
-                            <p style="border-radius: 20px 0 0 20px;">When you're backed against the wall, break the god damn
-                                thing down.</p>
-                        </div>
-                        <div class="_5wd4 _1nc6">
-                            <p style="border-radius: 20px 0px 20px 20px;">Excuses don't win championships.</p>
-                        </div>
-                    </div>
-                </li>
-                <li class="_4tdt sent">
-                    <div class="_31o4">
-                        <img src="http://emilcarlsson.se/assets/mikeross.png" alt="">
-                    </div>
-                    <div class="_ua2">
-                        <div class="_5wd4" style="margin-bottom: 1px">
-                            <p style="border-bottom-left-radius: 0px;">Oh yeah, dkjn kjl youh, dkjn kjl youh, dkjn kjl youh, dkjn kjl you that?</p>
-                        </div>
-                        <div class="_5wd4" style="margin-bottom: 1px">
-                            <p style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;">cccccccccccccc?</p>
-                        </div>
-                        <div class="_5wd4">
-                            <p style="border-top-left-radius: 0px;">23456789?</p>
-                        </div>
-                    </div>
-
-                </li>
-                <li class="_4tdt replies">
-                    <div class="_ua2">
-                        <div class="_5wd4 _1nc6 _1nc6" style="margin-bottom: 1px">
-                            <p>No, I told him that.</p>
-                        </div>
-                        <div class="_5wd4 _1nc6" >
-                            <p>What are your choices when someone puts a gun to your head?</p>
-                        </div>
-                    </div>
-                </li>
-                <li class="_4tdt sent">
-                    <div class="_31o4">
-                        <img src="http://emilcarlsson.se/assets/mikeross.png" alt="">
-                    </div>
-                    <div class="_ua2">
-                        <div class="_4tdx">Bích</div>
-                        <div class="_5wd4" style="margin-bottom: 1px">
-                            <p style="border-bottom-left-radius: 0px;">Oh yeah, did Michael Jordan tell you that?</p>
-                        </div>
-                        <div class="_5wd4">
-                            <p style="border-top-left-radius: 0px;">Ohfsgsgat?</p>
-                        </div>
-                    </div>
-
-                </li>
-                <li class="_4tdt replies">
-                    <!--<img src="http://emilcarlsson.se/assets/harveyspecter.png" alt=""/>-->
-                    <div class="_ua2">
-                        <div class="_5wd4 _1nc6">
-                            <p>Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you do any
-                                one of a hundred and forty six other things.</p></div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div class="message-input" id="messageInput">
-            <div class="wrap">
-                <div class="scrollbar" id="style-box-sms" min-height='<%= minHeightBoxChat %>'
-                     max-height='<%= maxHeightBoxChat %>' style="'max-height: <%= maxHeightBoxChat %>px'">
-                    <textarea style='max-height: <%- maxHeightInputBoxChat %>px;' id="boxChat" class="box_msg"
-                              type="text" placeholder="Write your message..."></textarea>
-                </div>
-                <div class="btn-controler-act">
-                    <ul class="_552n">
-                        <li class="_13gd ">
-                            <form action="https://upload.facebook.com/ajax/mercury/upload.php" class="_vzk"
-                                  title="Add Files" method="post">
-                                <input type="hidden" name="attach_id" value="">
-                                <input type="hidden" name="images_only" value="false">
-                                <div class="ms_img">
-                                    <input id="add_f" type="file" class="" name="attachment[]" multiple="" accept="*"
-                                           title="Add Files">
-                                    <label for="add_f" class="_4q61 _6gb _6gg attachment-cst r_file90" tabindex="-1"
-                                           href="#">
-                                        <i class="hidden_elem" alt="Camera"></i></label>
-                                </div>
-                            </form>
-                        </li>
-                        <li class="_13f- ">
-                            <form action="https://upload.facebook.com/ajax/mercury/upload.php" class="_vzk"
-                                  title="Add Photos" method="post">
-                                <input type="hidden" name="attach_id" value="">
-                                <input type="hidden" name="images_only" value="true">
-                                <div class="ms_img">
-                                    <input id="add_i" type="file" class="" name="attachment[]" multiple=""
-                                           accept="image/*"
-                                           title="Add Photos">
-                                    <label for="add_i" class="_4q61 _6gb _6ge attachment-cst r_img70" tabindex="-1"
-                                           href="#">
-                                        <i class="hidden_elem" alt="Camera"></i></label>
-                                </div>
-                            </form>
-                        </li>
-                        <li class="_13gg "><a class="_6gb _3oxr attachment-cst r_emoji50" role="button"
-                                              title="Choose an emoji" href="#"><i class="" aria-hidden="true"></i></a>
-                        </li>
-                        <li class="_13gg "><a id="sendMessageChat" class="sms-send">
-                            <div class="submit attachment-cst r_bt25"><i class="fa fa-paper-plane"
-                                                                         aria-hidden="true"></i></div>
-                        </a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div id="newMsgChat" style="display: none">
-            <div class="bs"><a id="notifyNewsSms" title="news message">news message</a></div>
-        </div>
-    </div>
+    <div class="content" id="content-chat"></div>
 </div>
 
 
 <nav id="context-menu" class="context-menu">
     <ul class="context-menu__items">
         <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="View"><i class="fa fa-eye"></i> View Task</a>
+            <a href="#" class="context-menu__link" data-action="view"><i class="fa fa-eye"></i> View Task</a>
         </li>
         <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="Edit"><i class="fa fa-edit"></i> Edit Task</a>
+            <a href="#" class="context-menu__link" data-action="edit"><i class="fa fa-edit"></i> Edit Task</a>
         </li>
         <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="Delete"><i class="fa fa-times"></i> Delete Task</a>
+            <a href="#" class="context-menu__link" data-action="delete"><i class="fa fa-times"></i> Delete Task</a>
         </li>
     </ul>
 </nav>

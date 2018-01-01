@@ -29,7 +29,7 @@ const chatStatus = helper.coreHelper.app.chatStatus;
 const messageType = helper.coreHelper.app.messageType;
 const conversationType = helper.coreHelper.app.participants;
 const typeMsgSwapKeyValue = libFunction.swap(messageType);
-const typeConversationSwapKeyValue = libFunction.swap(conversationType);
+// const typeConversationSwapKeyValue = libFunction.swap(conversationType);
 
 // let IMG_SINGLE_USER = "/images/users.png";
 // let IMG_GROUP_USER = "/images/group.png";
@@ -53,14 +53,25 @@ class ChatController extends BaseController {
             showResponse.cssInclude = showResponse.readFileInclude(['css/chat.custom.css', 'css/chat.test.css'], 'c');
             showResponse.title = 'Home chat';
             showResponse.isNotIncludeSidebar = true;
-            showResponse.scriptInclude = showResponse.readFileInclude(['js/socket/client.js', 'js/socket/chat.js', "js/libCommonChat.js"]);
+            showResponse.scriptInclude = showResponse.readFileInclude([
+                "js/support/menu-info-chat.js",
+                'js/socket/client.js',
+                'js/socket/chat.js',
+                "js/support/libCommonChat.js"
+            ]);
             showResponse.renderViews = 'chat/index.ejs';
 
             let userCurrent = req.user;
-            if (userCurrent) {
-                let cfgChat = chatController.supportConfigChat(req.session.cfg_chat);
+            let cfgChat = chatController.supportConfigChat(req.session.cfg_chat);
+            if (userCurrent && cfgChat) {
+                let requestSql = {
+                    userCurrentID: userCurrent.attributes.id,
+                    conversationType: Object.keys(conversationType).map(function (k) {
+                        return conversationType[k]
+                    })
+                };
                 var newUser = new User.class({});
-                newUser.findByIdChat(userCurrent.attributes.id, function (err, rsData) {
+                newUser.findByIdChat(requestSql, function (err, rsData) {
                     if (err) return next(err);
 
                     let notiContacts = rsData.infoAccount.relations.useContacts;
@@ -89,9 +100,6 @@ class ChatController extends BaseController {
                     showResponse.classReplaceStatusHidden = cfgChat.status_hidden_name_replace;
 
                     showResponse.listParticipant = rsData.infoParticipant ? rsData.infoParticipant : null;
-                    showResponse.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX;
-                    showResponse.maxHeightInputBoxChat = HEIGHT_INPUT_BOX_MAX;
-                    showResponse.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN;
 
                     // save session - share socket io
                     req.session.currentStatus = requestCurrent;
@@ -118,12 +126,14 @@ class ChatController extends BaseController {
             showResponseChat.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX;
             showResponseChat.maxHeightInputBoxChat = HEIGHT_INPUT_BOX_MAX;
             showResponseChat.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN;
+            showResponseChat.page = 1;
             showResponseChat.userName = req.body.userName;
             showResponseChat.hexCodeId = userCurrent.attributes.id ? 'hex-' + userCurrent.attributes.id : null;
+            let chatController = new ChatController();
+            let cfgChat = chatController.supportConfigChat(req.session.cfg_chat);
 
-            if (parseInt(req.body.dataConversation) && userCurrent) {
-                let chatController = new ChatController();
-                let cfgChat = chatController.supportConfigChat(req.session.cfg_chat);
+            if (parseInt(req.body.dataConversation) && userCurrent && cfgChat) {
+
                 showResponseChat.renderViews = 'chat/content.chat.ejs';
                 let conversation = new Conversation.class();
                 let optionRequset = {
@@ -282,12 +292,10 @@ class ChatController extends BaseController {
                         });
                     });
                 });
-            } else if ((req.body.dataConversation === "") && parseInt(req.body.valAuthor) && userCurrent) {
+            } else if ((req.body.dataConversation === "") && parseInt(req.body.valAuthor) && userCurrent && cfgChat) {
                 // NOT FRIEND AND NOT REQUEST
                 showResponseChat.renderViews = 'chat/request.chat.ejs';
                 let user = new User.class();
-                let chatController = new ChatController();
-                let cfgChat = chatController.supportConfigChat(req.session.cfg_chat);
 
                 user.findUserFullById(parseInt(req.body.valAuthor), function (err, modelUser) {
                     if (err) return next(err);
@@ -332,12 +340,12 @@ class ChatController extends BaseController {
 
             let chatController = new ChatController();
             let userCurrent = chatController.getSessionByName(socket, 'passport');
-            let cfgChat = chatController.getSessionByName(socket, 'cfg_chat');
+            let cfgChat = chatController.supportConfigChat(chatController.getSessionByName(socket, 'cfg_chat'));
             chatController.setSessionByName(socket, 'isActiveCurrent', userCurrent.user ? userCurrent.user : null);
             socket.isActiveLoadPageCurrent = userCurrent.user ? userCurrent.user : null;
             // allClients.push(socket.id);
 
-            if (userCurrent) {
+            if (userCurrent && cfgChat) {
                 let chatController = new ChatController();
                 let newContacts = new Contacts.class();
                 let newUser = new User.class();
@@ -366,7 +374,8 @@ class ChatController extends BaseController {
 
                 socket.on('msgContentChat', function (reqData) {
                     let conversationId = reqData.data.dataConversation ? parseInt(reqData.data.dataConversation) : null;
-                    let page = false ? 1 : 1;
+                    let page = reqData.data.page !== undefined ? parseInt(reqData.data.page) : 1;
+
                     if (conversationId) {
                         let message = new Messages.class();
                         let requestMessage = {
@@ -384,60 +393,28 @@ class ChatController extends BaseController {
                             } else {
                                 process.nextTick(function () {
                                     let reqOption = {
-                                        dataType: reqData.data.dataType,
                                         userCurrent: userCurrent
                                     };
-                                    let modelMsgArray = [];
-                                    modelMessage.models.forEach(function (eleModel) {
-                                        modelMsgArray.push(eleModel);
+                                    let modelMsgArray = modelMessage.models.map(function (eleModel) {
+                                        return eleModel;
                                     });
-
-                                    modelMsgArray.reverse();
+                                    let isScrollTop = reqData.data.isScrollTop !== undefined ? reqData.data.isScrollTop : false;
+                                    if (isScrollTop === false) modelMsgArray.reverse();
                                     let resModelMessage = chatController.convertListMessage(modelMsgArray, reqOption);
 
-                                    // let resModelMessage = {};
-                                    // resModelMessage.isLength = modelMessage.length;
-                                    // if (modelMessage.length) {
-                                    //
-                                    //     resModelMessage.inversTypeMsg = typeMsgSwapKeyValue;
-                                    //     resModelMessage.inversTypeGuid = typeConversationSwapKeyValue;
-                                    //     // resModelMessage.data = modelMessage.toJSON();
-                                    //
-                                    //     resModelMessage.option = {
-                                    //         userCurrentId: userCurrent.user,
-                                    //         isLoad: false
-                                    //     };
-                                    //     let lengthModel = modelMessage.length;
-                                    //     let resultListMessage = [];
-                                    //     let listMessage = {};
-                                    //     let listMsgTemp = [];
-                                    //
-                                    //     modelMessage.forEach(function (element, index) {
-                                    //         let isUserFuture = ((index + 1) >= lengthModel) ? false : (modelMessage.models[(index + 1)].attributes.sender_id === element.attributes.sender_id);
-                                    //
-                                    //         if (isUserFuture === false) {
-                                    //             listMsgTemp.push(element.attributes);
-                                    //
-                                    //             listMessage.data = listMsgTemp;
-                                    //             listMessage.contactMessage = element.relations.contactMessage.toJSON();
-                                    //             listMessage.isSingle = (typeConversationSwapKeyValue[reqData.data.dataType] == 0);
-                                    //             listMessage.isUserCurrent = (element.attributes.sender_id == userCurrent.user);
-                                    //             resultListMessage.push(listMessage);
-                                    //             listMsgTemp = [];
-                                    //             listMessage = {};
-                                    //
-                                    //         } else {
-                                    //             listMsgTemp.push(element.attributes);
-                                    //         }
-                                    //     });
-                                    //     resModelMessage.listMsg = resultListMessage;
-                                    // } else {
-                                    //
-                                    // }
+                                    // resModelMessage.isScrollTop = isScrollTop;
+                                    resModelMessage.isLoadTop = reqData.data.isScrollTop !== undefined ? true : false;
+                                    resModelMessage.channelId = reqData.data.dataChannelID;
                                     socket.emit('msgContent', resModelMessage);
                                 });
                             }
                         });
+                    } else {
+                        let resModelMessageNull = {};
+                        resModelMessageNull.isLoadTop = reqData.data.isScrollTop !== undefined ? true : false;
+                        resModelMessageNull.channelId = reqData.data.dataChannelID;
+                        resModelMessageNull.isLength = 0;
+                        socket.emit('msgContent', resModelMessageNull);
                     }
                 });
 
@@ -446,19 +423,6 @@ class ChatController extends BaseController {
                         let message = new Messages.class();
                         dataSendChat.channelId = dataSendChat.dataChannel;
                         dataSendChat.valueMsg = dataSendChat.dataValueMsg;
-
-
-                        // {
-                        //        isLength: 11
-                        //     listMsg: [{data: [], contactMessage: {}, isSingle: true,  isUserCurrent: true }],
-                        //         option: {
-                        //         userCurrentId: userCurrent.user,
-                        //         isLoad: false
-                        //     },
-                        //     inversTypeMsg: 1111,
-                        //         inversTypeGuid: 2222
-                        // }
-
                         let reqDataInsert = {
                             conversation_id: dataSendChat.dataConversation,
                             sender_id: userCurrent.user,
@@ -473,12 +437,12 @@ class ChatController extends BaseController {
 
                             process.nextTick(function () {
                                 let reqOption = {
-                                    dataType: dataSendChat.dataType,
                                     userCurrent: userCurrent
                                 };
                                 let modelMsgArray = [];
                                 modelMsgArray.push(modelMsg);
                                 let resModelMessage = chatController.convertListMessage(modelMsgArray, reqOption);
+                                resModelMessage.isLoadTop = dataSendChat.isScrollTop !== undefined ? true : false;
 
                                 socket.emit('sendDataPrivate', resModelMessage);
 
@@ -504,15 +468,6 @@ class ChatController extends BaseController {
                     };
                     chatController.queueUpdateContact(socket, dataRequest, currentStatus);
                 });
-
-                // if (userCurrent.length) {
-                //     var newUser = new User.class({});
-                //     newUser.findConversation(userCurrent.attributes.id, function (err, rsDataConversation) {
-                //         if (err) rsDataConversation = {};
-                //
-                //         socket.broadcast.emit('sendListConversation', JSON.stringify(rsDataConversation));
-                //     });
-                // }
 
                 // chi thang phat ra => socket.emit
                 socket.emit('message', {
@@ -559,13 +514,13 @@ class ChatController extends BaseController {
 
                 //// 3s
                 // socket.on('pingServer', (data) => {
-                    // clearTimeout(s60Revert);
+                // clearTimeout(s60Revert);
                 // });
                 // socket.on('pong', (data) => {
-                    // if (socket.isActiveLoadPageCurrent)
-                    // if (gh)
-                    //     io.emit('ping', userCurrent);
-                    // socket.isActiveLoadPageCurrent = userCurrent.user;
+                // if (socket.isActiveLoadPageCurrent)
+                // if (gh)
+                //     io.emit('ping', userCurrent);
+                // socket.isActiveLoadPageCurrent = userCurrent.user;
                 // });
                 // // 30 minutine - reload page
                 // setTimeout(function () {
@@ -577,7 +532,7 @@ class ChatController extends BaseController {
                 //     }
                 // }, 1000 * 60 * 30);
                 // setInterval(function () {
-                    // socket.emit('expiresTime60', "--------test------- 3s -> " + socket.isActiveLoadPageCurrent);
+                // socket.emit('expiresTime60', "--------test------- 3s -> " + socket.isActiveLoadPageCurrent);
                 // }, 3000)
             }
 
@@ -796,13 +751,25 @@ ChatController.prototype.updateUserListSocket = function (socket, dataRequest, c
         let chatController = new ChatController();
         let cfgChat = chatController.supportConfigChat(chatController.getSessionByName(socket, 'cfg_chat'));
 
+        if (cfgChat === null) {
+            responsiveData['msg'] = 'Not read session config chat';
+            responsiveData['code'] = 'ERR0000';
+            done('ERR0000', responsiveData);
+        }
+
         newContacts.updateContact(dataRequest, function (err, rsModel) {
             if (err) {
                 responsiveData['msg'] = err;
                 responsiveData['code'] = 'ERR0002';
                 done(err, responsiveData);
             } else {
-                newUser.findByIdChat(currentStatus.userCurrentID, function (err, modelData) {
+                let requestSql = {
+                    userCurrentID: currentStatus.userCurrentID,
+                    conversationType: Object.keys(conversationType).map(function (k) {
+                        return conversationType[k]
+                    })
+                };
+                newUser.findByIdChat(requestSql, function (err, modelData) {
                     if (err) {
                         responsiveData['msg'] = err;
                         responsiveData['code'] = 'ERR0002';
@@ -880,13 +847,11 @@ ChatController.prototype.convertListMessage = function (modelArrayMessage, reqOp
     let resModelMessage = {};
     let lengthModel = modelArrayMessage.length;
     resModelMessage.isLength = lengthModel;
-    resModelMessage.inversTypeMsg = typeMsgSwapKeyValue;
-    resModelMessage.inversTypeGuid = typeConversationSwapKeyValue;
+    resModelMessage.inverseTypeMsg = typeMsgSwapKeyValue;
 
     if (modelArrayMessage.length) {
         resModelMessage.option = {
-            userCurrentId: reqOption.userCurrent.user,
-            isLoad: false
+            userCurrentId: reqOption.userCurrent.user
         };
 
         let resultListMessage = [];
@@ -901,7 +866,7 @@ ChatController.prototype.convertListMessage = function (modelArrayMessage, reqOp
 
                 listMessage.data = listMsgTemp;
                 listMessage.contactMessage = element.relations.contactMessage.toJSON();
-                listMessage.isSingle = (typeConversationSwapKeyValue[reqOption.dataType] == 0);
+                listMessage.isSingle = element.attributes.is_single_group == 0;
                 listMessage.isUserCurrent = (element.attributes.sender_id == reqOption.userCurrent.user);
                 resultListMessage.push(listMessage);
                 listMsgTemp = [];
@@ -919,7 +884,11 @@ ChatController.prototype.convertListMessage = function (modelArrayMessage, reqOp
 }
 
 ChatController.prototype.supportConfigChat = function (jsonConfigChat) {
-    return JSON.parse(jsonConfigChat);
+    try {
+        return JSON.parse(jsonConfigChat);
+    } catch (ex) {
+        return null;
+    }
 }
 
 kue.Job.rangeByState('complete', 0, 0, 'asc', function (err, jobs) {

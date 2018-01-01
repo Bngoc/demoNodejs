@@ -20,7 +20,8 @@
         "css/flexslider.css",
         "css/jquery.fancybox.css",
         "css/cloud-zoom.css",
-        "css/common.style.css"
+        "css/common.style.css",
+        "css/select2.css"
       ]
     },
     "admin_main": {
@@ -32,7 +33,8 @@
         "css/admin/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css",
         "css/admin/bower_components/datatables-responsive/css/dataTables.responsive.css",
         "css/admin/dist/css/sb-admin-2.css",
-        "css/rawcss.css"
+        "css/rawcss.css",
+        "css/select2.css"
       ]
     }
   },
@@ -42,10 +44,10 @@
         "head": [
           "js/jquery-3.2.1.min.js",
           "socket.io/socket.io.js",
-          "js/common.js"
+          "js/common.js",
+          "js/select2.js"
         ],
         "body": [
-          "js/contextMenu/main.js",
           "js/bootstrap.js",
           "js/respond.min.js",
           "js/bootstrap-tooltip.js",
@@ -67,7 +69,8 @@
           "js/bootstrap.js",
           "js/respond.min.js",
           "js/application.js",
-          "js/common.js"
+          "js/common.js",
+          "js/select2.js"
         ],
         "body": [
           "js/contextMenu/main.js",

@@ -395,7 +395,7 @@
 
 #frame #sidepanel #search input {
     font-family: "proxima-nova", "Source Sans Pro", sans-serif;
-    padding: 8px 17px 8px 44px;
+    padding: 8px 16px 8px 44px;
     width: calc(100% - 60px);
     border: none;
     background: #32465a;
@@ -694,7 +694,7 @@
     float: right;
     width: 67.7%;
     height: 100%;
-    overflow: hidden;
+    /*overflow: hidden;*/
     position: relative;
 }
 
@@ -985,6 +985,7 @@
     margin: 0;
     clear: inherit;
     word-wrap: break-word;
+    word-break: break-all;
 }
 
 #frame .content .messages ul {
@@ -1002,6 +1003,7 @@
     clear: unset;
     margin: 0;
     word-wrap: break-word;
+    word-break: break-all;
 }
 
 #frame .content .messages ul li img {

@@ -11,7 +11,7 @@ let cfg_chat = {
     img_group_user: '/images/group.png',
     mood_message_request: 'User not share information',
     mood_message_responsive: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    page_size_number: 20
+    page_size_number: 25
 };
 
 module.exports = cfg_chat;

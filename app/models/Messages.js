@@ -77,4 +77,19 @@ Message.prototype.insert = function (dataInsert, callback) {
     });
 }
 
+Message.prototype.cornDeleteMessage = function (callback) {
+    Messages
+        .query((q) => {
+            q.where('created_at', '<=', "2018-11-01");
+            q.orderBy('created_at', 'DESC');
+        })
+        .fetchAll()
+        .then(function (model) {
+            callback(null, model);
+        })
+        .catch(function (err) {
+            callback(err);
+        });
+};
+
 module.exports = {model: Messages, class: Message};

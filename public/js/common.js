@@ -11,7 +11,7 @@ $(function () {
             let isPrivate = (typeof tooltipPrivate !== typeof undefined && tooltipPrivate !== false);
             let tooltipText = $('#create-tooltip .tooltiptext');
 
-            tooltipText.text(tooltipContent);
+            tooltipText.html(tooltipContent);
 
             var offset = $(this).offset();
             var offsetCreateTooltip = $('#create-tooltip').offset();
@@ -40,13 +40,13 @@ $(function () {
             tooltipText.css({display: 'block', top: heightNormalTop, left: withNormal});
 
             window.isCheckHover = true;
-            console.log('2222222222222222222222222', event.pageY, offsetCreateTooltip.top, offset.top);
+            // console.log('2222222222222222222222222', event.pageY, offsetCreateTooltip.top, offset.top);
 
         })
         .on('mouseleave', '[data-hover="tooltip"]', function () {
             let tooltipTextLeave = $('#create-tooltip .tooltiptext');
 
-            tooltipTextLeave.text('xxxxxxx');
+            tooltipTextLeave.text('');
             tooltipTextLeave.css({display: 'none'});
             tooltipTextLeave.removeClass(function (index, className) {
                 return (className.match(/(^|\s)tooltip-\S+/g) || []).join(' ');
@@ -54,16 +54,29 @@ $(function () {
         })
 });
 
+function activeLastWeek(dateCheck, nowTimestampLastWeek) {
+    let timestemp = new Date(dateCheck);
+    return timestemp.getTime() >= nowTimestampLastWeek;
+}
 
-function customDateTime(dateTime) {
+function customDateTime(dateTime, timestampLastWeek) {
     if (dateTime == undefined) return '';
-
+    var weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     let objDate = new Date(dateTime);
-    return objDate.toLocaleString("en-us", {month: "long"}) + ' ' + objDate.getDate() + ', ' + objDate.toLocaleString('en-US', {
+    let strTime = '';
+    if (activeLastWeek(dateTime, timestampLastWeek)) {
+        strTime = weekday[objDate.getDay()];
+    } else {
+        strTime = objDate.toLocaleString("en-us", {month: "long"}) + ' ' + objDate.getDate();
+    }
+
+    strTime += ', ' + objDate.toLocaleString('en-US', {
             hour: 'numeric',
             minute: 'numeric',
             hour12: true
         });
+
+    return strTime;
 }
 
 function callDataJS(dataRequest, callback) {
