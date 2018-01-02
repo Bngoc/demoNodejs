@@ -1,7 +1,9 @@
 $('body').on('input', 'textarea#boxChat', function () {
-    $(this).outerHeight(38).outerHeight(this.scrollHeight);
-    $('#frameListMsg').attr('box-change-msg', $(this).height());
-    $('#frameListMsg').trigger('changeBoxMsg');
+    if ($('#frameListMsg').height()) {
+        $(this).outerHeight(38).outerHeight(this.scrollHeight);
+        $('#frameListMsg').attr('box-change-msg', $(this).height());
+        $('#frameListMsg').trigger('changeBoxMsg');
+    }
 });
 
 // add listen trigger changeBoxMsg

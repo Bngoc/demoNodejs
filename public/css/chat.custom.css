@@ -1163,7 +1163,7 @@
     border-radius: 5px;
     float: left;
     min-height: 35px;
-    height: 60px;
+    max-height: 60px;
     overflow-y: scroll;
     margin-bottom: 1px;
 }

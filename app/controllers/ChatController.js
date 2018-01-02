@@ -57,7 +57,8 @@ class ChatController extends BaseController {
                 "js/support/menu-info-chat.js",
                 'js/socket/client.js',
                 'js/socket/chat.js',
-                "js/support/libCommonChat.js"
+                "js/support/libCommonChat.js",
+                "js/support/listContacts.js"
             ]);
             showResponse.renderViews = 'chat/index.ejs';
 

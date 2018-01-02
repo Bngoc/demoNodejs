@@ -1,7 +1,3 @@
-// var  reconnection = true,
-//     reconnectionDelay = 5000,
-//     reconnectionTry = 0;
-
 var socket = io.connect(document.location.origin, {
     rememberTransport: false,
     'reconnect': true,
@@ -11,17 +7,6 @@ var socket = io.connect(document.location.origin, {
     'pingInterval': 2000,
     'pingTimeout': 5000
 });
-
-// socket.on('disconnect', function () {
-//     socket.disconnect();
-//     console.log("client disconnected");
-//     if (reconnection === true) {
-//         setTimeout(function () {
-//             console.log("client trying reconnect");
-//             connectClient();
-//         }, reconnectionDelay);
-//     }
-// });
 
 
 $(document).ready(function () {
@@ -101,6 +86,7 @@ SendChatMessage.prototype.sendMsg = function () {
             let dataSendChat = {
                 dataConversation: messageInput.attr('data-conversation'),
                 dataChannel: messageInput.attr('data-channel'),
+                dataType: messageInput.attr('data-type'),
                 // dataOwner: messageInput.attr('data-owner'),
                 // hexClassSend: $('#profile-img').attr('user-code-id'),
                 // hexClassNameSend: $('#profile .user-name-chat').contents().get(0).nodeValue,
@@ -190,53 +176,13 @@ SendChatMessage.prototype.scrollEndShowBoxChat = function (timeAnimal) {
 
 SendChatMessage.prototype.clickRightContactContentChat = function () {
     let _this = this;
-    $('body')
-        .on("mousedown", "#group-participant .show-info-participants", function (ev) {
-            if (ev.which == 1 || ev.which == 3) {
-                $('.show-info-participants').removeClass('check-participant');
-                $(this).addClass('check-participant');
-            }
-
-            if (ev.which == 3) {
-                // let menuElement = document.getElementById("menu").style;
-                // if (document.addEventListener) {
-                //     $(document).on('contextmenu', '#group-participant .info-contextmenu', function (e) {
-                //         var posX = e.clientX;
-                //         var posY = e.clientY;
-                //         _this.contextMenu(menuElement, posX, posY);
-                //         e.preventDefault();
-                //     }, false);
-                //     $(document).on('click', "#group-participant .info-contextmenu", function (e) {
-                //         menuElement.opacity = "0";
-                //         setTimeout(function () {
-                //             menuElement.visibility = "hidden";
-                //         }, 501);
-                //     }, false);
-                // } else { // IE < 9
-                //     document.attachEvent('oncontextmenu', function (e) {
-                //         var posX = e.clientX;
-                //         var posY = e.clientY;
-                //         _this.contextMenu(menuElement, posX, posY);
-                //         e.preventDefault();
-                //     });
-                //     document.attachEvent('onclick', function (e) {
-                //         menuElement.opacity = "0";
-                //         setTimeout(function () {
-                //             menuElement.visibility = "hidden";
-                //         }, 501);
-                //     });
-                // }
-                // alert("Right mouse button clicked on element with id myId");
-            }
-        });
-}
-
-SendChatMessage.prototype.contextMenu = function (menuElement, x, y) {
-    menuElement.top = y + "px";
-    menuElement.left = x + "px";
-    menuElement.visibility = "visible";
-    menuElement.opacity = "1";
-}
+    $('body').on("mousedown", "#group-participant .show-info-participants", function (ev) {
+        if (ev.which == 1 || ev.which == 3) {
+            $('.show-info-participants').removeClass('check-participant');
+            $(this).addClass('check-participant');
+        }
+    });
+};
 
 SendChatMessage.prototype.clickContactContentChat = function () {
     let _this = this;
@@ -283,6 +229,7 @@ SendChatMessage.prototype.clickContactContentChat = function () {
 };
 
 SendChatMessage.prototype.getListContact = function () {
+    let _this = this;
     $('body').on('click', '#list-contact-your', function () {
         let requestListContact = {
             url: '/chat/list-contact',
@@ -294,8 +241,15 @@ SendChatMessage.prototype.getListContact = function () {
             if (dataResult.err === null) {
                 let top = $('#list-contact-your').height() * 2;
                 $('#list-your-friend').css({display: 'block', position: 'absolute', top: top, right: 23});
-                $('#list-your-friend').html(dataResult.html);
-                console.log(dataResult);
+
+                // $('#list-your-friend').html(dataResult.html);
+
+
+                let lisContact = new listContacts();
+                console.log(lisContact.render());
+                $('#list-your-friend').html(lisContact.render());
+
+                // console.log(dataResult);
             }
         });
     });
@@ -424,7 +378,10 @@ SendChatMessage.prototype.htmlContentBoxChat = function (resultDataMsg) {
                 } else {
                     if (msgFirstElementsMsg.hasClass('author-' + element.contactMessage.id)) {
                         msgFirstElementsMsg.find('p').addClass('top-left');
-                        msgFirstElementsMsg.find('._ua2 ._4tdx').after(resultHtml);
+                        let get_4tdx = msgFirstElementsMsg.find('._ua2 ._4tdx');
+                        msgFirstElementsMsg.find('._ua2 ._4tdx').remove();
+                        msgFirstElementsMsg.find('._ua2').prepend(resultHtml);
+                        msgFirstElementsMsg.find('._ua2').prepend(get_4tdx);
                     } else {
                         option.lastCreatedAt = element.data[element.data.length - 1].created_at;
                         var htmlTextTopOther = libCommonChat.supportHtmlTextOther(element.contactMessage, option);
