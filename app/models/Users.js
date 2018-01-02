@@ -99,8 +99,9 @@ User.prototype.findConversation = function (request, callback) {
     Users.where({id: request.userCurrentID}).fetch({withRelated: ['useContacts']}).then(function (data) {
         responseData['infoAccount'] = data;
         let blockList = new BlockList.class();
-        blockList.getListBlockParticipant(request.userCurrentID, function (errBlockList, blockListConversation) {
+        blockList.getListBlockConversation(request.userCurrentID, function (errBlockList, blockListConversation) {
             if (errBlockList) callback(errBlockList);
+            responseData['blockList'] = blockListConversation;
             // let getBlockList = data.relations.useBlockList
             //     .filter(function (isDelete) {
             //         if (isDelete.get('is_deleted') != 0) {
@@ -114,26 +115,27 @@ User.prototype.findConversation = function (request, callback) {
             Participants.model
                 .query(function (qd) {
                     // qd.where('id', 'not in', blockList);
-                    qd.where('conversation_id', 'not in', blockListConversation);
+                    qd.where('conversation_id', 'not in', blockListConversation.blockListConversation);
                     qd.where({"users_id": data.get('id')});
                     qd.where("type", 'in', request.conversationType);//single vs group
                 })
                 .fetchAll({columns: ['id', 'conversation_id', 'users_id']})
                 // .fetchAll({columns: ['id', 'title', 'creator_id', 'channel_id']})
                 .then(function (modelParticipants) {
-                    let getParticipantsList = modelParticipants.map(function (listItem) {
+                    let conversationsList = modelParticipants.map(function (listItem) {
                         return listItem.get('conversation_id');
                     });
 
                     Conversations.model
                         .query(function (dq) {
-                            dq.where('id', 'in', getParticipantsList).where('is_deleted', '=', '0');
+                            dq.where('id', 'in', conversationsList).where('is_deleted', '=', '0');
                         })
                         // .fetchAll({withRelated: ['cccccc', {'conParticipant': function(db){ qb.where('status', 'enabled'); }}]})
                         .fetchAll({
                             withRelated: [{
                                 'conParticipant': function (qb) {
-                                    qb.where('users_id', '!=', request.userCurrentID)
+                                    qb.where('users_id', '!=', request.userCurrentID);
+                                    qb.where('users_id', 'not in', blockListConversation.blockListParticipantGroup);
                                 }
                             }]
                         })
@@ -157,6 +159,7 @@ User.prototype.findConversation = function (request, callback) {
 
 User.prototype.findByIdChat = function (request, callback) {
     let responseData = {};
+    let isAuthenticatesSingle = request.isAuthenticatesSingle !== undefined ? request.isAuthenticatesSingle : false;
     this.findConversation(request, function (err, modelConversation) {
 
         if (err) {
@@ -164,10 +167,16 @@ User.prototype.findByIdChat = function (request, callback) {
         } else {
             responseData['infoAccount'] = modelConversation.infoAccount;
             let modelConver = modelConversation.modelConversation;
+            let blockList = modelConversation.blockList;
             let infoParticipantClone = [];
 
             modelConver.forEach(function (elem) {
-                elem.relations.conParticipant.forEach(function (elemUser, indx) {
+                elem.relations.conParticipant.forEach(function (elemUser) {
+
+                    if (isAuthenticatesSingle === true && elemUser.get('is_accept_single') === 1) {
+                        return false;
+                    }
+
                     let infoParticipant = {};
                     infoParticipant['idConversation'] = elem.get('id');
                     infoParticipant['title'] = elem.get('title');

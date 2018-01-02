@@ -141,7 +141,10 @@ input {
     background: #FFFFFF;
 }
 
-/* degisn srcoll */
+/* -------------------------------S degisn srcoll------------------------- */
+
+.data-contact::-webkit-scrollbar-track,
+.box-action-friend::-webkit-scrollbar-track,
 #boxChat::-webkit-scrollbar-track {
     /*-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);*/
     background-color: #FFFFFF;
@@ -149,14 +152,20 @@ input {
     padding: 5px 0;
 }
 
+.data-contact::-webkit-scrollbar,
+.box-action-friend::-webkit-scrollbar,
 #boxChat::-webkit-scrollbar {
     width: 8px;
     background-color: #F5F5F5;
 }
 
+.data-contact::-webkit-scrollbar-thumb,
+.box-action-friend::-webkit-scrollbar-thumb,
 #boxChat::-webkit-scrollbar-thumb {
     background-color: #A1A3A3;
 }
+
+/* -------------------------------E degisn srcoll------------------------- */
 
 .btn-controler-act {
     position: unset;
@@ -261,3 +270,4 @@ input {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+

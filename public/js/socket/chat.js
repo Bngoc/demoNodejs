@@ -44,8 +44,21 @@ $(document).click(function (event) {
             $("#contacts").toggleClass("expanded");
         }
     }
+
+    //
+    if (!$(event.target).closest('#list-your-friend').length) {
+        if ($('#list-your-friend').css('display') === 'block') {
+            $('#list-your-friend').css({display: 'none'});
+            $('.search-results-contacts .box-action-friend').remove();
+        }
+    }
 });
 
+
+$("body").on('click', '.action-friend .cancel', function (event) {
+    $('#list-your-friend').css({display: 'none'});
+    $('.search-results-contacts .box-action-friend').remove();
+});
 
 $("body").on('click', '.expand-button', function (event) {
     $("#profile").toggleClass("expanded");

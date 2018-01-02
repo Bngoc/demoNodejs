@@ -1124,3 +1124,116 @@
     outline: none;
 }
 
+/*---------------------------S list contact -------------------------*/
+.list-contact {
+    position: relative;
+    width: 250px;
+    display: block;
+    z-index: 999;
+    border: 1px solid;
+    background: #cdcdde;
+    font-size: 12px;
+    padding: 5px;
+}
+
+.search-results-contacts {
+    display: inline-block;
+    float: left;
+    width: 100%;
+}
+
+.search-contacts {
+    display: block;
+    float: left;
+    width: 100%;
+    margin: 0 !important;
+}
+
+.search-contacts .search {
+    width: calc(100% - 26px);
+    padding: 5px 12px;
+    margin: 0;
+}
+
+.box-action-friend {
+    width: calc(100% - 6px);
+    background: #f2f3ec;
+    display: inline-block;
+    padding: 4px 3px;
+    border-radius: 5px;
+    float: left;
+    min-height: 35px;
+    height: 60px;
+    overflow-y: scroll;
+    margin-bottom: 1px;
+}
+
+.name-contact {
+    width: auto;
+    float: left;
+    margin: 5px 6px 6px 0;
+    position: relative;
+}
+
+span.name-act {
+    background: #00aeef;
+    padding: 3px 18px 3px 4px;
+    border: 1px solid #41849c;
+    color: white;
+    font-weight: 500;
+    border-radius: 12px;
+}
+
+.name-contact .act-aptach {
+    position: absolute;
+    right: 4px;
+    top: 2px;
+    cursor: pointer;
+    color: snow;
+}
+
+ul li.contact-list:hover {
+    background: #b0c5da;
+    color: white;
+}
+
+.data-contact {
+    overflow-y: scroll;
+    background: lavender;
+    padding: 12px 7px;
+    height: 130px;
+}
+
+li.contact-list {
+    width: 100%;
+    float: left;
+    z-index: 9999;
+    overflow: visible;
+    margin: 2px 0;
+    padding: 5px 0;
+}
+
+.wap-contact .meta-contact p {
+    white-space: nowrap;
+    width: 77%;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    overflow: hidden;
+    word-spacing: normal;
+}
+
+.wap-contact img {
+    width: 27px;
+    float: left;
+    display: inline;
+    margin-right: 10px;
+    border-radius: 50%;
+    border: 1px solid darkorange;
+}
+
+.action-friend {
+    margin-top: 7px;
+    text-align: right;
+}
+
+/*---------------------------E list contact -------------------------*/

@@ -330,6 +330,50 @@ class ChatController extends BaseController {
         }
     }
 
+    postListContact(req, res, next) {
+        var showResponseChat = {};
+        try {
+            if (req.user) {
+                let requestConversation = {
+                    userCurrentID: req.user.attributes.id,
+                    conversationType: ['single'],
+                    isAuthenticatesSingle: true
+                };
+                let user = new User.class();
+                user.findByIdChat(requestConversation, function (errConversation, modelConversation) {
+                    if (errConversation) {
+                        res.status(500).send(errConversation)
+                    } else {
+                        // modelConversation.infoParticipant.forEach(function (elemItem) {
+                        //     elemItem.attributes.conParticipant
+                        // })
+                        showResponseChat.renderViews = 'chat/list-contact.chat.ejs';
+
+                        res.render(showResponseChat.renderViews, {
+                            data: showResponseChat,
+                            layout: false
+                        }, function (err, renderHtml) {
+                            if (err) {
+                                res.send(err);
+                            } else {
+                                var response = {
+                                    html: renderHtml,
+                                    err: err,
+                                };
+
+                                res.status(200).send(response);
+                            }
+                        });
+
+                        // res.status(200).send(modelConversation.infoParticipant)
+                    }
+                });
+            }
+        } catch (ex) {
+            res.status(500).send(ex)
+        }
+    }
+
     socketConnection(io) {
         var s60 = 1000 * 60 * 1;
         io.on('connection', function (socket) {

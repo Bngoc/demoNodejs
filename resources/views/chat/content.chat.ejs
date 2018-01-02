@@ -31,10 +31,11 @@
         <i class="fa fa-facebook" aria-hidden="true"></i>
         <i class="fa fa-twitter" aria-hidden="true"></i>
         <i class="fa fa-instagram" aria-hidden="true"></i>
-        <i class='fa <%- data.isTypeSingle ? (data.isFriendCurrentSingle ? "plus-group" : "") : "plus-user" %>'
+        <i id="list-contact-your"
+           class='fa <%- data.isTypeSingle ? (data.isFriendCurrentSingle ? "plus-group" : "") : "plus-user" %>'
            aria-hidden="true"
            title='<%- data.isTypeSingle ? "Create group" : "Add user" %>' data-toggle="modal"
-           data-target="#list-friend-your"></i>
+           data-target="#list-friend-yours"></i>
     </div>
 </div>
 
@@ -137,6 +138,9 @@
         <span class="tooltiptext" style="display: none"></span>
     </div>
 </div>
+
+<div id="list-your-friend"></div>
+
 <script>
     (function () {
         "use strict";
@@ -181,6 +185,7 @@
             $('#messageInput .btn-controler-act').remove();
             $('#boxChat').addClass('cuts-box-chat-clear center-placeholder');
         }
+        $('#list-your-friend').css({'display': 'none'});
 
 
 //        var updatePosition = function() {

@@ -69,6 +69,8 @@
     border: 1px solid red !important;
 }
 
+/*----------------------E notify ---------------*/
+
 .display-none {
     display: none !important;
 }
@@ -126,6 +128,7 @@
     padding: 9px 0px !important;
 }
 
+/*---------------------------- S box message --------------------*/
 .bottom-left {
     border-bottom-left-radius: 0px !important;
 }

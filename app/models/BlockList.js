@@ -17,6 +17,7 @@ let BlockLists = bookshelf.Model.extend({
 let BlockList = function () {
 };
 
+// don't use
 BlockList.prototype.getListBlockParticipant = function (id, callback) {
     BlockLists
         .query(function (qb) {
@@ -28,6 +29,20 @@ BlockList.prototype.getListBlockParticipant = function (id, callback) {
         })
         .fetchAll()
         .then(function (modelBlockList) {
+            let resultBlockList = {};
+            let blockListConversation = [];
+            let blocklistParticipantGroup = [];
+            modelBlockList.forEach(function (elementItem) {
+                if (id === elementItem.get('users_id') && elementItem.get('is_single_group') === 1) {
+                    blocklistParticipantGroup.push(elementItem.get('prevent_participant'));
+                } else {
+                    blockListConversation.push(elementItem.get('conversation_id'));
+                }
+            });
+
+            resultBlockList.blockListConversation = blockListConversation;
+            resultBlockList.blockListParticipantGroup = blocklistParticipantGroup;
+
             let blockList = modelBlockList.map(function (itemList) {
                 // if (itemList.get('users_id') == id && itemList.get('prevent_participant')) {
                 //     return itemList.get('conversation_id');
@@ -45,7 +60,35 @@ BlockList.prototype.getListBlockParticipant = function (id, callback) {
             //     .map(function (listItem) {
             //         return listItem.get('prevent_participant');
             //     });
-            callback(null, blockList);
+            callback(null, resultBlockList);
+        })
+        .catch(function (errModel) {
+            callback(errModel);
+        })
+};
+
+BlockList.prototype.getListBlockConversation = function (user_id, callback) {
+    BlockLists
+        .query(function (qb) {
+            qb.where('is_deleted', '!=', 0);
+        })
+        .fetchAll()
+        .then(function (modelBlockList) {
+            let resultBlockList = {};
+            let blockListConversation = [];
+            let blocklistParticipantGroup = [];
+            modelBlockList.forEach(function (elementItem) {
+                if (elementItem.get('is_single_group') === 0 || elementItem.get('is_single_group') === 1 && elementItem.get('prevent_participant') === user_id) {
+                    blockListConversation.push(elementItem.get('conversation_id'));
+                } else {
+                    blocklistParticipantGroup.push(elementItem.get('prevent_participant'));
+                }
+            });
+
+            resultBlockList.blockListConversation = blockListConversation;
+            resultBlockList.blockListParticipantGroup = blocklistParticipantGroup;
+
+            callback(null, resultBlockList);
         })
         .catch(function (errModel) {
             callback(errModel);

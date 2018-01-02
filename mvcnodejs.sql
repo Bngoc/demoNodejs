@@ -209,7 +209,7 @@ CREATE TABLE IF NOT EXISTS `block_list` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `participantsId_user_UNIQUE` (`participants_id`, `users_id`))
+  UNIQUE KEY `participantsId_user_UNIQUE` (`prevent_participant`, `conversation_id`, `users_id`))
 ENGINE = InnoDB;
 
 SHOW WARNINGS;

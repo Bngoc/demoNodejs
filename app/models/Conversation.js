@@ -12,6 +12,7 @@ const bookshelf = coreHelper.bookshelf();
 
 const Participants = coreHelper.callModule(`${coreHelper.paths.MODELS}Participants.js`);
 // const DeletedConversations = coreHelper.callModule(`${coreHelper.paths.MODELS}DeletedConversations.js`);
+const BlockList = coreHelper.callModule(`${coreHelper.paths.MODELS}BlockList.js`);
 
 var Conversations = bookshelf.Model.extend({
     tableName: 'conversation',
@@ -31,24 +32,30 @@ let Conversation = function () {
 };
 
 Conversation.prototype.getConversations = function (id, users_id, callback) {
-    Conversations
-        .where({id: id})
-        .fetchAll({
-            withRelated: [
-                {
-                    'conParticipant': function (qb) {
-                        qb.where('users_id', '!=', users_id)
+    let blockList = new BlockList.class();
+    blockList.getListBlockConversation(users_id, function (errBlockList, blockList) {
+        if (errBlockList) callback(errBlockList);
+
+        Conversations
+            .where({id: id})
+            .fetchAll({
+                withRelated: [
+                    {
+                        'conParticipant': function (qb) {
+                            qb.where('users_id', '!=', users_id)
+                                .where('users_id', 'not in', blockList.blockListParticipantGroup);
+                        }
                     }
-                }
-            ]
-        })
-        .then(function (modelConver) {
-            callback(null, modelConver)
-        })
-        .catch(function (err) {
-            callback(err);
-        });
-}
+                ]
+            })
+            .then(function (modelConver) {
+                callback(null, modelConver)
+            })
+            .catch(function (err) {
+                callback(err);
+            });
+    });
+};
 
 Conversation.prototype.conversationsListUser = function (optionRequest, callback) {
     this.getConversations(optionRequest.id, optionRequest.userCurrentID, function (err, modelConversation) {
@@ -137,16 +144,19 @@ Conversation.prototype.conversationsListSingleUser = function (req, callback) {
     this.participantByUserId(req, function (err, modelPartici) {
         if (err) callback(err);
 
-        let partList = modelPartici.map(function (listItem) {
+        let conversationList = modelPartici.map(function (listItem) {
             return listItem.get('conversation_id');
         });
 
         Participants.model
             .query(function (q) {
                 q.where('type', req.statusSingle).where('users_id', '!=', req.userCurrentID)
-                    .where('conversation_id', 'IN', partList)
+                    .where('conversation_id', 'IN', conversationList)
             })
-            .fetchAll({withRelated: ['parConversation'], columns: ['id', 'users_id', 'conversation_id', 'is_accept_single', 'is_accept_group']})
+            .fetchAll({
+                withRelated: ['parConversation'],
+                columns: ['id', 'users_id', 'conversation_id', 'is_accept_single', 'is_accept_group']
+            })
             .then(function (reModel) {
                 callback(null, reModel)
             })

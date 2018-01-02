@@ -47,6 +47,7 @@ var SendChatMessage = function () {
         this.clickContactContentChat();
         this.clickListContactContentChat();
         this.clickRightContactContentChat();
+        this.getListContact();
     };
 };
 
@@ -279,7 +280,26 @@ SendChatMessage.prototype.clickContactContentChat = function () {
             e.stopPropagation();
             e.preventDefault();
         });
-}
+};
+
+SendChatMessage.prototype.getListContact = function () {
+    $('body').on('click', '#list-contact-your', function () {
+        let requestListContact = {
+            url: '/chat/list-contact',
+            data: {
+                _method: 'post'
+            }
+        };
+        callDataJS(requestListContact, function (dataResult) {
+            if (dataResult.err === null) {
+                let top = $('#list-contact-your').height() * 2;
+                $('#list-your-friend').css({display: 'block', position: 'absolute', top: top, right: 23});
+                $('#list-your-friend').html(dataResult.html);
+                console.log(dataResult);
+            }
+        });
+    });
+};
 
 SendChatMessage.prototype.clickTaskContactChat = function () {
     console.log('clickTaskContactChat');
