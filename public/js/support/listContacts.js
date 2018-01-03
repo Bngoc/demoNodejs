@@ -37,8 +37,12 @@ let listContacts = function () {
     };
 
     this.supportListContact = function (obj) {
+        let listParticipant = this.getListParticipant();
         let htmlListContact = '';
         obj.map(function (element) {
+            if (listParticipant.includes(element.user_id)) {
+                return false;
+            }
             htmlListContact += '<li class="contact-list"><div class="wap-contact" data-author="author.' + element.user_id + '">'
                 + '<img src="' + (element.path_img ? element.path_img : element.path_img_default) + '" alt="">'
                 + '<div class="meta-contact"><p class="">';
@@ -95,4 +99,16 @@ let listContacts = function () {
             return false;
         });
     };
+
+    this.getListParticipant = function () {
+        return $.map($('[code-participant-id]'), function (ele) {
+            let codeParticipant = $(ele).attr("code-participant-id");
+            if (typeof codeParticipant !== typeof undefined && codeParticipant !== false) {
+                return parseInt(codeParticipant)
+            }
+
+            return false;
+        });
+    }
+
 };

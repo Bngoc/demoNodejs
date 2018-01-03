@@ -48,12 +48,15 @@ $(document).click(function (event) {
     }
 
     //
-    // if (!$(event.target).closest('#list-your-friend').length) {
-    //     if ($('#list-your-friend').css('display') === 'block') {
-    //         $('#list-your-friend').css({display: 'none'});
-    //         $('.search-results-contacts .box-action-friend').remove();
-    //     }
-    // }
+    if (!$(event.target).closest('#list-your-friend').length) {
+        // var attr = $('#list-contact-your').attr('show');
+        // if (typeof attr !== typeof undefined && attr !== false) {
+        if ($('#list-your-friend').css('display') === 'block') {
+            $('#list-your-friend').css({display: 'none'});
+            $('.search-results-contacts .box-action-friend').remove();
+
+        }
+    }
 });
 
 

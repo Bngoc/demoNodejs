@@ -84,10 +84,9 @@ SendChatMessage.prototype.diffHeightBoxMsg = function () {
 SendChatMessage.prototype.sendMsg = function () {
     var dataValueMsg = $.trim($('#boxChat').val());
     if (dataValueMsg.length) {
+        let listContact = new listContacts();
         let messageInput = $('#messageInput');
-        let listPart = $.map($('[code-participant-id]'), function (ele) {
-            return $(ele).attr("code-participant-id");
-        });
+        let listPart = listContact.getListParticipant();
 
         if (window.dataFriend === 'true') {
             let dataSendChat = {
@@ -236,17 +235,15 @@ SendChatMessage.prototype.clickContactContentChat = function () {
 };
 
 SendChatMessage.prototype.clickActContactConversation = function () {
-    $('body').on('click', '#action-friend', function () {
+    $('body').on('click', '#action-friend .add, #action-friend .create', function () {
         let listContact = new listContacts();
-        let codeParticipant = $('[code-participant-id]').attr("code-participant-id");
-        let dataCconversation = $('#messageInput').attr("data-conversation");
-        let participantId = (typeof codeParticipant !== typeof undefined && codeParticipant !== false) ? codeParticipant : null;
-        let dataCconversationId = (typeof dataCconversation !== typeof undefined && dataCconversation !== false) ? dataCconversation : null;
+        let dataConversation = $('#messageInput').attr("data-conversation");
+        let dataConversationId = (typeof dataConversation !== typeof undefined && dataConversation !== false) ? dataConversation : null;
 
         let isSingle = window.isSingle === 'true';
         let reqActionConversation = {
-            conversationId: (isSingle ? null : dataCconversationId),
-            userParticipant: (isSingle ? participantId : null),
+            conversationId: (isSingle ? null : dataConversationId),
+            userParticipant: (isSingle ? listContact.getListParticipant() : null),
             listAuthorId: listContact.clickActContact(),
             isSingle: isSingle,
             act: (isSingle ? 'add' : 'update'),
@@ -266,17 +263,17 @@ SendChatMessage.prototype.getListContact = function () {
                 _method: 'post'
             }
         };
+        let lisContact = new listContacts();
+        let _that = this;
         callDataJS(requestListContact, function (dataResult) {
             if (dataResult.err === '') {
                 let top = $('#list-contact-your').height() * 2;
                 $('#list-your-friend').css({display: 'block', position: 'absolute', top: top, right: 23});
+                $(_that).attr({show: true});
 
                 window.listContactYourSingleAction = [];
                 window.listContactYourSingle = dataResult.data;
-                let lisContact = new listContacts();
                 $('#list-your-friend').html(lisContact.render(dataResult, window.listContactYourSingleAction));
-
-                console.log(window.listContactYourSingleAction, window.listContactYourSingle);
             }
         });
     });
@@ -292,9 +289,8 @@ SendChatMessage.prototype.clickContactAdd = function () {
             if (indexFindUser !== -1) {
                 window.listContactYourSingleAction.push(window.listContactYourSingle[indexFindUser]);
                 window.listContactYourSingle.splice(indexFindUser, 1);
-
-                _this.renderHtmlListContact();
             }
+            _this.renderHtmlListContact();
         }
     });
 };
@@ -304,13 +300,17 @@ SendChatMessage.prototype.clickContactSearchSingle = function () {
     $('body')
         .on('keyup copy cut', '#search-single', function () {
             let val = $.trim($(this).val());
+            let htmlListContact = '';
+            let listContact = new listContacts();
             if (val.length > 2) {
-                let listContact = new listContacts();
                 let listContactYourSingleClone = $.extend(true, [], window.listContactYourSingle);
                 let arrayTempListContactSingle = listContact.searchLikeContact(listContactYourSingleClone, val);
-                let htmlContactSearchSingle = arrayTempListContactSingle.length ? listContact.supportListContact(arrayTempListContactSingle) : 'Not result';
-                $('#list-contacts').html(htmlContactSearchSingle);
+                htmlListContact = arrayTempListContactSingle.length ? listContact.supportListContact(arrayTempListContactSingle) : 'Not result';
+            } else {
+                htmlListContact = listContact.supportListContact(window.listContactYourSingle);
             }
+
+            $('#list-contacts').html(htmlListContact);
         })
         .on('focusout', '#search-single', function () {
             var val = $(this).val();
@@ -333,9 +333,8 @@ SendChatMessage.prototype.clickContactSub = function () {
                     return a.created_at - b.created_at;
                 });
                 window.listContactYourSingleAction.splice(indexFindUser, 1);
-
-                _this.renderHtmlListContact();
             }
+            _this.renderHtmlListContact();
         }
     });
 };
@@ -343,23 +342,21 @@ SendChatMessage.prototype.clickContactSub = function () {
 SendChatMessage.prototype.renderHtmlListContact = function () {
     let listContact = new listContacts();
 
-    if (window.listContactYourSingleAction) {
-        let htmlListContactAction = listContact.supportResultContact(window.listContactYourSingleAction);
-        $('#box-action-friend').html(htmlListContactAction);
-    }
-    if (window.listContactYourSingle) {
-        let checkInputSearch = $.trim($('#search-single').val());
-        let htmlListContact = '';
-        if (checkInputSearch.length > 2) {
-            let listContactYourSingleClone = $.extend(true, [], window.listContactYourSingle);
-            let arrayTempListContactSingle = listContact.searchLikeContact(listContactYourSingleClone, checkInputSearch);
-            htmlListContact = arrayTempListContactSingle.length ? listContact.supportListContact(arrayTempListContactSingle) : 'Not result';
-        } else {
-            htmlListContact = listContact.supportListContact(window.listContactYourSingle);
-        }
+    let htmlListContactAction = listContact.supportResultContact(window.listContactYourSingleAction);
+    $('#box-action-friend').html(htmlListContactAction);
+    $('#action-friend .add, #action-friend .create').attr({disabled: !window.listContactYourSingleAction.length});
 
-        $('#list-contacts').html(htmlListContact);
+    let checkInputSearch = $.trim($('#search-single').val());
+    let htmlListContact = '';
+    if (checkInputSearch.length > 2) {
+        let listContactYourSingleClone = $.extend(true, [], window.listContactYourSingle);
+        let arrayTempListContactSingle = listContact.searchLikeContact(listContactYourSingleClone, checkInputSearch);
+        htmlListContact = arrayTempListContactSingle.length ? listContact.supportListContact(arrayTempListContactSingle) : 'Not result';
+    } else {
+        htmlListContact = listContact.supportListContact(window.listContactYourSingle);
     }
+
+    $('#list-contacts').html(htmlListContact);
 };
 
 

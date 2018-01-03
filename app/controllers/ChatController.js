@@ -55,10 +55,10 @@ class ChatController extends BaseController {
             showResponse.isNotIncludeSidebar = true;
             showResponse.scriptInclude = showResponse.readFileInclude([
                 "js/support/menu-info-chat.js",
-                'js/socket/client.js',
-                'js/socket/chat.js',
                 "js/support/libCommonChat.js",
-                "js/support/listContacts.js"
+                "js/support/listContacts.js",
+                'js/socket/client.js',
+                'js/socket/chat.js'
             ]);
             showResponse.renderViews = 'chat/index.ejs';
 
