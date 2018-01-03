@@ -17,6 +17,12 @@ let LibCommonChat = function () {
             .replace(/\n/g, '<br>');
     };
 
+    this.regExpString = function (strSearch) {
+        let stringSearch = strSearch !== 'undefined' ? strSearch : '';
+
+        return new RegExp(stringSearch, "g");
+    };
+
     this.renderHtmlMessageVideo = function () {
 
     };

@@ -332,12 +332,18 @@ class ChatController extends BaseController {
     }
 
     postListContact(req, res, next) {
-        var showResponseChat = {};
+        var showResponseChat = {
+            data: [],
+            option: {},
+            done: false,
+            err: '',
+            msg: ''
+        };
         try {
-            if (req.user) {
+            if (req.user && req.body.dataType) {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
-                    conversationType: ['single'],
+                    conversationType: [conversationType[0]],
                     isAuthenticatesSingle: true
                 };
                 let user = new User.class();
@@ -345,30 +351,66 @@ class ChatController extends BaseController {
                     if (errConversation) {
                         res.status(500).send(errConversation)
                     } else {
-                        // modelConversation.infoParticipant.forEach(function (elemItem) {
-                        //     elemItem.attributes.conParticipant
-                        // })
-                        showResponseChat.renderViews = 'chat/list-contact.chat.ejs';
+                        showResponseChat.option.isConversationSingle = req.body.dataType === conversationType[0];
+                        let tempModelConversation = modelConversation.infoParticipant;
+                        let dataResult = [];
 
-                        res.render(showResponseChat.renderViews, {
-                            data: showResponseChat,
-                            layout: false
-                        }, function (err, renderHtml) {
-                            if (err) {
-                                res.send(err);
-                            } else {
-                                var response = {
-                                    html: renderHtml,
-                                    err: err,
-                                };
+                        tempModelConversation.forEach(function (elemItem) {
+                            let useContact = elemItem.infoAccountParticipant.relations.useContacts;
+                            let cfg_chat = JSON.parse(useContact.attributes.cfg_chat);
+                            let tempDataResult = {};
 
-                                res.status(200).send(response);
-                            }
+                            tempDataResult.first_name = useContact.attributes.first_name;
+                            tempDataResult.last_name = useContact.attributes.last_name;
+                            tempDataResult.middle_name = useContact.attributes.middle_name;
+                            tempDataResult.gender = useContact.attributes.gender;
+                            tempDataResult.user_id = useContact.attributes.users_id;
+                            tempDataResult.mood_message = useContact.attributes.mood_message;
+                            tempDataResult.path_img = useContact.attributes.path_img;
+                            tempDataResult.country = useContact.attributes.country;
+                            tempDataResult.email = elemItem.infoAccountParticipant.attributes.email;
+                            tempDataResult.phone = elemItem.infoAccountParticipant.attributes.phone;
+                            tempDataResult.user_name = useContact.attributes.user_name;
+                            tempDataResult.path_img_default = cfg_chat.img_single_user;
+                            tempDataResult.created_at = libFunction.convertDateTimeToInt(elemItem.infoAccountParticipant.attributes.created_at);
+
+                            dataResult.push(tempDataResult);
                         });
 
-                        // res.status(200).send(modelConversation.infoParticipant)
+                        dataResult.sort(function (a, b) {
+                            return a.created_at - b.created_at;
+                        });
+
+                        showResponseChat.data = dataResult;
+                        showResponseChat.done = true;
+                        showResponseChat.msg = 'success';
+
+                        // showResponseChat.renderViews = 'chat/list-contact.chat.ejs';
+                        //
+                        // res.render(showResponseChat.renderViews, {
+                        //     data: showResponseChat,
+                        //     layout: false
+                        // }, function (err, renderHtml) {
+                        //     if (err) {
+                        //         res.send(err);
+                        //     } else {
+                        //         var response = {
+                        //             html: renderHtml,
+                        //             err: err,
+                        //         };
+                        //
+                        //         res.status(200).send(response);
+                        //     }
+                        // });
+
+                        res.status(200).send(showResponseChat)
                     }
                 });
+            } else {
+                showResponseChat.err = 'ERR0002';
+                showResponseChat.done = 'failed';
+                showResponseChat.msg = 'ERR0003';
+                res.status(200).send(showResponseChat)
             }
         } catch (ex) {
             res.status(500).send(ex)
@@ -512,6 +554,22 @@ class ChatController extends BaseController {
                         },
                     };
                     chatController.queueUpdateContact(socket, dataRequest, currentStatus);
+                });
+
+                socket.on('updateActionConversationGroup', function (reqActionConversation) {
+                    if (reqActionConversation.isSingle === true) {
+                        // create conversaton
+                        //user part - use current - list author
+                        if (reqActionConversation.listAuthorId.length) {
+
+                        }
+                    } else {
+                        // update conversation
+                        // update conver
+                        if (reqActionConversation.conversationId && reqActionConversation.listAuthorId.length) {
+
+                        }
+                    }
                 });
 
                 // chi thang phat ra => socket.emit

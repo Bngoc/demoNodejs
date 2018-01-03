@@ -20,6 +20,9 @@ $(document).ready(function () {
     });
 
     //sendChatMessage.scrollEndShowBoxChat(1500);
+
+    window.listContactYourSingleAction = [];
+    window.listContactYourSingle = [];
 });
 
 var SendChatMessage = function () {
@@ -32,6 +35,10 @@ var SendChatMessage = function () {
         this.clickContactContentChat();
         this.clickListContactContentChat();
         this.clickRightContactContentChat();
+        this.clickContactAdd();
+        this.clickContactSub();
+        this.clickContactSearchSingle();
+        this.clickActContactConversation();
         this.getListContact();
     };
 };
@@ -228,36 +235,137 @@ SendChatMessage.prototype.clickContactContentChat = function () {
         });
 };
 
+SendChatMessage.prototype.clickActContactConversation = function () {
+    $('body').on('click', '#action-friend', function () {
+        let listContact = new listContacts();
+        let codeParticipant = $('[code-participant-id]').attr("code-participant-id");
+        let dataCconversation = $('#messageInput').attr("data-conversation");
+        let participantId = (typeof codeParticipant !== typeof undefined && codeParticipant !== false) ? codeParticipant : null;
+        let dataCconversationId = (typeof dataCconversation !== typeof undefined && dataCconversation !== false) ? dataCconversation : null;
+
+        let isSingle = window.isSingle === 'true';
+        let reqActionConversation = {
+            conversationId: (isSingle ? null : dataCconversationId),
+            userParticipant: (isSingle ? participantId : null),
+            listAuthorId: listContact.clickActContact(),
+            isSingle: isSingle,
+            act: (isSingle ? 'add' : 'update'),
+
+        };
+
+        socket.emit('updateActionConversationGroup', reqActionConversation);
+    });
+};
+
 SendChatMessage.prototype.getListContact = function () {
-    let _this = this;
     $('body').on('click', '#list-contact-your', function () {
         let requestListContact = {
             url: '/chat/list-contact',
             data: {
+                dataType: $('#messageInput').attr('data-type'),
                 _method: 'post'
             }
         };
         callDataJS(requestListContact, function (dataResult) {
-            if (dataResult.err === null) {
+            if (dataResult.err === '') {
                 let top = $('#list-contact-your').height() * 2;
                 $('#list-your-friend').css({display: 'block', position: 'absolute', top: top, right: 23});
 
-                // $('#list-your-friend').html(dataResult.html);
-
-
+                window.listContactYourSingleAction = [];
+                window.listContactYourSingle = dataResult.data;
                 let lisContact = new listContacts();
-                console.log(lisContact.render());
-                $('#list-your-friend').html(lisContact.render());
+                $('#list-your-friend').html(lisContact.render(dataResult, window.listContactYourSingleAction));
 
-                // console.log(dataResult);
+                console.log(window.listContactYourSingleAction, window.listContactYourSingle);
             }
         });
     });
 };
 
+SendChatMessage.prototype.clickContactAdd = function () {
+    var _this = this;
+    $('body').on('click', '#data-contact li.contact-list', function () {
+        let author = $(this).find('[data-author]').attr('data-author');
+        if (typeof author !== typeof undefined && author !== false) {
+            let authorId = author.split('.')[1];
+            let indexFindUser = window.listContactYourSingle.findIndex(x => x.user_id === parseInt(authorId));
+            if (indexFindUser !== -1) {
+                window.listContactYourSingleAction.push(window.listContactYourSingle[indexFindUser]);
+                window.listContactYourSingle.splice(indexFindUser, 1);
+
+                _this.renderHtmlListContact();
+            }
+        }
+    });
+};
+
+SendChatMessage.prototype.clickContactSearchSingle = function () {
+    var _this = this;
+    $('body')
+        .on('keyup copy cut', '#search-single', function () {
+            let val = $.trim($(this).val());
+            if (val.length > 2) {
+                let listContact = new listContacts();
+                let listContactYourSingleClone = $.extend(true, [], window.listContactYourSingle);
+                let arrayTempListContactSingle = listContact.searchLikeContact(listContactYourSingleClone, val);
+                let htmlContactSearchSingle = arrayTempListContactSingle.length ? listContact.supportListContact(arrayTempListContactSingle) : 'Not result';
+                $('#list-contacts').html(htmlContactSearchSingle);
+            }
+        })
+        .on('focusout', '#search-single', function () {
+            var val = $(this).val();
+            if (val === '' || $.trim(val) < 3) {
+                _this.renderHtmlListContact();
+            }
+        });
+};
+
+SendChatMessage.prototype.clickContactSub = function () {
+    var _this = this;
+    $('body').on('click', '#box-action-friend i.act-aptach', function () {
+        let author = $(this).closest('[data-author]').attr('data-author');
+        if (typeof author !== typeof undefined && author !== false) {
+            let authorId = author.split('.')[1];
+            let indexFindUser = window.listContactYourSingleAction.findIndex(x => x.user_id === parseInt(authorId));
+            if (indexFindUser !== -1) {
+                window.listContactYourSingle.push(window.listContactYourSingleAction[indexFindUser]);
+                window.listContactYourSingle.sort(function (a, b) {
+                    return a.created_at - b.created_at;
+                });
+                window.listContactYourSingleAction.splice(indexFindUser, 1);
+
+                _this.renderHtmlListContact();
+            }
+        }
+    });
+};
+
+SendChatMessage.prototype.renderHtmlListContact = function () {
+    let listContact = new listContacts();
+
+    if (window.listContactYourSingleAction) {
+        let htmlListContactAction = listContact.supportResultContact(window.listContactYourSingleAction);
+        $('#box-action-friend').html(htmlListContactAction);
+    }
+    if (window.listContactYourSingle) {
+        let checkInputSearch = $.trim($('#search-single').val());
+        let htmlListContact = '';
+        if (checkInputSearch.length > 2) {
+            let listContactYourSingleClone = $.extend(true, [], window.listContactYourSingle);
+            let arrayTempListContactSingle = listContact.searchLikeContact(listContactYourSingleClone, checkInputSearch);
+            htmlListContact = arrayTempListContactSingle.length ? listContact.supportListContact(arrayTempListContactSingle) : 'Not result';
+        } else {
+            htmlListContact = listContact.supportListContact(window.listContactYourSingle);
+        }
+
+        $('#list-contacts').html(htmlListContact);
+    }
+};
+
+
 SendChatMessage.prototype.clickTaskContactChat = function () {
     console.log('clickTaskContactChat');
-}
+};
 
 SendChatMessage.prototype.clickListContactContentChat = function () {
     var _this = this;
