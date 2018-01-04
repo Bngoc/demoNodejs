@@ -58,7 +58,6 @@ $(document).click(function (event) {
     }
 });
 
-
 $("body").on('click', '.action-friend .cancel', function (event) {
     $('#list-your-friend').css({display: 'none'});
     $('.search-results-contacts .box-action-friend').remove();

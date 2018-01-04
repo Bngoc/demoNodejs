@@ -6,11 +6,6 @@ let cfg_chat = {
     animal: {
         'scrollEnd': 1000,
     },
-    class_undefined: 'undefined',
-    img_single_user: '/images/users.png',
-    img_group_user: '/images/group.png',
-    mood_message_request: 'User not share information',
-    mood_message_responsive: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
     page_size_number: 25
 };
 

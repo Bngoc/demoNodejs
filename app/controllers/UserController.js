@@ -272,7 +272,7 @@ class UserController {
                     first_name: req.body.name,
                     last_name: 'xxxx',
                     repassword: req.body.repassword,
-                    cfg_chat: cfgChat
+                    cfg_chat: JSON.stringify(cfgChat)
                 };
 
                 var newUser = new User();
@@ -411,10 +411,6 @@ class UserController {
             } else {
                 var newUser = new User.class();
                 let cfgChat = helper.coreHelper.callModule(`${helper.coreHelper.paths.CONFIG}cfgChat.js`);
-                cfgChat.status_single = helper.coreHelper.app.participants[0];
-                cfgChat.status_hidden_name = helper.coreHelper.app.chatStatus[4];
-                cfgChat.status_hidden_name_replace = helper.coreHelper.app.chatStatus[1];
-
 
                 var dataRequest = {
                     phone: req.body.phone,

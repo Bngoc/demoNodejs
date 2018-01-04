@@ -189,6 +189,8 @@ SendChatMessage.prototype.clickSearchContact = function () {
                 data: {
                     dataType: false,
                     isAuthenticatesSingle: false,
+                    isSearch: true,
+                    valSearch: val,
                     _method: 'post'
                 }
             };

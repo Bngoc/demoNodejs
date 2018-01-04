@@ -110,23 +110,6 @@ let listContacts = function () {
         listParticipant.nameAuthorId = tempNameAuthorId;
 
         return listParticipant;
-
-        // return $.map($('.name-contact[data-act-freind]'), function (element) {
-        //     let authorId = $(element).attr('data-act-freind');
-        //     let nameAuthorId = $(element).find('.name-act')[0].childNodes[0].nodeValue;
-        //     let temp = {};
-        //     if (typeof authorId !== typeof undefined && authorId !== false){
-        //         temp.authorId = parseInt(authorId);
-        //         temp.nameAuthorId = nameAuthorId;
-        //         return temp;
-        //     }
-        //
-        //     return false;
-        // });
-    };
-
-    this.getNameParticipant = function () {
-
     };
 
     this.getListParticipant = function () {
@@ -138,6 +121,43 @@ let listContacts = function () {
 
             return false;
         });
-    }
+    };
+
+    this.renderContactSingle = function () {
+        let htmlSingleAll = '<li class="contact">'
+            + '<div class="wrap" data-conversation="<%-element.idConversation %>" data-type="<%- element.type%>"'
+            + 'data-channel="<%- element.channel_id %>" data-owner="<%- element.creator_id %>">'
+            + '<span channel="status.<%- element.channel_id %>"'
+            + 'class="list-icon-status contact-status <%- element.is_accept_single ? classUndefined : (infoContact.attributes.is_life && classStatusPart) ? classStatusPart : "" %>"></span> '
+            + '<img src="<%- infoContact.attributes.path_img ? infoContact.attributes.path_img : pathImgSingle %>" alt=""/>'
+            + '<div class="meta">'
+            + '<span class="name-notify"><p class="name"><%- infoContact.attributes.middle_name ? infoContact.attributes.middle_name : "&nbsp;" %></p><i class="badges-notify">132</i></span>'
+            + '<p class="preview mood_message"><%- infoContact.attributes.mood_message ? infoContact.attributes.mood_message : "" %></p>'
+            + '</div>'
+            + '</div>'
+            + '</li>';
+    };
+
+    this.renderContactGroup = function () {
+        let htmlGroupAll = '<li class="contact">'
+            + '<div class="wrap" data-conversation="<%- element.idConversation %>" data-type="<%- element.type%>"'
+            + 'data-channel="<%- element.channel_id %>" data-owner="<%- element.creator_id %>">'
+            + '<span channel="status.<%- element.channel_id %>" class=""></span>'
+            + '<img src="<%- infoContactGroup.attributes.path_img_group ? infoContactGroup.attributes.path_img_group : pathImgGroup %>" alt=""/>'
+            + '<div class="meta">'
+            + '<span class="name-notify"><p class="name"><%- element.title %></p><i class="badges-notify">132</i></span>'
+            + '<p class="preview"> <%- element.count %> participants</p>'
+            + '</div>'
+            + '</div>'
+            + '</li>';
+    };
+
+    this.showContactListAll = function () {
+
+    };
+
+    this.renderContactSearchAll = function () {
+
+    };
 
 };

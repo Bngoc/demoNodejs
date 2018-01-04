@@ -28,19 +28,9 @@ const HEIGHT_BOX_CHAT_MIN = 56;
 const chatStatus = helper.coreHelper.app.chatStatus;
 const messageType = helper.coreHelper.app.messageType;
 const conversationType = helper.coreHelper.app.participants;
+const cfgChat = helper.coreHelper.app.cfg_chat;
 const typeMsgSwapKeyValue = libFunction.swap(messageType);
 // const typeConversationSwapKeyValue = libFunction.swap(conversationType);
-
-// let IMG_SINGLE_USER = "/images/users.png";
-// let IMG_GROUP_USER = "/images/group.png";
-// let STATUS_SINGLE = helper.coreHelper.app.participants[0];
-// let STATUS_HIDDEN_NAME = helper.coreHelper.app.chatStatus[4];
-// let STATUS_HIDDEN_NAME_REPLACE = helper.coreHelper.app.chatStatus[1];
-// let CLASS_UNDEFINED = 'undefined';
-// let MOOD_MESSAGE_REQUEST = 'User not share information';
-// let MOOD_MESSAGE_RESPONSIVE = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-// let allClients = [];
-
 
 class ChatController extends BaseController {
 
@@ -63,8 +53,7 @@ class ChatController extends BaseController {
             showResponse.renderViews = 'chat/index.ejs';
 
             let userCurrent = req.user;
-            let cfgChat = chatController.supportConfigChat(req.session.cfg_chat);
-            if (userCurrent && cfgChat) {
+            if (userCurrent) {
                 let requestSql = {
                     userCurrentID: userCurrent.attributes.id,
                     conversationType: Object.keys(conversationType).map(function (k) {
@@ -87,19 +76,19 @@ class ChatController extends BaseController {
                     let statusUser = chatStatus[notiContacts.attributes.status];
 
                     showResponse.userName = notiContacts ? notiContacts.attributes.middle_name : '';
+                    showResponse.classStatusCurrent = (statusUser != cfgChat.status_hidden_name) ? statusUser : cfgChat.status_hidden_name_replace;
                     showResponse.moodMessage = notiContacts ? notiContacts.attributes.mood_message : '';
                     showResponse.userID = notiContacts ? notiContacts.attributes.id : '';
                     showResponse.status = notiContacts ? statusUser : '';
                     showResponse.listStatus = chatStatus;
                     showResponse.urlChangeContent = aliasRouter.build('chat.change.content');
+
                     showResponse.statusSingle = cfgChat.status_single;
                     showResponse.pathImgSingle = cfgChat.img_single_user;
                     showResponse.pathImgGroup = cfgChat.img_group_user;
-                    showResponse.classStatusCurrent = (statusUser != cfgChat.status_hidden_name) ? statusUser : cfgChat.status_hidden_name_replace;
                     showResponse.classUndefined = cfgChat.class_undefined;
                     showResponse.classStatusHidden = cfgChat.status_hidden_name;
                     showResponse.classReplaceStatusHidden = cfgChat.status_hidden_name_replace;
-
                     showResponse.listParticipant = rsData.infoParticipant ? rsData.infoParticipant : null;
 
                     // save session - share socket io
@@ -130,36 +119,33 @@ class ChatController extends BaseController {
             showResponseChat.page = 1;
             showResponseChat.userName = req.body.userName;
             showResponseChat.hexCodeId = userCurrent.attributes.id ? 'hex-' + userCurrent.attributes.id : null;
-            let chatController = new ChatController();
-            let cfgChat = chatController.supportConfigChat(req.session.cfg_chat);
+            // let chatController = new ChatController();
 
-            if (parseInt(req.body.dataConversation) && userCurrent && cfgChat) {
-
+            if (parseInt(req.body.dataConversation) && userCurrent) {
                 showResponseChat.renderViews = 'chat/content.chat.ejs';
                 let conversation = new Conversation.class();
-                let optionRequset = {
+                let optionRequest = {
                     id: parseInt(req.body.dataConversation),
                     userCurrentID: userCurrent.attributes.id,
                     userModel: User.model,
                     statusSingle: cfgChat.status_single
                 };
 
-                conversation.conversationsListSingleUser(optionRequset, function (errPart, modelListUser) {
+                conversation.conversationsListSingleUser(optionRequest, function (errPart, modelListUser) {
                     if (errPart) return next(errPart);
 
                     let listUserParticipant = modelListUser.map(function (listUser) {
-                        let listUserRelations = listUser.relations.parConversation;
                         return {
                             codePartId: listUser.get('id'),
                             usersId: listUser.get('users_id'),
                             is_accept_single: listUser.get('is_accept_single'),
                             is_accept_group: listUser.get('is_accept_group'),
-                            channelId: listUserRelations.get('channel_id'),
+                            channelId: listUser.relations.parConversation.get('channel_id'),
                             conversationID: listUser.get('conversation_id')
                         };
                     });
 
-                    conversation.conversationsListUser(optionRequset, function (err, infoConversation) {
+                    conversation.conversationsListUser(optionRequest, function (err, infoConversation) {
                         if (err) return next(err);
 
                         infoConversation.forEach(function (elem) {
@@ -180,7 +166,6 @@ class ChatController extends BaseController {
                                 let eleSingle = elem.infoParticipant;
                                 let useContactsSingle = eleSingle.relations.useContacts;
                                 let indexFindUserSingle = listUserParticipant.findIndex(x => x.usersId == useContactsSingle.get('users_id'));
-                                let booleanFindUserSingle = (indexFindUserSingle !== -1);
                                 let moodMessageTemp = "";
                                 let tempClassStatus = "";
                                 let tempChatStatusName = chatStatus[useContactsSingle.get('status')];
@@ -195,28 +180,15 @@ class ChatController extends BaseController {
                                     }
                                     tempClassStatus = (tempChatStatusName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusName;
                                 }
-
-                                let tempPartSingle = {
-                                    email: eleSingle.get('email'),
-                                    phone: eleSingle.get('phone'),
-                                    user_name: useContactsSingle.get('user_name'),
-                                    users_id: useContactsSingle.get('users_id'),
-                                    first_name: useContactsSingle.get('first_name'),
-                                    last_name: useContactsSingle.get('last_name'),
-                                    middle_name: useContactsSingle.get('middle_name'),
-                                    gender: useContactsSingle.get('gender'),
-                                    is_life: useContactsSingle.get('is_life'),
-                                    mood_message: useContactsSingle.get('mood_message'),
-                                    status: useContactsSingle.get('status'),
-                                    statusName: tempChatStatusName,
+                                let optionRender = {
+                                    eleSingle: eleSingle,
                                     strListStatus: Object.values(chatStatus).join(' '),
-                                    isFriendCurrent: booleanFindUserSingle ? (listUserParticipant[indexFindUserSingle].is_accept_single != 1) : false,
-                                    channelID: booleanFindUserSingle ? listUserParticipant[indexFindUserSingle].channelId : null,
-                                    conversationID: booleanFindUserSingle ? listUserParticipant[indexFindUserSingle].conversationID : null,
-                                    moodMessageShow: moodMessageTemp,
-                                    classStatus: tempClassStatus,
-                                    codePartId: booleanFindUserSingle ? listUserParticipant[indexFindUserSingle].codePartId : null,
+                                    moodMessageTemp: moodMessageTemp,
+                                    tempClassStatus: tempClassStatus,
+                                    indexFindUserSingle: indexFindUserSingle,
+                                    tempChatStatusName: tempChatStatusName
                                 };
+                                let tempPartSingle = libFunction.renderDataContentChat(useContactsSingle, listUserParticipant, optionRender);
 
                                 showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
                                 listParticipant.push(tempPartSingle);
@@ -243,30 +215,20 @@ class ChatController extends BaseController {
                                         tempClassStatusGroup = cfgChat.class_undefined;
                                     }
 
-                                    let tempPartGroup = {
-                                        email: ele.get('email'),
-                                        phone: ele.get('phone'),
-                                        user_name: relationsUseContacts.get('user_name'),
-                                        users_id: relationsUseContacts.get('users_id'),
-                                        first_name: relationsUseContacts.get('first_name'),
-                                        last_name: relationsUseContacts.get('last_name'),
-                                        middle_name: relationsUseContacts.get('middle_name'),
-                                        gender: relationsUseContacts.get('gender'),
-                                        is_life: relationsUseContacts.get('is_life'),
-                                        mood_message: relationsUseContacts.get('mood_message'),
-                                        status: relationsUseContacts.get('status'),
-                                        statusName: tempChatStatusGroupName,
+                                    let optionRender = {
+                                        eleSingle: ele,
                                         strListStatus: Object.values(chatStatus).join(' '),
-                                        isFriendCurrent: isFriendCurrent,
-                                        channelID: booleanFindUser ? listUserParticipant[indexFindUser].channelId : null,
-                                        conversationID: booleanFindUser ? listUserParticipant[indexFindUser].conversationID : null,
-                                        moodMessageShow: tempMoodMessageGroup,
-                                        classStatus: tempClassStatusGroup,
-                                        codePartId: booleanFindUser ? listUserParticipant[indexFindUser].codePartId : null,
+                                        moodMessageTemp: tempMoodMessageGroup,
+                                        tempClassStatus: tempClassStatusGroup,
+                                        indexFindUserSingle: indexFindUser,
+                                        tempChatStatusName: tempChatStatusGroupName
                                     };
+                                    let tempPartGroup = libFunction.renderDataContentChat(relationsUseContacts, listUserParticipant, optionRender);
+
                                     listParticipant.push(tempPartGroup);
                                     urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : cfgChat.img_group_user;
                                 });
+
                                 showResponseChat.isFriendCurrentSingle = true;
                             }
 
@@ -283,17 +245,14 @@ class ChatController extends BaseController {
                             if (err) {
                                 res.send(err);
                             } else {
-                                var response = {
-                                    html: renderHtml,
-                                    err: err,
-                                };
+                                var response = {html: renderHtml, err: err};
 
                                 res.status(200).send(response);
                             }
                         });
                     });
                 });
-            } else if ((req.body.dataConversation === "") && parseInt(req.body.valAuthor) && userCurrent && cfgChat) {
+            } else if ((req.body.dataConversation === "") && parseInt(req.body.valAuthor) && userCurrent) {
                 // NOT FRIEND AND NOT REQUEST
                 showResponseChat.renderViews = 'chat/request.chat.ejs';
                 let user = new User.class();
@@ -314,10 +273,7 @@ class ChatController extends BaseController {
                         if (err) {
                             res.send(err);
                         } else {
-                            var response = {
-                                html: renderHtml,
-                                err: err,
-                            };
+                            var response = {html: renderHtml, err: err};
 
                             res.status(200).send(response);
                         }
@@ -345,8 +301,8 @@ class ChatController extends BaseController {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                            return conversationType[k]
-                        })),
+                        return conversationType[k]
+                    })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -354,63 +310,31 @@ class ChatController extends BaseController {
                     if (errConversation) {
                         res.status(500).send(errConversation)
                     } else {
-                        showResponseChat.option.isConversationSingle = isAuthenticatesSingle ? req.body.dataType === conversationType[0] : null;
                         let tempModelConversation = modelConversation.infoParticipant;
-                        let dataResult = [];
+                        if (isAuthenticatesSingle === false) {
+                            let option = {
+                                isSearch: req.body.isSearch !== undefined ? req.body.isSearch === 'true' : false,
+                                valSearch: req.body.valSearch !== undefined ? req.body.valSearch : false
+                            };
+                            let resultListContactAll = libFunction.renderContactListAll(tempModelConversation, option);
+                            resultListContactAll.cfg_chat = helper.coreHelper.app.cfg_chat;
 
-                        tempModelConversation.forEach(function (elemItem) {
-                            if (elemItem.infoAccountParticipant.length === undefined) {
-                                let useContact = elemItem.infoAccountParticipant.relations.useContacts;
-                                let cfg_chat = JSON.parse(useContact.attributes.cfg_chat);
-                                let tempDataResult = {};
+                            res.status(200).send(resultListContactAll);
+                        } else {
+                            showResponseChat.option.isConversationSingle = isAuthenticatesSingle ? req.body.dataType === conversationType[0] : null;
 
-                                tempDataResult.first_name = useContact.attributes.first_name;
-                                tempDataResult.last_name = useContact.attributes.last_name;
-                                tempDataResult.middle_name = useContact.attributes.middle_name;
-                                tempDataResult.gender = useContact.attributes.gender;
-                                tempDataResult.user_id = useContact.attributes.users_id;
-                                tempDataResult.mood_message = useContact.attributes.mood_message;
-                                tempDataResult.path_img = useContact.attributes.path_img;
-                                tempDataResult.country = useContact.attributes.country;
-                                tempDataResult.email = elemItem.infoAccountParticipant.attributes.email;
-                                tempDataResult.phone = elemItem.infoAccountParticipant.attributes.phone;
-                                tempDataResult.user_name = useContact.attributes.user_name;
-                                tempDataResult.path_img_default = cfg_chat.img_single_user;
-                                tempDataResult.created_at = libFunction.convertDateTimeToInt(elemItem.infoAccountParticipant.attributes.created_at);
+                            let option = {single: conversationType[0]};
+                            let dataResult = libFunction.getListContactSingle(tempModelConversation, option);
+                            dataResult.sort(function (a, b) {
+                                return a.created_at - b.created_at;
+                            });
 
-                                dataResult.push(tempDataResult);
-                            } else if (elemItem.infoAccountParticipant.length !== undefined && elemItem.infoAccountParticipant.length) {
-                                console.log(elemItem.infoAccountParticipant);
-                            }
-                        });
+                            showResponseChat.data = dataResult;
+                            showResponseChat.done = true;
+                            showResponseChat.msg = 'success';
 
-                        dataResult.sort(function (a, b) {
-                            return a.created_at - b.created_at;
-                        });
-
-                        showResponseChat.data = dataResult;
-                        showResponseChat.done = true;
-                        showResponseChat.msg = 'success';
-
-                        // showResponseChat.renderViews = 'chat/list-contact.chat.ejs';
-                        //
-                        // res.render(showResponseChat.renderViews, {
-                        //     data: showResponseChat,
-                        //     layout: false
-                        // }, function (err, renderHtml) {
-                        //     if (err) {
-                        //         res.send(err);
-                        //     } else {
-                        //         var response = {
-                        //             html: renderHtml,
-                        //             err: err,
-                        //         };
-                        //
-                        //         res.status(200).send(response);
-                        //     }
-                        // });
-
-                        res.status(200).send(showResponseChat)
+                            res.status(200).send(showResponseChat);
+                        }
                     }
                 });
             } else {
@@ -427,19 +351,13 @@ class ChatController extends BaseController {
     socketConnection(io) {
         var s60 = 1000 * 60 * 1;
         io.on('connection', function (socket) {
-            // io.sockets.emit('send-data-test', socket.id);
-            // var reconnection = true,
-            //     reconnectionDelay = 5000,
-            //     reconnectionTry = 0;
-
             let chatController = new ChatController();
             let userCurrent = chatController.getSessionByName(socket, 'passport');
-            let cfgChat = chatController.supportConfigChat(chatController.getSessionByName(socket, 'cfg_chat'));
+            let cfgChatUser = chatController.supportConfigChat(chatController.getSessionByName(socket, 'cfg_chat'));
             chatController.setSessionByName(socket, 'isActiveCurrent', userCurrent.user ? userCurrent.user : null);
             socket.isActiveLoadPageCurrent = userCurrent.user ? userCurrent.user : null;
-            // allClients.push(socket.id);
 
-            if (userCurrent && cfgChat) {
+            if (userCurrent) {
                 let chatController = new ChatController();
                 let newContacts = new Contacts.class();
                 let newUser = new User.class();
@@ -450,7 +368,6 @@ class ChatController extends BaseController {
                         return getRoomId.channel_id;
                     });
                     chatController.setSessionByName(socket, 'listRooms', reqListRooms);
-
                     chatController.convertDataListSocket(socket, infoParticipant, currentStatus);
                     chatController.deleteSessionByName(socket, 'infoParticipant');
 
@@ -475,8 +392,8 @@ class ChatController extends BaseController {
                         let requestMessage = {
                             id: conversationId,
                             userCurrentID: userCurrent.user,
-                            limit: cfgChat.page_size_number,
-                            offset: cfgChat.page_size_number * (page - 1),
+                            limit: cfgChatUser.page_size_number,
+                            offset: cfgChatUser.page_size_number * (page - 1),
                             sort: 'DESC'
 
                         };
@@ -739,18 +656,10 @@ class ChatController extends BaseController {
                 }
                 console.log(`disconnect ----------------------------------------  ${socket.id}`);
                 socket.emit('messageDisconnect', {content: 'bye bye!', importance: null, 'socketID': socket.id});
-
-
-                // // logout
-                // if (chatController.getSessionByName(socket, 'isLogout') === true) {
-                //     console.log('logout');
-                // }
-
             });
 
         });
     }
-
 }
 
 ChatController.prototype.getSessionUser = function (socket) {
@@ -772,12 +681,9 @@ ChatController.prototype.getSessionByName = function (socket, nameSession) {
 ChatController.prototype.setSessionByName = function (socket, nameSession, dataSave) {
     let resultSession = false;
     if (nameSession) {
-        // let sessionByName = socket.handshake.session[nameSession] ? socket.handshake.session[nameSession] : false;
-        // if (sessionByName) {
         socket.handshake.session[nameSession] = dataSave;
         socket.handshake.session.save();
         resultSession = true;
-        // }
     }
 
     return resultSession;
@@ -863,11 +769,6 @@ ChatController.prototype.convertDataListSocket = function (socket, infoConversat
             // C2
             // socket.broadcast.in(sendBroadcastRoom).emit('listUserConversation', conversationClone);
         });
-
-        // console.log('________', JSON.stringify(socket.adapter.rooms));
-        // console.log('sendBroadcastRoom ________', JSON.stringify(sendBroadcastRoom));
-        // socket.broadcast.emit('listUserConversation', conversation);
-
         return true;
     } catch (ex) {
         return false;
@@ -875,24 +776,12 @@ ChatController.prototype.convertDataListSocket = function (socket, infoConversat
 };
 
 ChatController.prototype.updateUserListSocket = function (socket, dataRequest, currentStatus, done) {
-    let responsiveData = {
-        code: null,
-        msg: '',
-        data: {},
-        status: false
-    };
+    let responsiveData = {code: null, msg: '', data: {}, status: false};
 
     try {
         let newContacts = new Contacts.class();
         let newUser = new User.class();
         let chatController = new ChatController();
-        let cfgChat = chatController.supportConfigChat(chatController.getSessionByName(socket, 'cfg_chat'));
-
-        if (cfgChat === null) {
-            responsiveData['msg'] = 'Not read session config chat';
-            responsiveData['code'] = 'ERR0000';
-            done('ERR0000', responsiveData);
-        }
 
         newContacts.updateContact(dataRequest, function (err, rsModel) {
             if (err) {

@@ -884,14 +884,17 @@
     border-top: 1px solid brown;
     position: absolute;
     width: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 #frame .content #group-participant .list-group-part {
     /*display: inline-flex;*/
     display: block;
-    width: 90%;
+    width: 100%;
     padding: 5px 10px 0px 10px;
     float: left;
+    max-height: 100px;
 }
 
 #frame .content #group-participant .list-group-part .info-part {
@@ -952,6 +955,7 @@
     /*max-height: calc(100% - 93px);*/
     overflow-y: scroll;
     overflow-x: hidden;
+    width: auto;
 }
 
 @media screen and (max-width: 735px) {
