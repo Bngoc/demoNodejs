@@ -568,7 +568,7 @@
 }
 
 #frame #sidepanel #contacts ul li.contact .wrap .meta {
-    /*padding: 5px 0 0 0;*/
+    display: grid;
 }
 
 @media screen and (max-width: 735px) {
@@ -577,14 +577,20 @@
     }
 }
 
-#frame #sidepanel #contacts ul li.contact .wrap .meta .name {
+#contacts ul li.contact .wrap .name-notify {
+    position: relative;
+    float: left;
+}
+
+#contacts ul li.contact .wrap .meta .name {
     font-weight: 600;
     width: 77%;
     white-space: nowrap;
-    position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-#frame #sidepanel #contacts ul li.contact .wrap .meta .name .badges-notify {
+#contacts ul li.contact .wrap .meta .name-notify .badges-notify {
     height: 15px;
     border-radius: 50%;
     padding: 3px 10px;
@@ -592,17 +598,19 @@
     margin-left: 0px;
     position: absolute;
     right: 0;
-    margin-right: -35px;
     bottom: -2pt;
 }
 
-#frame #sidepanel #contacts ul li.contact .wrap .meta .name .badges-color {
+#contacts ul li.active .wrap .meta .name-notify .badges-notify {
+    /*right: -5px;*/
+}
+
+#frame #sidepanel #contacts ul li.contact .wrap .meta .name-notify .badges-color {
     background: red;
 }
 
-#frame #sidepanel #contacts ul li.active .wrap .meta .name .badges-notify {
-    right: 0px !important;
-    /*right: -4.2762px !important;*/
+#frame #sidepanel #contacts ul li.active .wrap .meta .name-notify .badges-notify {
+    /*right: 0px !important;*/
 }
 
 #frame #sidepanel #contacts ul li.contact .wrap .meta .preview {

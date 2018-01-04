@@ -92,12 +92,41 @@ let listContacts = function () {
         return listContactSingleSearch;
     };
 
-    this.clickActContact = function () {
-        return $.map($('.name-contact[data-act-freind]'), function (element) {
+    this.clickActionContact = function () {
+        let listParticipant = {};
+        let tempAuthorId = [];
+        let tempNameAuthorId = [];
+        $('.name-contact[data-act-freind]').each(function (index, element) {
             let authorId = $(element).attr('data-act-freind');
-            if (typeof authorId !== typeof undefined && authorId !== false) return parseInt(authorId);
-            return false;
+            let nameAuthorId = $(element).find('.name-act')[0].childNodes[0].nodeValue;
+
+            if (typeof authorId !== typeof undefined && authorId !== false) {
+                tempAuthorId.push(parseInt(authorId));
+                tempNameAuthorId.push(ucfirst(nameAuthorId));
+            }
         });
+
+        listParticipant.authorId = tempAuthorId;
+        listParticipant.nameAuthorId = tempNameAuthorId;
+
+        return listParticipant;
+
+        // return $.map($('.name-contact[data-act-freind]'), function (element) {
+        //     let authorId = $(element).attr('data-act-freind');
+        //     let nameAuthorId = $(element).find('.name-act')[0].childNodes[0].nodeValue;
+        //     let temp = {};
+        //     if (typeof authorId !== typeof undefined && authorId !== false){
+        //         temp.authorId = parseInt(authorId);
+        //         temp.nameAuthorId = nameAuthorId;
+        //         return temp;
+        //     }
+        //
+        //     return false;
+        // });
+    };
+
+    this.getNameParticipant = function () {
+
     };
 
     this.getListParticipant = function () {

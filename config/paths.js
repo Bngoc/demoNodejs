@@ -29,25 +29,3 @@ var DefinePaths = function definePaths() {
 };
 
 module.exports = DefinePaths;
-
-
-// exports.ROOT            = dirname(__dirname) + DS;
-// exports.LIB             = this.ROOT + 'lib' + DS;
-// exports.VENDOR          = this.ROOT + 'vendor' + DS;
-// exports.RESOURCES       = this.ROOT + 'resources' + DS;
-// exports.PUBLIC          = this.ROOT + 'public' + DS;
-exports.locales = this.ROOT + 'locales' + DS;
-// exports.CONFIG  = this.ROOT + 'config' + DS;
-// exports.cache           = this.ROOT + 'cache' + DS;
-exports.config_module = this.config + 'modules' + DS;
-// exports.middlewares = this.config + 'middlewares' + DS;
-exports.config_passport = this.config_module + 'passport' + DS;
-// exports.APP             = this.ROOT + 'app' + DS;
-// exports.controllers     = this.APP + 'controllers' + DS;
-exports.controllersApi = this.controllers + 'api' + DS;
-// exports.models          = this.app + 'models' + DS;
-// exports.views           = this.app + 'views' + DS;
-exports.sockets = this.app + 'sockets' + DS;
-exports.utils = this.ROOT + 'utils' + DS;
-exports.webROOT = this.ROOT + 'webROOT' + DS;
-exports.webROOT_img = this.webROOT + 'images' + DS;

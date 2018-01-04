@@ -3,7 +3,6 @@
 $(function () {
     $(document)
         .on('mouseenter', '[data-hover="tooltip"]', function (event) {
-
             let tooltipContent = $(this).attr('data-tooltip-content');
             let tooltipPosition = $(this).attr('data-tooltip-position');
             let tooltipPrivate = $(this).attr('data-tooltip-private');
@@ -40,8 +39,6 @@ $(function () {
             tooltipText.css({display: 'block', top: heightNormalTop, left: withNormal});
 
             window.isCheckHover = true;
-            // console.log('2222222222222222222222222', event.pageY, offsetCreateTooltip.top, offset.top);
-
         })
         .on('mouseleave', '[data-hover="tooltip"]', function () {
             let tooltipTextLeave = $('#create-tooltip .tooltiptext');
@@ -113,7 +110,6 @@ function callDataJS(dataRequest, callback) {
             } else {
                 msg = 'Uncaught Error.\n' + jqXHR.responseText;
             }
-            // $('#post').html(msg);
         }
     });
 }
@@ -178,9 +174,11 @@ function notify_auto_hide(id, type, delay) {
     }, delay);
 }
 
+function ucfirst(str) {
+    let string = (str !== undefined ? str : '');
+    if (str === '') return '';
 
-function randomStringGenerate() {
-    return Math.random().toString(36).substring(2);
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 function imageToBase64(img) {

@@ -73,7 +73,6 @@
           "js/select2.js"
         ],
         "body": [
-          "js/contextMenu/main.js",
           "js/bootstrap.js",
           "js/respond.min.js",
           "js/application.js",

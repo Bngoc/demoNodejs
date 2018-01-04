@@ -35,17 +35,6 @@ let LibCommonChat = function () {
 
     };
 
-    // this.renderHtmlMessageText = function (objElement, reqOption) {
-    //     let htmlText = '';
-    //     if (reqOption.isUserCurrent === true) {
-    //         htmlText = this.supportHtmlTextAppend(objElement, reqOption);
-    //     } else {
-    //         htmlText = this.supportHtmlTextAppend(objElement, reqOption);
-    //     }
-    //
-    //     return htmlText;
-    // };
-
     this.supportHtmlTextOther = function (contactMessage, reqOption) {
         let htmlOpen = '<li class="_4tdt sent author-' + contactMessage.id + '">'
             + '<div class="js_hn _31o4">'

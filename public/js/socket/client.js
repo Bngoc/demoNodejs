@@ -8,7 +8,6 @@ var socket = io.connect(document.location.origin, {
     'pingTimeout': 5000
 });
 
-
 $(document).ready(function () {
     var sendChatMessage = new SendChatMessage();
     sendChatMessage.eventSendMsg();
@@ -39,6 +38,7 @@ var SendChatMessage = function () {
         this.clickContactSub();
         this.clickContactSearchSingle();
         this.clickActContactConversation();
+        this.clickSearchContact();
         this.getListContact();
     };
 };
@@ -179,6 +179,29 @@ SendChatMessage.prototype.scrollEndShowBoxChat = function (timeAnimal) {
     $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, timeAnimate);
 };
 
+SendChatMessage.prototype.clickSearchContact = function () {
+    let _this = this;
+    $('body').on('keyup copy cut', '#search-contact', function () {
+        let val = $.trim($(this).val());
+        if (val.length > 2) {
+            let requestListContact = {
+                url: '/chat/list-contact',
+                data: {
+                    dataType: false,
+                    isAuthenticatesSingle: false,
+                    _method: 'post'
+                }
+            };
+            let lisContact = new listContacts();
+            let _that = this;
+            callDataJS(requestListContact, function (dataResult) {
+                console.log(dataResult)
+            });
+        } else {
+
+        }
+    });
+};
 
 SendChatMessage.prototype.clickRightContactContentChat = function () {
     let _this = this;
@@ -241,13 +264,18 @@ SendChatMessage.prototype.clickActContactConversation = function () {
         let dataConversationId = (typeof dataConversation !== typeof undefined && dataConversation !== false) ? dataConversation : null;
 
         let isSingle = window.isSingle === 'true';
+        let listParticipant = listContact.clickActionContact();
+        let nameListParticipant = listParticipant.nameAuthorId;
+        let nameUesrCurrent = $('#profile .user-name-chat')[0].childNodes[0].nodeValue;
+        nameListParticipant.unshift(ucfirst(nameUesrCurrent));
+
         let reqActionConversation = {
             conversationId: (isSingle ? null : dataConversationId),
             userParticipant: (isSingle ? listContact.getListParticipant() : null),
-            listAuthorId: listContact.clickActContact(),
+            listAuthorId: listParticipant.authorId,
             isSingle: isSingle,
             act: (isSingle ? 'add' : 'update'),
-
+            title: (isSingle ? nameListParticipant.join(', ') : null)
         };
 
         socket.emit('updateActionConversationGroup', reqActionConversation);
@@ -260,6 +288,7 @@ SendChatMessage.prototype.getListContact = function () {
             url: '/chat/list-contact',
             data: {
                 dataType: $('#messageInput').attr('data-type'),
+                isAuthenticatesSingle: true,
                 _method: 'post'
             }
         };
@@ -358,7 +387,6 @@ SendChatMessage.prototype.renderHtmlListContact = function () {
 
     $('#list-contacts').html(htmlListContact);
 };
-
 
 SendChatMessage.prototype.clickTaskContactChat = function () {
     console.log('clickTaskContactChat');

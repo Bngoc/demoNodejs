@@ -340,41 +340,48 @@ class ChatController extends BaseController {
             msg: ''
         };
         try {
-            if (req.user && req.body.dataType) {
+            if (req.user) {
+                let isAuthenticatesSingle = req.body.isAuthenticatesSingle === 'true';
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
-                    conversationType: [conversationType[0]],
-                    isAuthenticatesSingle: true
+                    conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
+                            return conversationType[k]
+                        })),
+                    isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
                 user.findByIdChat(requestConversation, function (errConversation, modelConversation) {
                     if (errConversation) {
                         res.status(500).send(errConversation)
                     } else {
-                        showResponseChat.option.isConversationSingle = req.body.dataType === conversationType[0];
+                        showResponseChat.option.isConversationSingle = isAuthenticatesSingle ? req.body.dataType === conversationType[0] : null;
                         let tempModelConversation = modelConversation.infoParticipant;
                         let dataResult = [];
 
                         tempModelConversation.forEach(function (elemItem) {
-                            let useContact = elemItem.infoAccountParticipant.relations.useContacts;
-                            let cfg_chat = JSON.parse(useContact.attributes.cfg_chat);
-                            let tempDataResult = {};
+                            if (elemItem.infoAccountParticipant.length === undefined) {
+                                let useContact = elemItem.infoAccountParticipant.relations.useContacts;
+                                let cfg_chat = JSON.parse(useContact.attributes.cfg_chat);
+                                let tempDataResult = {};
 
-                            tempDataResult.first_name = useContact.attributes.first_name;
-                            tempDataResult.last_name = useContact.attributes.last_name;
-                            tempDataResult.middle_name = useContact.attributes.middle_name;
-                            tempDataResult.gender = useContact.attributes.gender;
-                            tempDataResult.user_id = useContact.attributes.users_id;
-                            tempDataResult.mood_message = useContact.attributes.mood_message;
-                            tempDataResult.path_img = useContact.attributes.path_img;
-                            tempDataResult.country = useContact.attributes.country;
-                            tempDataResult.email = elemItem.infoAccountParticipant.attributes.email;
-                            tempDataResult.phone = elemItem.infoAccountParticipant.attributes.phone;
-                            tempDataResult.user_name = useContact.attributes.user_name;
-                            tempDataResult.path_img_default = cfg_chat.img_single_user;
-                            tempDataResult.created_at = libFunction.convertDateTimeToInt(elemItem.infoAccountParticipant.attributes.created_at);
+                                tempDataResult.first_name = useContact.attributes.first_name;
+                                tempDataResult.last_name = useContact.attributes.last_name;
+                                tempDataResult.middle_name = useContact.attributes.middle_name;
+                                tempDataResult.gender = useContact.attributes.gender;
+                                tempDataResult.user_id = useContact.attributes.users_id;
+                                tempDataResult.mood_message = useContact.attributes.mood_message;
+                                tempDataResult.path_img = useContact.attributes.path_img;
+                                tempDataResult.country = useContact.attributes.country;
+                                tempDataResult.email = elemItem.infoAccountParticipant.attributes.email;
+                                tempDataResult.phone = elemItem.infoAccountParticipant.attributes.phone;
+                                tempDataResult.user_name = useContact.attributes.user_name;
+                                tempDataResult.path_img_default = cfg_chat.img_single_user;
+                                tempDataResult.created_at = libFunction.convertDateTimeToInt(elemItem.infoAccountParticipant.attributes.created_at);
 
-                            dataResult.push(tempDataResult);
+                                dataResult.push(tempDataResult);
+                            } else if (elemItem.infoAccountParticipant.length !== undefined && elemItem.infoAccountParticipant.length) {
+                                console.log(elemItem.infoAccountParticipant);
+                            }
                         });
 
                         dataResult.sort(function (a, b) {
@@ -557,16 +564,43 @@ class ChatController extends BaseController {
                 });
 
                 socket.on('updateActionConversationGroup', function (reqActionConversation) {
-                    if (reqActionConversation.isSingle === true) {
+                    if (reqActionConversation.isSingle === true && reqActionConversation.act === 'add') {
                         // create conversaton
                         //user part - use current - list author
-                        if (reqActionConversation.listAuthorId.length) {
+                        if (reqActionConversation.userParticipant.length && reqActionConversation.listAuthorId.length) {
+                            let userParticipant = reqActionConversation.userParticipant;
+                            userParticipant.push(userCurrent.user);
+                            let listParticipant = [];
+                            userParticipant.forEach(function (items) {
+                                let temp = {};
+                                temp.users_id = items;
+                                temp.type = conversationType[1];
+                                temp.is_accept_group = 0;
+                                listParticipant.push(temp);
+                            });
 
+                            reqActionConversation.listAuthorId.forEach(function (items) {
+                                let temp = {};
+                                temp.users_id = items;
+                                temp.is_accept_group = 1;
+                                temp.type = conversationType[1];
+                                listParticipant.push(temp);
+                            });
+                            let reqModelsInsert = {
+                                title: reqActionConversation.title,
+                                creator_id: userCurrent.user,
+                                channel_id: libFunction.randomStringGenerate(),
+                                listParticipant: listParticipant
+                            };
+
+                            let conversation = new Conversation.class();
+                            conversation.insertConversation(reqModelsInsert, function (err, modelConversation) {
+                                console.log(reqModelsInsert);
+                            });
                         }
-                    } else {
-                        // update conversation
-                        // update conver
-                        if (reqActionConversation.conversationId && reqActionConversation.listAuthorId.length) {
+                    } else if (reqActionConversation.conversationId && reqActionConversation.act === 'update') {
+                        // update conversation user in table participant
+                        if (reqActionConversation.listAuthorId.length) {
 
                         }
                     }
