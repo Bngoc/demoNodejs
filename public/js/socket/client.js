@@ -185,46 +185,31 @@ SendChatMessage.prototype.clickSearchContact = function () {
     $('body')
         .on('keyup copy cut', '#search-contact', function () {
             let val = $.trim($(this).val());
-            let requestListContact = {
+            let requestListContactDefault = {
                 url: '/chat/list-contact',
                 data: {
                     dataType: false,
                     isAuthenticatesSingle: false,
+                    isSearch: false,
+                    valSearch: null,
                     _method: 'post'
-                }
+                },
+                reset: true
             };
+            //remain time  or value search length min 3 for reset list contact
+            window.remainTime = getDateTimeNow() + 0.1 * 60 * 1000;
+            window.reqDataReset = requestListContactDefault;
+
+            listContact.subscribeAfterClickListContact();
+            let requestListContact = jQuery.extend(true, {}, requestListContactDefault);
+
             if (val.length > 2) {
-                requestListContact.data.isSearch = true;
-                requestListContact.data.valSearch = val;
-                requestListContact.reset = false;
-            } else {
-                requestListContact.data.isSearch = false;
-                requestListContact.data.valSearch = null;
-                requestListContact.reset = true;
-                window.remainTime = getDateTimeNow() + 0.3 * 60 * 1000;
-                window.reqDataReset = requestListContact;
-                listContact.subscribeAfterClickListContact();
+                requestListContact['data']['isSearch'] = true;
+                requestListContact['data']['valSearch'] = val;
+                requestListContact['reset'] = false;
             }
 
             listContact.searchListContactListAll(requestListContact);
-        })
-        .on('click', '#contacts .contact', function () {
-            if ($.trim($('#search-contact').val())) {
-                let reqListContact = {
-                    url: '/chat/list-contact',
-                    data: {
-                        dataType: false,
-                        isAuthenticatesSingle: false,
-                        isSearch: false,
-                        valSearch: null,
-                        _method: 'post',
-                    },
-                    reset: true
-                };
-                window.remainTime = getDateTimeNow() + 0.4 * 60 * 1000;
-                window.reqDataReset = reqListContact;
-                listContact.subscribeAfterClickListContact();
-            }
         });
 };
 

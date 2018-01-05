@@ -190,7 +190,7 @@ let listContacts = function () {
         let _this = this;
         let valSearch = $.trim($('#search-contact').val());
         let remainTime = setInterval(function () {
-            if (window.remainTime != undefined && window.reqDataReset != undefined) {
+            if (window.remainTime !== 'undefined' && window.reqDataReset !== 'undefined') {
                 if (window.remainTime <= getDateTimeNow() && valSearch) {
                     clearInterval(remainTime);
                     $('#search-contact').val('');
