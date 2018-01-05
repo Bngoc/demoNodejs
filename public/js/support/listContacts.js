@@ -193,12 +193,14 @@ let listContacts = function () {
             if (window.remainTime != undefined && window.reqDataReset != undefined) {
                 if (window.remainTime <= getDateTimeNow() && valSearch) {
                     clearInterval(remainTime);
-                    window.remainTime = undefined;
                     $('#search-contact').val('');
                     _this.searchListContactListAll(window.reqDataReset);
+                    window.remainTime = undefined;
                     window.reqDataReset = undefined;
                 }
+            } else {
+                clearInterval(remainTime);
             }
         }, 1000);
-    }
+    };
 };

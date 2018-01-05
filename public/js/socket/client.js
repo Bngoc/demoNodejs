@@ -201,6 +201,9 @@ SendChatMessage.prototype.clickSearchContact = function () {
                 requestListContact.data.isSearch = false;
                 requestListContact.data.valSearch = null;
                 requestListContact.reset = true;
+                window.remainTime = getDateTimeNow() + 0.3 * 60 * 1000;
+                window.reqDataReset = requestListContact;
+                listContact.subscribeAfterClickListContact();
             }
 
             listContact.searchListContactListAll(requestListContact);
@@ -218,7 +221,7 @@ SendChatMessage.prototype.clickSearchContact = function () {
                     },
                     reset: true
                 };
-                window.remainTime = getDateTimeNow() + 0.5 * 60 * 1000;
+                window.remainTime = getDateTimeNow() + 0.4 * 60 * 1000;
                 window.reqDataReset = reqListContact;
                 listContact.subscribeAfterClickListContact();
             }
