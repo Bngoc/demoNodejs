@@ -456,12 +456,22 @@
     background-color: #243140;
 }
 
-#frame #sidepanel #contacts ul li.contact {
+#frame #sidepanel #contacts ul li.contact, #frame #sidepanel #contacts ul li.search-contact {
     position: relative;
     padding: 7px 0;
     font-size: 0.9em;
     cursor: pointer;
     display: -webkit-box;
+}
+
+#contacts ul li.search-contact .box-sreach-contact {
+    text-align: center;
+    margin-top: 10px;
+}
+
+#contacts ul li.search-contact .box-sreach-contact input.btn {
+    box-sizing: border-box;
+    box-shadow: 2px 1px #0054CC;
 }
 
 @media screen and (max-width: 735px) {
@@ -483,7 +493,7 @@
     border: 1px solid #32465a !important;
 }
 
-#frame #sidepanel #contacts ul li.contact .wrap {
+#frame #sidepanel #contacts ul li.contact .wrap, #contacts ul li.search-contact .wrap {
     width: 88%;
     margin: 0 auto;
     position: relative;

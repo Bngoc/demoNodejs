@@ -123,41 +123,82 @@ let listContacts = function () {
         });
     };
 
-    this.renderContactSingle = function () {
+    this.renderContactSingle = function (element, option) {
+        let statusPart = option.cfgChat.chatStatus[element.status] ? option.cfgChat.chatStatus[element.status] : "";
+        let classStatusPart = statusPart ? ((statusPart == option.cfgChat.cfg_chat.status_hidden_name) ? option.cfgChat.cfg_chat.status_hidden_name_replace : statusPart) : statusPart;
+
         let htmlSingleAll = '<li class="contact">'
-            + '<div class="wrap" data-conversation="<%-element.idConversation %>" data-type="<%- element.type%>"'
-            + 'data-channel="<%- element.channel_id %>" data-owner="<%- element.creator_id %>">'
-            + '<span channel="status.<%- element.channel_id %>"'
-            + 'class="list-icon-status contact-status <%- element.is_accept_single ? classUndefined : (infoContact.attributes.is_life && classStatusPart) ? classStatusPart : "" %>"></span> '
-            + '<img src="<%- infoContact.attributes.path_img ? infoContact.attributes.path_img : pathImgSingle %>" alt=""/>'
+            + '<div class="wrap" data-conversation="' + element.idConversation + '" data-type="' + element.type + '"'
+            + 'data-channel="' + element.channel_id + '" data-owner="' + element.creator_id + '">'
+            + '<span channel="status.' + element.channel_id + '"'
+            + 'class="list-icon-status contact-status ' + (element.is_accept_single ? option.cfgChat.cfg_chat.class_undefined : (element.is_life && classStatusPart) ? classStatusPart : "") + '"></span>'
+            + '<img src="' + (element.path_img ? element.path_img : option.cfgChat.cfg_chat.img_single_user) + '" alt=""/>'
             + '<div class="meta">'
-            + '<span class="name-notify"><p class="name"><%- infoContact.attributes.middle_name ? infoContact.attributes.middle_name : "&nbsp;" %></p><i class="badges-notify">132</i></span>'
-            + '<p class="preview mood_message"><%- infoContact.attributes.mood_message ? infoContact.attributes.mood_message : "" %></p>'
+            + '<span class="name-notify"><p class="name" data-conversation-name="' + element.middle_name + '">' + ((element.textSearch != undefined ? element.textSearch : element.middle_name ? element.middle_name : "&nbsp;")) + ' </p><i class="badges-notify">132</i></span>'
+            + '<p class="preview mood_message">' + (element.mood_message ? element.mood_message : "") + ' </p>'
             + '</div>'
             + '</div>'
             + '</li>';
+
+        return htmlSingleAll;
     };
 
-    this.renderContactGroup = function () {
+    this.renderContactGroup = function (element, option) {
         let htmlGroupAll = '<li class="contact">'
-            + '<div class="wrap" data-conversation="<%- element.idConversation %>" data-type="<%- element.type%>"'
-            + 'data-channel="<%- element.channel_id %>" data-owner="<%- element.creator_id %>">'
-            + '<span channel="status.<%- element.channel_id %>" class=""></span>'
-            + '<img src="<%- infoContactGroup.attributes.path_img_group ? infoContactGroup.attributes.path_img_group : pathImgGroup %>" alt=""/>'
+            + '<div class="wrap" data-conversation="' + element.idConversation + ' " data-type="' + element.type + ' "'
+            + 'data-channel="' + element.channel_id + ' " data-owner="' + element.creator_id + ' ">'
+            + '<span channel="status.' + element.channel_id + ' " class=""></span>'
+            + '<img src="' + (element.path_img_group ? element.path_img_group : option.cfgChat.cfg_chat.img_group_user) + ' " alt=""/>'
             + '<div class="meta">'
-            + '<span class="name-notify"><p class="name"><%- element.title %></p><i class="badges-notify">132</i></span>'
-            + '<p class="preview"> <%- element.count %> participants</p>'
+            + '<span class="name-notify"><p class="name" data-conversation-name="' + element.title + '">' + (element.textSearch != undefined ? element.textSearch : element.title) + ' </p><i class="badges-notify">132</i></span>'
+            + '<p class="preview"> ' + element.count + '  participants</p>'
             + '</div>'
             + '</div>'
             + '</li>';
+
+        return htmlGroupAll;
     };
 
-    this.showContactListAll = function () {
-
+    this.searchListContactListAll = function (requestListContact) {
+        let _this = this;
+        callDataJS(requestListContact, function (dataResult) {
+            _this.showContactListAll(dataResult);
+            let htmlSearch = '<li id="search-box-contacts" class="search-contact"><div class="wrap"><div class="box-sreach-contact"><input type="button" class="btn btn-primary" value="Search contacts" /></div></div></li>';
+            $('#contacts-your').append(requestListContact.reset ? '' : htmlSearch);
+        });
     };
 
-    this.renderContactSearchAll = function () {
+    this.showContactListAll = function (dataResult) {
+        let _this = this;
+        window.listContacts = dataResult;
+        let htmlListContact = '';
+        let option = {
+            cfgChat: dataResult.cfgChat
+        };
+        dataResult.contactList.forEach(function (element) {
+            if (element.isSingle === true) {
+                htmlListContact += _this.renderContactSingle(element, option);
+            } else {
+                htmlListContact += _this.renderContactGroup(element, option);
+            }
+        });
 
+        $('#contacts-your').html(htmlListContact);
     };
 
+    this.subscribeAfterClickListContact = function () {
+        let _this = this;
+        let valSearch = $.trim($('#search-contact').val());
+        let remainTime = setInterval(function () {
+            if (window.remainTime != undefined && window.reqDataReset != undefined) {
+                if (window.remainTime <= getDateTimeNow() && valSearch) {
+                    clearInterval(remainTime);
+                    window.remainTime = undefined;
+                    $('#search-contact').val('');
+                    _this.searchListContactListAll(window.reqDataReset);
+                    window.reqDataReset = undefined;
+                }
+            }
+        }, 1000);
+    }
 };

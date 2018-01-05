@@ -21,6 +21,7 @@ const app = {
         img_single_user: '/images/users.png',
         img_group_user: '/images/group.png',
         status_single: 'single',
+        status_group: 'group',
         status_hidden_name: 'hidden',
         status_hidden_name_replace: 'offline',
         mood_message_request: 'User not share information',

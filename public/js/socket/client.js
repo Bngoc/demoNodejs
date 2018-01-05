@@ -181,28 +181,48 @@ SendChatMessage.prototype.scrollEndShowBoxChat = function (timeAnimal) {
 
 SendChatMessage.prototype.clickSearchContact = function () {
     let _this = this;
-    $('body').on('keyup copy cut', '#search-contact', function () {
-        let val = $.trim($(this).val());
-        if (val.length > 2) {
+    let listContact = new listContacts();
+    $('body')
+        .on('keyup copy cut', '#search-contact', function () {
+            let val = $.trim($(this).val());
             let requestListContact = {
                 url: '/chat/list-contact',
                 data: {
                     dataType: false,
                     isAuthenticatesSingle: false,
-                    isSearch: true,
-                    valSearch: val,
                     _method: 'post'
                 }
             };
-            let lisContact = new listContacts();
-            let _that = this;
-            callDataJS(requestListContact, function (dataResult) {
-                console.log(dataResult)
-            });
-        } else {
+            if (val.length > 2) {
+                requestListContact.data.isSearch = true;
+                requestListContact.data.valSearch = val;
+                requestListContact.reset = false;
+            } else {
+                requestListContact.data.isSearch = false;
+                requestListContact.data.valSearch = null;
+                requestListContact.reset = true;
+            }
 
-        }
-    });
+            listContact.searchListContactListAll(requestListContact);
+        })
+        .on('click', '#contacts .contact', function () {
+            if ($.trim($('#search-contact').val())) {
+                let reqListContact = {
+                    url: '/chat/list-contact',
+                    data: {
+                        dataType: false,
+                        isAuthenticatesSingle: false,
+                        isSearch: false,
+                        valSearch: null,
+                        _method: 'post',
+                    },
+                    reset: true
+                };
+                window.remainTime = getDateTimeNow() + 0.5 * 60 * 1000;
+                window.reqDataReset = reqListContact;
+                listContact.subscribeAfterClickListContact();
+            }
+        });
 };
 
 SendChatMessage.prototype.clickRightContactContentChat = function () {
@@ -400,7 +420,7 @@ SendChatMessage.prototype.clickListContactContentChat = function () {
         // $('li.contact').removeClass('active');
         // $(this).addClass('active');
 
-        let userName = $(this).find('.meta p.name').contents().get(0).nodeValue;
+        let userName = $(this).find('.meta p.name').attr('data-conversation-name');
         let dataChannelID = $(this).find('.wrap').attr("data-channel");
         let dataOwnerID = $(this).find('.wrap').attr("data-owner");
         let dataConversation = $(this).find('.wrap').attr("data-conversation");

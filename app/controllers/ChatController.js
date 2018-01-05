@@ -83,13 +83,12 @@ class ChatController extends BaseController {
                     showResponse.listStatus = chatStatus;
                     showResponse.urlChangeContent = aliasRouter.build('chat.change.content');
 
-                    showResponse.statusSingle = cfgChat.status_single;
-                    showResponse.pathImgSingle = cfgChat.img_single_user;
-                    showResponse.pathImgGroup = cfgChat.img_group_user;
-                    showResponse.classUndefined = cfgChat.class_undefined;
-                    showResponse.classStatusHidden = cfgChat.status_hidden_name;
-                    showResponse.classReplaceStatusHidden = cfgChat.status_hidden_name_replace;
-                    showResponse.listParticipant = rsData.infoParticipant ? rsData.infoParticipant : null;
+                    let option = {
+                        isSearch: false,
+                        valSearch: null,
+                        cfg_chat: helper.coreHelper.app
+                    };
+                    showResponse.dataContactList = JSON.stringify(libFunction.renderContactListAll(rsData.infoParticipant, option), true);
 
                     // save session - share socket io
                     req.session.currentStatus = requestCurrent;
@@ -314,10 +313,11 @@ class ChatController extends BaseController {
                         if (isAuthenticatesSingle === false) {
                             let option = {
                                 isSearch: req.body.isSearch !== undefined ? req.body.isSearch === 'true' : false,
-                                valSearch: req.body.valSearch !== undefined ? req.body.valSearch : false
+                                valSearch: req.body.valSearch !== undefined ? req.body.valSearch : null,
+                                cfg_chat: helper.coreHelper.app
                             };
+
                             let resultListContactAll = libFunction.renderContactListAll(tempModelConversation, option);
-                            resultListContactAll.cfg_chat = helper.coreHelper.app.cfg_chat;
 
                             res.status(200).send(resultListContactAll);
                         } else {

@@ -55,6 +55,10 @@ function activeLastWeek(dateCheck, nowTimestampLastWeek) {
     let timestemp = new Date(dateCheck);
     return timestemp.getTime() >= nowTimestampLastWeek;
 }
+function getDateTimeNow() {
+    let timestemp = new Date();
+    return timestemp.getTime();
+}
 
 function customDateTime(dateTime, timestampLastWeek) {
     if (dateTime == undefined) return '';
