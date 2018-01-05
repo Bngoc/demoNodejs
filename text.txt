@@ -1,3 +1,11 @@
+Angular 5
+    https://www.djamware.com/post/5a0673c880aca7739224ee21/mean-stack-angular-5-crud-web-application-example
+
+1. npm install -g @angular/cli
+2. ng -v
+3.
+4. ng serve  ==========> add package.json =>>>  scripts
+
 <!--<% if(listParticipant){
                 listParticipant.forEach((element, indx)=> {
 
