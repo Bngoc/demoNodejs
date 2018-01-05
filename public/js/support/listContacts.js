@@ -145,10 +145,10 @@ let listContacts = function () {
 
     this.renderContactGroup = function (element, option) {
         let htmlGroupAll = '<li class="contact">'
-            + '<div class="wrap" data-conversation="' + element.idConversation + ' " data-type="' + element.type + ' "'
-            + 'data-channel="' + element.channel_id + ' " data-owner="' + element.creator_id + ' ">'
-            + '<span channel="status.' + element.channel_id + ' " class=""></span>'
-            + '<img src="' + (element.path_img_group ? element.path_img_group : option.cfgChat.cfg_chat.img_group_user) + ' " alt=""/>'
+            + '<div class="wrap" data-conversation="' + element.idConversation + '" data-type="' + element.type + '"'
+            + 'data-channel="' + element.channel_id + '" data-owner="' + element.creator_id + '">'
+            + '<span channel="status.' + element.channel_id + '" class=""></span>'
+            + '<img src="' + (element.path_img_group ? element.path_img_group : option.cfgChat.cfg_chat.img_group_user) + '" alt=""/>'
             + '<div class="meta">'
             + '<span class="name-notify"><p class="name" data-conversation-name="' + element.title + '">' + (element.textSearch != undefined ? element.textSearch : element.title) + ' </p><i class="badges-notify">132</i></span>'
             + '<p class="preview"> ' + element.count + '  participants</p>'
