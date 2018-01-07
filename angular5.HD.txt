@@ -1,0 +1,84 @@
+// -----------------------------environments-----------------------------------------
+1. npm install -g @angular/cli
+2. ng -v
+       npm install -g typescript
+3. Create
+    =) new app
+       -> ng new nameApp
+    =) exits app
+        .) ng new nameApp
+        .) copy folder angular js - project
+        .) sample skip (not replace)
+        .) edit file
+            -) package.json
+            -) .gitignore
+            -) ....
+4. ng serve  ==========> add package.json =>>>  scripts
+        ng serve --host 0.0.0.0 --port 4201
+5. npm install
+    - all package express socket.io .....
+6. run
+
+   npm start
+        .)Note
+            ..) sever node js running
+            ..) client angular runnng, default port 4200
+
+7. support
+    .) npm cache clean
+    .) ng serve --host 0.0.0.0 --port 4201 >>> single run
+        -) edit file anglular-cli.json
+            -)
+                "defaults": {
+                   "serve": {
+                     "port": 8080
+                   },
+                 }
+    .) serve Node + serve angular in one pc (code in one server)--->> https://medium.com/@danielkagan/serve-mean-stack-using-angular-cli-f39b33dbad64
+        0. Say we have a server running on http://localhost:3000/api and we want all calls to http://localhost:4200/api to go to that server.
+        1. CMD: npm install concurrently -g
+        2. add file
+            -).  proxy.conf.json --> serve node
+                //ND: proxy.conf.json
+                {
+                  "/XXXXXXX": {
+                    "target": "http://localhost:1230",
+                    "secure": false
+                  }
+                }
+                .) NOTE: localhost:1230/XXXXXXX
+                .) ng serve run automatically REMOVE /XXXXXX
+        3. edit file package.json
+             .)
+             "start": "npm run build & concurrently --kill-others \"npm run serve-api\" \"npm run serve\"",
+             "serve": "ng serve --proxy-config proxy.conf.json",
+             "serve-api": "node server.js",
+
+             //// Point static path to public
+             //// app.use(express.static(path.join(__dirname, 'public')));
+             // "build": "ng build --output-path=public",
+             // "build": "ng build --prod",
+        4. npm start
+            -) NOTE:
+                    -> localhost:4200 is our web app
+                    -> localhost:1230/XXXXXXX is our web server api
+// -----------------------------cmd-----------------------------------------
+-. Create the heroes component
+    ng generate component NameComponent
+
+-. import { Hero } from './hero';
+
+-. Add the AppRoutingModule
+
+      EX: ng generate module app-routing --flat --module=app
+
+       ____Scaffold_____| _____Usage_____
+       Component        |	ng g component my-new-component
+       Directive	    |   ng g directive my-new-directive
+       Pipe             |	ng g pipe my-new-pipe
+       Service	        |   ng g service my-new-service
+       Class            |	ng g class my-new-class
+       Guard            |	ng g guard my-new-guard
+       Interface        |	ng g interface my-new-interface
+       Enum             |	ng g enum my-new-enum
+       Module           |	ng g module my-module

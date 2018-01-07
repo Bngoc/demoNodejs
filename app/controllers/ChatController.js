@@ -106,6 +106,79 @@ class ChatController extends BaseController {
         }
     }
 
+    getApiIndex(req, res, next) {
+        try {
+            let chatController = new ChatController();
+            var showResponse = helper;
+            const aliasRouter = helper.coreHelper.aliasRouter();
+            showResponse.header = showResponse.getHeader('CHAT');
+            showResponse.cssInclude = showResponse.readFileInclude(['css/chat.custom.css', 'css/chat.test.css'], 'c');
+            showResponse.title = 'Home chat';
+            showResponse.isNotIncludeSidebar = true;
+            showResponse.scriptInclude = showResponse.readFileInclude([
+                "js/support/menu-info-chat.js",
+                "js/support/libCommonChat.js",
+                "js/support/listContacts.js",
+                'js/socket/client.js',
+                'js/socket/chat.js'
+            ]);
+            showResponse.renderViews = 'chat/index.ejs';
+
+            let userCurrent = req.user;
+            if (userCurrent) {
+                let requestSql = {
+                    userCurrentID: userCurrent.attributes.id,
+                    conversationType: Object.keys(conversationType).map(function (k) {
+                        return conversationType[k]
+                    })
+                };
+                var newUser = new User.class({});
+                newUser.findByIdChat(requestSql, function (err, rsData) {
+                    if (err) return next(err);
+
+                    let notiContacts = rsData.infoAccount.relations.useContacts;
+                    let requestCurrent = {
+                        userCurrentID: userCurrent.attributes.id,
+                        statusID: notiContacts.attributes.status,
+                        statusName: chatStatus[notiContacts.attributes.status],
+                        listStatus: Object.values(chatStatus).join(' '),
+                        statusSingle: cfgChat.status_single,
+                        infoAccount: rsData.infoAccount
+                    };
+                    let statusUser = chatStatus[notiContacts.attributes.status];
+
+                    showResponse.userName = notiContacts ? notiContacts.attributes.middle_name : '';
+                    showResponse.classStatusCurrent = (statusUser != cfgChat.status_hidden_name) ? statusUser : cfgChat.status_hidden_name_replace;
+                    showResponse.moodMessage = notiContacts ? notiContacts.attributes.mood_message : '';
+                    showResponse.userID = notiContacts ? notiContacts.attributes.id : '';
+                    showResponse.status = notiContacts ? statusUser : '';
+                    showResponse.listStatus = chatStatus;
+                    showResponse.urlChangeContent = aliasRouter.build('chat.change.content');
+
+                    let option = {
+                        isSearch: false,
+                        valSearch: null,
+                        cfg_chat: helper.coreHelper.app
+                    };
+                    showResponse.dataContactList = JSON.stringify(libFunction.renderContactListAll(rsData.infoParticipant, option), true);
+
+                    // save session - share socket io
+                    req.session.currentStatus = requestCurrent;
+                    req.session.isLife = notiContacts ? (notiContacts.attributes.is_life == 1) : false;
+                    req.session.infoParticipant = rsData.infoParticipant;
+
+                    res.send(showResponse);
+                    // res.render(showResponse.renderViews, showResponse);
+                });
+            } else {
+                res.redirect('/');
+            }
+        } catch (ex) {
+            throw ex;
+            console.log('ERROR TRY_CATCH CHAT INDEX');
+        }
+    }
+
     postContentChat(req, res, next) {
         var showResponseChat = {};
         let userCurrent = req.user;

@@ -19,6 +19,8 @@ class Routers {
 
         // ---------------------- List router ----------------------------
         app.get('/', 'user', homeController.getIndex);
+        app.get('/api/as', 'user', homeController.getIndex1);
+        app.get('/api/chat', 'api.chat.index', useMiddleware.isAuthenticated, chatController.getApiIndex);
 
         app.get("/login", useMiddleware.authenticatedRegister, userController.getLogin);
         // --------------------C0 ------------------
@@ -72,6 +74,11 @@ class Routers {
             // response.sendFile(coreHelper.paths.resolve(__dirname + '/../resources/layouts/master.ejs'), 'utf-8');
         });
         // --------------------End Test ------------------------------------------------
+
+
+        app.get('*', function (req, res, next) {
+            res.sendFile(coreHelper.paths.DIST + 'index.html');
+        });
 
         return router;
     }

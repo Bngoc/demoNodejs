@@ -8,6 +8,7 @@ var DefinePaths = function definePaths() {
     this.ROOT = dirname(__dirname) + DS;
     this.LIB = `${this.ROOT}lib${DS}`;
     this.VENDOR = `${this.ROOT}vendor${DS}`;
+    this.DIST = `${this.ROOT}dist${DS}`;
     this.CONFIG = `${this.ROOT}config${DS}`;
     this.MODULE = `${this.CONFIG}module${DS}`;
 
