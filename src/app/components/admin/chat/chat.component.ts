@@ -5,16 +5,15 @@ import {libSupports} from "../../../common/libSupports";
 
 
 @Component({
-    selector: 'app-contents',
+    selector: 'contents-chat',
     templateUrl: './chat.component.html',
     styleUrls: ['./chat.component.css']
 })
 export class ChatComponent extends libSupports implements OnInit {
 
-
     constructor() {
         super();
-        // const socket = io('http://localhost:1230');
+        const socket = io('http://localhost:1230');
 
         this.loadCss([
             'css/chat.custom.css',

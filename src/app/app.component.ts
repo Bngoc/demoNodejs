@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {libSupports} from './common/libSupports';
+import {HeaderComponent} from "./components/layouts/header/header.component";
 
 declare var jQuery: any;
 

@@ -1,4 +1,4 @@
-//'use strict';
+'use strict';
 
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
@@ -21,6 +21,7 @@ import {SidebarComponent} from './components/layouts/sidebar/sidebar.component';
 
 import {LoginComponent} from './components/login/login.component';
 import {RegisterComponent} from './components/register/register.component';
+import {ContentsComponent} from './components/contents/contents.component';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import {RegisterComponent} from './components/register/register.component';
         NavComponent,
         SidebarComponent,
         LoginComponent,
-        RegisterComponent
+        RegisterComponent,
+        ContentsComponent
     ],
     imports: [
         BrowserModule,

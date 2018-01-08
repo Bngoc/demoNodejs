@@ -1,0 +1,22 @@
+<div class="inner-content">
+    <div id="question-header">
+        <!--- (typeof header !== 'undefined') ? header : '' -->
+    </div>
+
+    <div id="<!--- (typeof isNotIncludeSidebar === 'undefined') ? 'mainbar' : ''  -->" role="main"
+         aria-label="question and answers">
+        <contents-chat></contents-chat>
+        <!--- body -->
+        <!-- (typeof content !== 'undefined') ? content : '' -->
+    </div>
+    <!-- if (typeof isNotIncludeSidebar === 'undefined') { -->
+    <div id="sidebar" class="show-votes" role="complementary" aria-label="sidebar">
+        <contents-sidebar></contents-sidebar>
+    </div>
+    <!-- } -->
+    <div id="feed-link">
+        <!--- (typeof header !== 'undefined') ? feedBack : '' -->
+    </div>
+</div>
+
+<router-outlet></router-outlet>

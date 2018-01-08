@@ -1,3 +1,4 @@
+
 <div id="notify-container"></div>
 <div id="custom-header"></div>
 
@@ -6,29 +7,31 @@
 <div class="container _full ">
     <div id="content" class="snippet-hidden">
         <app-nav></app-nav>
-        <div class="inner-content">
-            <div id="question-header">
-                <!--- (typeof header !== 'undefined') ? header : '' -->
-            </div>
+        <app-child></app-child>
+        <!--<div class="inner-content">-->
+        <!--<div id="question-header">-->
+        <!--&lt;!&ndash;- (typeof header !== 'undefined') ? header : '' &ndash;&gt;-->
+        <!--</div>-->
 
-            <div id="<!--- (typeof isNotIncludeSidebar === 'undefined') ? 'mainbar' : ''  -->" role="main"
-                 aria-label="question and answers">
-                <app-contents></app-contents>
-                <!--- body -->
-                <!-- (typeof content !== 'undefined') ? content : '' -->
-            </div>
-            <!-- if (typeof isNotIncludeSidebar === 'undefined') { -->
-            <div id="sidebar" class="show-votes" role="complementary" aria-label="sidebar">
-                <app-sidebar></app-sidebar>
-            </div>
-            <!-- } -->
-            <div id="feed-link">
-                <!--- (typeof header !== 'undefined') ? feedBack : '' -->
-            </div>
-        </div>
+        <!--<div id="&lt;!&ndash;- (typeof isNotIncludeSidebar === 'undefined') ? 'mainbar' : ''  &ndash;&gt;" role="main"-->
+        <!--aria-label="question and answers">-->
+        <!--&lt;!&ndash;<app-contents></app-contents>&ndash;&gt;-->
+        <!--&lt;!&ndash;- body &ndash;&gt;-->
+        <!--&lt;!&ndash; (typeof content !== 'undefined') ? content : '' &ndash;&gt;-->
+        <!--</div>-->
+        <!--&lt;!&ndash; if (typeof isNotIncludeSidebar === 'undefined') { &ndash;&gt;-->
+        <!--<div id="sidebar" class="show-votes" role="complementary" aria-label="sidebar">-->
+        <!--<app-sidebar></app-sidebar>-->
+        <!--</div>-->
+        <!--&lt;!&ndash; } &ndash;&gt;-->
+        <!--<div id="feed-link">-->
+        <!--&lt;!&ndash;- (typeof header !== 'undefined') ? feedBack : '' &ndash;&gt;-->
+        <!--</div>-->
+        <!--</div>-->
     </div>
 </div>
 
 <footer id="footer" class="s-footer js-footer" role="contentinfo">
     <app-footer></app-footer>
 </footer>
+<router-outlet></router-outlet>
