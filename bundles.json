@@ -42,8 +42,6 @@
     "main": {
       "files": {
         "head": [
-          "js/jquery-3.2.1.min.js",
-          "socket.io/socket.io.js",
           "js/common.js",
           "js/select2.js"
         ],

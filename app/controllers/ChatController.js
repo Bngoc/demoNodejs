@@ -40,7 +40,9 @@ class ChatController extends BaseController {
             var showResponse = helper;
             const aliasRouter = helper.coreHelper.aliasRouter();
             showResponse.header = showResponse.getHeader('CHAT');
-            showResponse.cssInclude = showResponse.readFileInclude(['css/chat.custom.css', 'css/chat.test.css'], 'c');
+            showResponse.cssInclude = showResponse.readFileInclude([
+                'css/chat.custom.css',
+                'css/chat.test.css'], 'c');
             showResponse.title = 'Home chat';
             showResponse.isNotIncludeSidebar = true;
             showResponse.scriptInclude = showResponse.readFileInclude([

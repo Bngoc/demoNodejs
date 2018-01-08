@@ -1,0 +1,228 @@
+<header class="top-bar js-top-bar _fixed">
+    <div class="-container">
+        <div class="-main">
+            <a href="#" class="-logo js-gps-track"
+               data-gps-track="top_nav.click({is_current:false, location:2, destination:8})">
+                <span class="-img _glyph">Stack Overflow</span>
+            </a>
+
+            <nav class="navigation" role="navigation" aria-label="site navigation">
+                <ol class="-list">
+                    <li class="-item _current">
+                        <a id="nav-questions" href="/questions" class="-link js-gps-track"
+                           data-gps-track="top_nav.click({is_current:true, location:2, destination:1})">Questions</a>
+                    </li>
+                    <li class="-item">
+                        <a id="nav-jobs" href="/jobs?med=site-ui&amp;ref=jobs-tab" class="-link js-gps-track"
+                           data-gps-track="top_nav.click({is_current:false, location:2, destination:6})">Developer
+                            Jobs</a>
+                    </li>
+                    <li class="-item">
+                        <a id="nav-tags" href="/tags" class="-link js-gps-track"
+                           data-gps-track="top_nav.click({is_current:false, location:2, destination:2})">Tags</a>
+                    </li>
+                    <li class="-item">
+                        <a id="nav-users" href="/users" class="-link js-gps-track"
+                           data-gps-track="top_nav.click({is_current:false, location:2, destination:3})">Users</a>
+                    </li>
+                </ol>
+            </nav>
+
+        </div>
+        <form id="search" action="/search" method="get" class="searchbar" autocomplete="off" role="search">
+            <input name="q" type="text" placeholder="Search…" value="" tabindex="1" autocomplete="off" maxlength="240"
+                   class="f-input js-search-field">
+            <button type="submit" aria-label="Search..." class="btn-topbar-primary js-search-submit">
+                <svg aria-hidden="true" class="svg-icon iconSearch" width="18" height="18" viewBox="0 0 18 18">
+                    <path d=""></path>
+                </svg>
+            </button>
+        </form>
+        <div class="-actions">
+            <a href="/users/3000159/user3000159" class="my-profile js-gps-track"
+               data-gps-track="profile_summary.click()">
+                <div class="gravatar-wrapper-24" title="user3000159"><img src="#" alt="" width="24" height="24"
+                                                                          class="-avatar js-avatar-me"></div>
+
+                <div class="-rep js-header-rep" title="your reputation: 1">1</div>
+                <div class="-badges">
+
+                </div>
+
+            </a>
+            <nav class="secondary-nav">
+                <div class="-dialog-container js-topbar-dialog-corral">
+                    <div class="topbar-dialog siteSwitcher-dialog dno">
+                        <div class="header">
+                            <h3><a href="#">current community</a>
+                            </h3>
+                        </div>
+                        <div class="modal-content current-site-container">
+                            <ul class="current-site">
+                                <li>
+                                    <div class="related-links">
+                                        <a href="#" class="js-gps-track"
+                                           data-gps-track="site_switcher.click({ item_type:14 })">help</a>
+                                        <a href="#" class="js-gps-track"
+                                           data-gps-track="site_switcher.click({ item_type:6 })">chat</a>
+                                        <a href="#" class="js-gps-track"
+                                           data-gps-track="site_switcher.click({ item_type:8 })">log out</a>
+                                    </div>
+                                    <a href="#" class="current-site-link site-link js-gps-track" data-id="1"
+                                       data-gps-track="site_switcher.click({ item_type:3 })">
+                                        <div class="favicon favicon-stackoverflow site-icon"
+                                             title="Stack Overflow"></div>
+                                        Stack Overflow
+                                    </a>
+
+                                </li>
+                                <li class="related-site">
+                                    <div class="L-shaped-icon-container">
+                                        <span class="L-shaped-icon"></span>
+                                    </div>
+
+                                    <a href="#" class="site-link js-gps-track" data-id="552"
+                                       data-gps-track="site.switch({ target_site:552, item_type:3 }),site_switcher.click({ item_type:4 })">
+                                        <div class="favicon favicon-stackoverflowmeta site-icon"
+                                             title="Meta Stack Overflow"></div>
+                                        Meta Stack Overflow
+                                    </a>
+
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="header" id="your-communities-header">
+                            <h3>
+                                <a href="#">your communities</a>
+                            </h3>
+
+                            <a href="#" id="edit-pinned-sites">edit</a>
+                            <a href="#" id="cancel-pinned-sites" style="display: none;">cancel</a>
+                        </div>
+                        <div class="modal-content" id="your-communities-section">
+
+                            <ul class="my-sites">
+                                <li>
+                                    <a href="#" class="site-link js-gps-track" data-id="1"
+                                       data-gps-track="site.switch({ target_site:1, item_type:3 }),site_switcher.click({ item_type:1 })">
+                                        <div class="favicon favicon-stackoverflow site-icon"
+                                             title="Stack Overflow"></div>
+                                        Stack Overflow
+                                        <span class="rep-score">1</span>
+                                    </a>
+
+                                </li>
+                            </ul>
+                            <div class="pinned-site-editor-container" style="display: none;">
+                                <input id="js-site-search-txt" type="text" class="site-filter-input" value=""
+                                       placeholder="Add a Stack Exchange community">
+                                <input type="submit" id="pin-site-btn" value="Add" disabled="disabled">
+                                <ul class="js-found-sites found-sites"></ul>
+                                <ul class="pinned-site-list sortable" data-custom-list="False">
+                                </ul>
+                                <input type="submit" value="Save" id="save-pinned-sites-btn" disabled="disabled">
+                                <a href="#" id="reset-pinned-sites">reset to default list</a>
+                            </div>
+                        </div>
+
+                        <div class="header">
+                            <h3><a href="#">more stack exchange communities</a>
+                            </h3>
+                            <a href="#" class="fr">company blog</a>
+                        </div>
+                        <div class="modal-content">
+                            <div class="child-content"></div>
+                        </div>
+                    </div>
+                    <div class="topbar-dialog help-dialog js-help-dialog dno">
+                        <div class="modal-content">
+                            <ul>
+                                <li>
+                                    <a href="/tour" class="js-gps-track"
+                                       data-gps-track="help_popup.click({ item_type:1 })">
+                                        Tour
+                                        <span class="item-summary">
+                                Start here for a quick overview of the site
+                            </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/help" class="js-gps-track"
+                                       data-gps-track="help_popup.click({ item_type:4 })">
+                                        Help Center
+                                        <span class="item-summary">
+                            Detailed answers to any questions you might have
+                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="js-gps-track" data-gps-track="help_popup.click({ item_type:2 })">
+                                        Meta
+                                        <span class="item-summary">
+                                    Discuss the workings and policies of this site
+                                </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="js-gps-track" data-gps-track="help_popup.click({ item_type:6 })">
+                                        About Us
+                                        <span class="item-summary">
+                                    Learn more about Stack Overflow the company
+                                </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="js-gps-track" data-gps-track="help_popup.click({ item_type:7 })">
+                                        Business
+                                        <span class="item-summary">
+                                    Learn more about hiring developers or posting ads with us
+                                </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+                <ol class="-list">
+                    <li class="-item">
+                        <a href="#" class="-link js-inbox-button" title="Recent inbox messages">
+                            <svg aria-hidden="true" class="svg-icon iconInbox" width="20" height="18"
+                                 viewBox="0 0 20 18">
+                                <path d=""></path>
+                            </svg>
+                            <span class="indicator-badge js-unread-count _important" style="display: none;"></span>
+                        </a>
+                    </li>
+                    <li class="-item">
+                        <a href="#" class="-link js-achievements-button"
+                           title="Recent achievements: reputation, badges, and privileges earned"
+                           data-unread-class="_highlighted-positive">
+                            <svg aria-hidden="true" class="svg-icon iconAchievements" width="18" height="18"
+                                 viewBox="0 0 18 18">
+                                <path d=""></path>
+                            </svg>
+                            <span class="indicator-badge js-unread-count _positive" style="display: none;"></span>
+                        </a>
+                    </li>
+                    <li class="-item"><a href="#" class="-link js-help-button" title="Help Center and other resources">
+                        <svg aria-hidden="true" class="svg-icon iconHelp" width="18" height="18" viewBox="0 0 18 18">
+                            <path d=""></path>
+                        </svg>
+                    </a></li>
+                    <li class="-item">
+                        <a href="#" class="-link js-site-switcher-button js-gps-track"
+                           data-gps-track="site_switcher.show" title="A list of all 171 Stack Exchange sites">
+                            <svg aria-hidden="true" class="svg-icon iconStackExchange" width="18" height="18"
+                                 viewBox="0 0 18 18">
+                                <path d=""></path>
+                            </svg>
+                        </a>
+                    </li>
+
+                </ol>
+            </nav>
+        </div>
+    </div>
+</header>

@@ -1,0 +1,251 @@
+input {
+    margin: 0;
+}
+
+#frame .content .message-input .wrap ._552n li .ms_img input {
+    margin: 0;
+    height: auto;
+    line-height: inherit;
+    display: none;
+}
+
+.wrap ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.wrap ul._552n li {
+    position: absolute;
+    right: 0;
+    top: 10px;
+}
+
+.wrap ._552n {
+    bottom: 14px;
+    position: initial;
+    right: 0;
+}
+
+._vzk {
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+}
+
+#frame .content .message-input .wrap .attachment-cst:hover {
+    opacity: 1;
+}
+
+#frame .content .message-input .wrap .attachment-cst {
+    opacity: .5;
+    cursor: pointer;
+    float: right;
+    margin-top: 10px;
+    position: absolute;
+    color: white;
+}
+
+._6gs {
+    background-image: url(../images/H2yAaG5kbRf.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: -17px -611px;
+}
+
+._6ge {
+    background-image: url(../images/H2yAaG5kbRf.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: -68px -611px;
+}
+
+.hidden_elem {
+    display: none !important;
+}
+
+._3oxr {
+    background-image: url(../images/H2yAaG5kbRf.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: 0 -611px;
+}
+
+._6gb {
+    display: block;
+    height: 16px;
+    position: relative;
+    transition: opacity .2s;
+    width: 16px;
+
+}
+
+._6gg {
+    background-image: url(../images/H2yAaG5kbRf.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: -51px -611px;
+}
+
+.r_emoji50 {
+    right: 50px;
+}
+
+.r_img70 {
+    right: 70px;
+}
+
+.r_file90 {
+    right: 90px;
+}
+
+.r_bt25 {
+    right: 25px;
+}
+
+#newMsgChat {
+    margin: 0px 0px 45px 0;
+    position: absolute;
+    bottom: 43px;
+    color: beige;
+    width: 100%;
+    -moz-animation-delay: 3.5s;
+    -webkit-animation-delay: 3.5s;
+    -o-animation-delay: 3.5s;
+    animation-delay: 3.5s;
+    -prefix-animation: slide 1s ease 3.5s forwards;
+    transition: height 600ms ease 0ms;
+}
+
+#newMsgChat .bs {
+    background: blue;
+    padding: 5px 10px;
+    border-radius: 5px;
+    line-height: 23px;
+    text-align: center;
+    width: 17%;
+    margin: auto;
+}
+
+#sendMessageChat {
+    margin-left: 9px;
+}
+
+#boxMsgChat li:last-child {
+    margin-bottom: 5px;
+}
+
+.scrollbar {
+    float: left;
+    width: 100%;
+    background: #FFFFFF;
+}
+
+.btn-controler-act {
+    position: unset;
+    right: 0;
+    bottom: 0;
+    cursor: default;
+    display: block;
+}
+
+#status-options .change-status p:first-letter {
+    text-transform: capitalize;
+}
+
+/* ----- S - tootip ---- */
+.uiContextualLayer {
+    position: absolute;
+}
+
+._-kb div {
+    font-family: inherit;
+}
+
+.uiTooltipX {
+    max-width: 334px;
+    word-wrap: break-word;
+    position: relative;
+    zoom: 1;
+}
+
+.uiContextualLayerLeft > .uiTooltipX {
+    margin-right: 1px;
+    padding-right: 4px;
+}
+
+.uiTooltipX .tooltipContent {
+    background-color: #282828;
+    border-radius: 2px;
+    color: #fff;
+    font-size: 12px;
+    line-height: 16px;
+    padding: 6px 8px;
+    text-align: left;
+}
+
+.fbNub._50mz .tooltipText {
+    line-height: 1.5;
+}
+
+.uiTooltipX .tooltipText span {
+    zoom: 1;
+}
+
+.hidden_elem {
+    /*display: none !important; */
+}
+
+/* ----- E - tootip ---- */
+
+._31o4 {
+    position: relative;
+}
+
+._4tdt {
+    align-items: flex-end;
+    display: flex;
+    margin: 10px 9px 10px 8px;
+    position: relative;
+}
+
+._4tdt ._ua2 {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+}
+
+._4tdw {
+    display: block;
+    margin: 0 7px 0 0;
+    width: 33px;
+}
+
+._5wd4 {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    line-height: 1.28;
+    padding: 0 0 1px 0;
+    text-align: initial;
+}
+
+._1nc6 {
+    flex-direction: row-reverse;
+}
+
+._4tdt ._4tdx {
+    color: #90949c;
+    display: block;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    line-height: 1.28;
+    margin-bottom: 1px;
+    margin-left: 16px;
+    max-width: 201px;
+    min-height: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
