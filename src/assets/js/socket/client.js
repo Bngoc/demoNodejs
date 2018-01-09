@@ -9,6 +9,8 @@
 // });
 
 
+var socket = io.connect();
+
 $(document).ready(function () {
     var sendChatMessage = new SendChatMessage();
     sendChatMessage.eventSendMsg();
@@ -187,7 +189,7 @@ SendChatMessage.prototype.clickSearchContact = function () {
         .on('keyup copy cut', '#search-contact', function () {
             let val = $.trim($(this).val());
             let requestListContactDefault = {
-                url: '/chat/list-contact',
+                url: 'api/chat/list-contact',
                 data: {
                     dataType: false,
                     isAuthenticatesSingle: false,
@@ -428,12 +430,12 @@ SendChatMessage.prototype.clickListContactContentChat = function () {
             socket.emit('msgContentChat', dataRequest);
         });
     });
-}
+};
 
 SendChatMessage.prototype.eventScrollEndBoxChat = function () {
     //     $('#newMsgChat').delay(10).css("display", "none");
     console.log('-------------------------- lam cai day');
-}
+};
 
 SendChatMessage.prototype.eventScrollTopBoxChat = function () {
     let page = $('#frameListMsg').has('page') ? $('#frameListMsg').attr('page') : 1;

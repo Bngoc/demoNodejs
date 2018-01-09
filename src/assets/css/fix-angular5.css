@@ -1,0 +1,7 @@
+.container {
+    margin-top: 60px;
+}
+
+#frame #sidepanel #search input {
+    width: 100% !important;
+}

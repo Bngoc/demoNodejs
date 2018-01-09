@@ -1,3 +1,24 @@
+<!--<div class="inner-content">-->
+<div id="question-header">
+    <!--&lt;!&ndash;- (typeof header !== 'undefined') ? header : '' &ndash;&gt;-->
+</div>
+
+<!--<div id="&lt;!&ndash;- (typeof isNotIncludeSidebar === 'undefined') ? 'mainbar' : ''  &ndash;&gt;" role="main"-->
+<!--aria-label="question and answers">-->
+<!--&lt;!&ndash;<contents-chat></contents-chat>&ndash;&gt;-->
+<!--&lt;!&ndash;- body &ndash;&gt;-->
+<!--&lt;!&ndash; (typeof content !== 'undefined') ? content : '' &ndash;&gt;-->
+<!--</div>-->
+<!--&lt;!&ndash; if (typeof isNotIncludeSidebar === 'undefined') { &ndash;&gt;-->
+<!--<div id="sidebar" class="show-votes" role="complementary" aria-label="sidebar">-->
+<!--<contents-sidebar></contents-sidebar>-->
+<!--</div>-->
+<!--&lt;!&ndash; } &ndash;&gt;-->
+<!--<div id="feed-link">-->
+<!--&lt;!&ndash;- (typeof header !== 'undefined') ? feedBack : '' &ndash;&gt;-->
+<!--</div>-->
+
+
 <div id="frame">
     <div id="sidepanel">
         <div id="profile">
@@ -54,7 +75,8 @@
         <div id="contacts" data-url="/chat/content-chat">
             <ul id="contacts-your">
                 <li class="contact">
-                    <div class="wrap" data-conversation="1" data-type="single" data-channel="r3f32ew33" data-owner="12">
+                    <div class="wrap" data-conversation="1" data-type="single" data-channel="r3f32ew33"
+                         data-owner="12">
                         <span channel="status.r3f32ew33" class="list-icon-status contact-status "></span><img
                             src="/images/users.png" alt="">
                         <div class="meta"><span class="name-notify"><p class="name"
@@ -64,8 +86,10 @@
                     </div>
                 </li>
                 <li class="contact">
-                    <div class="wrap" data-conversation="2" data-type="single" data-channel="ccccccc3t" data-owner="2">
-                        <span channel="status.ccccccc3t" class="list-icon-status contact-status undefined"></span><img
+                    <div class="wrap" data-conversation="2" data-type="single" data-channel="ccccccc3t"
+                         data-owner="2">
+                            <span channel="status.ccccccc3t"
+                                  class="list-icon-status contact-status undefined"></span><img
                             src="/images/users.png" alt="">
                         <div class="meta"><span class="name-notify"><p class="name"
                                                                        data-conversation-name="bqngoc110 undefined">bqngoc110 undefined </p><i
@@ -74,7 +98,8 @@
                     </div>
                 </li>
                 <li class="contact">
-                    <div class="wrap" data-conversation="3" data-type="group" data-channel="44534533h" data-owner="2">
+                    <div class="wrap" data-conversation="3" data-type="group" data-channel="44534533h"
+                         data-owner="2">
                         <span channel="status.44534533h" class=""></span><img src="/images/group.png" alt="">
                         <div class="meta"><span class="name-notify"><p class="name" data-conversation-name="ncncnc">ncncnc </p><i
                                 class="badges-notify">132</i></span>
@@ -82,7 +107,8 @@
                     </div>
                 </li>
                 <li class="contact">
-                    <div class="wrap" data-conversation="4" data-type="single" data-channel="53636433y" data-owner="12">
+                    <div class="wrap" data-conversation="4" data-type="single" data-channel="53636433y"
+                         data-owner="12">
                         <span channel="status.53636433y" class="list-icon-status contact-status away"></span><img
                             src="/images/users.png" alt="">
                         <div class="meta"><span class="name-notify"><p class="name"
@@ -102,7 +128,8 @@
                     </div>
                 </li>
                 <li class="contact">
-                    <div class="wrap" data-conversation="10" data-type="group" data-channel="md3s57jsnr4xbb6y4p80yhkt9"
+                    <div class="wrap" data-conversation="10" data-type="group"
+                         data-channel="md3s57jsnr4xbb6y4p80yhkt9"
                          data-owner="12"><span channel="status.md3s57jsnr4xbb6y4p80yhkt9" class=""></span><img
                             src="/images/group.png" alt="">
                         <div class="meta"><span class="name-notify"><p class="name"
@@ -114,7 +141,8 @@
             </ul>
         </div>
         <div id="bottom-bar">
-            <button id="addcontact"><i class="fa fa-user-plus fa-fw" aria-hidden="true"></i> <span>Add contact</span>
+            <button id="addcontact"><i class="fa fa-user-plus fa-fw" aria-hidden="true"></i>
+                <span>Add contact</span>
             </button>
             <button id="settings"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Settings</span></button>
         </div>
@@ -124,6 +152,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+
         window.listContacts = {};
         let dataContactList = JSON.parse('{"contactList":[{"idConversation":1,"title":"cncnccnc","creator_id":12,"channel_id":"r3f32ew33","type":"single","is_accept_single":0,"is_accept_group":0,"count":1,"isSingle":true,"email":"bqngoc1191","phone":"9894515069","first_name":"BuiNgoc1","last_name":null,"middle_name":"BuiNgoc1 undefined","mood_message":"ư","path_img":null,"path_img_group":null,"status":2,"user_name":null,"is_life":0},{"idConversation":2,"title":"nc","creator_id":2,"channel_id":"ccccccc3t","type":"single","is_accept_single":1,"is_accept_group":0,"count":1,"isSingle":true,"email":"bqngoc110@fsfsf.fgf","phone":"9898150692","first_name":"bqngoc110","last_name":null,"middle_name":"bqngoc110 undefined","mood_message":"3","path_img":null,"path_img_group":null,"status":0,"user_name":null,"is_life":0},{"idConversation":3,"title":"ncncnc","creator_id":2,"channel_id":"44534533h","type":"group","is_accept_single":0,"is_accept_group":0,"count":5,"path_img_group":null,"isSingle":false},{"idConversation":4,"title":"hrjrjr","creator_id":12,"channel_id":"53636433y","type":"single","is_accept_single":0,"is_accept_group":0,"count":1,"isSingle":true,"email":"buingoc119","phone":"989231815069","first_name":"gsgewq","last_name":null,"middle_name":"gsgewq undefined","mood_message":"r","path_img":null,"path_img_group":null,"status":2,"user_name":null,"is_life":1},{"idConversation":6,"title":"6666666","creator_id":4,"channel_id":"666666","type":"single","is_accept_single":1,"is_accept_group":0,"count":1,"isSingle":true,"email":"buingoc1191","phone":"989811506921","first_name":"bqngoc11229","last_name":null,"middle_name":"bqngoc11229 undefine","mood_message":"r","path_img":null,"path_img_group":null,"status":1,"user_name":null,"is_life":1},{"idConversation":10,"title":"Bqngoc119 xxx-xx, Gsgewq undefined","creator_id":12,"channel_id":"md3s57jsnr4xbb6y4p80yhkt9","type":"group","is_accept_single":0,"is_accept_group":0,"count":2,"path_img_group":null,"isSingle":false}],"cfgChat":{"chatStatus":{"0":"online","1":"offline","2":"away","3":"busy","4":"hidden"},"messageType":{"1":"text","2":"image","3":"vedio","4":"audio"},"participants":{"0":"single","1":"group"},"cfg_chat":{"class_undefined":"undefined","img_single_user":"/images/users.png","img_group_user":"/images/group.png","status_single":"single","status_group":"group","status_hidden_name":"hidden","status_hidden_name_replace":"offline","mood_message_request":"User not share information","mood_message_responsive":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}}');
 
@@ -624,4 +653,4 @@
     </div>
 </div>-->
 
-
+<!--</div>-->

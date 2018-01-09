@@ -12,10 +12,7 @@
   "styles": {
     "main": {
       "files": [
-        "css/font-awesome.min.css",
-        "css/reset/reset.css",
-        "css/bootstrap.css",
-        "css/main.test.css",
+        "css/fix-angular5.css",
         "css/style.css",
         "css/flexslider.css",
         "css/jquery.fancybox.css",
@@ -42,8 +39,6 @@
     "main": {
       "files": {
         "head": [
-          "js/jquery-3.2.1.min.js",
-          "socket.io/socket.io.js",
           "js/common.js",
           "js/select2.js"
         ],

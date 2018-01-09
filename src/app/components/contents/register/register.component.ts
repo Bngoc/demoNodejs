@@ -2,7 +2,7 @@ declare var $: any;
 import {Component, OnInit} from '@angular/core';
 
 @Component({
-    selector: 'app-register',
+    selector: 'contents-register',
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.css']
 })

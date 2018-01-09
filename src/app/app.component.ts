@@ -16,12 +16,13 @@ export class AppComponent extends libSupports implements OnInit {
 
     constructor() {
         super();
-        this.intiLoadCss();
-        this.intiLoadScript();
+        // this.intiLoadCss();
+        // this.intiLoadScript();
     }
 
     public ngOnInit() {
-
+        this.intiLoadCss();
+        this.intiLoadScript();
     };
 
     clicked() {

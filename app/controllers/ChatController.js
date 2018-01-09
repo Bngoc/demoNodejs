@@ -423,6 +423,68 @@ class ChatController extends BaseController {
         }
     }
 
+    postApiListContact(req, res, next) {
+        var showResponseChat = {
+            data: [],
+            option: {},
+            done: false,
+            err: '',
+            msg: ''
+        };
+        try {
+            if (req.user) {
+                let isAuthenticatesSingle = req.body.isAuthenticatesSingle === 'true';
+                let requestConversation = {
+                    userCurrentID: req.user.attributes.id,
+                    conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
+                            return conversationType[k]
+                        })),
+                    isAuthenticatesSingle: isAuthenticatesSingle
+                };
+                let user = new User.class();
+                user.findByIdChat(requestConversation, function (errConversation, modelConversation) {
+                    if (errConversation) {
+                        res.status(500).send(errConversation)
+                    } else {
+                        let tempModelConversation = modelConversation.infoParticipant;
+                        if (isAuthenticatesSingle === false) {
+                            let option = {
+                                isSearch: req.body.isSearch !== undefined ? req.body.isSearch === 'true' : false,
+                                valSearch: req.body.valSearch !== undefined ? req.body.valSearch : null,
+                                cfg_chat: helper.coreHelper.app
+                            };
+
+                            let resultListContactAll = libFunction.renderContactListAll(tempModelConversation, option);
+
+                            res.status(200).send(resultListContactAll);
+                        } else {
+                            showResponseChat.option.isConversationSingle = isAuthenticatesSingle ? req.body.dataType === conversationType[0] : null;
+
+                            let option = {single: conversationType[0]};
+                            let dataResult = libFunction.getListContactSingle(tempModelConversation, option);
+                            dataResult.sort(function (a, b) {
+                                return a.created_at - b.created_at;
+                            });
+
+                            showResponseChat.data = dataResult;
+                            showResponseChat.done = true;
+                            showResponseChat.msg = 'success';
+
+                            res.status(200).send(showResponseChat);
+                        }
+                    }
+                });
+            } else {
+                showResponseChat.err = 'ERR0002';
+                showResponseChat.done = 'failed';
+                showResponseChat.msg = 'ERR0003';
+                res.status(200).send(showResponseChat)
+            }
+        } catch (ex) {
+            res.status(500).send(ex)
+        }
+    }
+
     socketConnection(io) {
         var s60 = 1000 * 60 * 1;
         io.on('connection', function (socket) {

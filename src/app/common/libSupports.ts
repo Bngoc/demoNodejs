@@ -2,7 +2,7 @@
 
 declare var require: any;
 const pjson = require('./../../../package.json');
-const bundles = require('./../../../bundles.json');
+const bundles = require('./../../../bundles.angular.json');
 import {isUndefined} from "util";
 
 export abstract class libSupports {

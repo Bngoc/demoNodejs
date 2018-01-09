@@ -23,7 +23,11 @@ const flash = require('connect-flash');
 
 const sharedSession = require("express-socket.io-session");
 const socketIo = require('socket.io');
-const sessionStore = new session.MemoryStore();
+const redis = require("redis");
+const client = redis.createClient(process.env.REDIS_URL);
+const RedisStore = require('connect-redis')(session);
+const sessionStore = new RedisStore({host: 'localhost', port: 6479, client: client, ttl: 260, logErrors: true});
+// const sessionStore = new session.MemoryStore();
 
 // use hander log
 const env = process.env.NODE_ENV || 'development';
@@ -31,6 +35,16 @@ const env = process.env.NODE_ENV || 'development';
 const SECRET = '{mySecretRequired}';
 const KEY = 'express.sid';
 
+// client.on("error", function (err) {
+//     console.log("Error " + err);
+// });
+
+// client.set('foo', 123, 'bar', function (err, res) {
+//
+// });
+// client.on('connect', function(){
+//     console.log('Connected to Redis');
+// });
 
 
 

@@ -50,6 +50,7 @@ class Routers {
         app.get("/chat", 'chat', useMiddleware.isAuthenticated, chatController.getIndex);
         app.post("/chat/content-chat", 'chat.change.content', chatController.postContentChat);
         app.post("/chat/list-contact", 'chat.list.contact', chatController.postListContact);
+        app.post("/api/chat/list-contact", 'api.chat.list.contact', chatController.postApiListContact);
 
 
         // --------------------Test ------------------------------------------------

@@ -52,7 +52,7 @@
              .)
              "start": "npm run build & concurrently --kill-others \"npm run serve-api\" \"npm run serve\"",
              "serve": "ng serve --proxy-config proxy.conf.json",
-             "serve-api": "node server.js",
+             "serve-api": "node index.js",
 
              //// Point static path to public
              //// app.use(express.static(path.join(__dirname, 'public')));

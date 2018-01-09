@@ -1,0 +1,21 @@
+<!--<div class="inner-content">-->
+<div id="question-header">
+    <!--- (typeof header !== 'undefined') ? header : '' -->
+</div>
+
+<div id="mainbar" role="main" aria-label="question and answers">
+    <!--<app-contents-home></app-contents-home>-->
+    <!--- body -->
+    <!-- (typeof content !== 'undefined') ? content : '' -->
+</div>
+<!-- if (typeof isNotIncludeSidebar === 'undefined') { -->
+<div id="sidebar" class="show-votes" role="complementary" aria-label="sidebar">
+    <app-contents-home-sidebar></app-contents-home-sidebar>
+</div>
+<!-- } -->
+<div id="feed-link">
+    <!--- (typeof header !== 'undefined') ? feedBack : '' -->
+</div>
+<!--</div>-->
+
+<router-outlet></router-outlet>
