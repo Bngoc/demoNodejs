@@ -1,15 +1,12 @@
-// var socket = io.connect('http://localhost:1230', {
-//     rememberTransport: false,
-//     'reconnect': true,
-//     'reconnection delay': 500,
-//     'max reconnection attempts': 10,
-//     'secure': true,
-//     'pingInterval': 2000,
-//     'pingTimeout': 5000
-// });
-
-
-var socket = io.connect();
+var socket = io.connect('https://localhost:1230', {
+    rememberTransport: false,
+    'reconnect': true,
+    'reconnection delay': 500,
+    'max reconnection attempts': 10,
+    'secure': true,
+    'pingInterval': 2000,
+    'pingTimeout': 5000
+});
 
 $(document).ready(function () {
     var sendChatMessage = new SendChatMessage();
@@ -189,7 +186,7 @@ SendChatMessage.prototype.clickSearchContact = function () {
         .on('keyup copy cut', '#search-contact', function () {
             let val = $.trim($(this).val());
             let requestListContactDefault = {
-                url: 'api/chat/list-contact',
+                url: $('#box-search-contacts').attr('data-url'),
                 data: {
                     dataType: false,
                     isAuthenticatesSingle: false,
@@ -298,7 +295,7 @@ SendChatMessage.prototype.clickActContactConversation = function () {
 SendChatMessage.prototype.getListContact = function () {
     $('body').on('click', '#list-contact-your', function () {
         let requestListContact = {
-            url: '/chat/list-contact',
+            url: $('#box-search-contacts').attr('data-url'),
             data: {
                 dataType: $('#messageInput').attr('data-type'),
                 isAuthenticatesSingle: true,

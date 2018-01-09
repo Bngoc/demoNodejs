@@ -2,6 +2,10 @@
     margin-top: 60px;
 }
 
-#frame #sidepanel #search input {
+#frame #sidepanel #box-search-contacts input {
     width: 100% !important;
+}
+
+#frame #sidepanel #profile .wrap img {
+    width: 60px !important;
 }

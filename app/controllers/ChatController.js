@@ -2,7 +2,53 @@
 
 //https://github.com/Automattic/kue
 const kue = require('kue');
-const queue = kue.createQueue();
+///////////////////////// ============> const redis = require("redis");
+// const client = redis.createClient(process.env.REDIS_URL);
+///////////////////////// ============> const RedisStore = require('connect-redis')(session);
+// const sessionStore = new RedisStore({host: 'localhost', port: 6379, client: client, ttl: 260, logErrors: true});
+///////////////////////// ============> const Redis = require('ioredis');
+
+// const queue = kue.createQueue({
+//     redis: {
+//         createClientFactory: function () {
+//             return new Redis.Cluster([{
+//                 port: 7000
+//             }, {
+//                 port: 7001
+//             }]);
+//         }
+//     }
+// });
+// client.on("error", function (err) {
+//     console.log("Error " + err);
+// });
+// client.set("keyj", 'vl', function (err, apply) {
+//     console.log('set=>  ', err, apply);
+// });
+//
+// client.get("keyj", function (err, apply) {
+//     console.log("get =>  ", err, apply);
+// });
+
+
+// const queue = kue.createQueue();
+
+///////////////////////// ============> var Sentinel = require('redis-sentinel');
+// var endpoints = [
+//     {host: '192.168.1.10', port: 6379},
+//     {host: '192.168.1.11', port: 6379}
+// ];
+// var opts = {}; // Standard node_redis client options
+// var masterName = 'mymaster';
+// var sentinel = Sentinel.Sentinel(endpoints);
+//
+// var queue = kue.createQueue({
+//     redis: {
+//         createClientFactory: function(){
+//             return sentinel.createClient(masterName, opts);
+//         }
+//     }
+// });
 
 const ViewController = require('./ViewController.js');
 const helper = new ViewController();
@@ -437,8 +483,8 @@ class ChatController extends BaseController {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                            return conversationType[k]
-                        })),
+                        return conversationType[k]
+                    })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -986,23 +1032,25 @@ ChatController.prototype.queueUpdateContact = function (socket, dataRequest, cur
         currentStatus: currentStatus
     };
     // setTimeout(function () {
-    queue.create('updateContact', newJob).priority('high').attempts(5).save(function (err) {
-        if (!err) return queue.id + ' - updateContact';
-    }).on('updateContact complete', function (id, result) {
-        kue.Job.get(id, function (err, job) {
-            if (err) return;
-            job.remove(function (err) {
-                if (err) throw err;
-                console.log('removed completed job #%d', job.id);
-            });
-        });
-    });
+    // queue.create('updateContact', newJob).priority('high').attempts(5).save(function (err) {
+    //     if (!err) return queue.id + ' - updateContact';
+    // }).on('updateContact complete', function (id, result) {
+    //     kue.Job.get(id, function (err, job) {
+    //         if (err) return;
+    //         job.remove(function (err) {
+    //             if (err) throw err;
+    //             console.log('removed completed job #%d', job.id);
+    //         });
+    //     });
+    // });
 
-    queue.process('updateContact', function (job, done) {
-        chatController.updateUserListSocket(socket, job.data.dataRequest, job.data.currentStatus, function (err, resultData) {
-            if (err) console.log('NOT UPDATE USER', err)
-        });
+    // queue.process('updateContact', function (job, done) {
+    chatController.updateUserListSocket(socket, newJob.dataRequest, newJob.currentStatus, function (err, resultData) {
     });
+    // chatController.updateUserListSocket(socket, job.data.dataRequest, job.data.currentStatus, function (err, resultData) {
+    //     if (err) console.log('NOT UPDATE USER', err)
+    // });
+    // });
     // }, updateLastMinute);
 }
 
@@ -1054,12 +1102,12 @@ ChatController.prototype.supportConfigChat = function (jsonConfigChat) {
     }
 }
 
-kue.Job.rangeByState('complete', 0, 0, 'asc', function (err, jobs) {
-    jobs.forEach(function (job) {
-        job.remove(function () {
-            console.log('removed ', job.id);
-        });
-    });
-});
+// kue.Job.rangeByState('complete', 0, 0, 'asc', function (err, jobs) {
+//     jobs.forEach(function (job) {
+//         job.remove(function () {
+//             console.log('removed ', job.id);
+//         });
+//     });
+// });
 
 module.exports = ChatController;

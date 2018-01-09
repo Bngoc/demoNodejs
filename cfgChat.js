@@ -8,5 +8,3 @@ var cfg_chat = {
     },
     page_size_number: 25
 };
-
-module.exports = cfg_chat;

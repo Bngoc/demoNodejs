@@ -12,7 +12,6 @@
   "styles": {
     "main": {
       "files": [
-        "css/fix-angular5.css",
         "css/style.css",
         "css/flexslider.css",
         "css/jquery.fancybox.css",

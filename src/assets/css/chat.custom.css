@@ -376,24 +376,24 @@
     background: #435f7a;
 }
 
-#frame #sidepanel #search {
+#frame #sidepanel #box-search-contacts {
     border-top: 1px solid #32465a;
     border-bottom: 1px solid #32465a;
     font-weight: 300;
 }
 
 @media screen and (max-width: 735px) {
-    #frame #sidepanel #search {
+    #frame #sidepanel #box-search-contacts {
         display: none;
     }
 }
 
-#frame #sidepanel #search label {
+#frame #sidepanel #box-search-contacts label {
     position: absolute;
     margin: 10px 0 0 20px;
 }
 
-#frame #sidepanel #search input {
+#frame #sidepanel #box-search-contacts input {
     font-family: "proxima-nova", "Source Sans Pro", sans-serif;
     padding: 8px 16px 8px 44px;
     width: calc(100% - 60px);
@@ -404,24 +404,24 @@
     /*border-bottom: 1px solid darkgray;*/
 }
 
-#frame #sidepanel #search input:focus {
+#frame #sidepanel #box-search-contacts input:focus {
     outline: none;
     background: #435f7a;
 }
 
-#frame #sidepanel #search input::-webkit-input-placeholder {
+#frame #sidepanel #box-search-contacts input::-webkit-input-placeholder {
     color: #f5f5f5;
 }
 
-#frame #sidepanel #search input::-moz-placeholder {
+#frame #sidepanel #box-search-contacts input::-moz-placeholder {
     color: #f5f5f5;
 }
 
-#frame #sidepanel #search input:-ms-input-placeholder {
+#frame #sidepanel #box-search-contacts input:-ms-input-placeholder {
     color: #f5f5f5;
 }
 
-#frame #sidepanel #search input:-moz-placeholder {
+#frame #sidepanel #box-search-contacts input:-moz-placeholder {
     color: #f5f5f5;
 }
 

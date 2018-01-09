@@ -87,7 +87,7 @@ function CoreHelper() {
 
     this.runServer = function () {
         var server = this.callModule(`${paths.CONFIG}/server.js`, true);
-        var createServer = server.createServer(app, sampleConfig);
+        var createServer = server.createServer(app, {paths: paths, config: sampleConfig});
         return createServer;
     };
 
