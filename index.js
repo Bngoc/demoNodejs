@@ -14,6 +14,24 @@ callCoreHelper.connectKnex();
 
 callCoreHelper.runSocket(runServer);
 
+// const https = require('https');
+// const fs = require('fs');
+//
+// const options = {
+//     key: fs.readFileSync('D:/Project/Demo/config/ssl/localhost.key'),
+//     cert: fs.readFileSync('D:/Project/Demo/config/ssl/localhost.cert'),
+//     "rejectUnauthorized": true,
+//     "requestCert": true,
+//     "passphrase": "123456",
+//     "family": "IPv4"
+// };
+//
+// https.createServer(options, (req, res) => {
+//     res.writeHead(200);
+//     res.end('hello world\n');
+// }).listen(8000);
+
+console.log(new Date().getTime());
 
 // callCoreHelper.checkConnect(function (rsConnect) {
 //     if (rsConnect.error) {

@@ -132,7 +132,7 @@ class Express {
             saveUninitialized: true,
             resave: true,
             cookie: {
-                secure: false,
+                secure: true,
                 httpOnly: true,
                 maxAge: (3600000 * 24) * 1, // * day
             }

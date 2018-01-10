@@ -50,3 +50,30 @@ Angular 5
                 <% }
                 });
                 }%>-->
+
+
+
+
+NODEJS --> SSL
+
+1. 	openssl genrsa -des3 -out ca.key 2048
+//1. 	openssl req -new -x509 -days 365 -key ca.key -out ca.crt
+1. 	openssl req -new -x509 -days 360 -key ca.key  -out ca.cert
+
+//1. 	openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out server.key
+//1. 	openssl req -new -key server.key -out server.crt
+//1. 	openssl x509 -days 360 -req -in server.crt -CAcreateserial -CA ca.cert -CAkey ca.key -out server.cert
+
+2.	openssl req -newkey rsa:2048 -new -nodes -keyout key.pem -out csr.pem
+2.	openssl x509 -req -days 365 -in csr.pem -signkey key.pem -out server.crt
+
+
+
+1. 	openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out client.key
+1. 	openssl req -new -key client.key -out client.crt
+1. 	openssl x509 -days 360 -req -in client.crt -CAcreateserial -CA ca.cert -CAkey ca.key -out client.cert
+1. 	openssl pkcs12 -in client.cert -inkey client.key -export -password pass:123456 -out client.p12
+
+
+//https://deliciousbrains.com/https-locally-without-browser-privacy-errors/
+//https://gist.githubusercontent.com/mtigas/952344/raw/846d41c802548ff0df620241c78bf026663e1b49/gistfile1.md

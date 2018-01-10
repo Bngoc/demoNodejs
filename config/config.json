@@ -1,7 +1,11 @@
 {
   "domain": {
-    "port": 1230,
-    "host": "localhost"
+    "port": 443,
+    "host": "localhost",
+    "rejectUnauthorized": true,
+    "requestCert": true,
+    "passphrase": "123456",
+    "family": "IPv4"
   },
   "APP_ENV": "local",
   "APP_DEBUG": false,
