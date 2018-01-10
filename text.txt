@@ -54,10 +54,9 @@ Angular 5
 
 
 
-NODEJS --> SSL
+NODEJS --> SSL self signed
 
 1. 	openssl genrsa -des3 -out ca.key 2048
-//1. 	openssl req -new -x509 -days 365 -key ca.key -out ca.crt
 1. 	openssl req -new -x509 -days 360 -key ca.key  -out ca.cert
 
 //1. 	openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out server.key
@@ -67,7 +66,15 @@ NODEJS --> SSL
 2.	openssl req -newkey rsa:2048 -new -nodes -keyout key.pem -out csr.pem
 2.	openssl x509 -req -days 365 -in csr.pem -signkey key.pem -out server.crt
 
+A.1. Generate you server key
+    eaxm: openssl genrsa -des3 -out xxxx.key 2048
+A.2. Generate your Certificate Signing Request (CSR)
+    exam: openssl req -new -key xxxx.key -out yyyy.csr
+    ....NOTE: CN='domain or IP"  .... Common Name (eg, YOUR name) []:localhost
+A.3 Generate your Certificate
+    openssl x509 -req -days 1024 -in server.csr -signkey server.key -out server.crt
 
+FREE===>ssl (90day)   // https://www.instantssl.com/free-ssl-certificate.html?track=3338
 
 1. 	openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out client.key
 1. 	openssl req -new -key client.key -out client.crt

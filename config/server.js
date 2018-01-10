@@ -11,9 +11,9 @@ class Server {
             // var serverHttp = http.createServer(app).listen(opt.config.domain.port, opt.config.domain.host);
             // return serverHttp;
             const httpsOptions = {
-                cert: fs.readFileSync(`${opt.paths.CONFIG}/ssl/localhost.cert`, 'utf8'),
-                key: fs.readFileSync(`${opt.paths.CONFIG}/ssl/localhost.key`, 'utf8'),
-                ca: fs.readFileSync(`${opt.paths.CONFIG}/ssl/ca.cert`, 'utf8'),
+                cert: fs.readFileSync(`${opt.paths.CONFIG}/ssl/server.crt`, 'utf8'),
+                key: fs.readFileSync(`${opt.paths.CONFIG}/ssl/server.key`, 'utf8'),
+                // ca: fs.readFileSync(`${opt.paths.CONFIG}/ssl/ca.cert`, 'utf8'),
                 requestCert: opt.config.domain.requestCert,
                 rejectUnauthorized: opt.config.domain.rejectUnauthorized,
                 passphrase: opt.config.domain.passphrase,

@@ -18,8 +18,8 @@ callCoreHelper.runSocket(runServer);
 // const fs = require('fs');
 //
 // const options = {
-//     key: fs.readFileSync('D:/Project/Demo/config/ssl/localhost.key'),
-//     cert: fs.readFileSync('D:/Project/Demo/config/ssl/localhost.cert'),
+//     key: fs.readFileSync('C:/Users/Bui/Desktop/Nodejs/Demo/config/ssl/server.key'),
+//     cert: fs.readFileSync('C:/Users/Bui/Desktop/Nodejs/Demo/config/ssl/server.crt'),
 //     "rejectUnauthorized": true,
 //     "requestCert": true,
 //     "passphrase": "123456",
@@ -30,8 +30,8 @@ callCoreHelper.runSocket(runServer);
 //     res.writeHead(200);
 //     res.end('hello world\n');
 // }).listen(8000);
-
-console.log(new Date().getTime());
+//
+// console.log(new Date().getTime());
 
 // callCoreHelper.checkConnect(function (rsConnect) {
 //     if (rsConnect.error) {
