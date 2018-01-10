@@ -14,31 +14,6 @@ callCoreHelper.connectKnex();
 
 callCoreHelper.runSocket(runServer);
 
-// const https = require('https');
-// const fs = require('fs');
-//
-// const options = {
-//     key: fs.readFileSync('C:/Users/Bui/Desktop/Nodejs/Demo/config/ssl/server.key'),
-//     cert: fs.readFileSync('C:/Users/Bui/Desktop/Nodejs/Demo/config/ssl/server.crt'),
-//     "rejectUnauthorized": true,
-//     "requestCert": true,
-//     "passphrase": "123456",
-//     "family": "IPv4"
-// };
-//
-// https.createServer(options, (req, res) => {
-//     res.writeHead(200);
-//     res.end('hello world\n');
-// }).listen(8000);
-//
-// console.log(new Date().getTime());
-
-// callCoreHelper.checkConnect(function (rsConnect) {
-//     if (rsConnect.error) {
-//         // runServer.close();
-//         // process.exit(1);
-//     }
-// });
 
 
 // const sampleConfig = require(`${paths.CONFIG}/config.json`);
