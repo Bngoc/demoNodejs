@@ -1,9 +1,9 @@
 {
   "domain": {
-    "port": 443,
+    "port": 1230,
     "host": "localhost",
-    "rejectUnauthorized": true,
-    "requestCert": true,
+    "rejectUnauthorized": false,
+    "requestCert": false,
     "passphrase": "123456",
     "family": "IPv4"
   },

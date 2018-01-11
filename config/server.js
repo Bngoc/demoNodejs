@@ -13,7 +13,6 @@ class Server {
             const httpsOptions = {
                 cert: fs.readFileSync(`${opt.paths.CONFIG}/ssl/server.crt`, 'utf8'),
                 key: fs.readFileSync(`${opt.paths.CONFIG}/ssl/server.key`, 'utf8'),
-                // ca: fs.readFileSync(`${opt.paths.CONFIG}/ssl/ca.cert`, 'utf8'),
                 requestCert: opt.config.domain.requestCert,
                 rejectUnauthorized: opt.config.domain.rejectUnauthorized,
                 passphrase: opt.config.domain.passphrase,

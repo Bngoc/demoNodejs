@@ -162,9 +162,13 @@ let listContacts = function () {
     this.searchListContactListAll = function (requestListContact) {
         let _this = this;
         callDataJS(requestListContact, function (dataResult) {
-            _this.showContactListAll(dataResult);
-            let htmlSearch = '<li id="search-box-contacts" class="search-contact"><div class="wrap"><div class="box-sreach-contact"><input type="button" class="btn btn-primary" value="Search contacts" /></div></div></li>';
-            $('#contacts-your').append(requestListContact.reset ? '' : htmlSearch);
+            if (dataResult.err){
+
+            } else {
+                _this.showContactListAll(dataResult);
+                let htmlSearch = '<li id="search-box-contacts" class="search-contact"><div class="wrap"><div class="box-sreach-contact"><input type="button" class="btn btn-primary" value="Search contacts" /></div></div></li>';
+                $('#contacts-your').append(requestListContact.reset ? '' : htmlSearch);
+            }
         });
     };
 

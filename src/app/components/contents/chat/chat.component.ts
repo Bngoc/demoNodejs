@@ -13,13 +13,13 @@ import {libSupports} from "../../../common/libSupports";
     encapsulation: ViewEncapsulation.None
 })
 export class ChatComponent extends libSupports implements OnInit {
-    private url = 'http://localhost:1230';
+    private url = 'https://localhost:1230';
     private socket;
 
     constructor() {
         super();
 
-        this.socket = io(this.url);
+        // this.socket = io(this.url);
 
         this.loadCss([
             // 'css/chat.custom.css',
