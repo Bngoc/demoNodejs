@@ -14,16 +14,21 @@ declare var jQuery: any;
 })
 
 export class AppComponent extends libSupports implements OnInit {
+    url;
 
     constructor() {
         super();
         // this.intiLoadCss();
         // this.intiLoadScript();
+
     }
 
     public ngOnInit() {
         this.intiLoadCss();
         this.intiLoadScript();
+
+        this.url = this.urlSide();
+
     };
 
     clicked() {

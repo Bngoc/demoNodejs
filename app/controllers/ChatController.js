@@ -534,6 +534,15 @@ class ChatController extends BaseController {
     socketConnection(io) {
         var s60 = 1000 * 60 * 1;
         io.on('connection', function (socket) {
+
+            socket.on('updateUser', function () {
+                io.sockets.emit('send-data-test', {
+                    content: 'You are connected -- all!',
+                    importance: '1',
+                    'socketID': socket.id
+                });
+            });
+
             let chatController = new ChatController();
             let userCurrent = chatController.getSessionByName(socket, 'passport');
             let cfgChatUser = chatController.supportConfigChat(chatController.getSessionByName(socket, 'cfg_chat'));

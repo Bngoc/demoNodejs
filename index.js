@@ -4,6 +4,7 @@ const express = require('express');
 var CoreHelper = require('./config/CoreHelper.js');
 var callCoreHelper = new CoreHelper();
 
+callCoreHelper.createFileConfig();
 // ------------- Run app ----------------------
 var runServer = callCoreHelper.runServer();
 
@@ -13,7 +14,6 @@ callCoreHelper.getConnect();
 callCoreHelper.connectKnex();
 
 callCoreHelper.runSocket(runServer);
-
 
 
 // const sampleConfig = require(`${paths.CONFIG}/config.json`);

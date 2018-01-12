@@ -1,4 +1,4 @@
-var socket = io.connect('https://localhost:1230', {
+var socket = io.connect($('#my-url').attr('data-url'), {
     rememberTransport: false,
     'reconnect': true,
     'reconnection delay': 500,

@@ -101,6 +101,30 @@ function CoreHelper() {
     this.aliasRouter = function () {
         return setAliasRouter;
     };
+
+    this.createFileConfig = function () {
+        let side = (((sampleConfig.domain.ssl === true) ? "https://" : "http://") + `${sampleConfig.domain.host}:${sampleConfig.domain.port}`);
+        let apiClient = {
+            "/api/*": {
+                "target": side,
+                "secure": sampleConfig.domain.secure,
+                "changeOrigin": sampleConfig.domain.changeOrigin
+            }
+        };
+        let reqData = {
+            path: `${paths.ROOT}/proxy.conf.json`,
+            fileContent: JSON.stringify(apiClient)
+        };
+
+        let syncFile = this.callModule(`${paths.LIB}/SyncFile.js`, true);
+        syncFile.createFile(reqData, function (err, done) {
+            if (err) {
+                return console.log(`Error: ${reqData.path} .....`, err);
+            }
+
+            console.log(`The file ${reqData.path} was saved!`);
+        });
+    }
 }
 
 

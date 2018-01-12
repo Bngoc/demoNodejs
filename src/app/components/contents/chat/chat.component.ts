@@ -13,12 +13,12 @@ import {libSupports} from "../../../common/libSupports";
     encapsulation: ViewEncapsulation.None
 })
 export class ChatComponent extends libSupports implements OnInit {
-    private url = 'https://localhost:1230';
+    private url;
     private socket;
 
     constructor() {
         super();
-
+        this.url = this.urlSide();
         // this.socket = io(this.url);
 
         this.loadCss([
@@ -39,7 +39,11 @@ export class ChatComponent extends libSupports implements OnInit {
 
     ngOnInit() {
 
-        console.log(this.socket);
-    }
+        console.log(this.url);
 
+
+        // this.socket.on('send-data-test', function (data) {
+        // console.log('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF =>',data);
+        // });
+    }
 }

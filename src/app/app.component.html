@@ -3,7 +3,8 @@
 
 <app-header></app-header>
 
-<div class="container _full">
+<div id="my-url" [attr.data-url]="url" style="display: none; z-index: -9999999"></div>
+<div class="container _full {{url}}">
     <div id="content" class="snippet-hidden">
         <div class="inner-content">
             <app-nav></app-nav>

@@ -1,11 +1,18 @@
 'use strict';
 
 declare var require: any;
+const mainAng = require("./../../../proxy.conf.json");
 const pjson = require('./../../../package.json');
 const bundles = require('./../../../bundles.angular.json');
 import {isUndefined} from "util";
 
+
 export abstract class libSupports {
+
+    public urlSide() {
+
+        return mainAng['/api/*'].target;
+    }
 
     public intiLoadCss(isCheckWebsite = true) {
         let nameWebsite = isCheckWebsite ? 'main' : 'admin_main';
