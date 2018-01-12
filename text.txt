@@ -83,7 +83,6 @@ FREE===>ssl (90day)   // https://www.instantssl.com/free-ssl-certificate.html?tr
 
 //https://geekflare.com/openssl-commands-certificates/
 
-//https://deliciousbrains.com/https-locally-without-browser-privacy-errors/
 //https://gist.githubusercontent.com/mtigas/952344/raw/846d41c802548ff0df620241c78bf026663e1b49/gistfile1.md
 
 

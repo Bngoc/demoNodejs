@@ -1,7 +1,7 @@
 {
   "domain": {
     "port": 1230,
-    "host": "localhost",
+    "host": "local.nodejs.vn",
     "rejectUnauthorized": false,
     "requestCert": false,
     "passphrase": "123456",
