@@ -11,6 +11,7 @@ class Routers {
         router.extendExpress(app);
         router.registerAppHelpers(app);
 
+        let useMiddlewareAngular = coreHelper.callModule(`${coreHelper.paths.MIDDLEWARE}Authenticate.angular.js`, true);
         let useMiddleware = coreHelper.callModule(`${coreHelper.paths.MIDDLEWARE}Authenticate.js`, true);
         let productController = coreHelper.callModule(`${coreHelper.paths.CONTROLLERS}ProductController.js`, true);
         let homeController = coreHelper.callModule(`${coreHelper.paths.CONTROLLERS}HomeController.js`, true);
@@ -19,8 +20,6 @@ class Routers {
 
         // ---------------------- List router ----------------------------
         app.get('/', 'user', homeController.getIndex);
-        app.get('/api/as', 'user', homeController.getIndex1);
-        app.get('/api/chat', 'api.chat.index', useMiddleware.isAuthenticated, chatController.getApiIndex);
 
         app.get("/login", useMiddleware.authenticatedRegister, userController.getLogin);
         // --------------------C0 ------------------
@@ -50,7 +49,6 @@ class Routers {
         app.get("/chat", 'chat', useMiddleware.isAuthenticated, chatController.getIndex);
         app.post("/chat/content-chat", 'chat.change.content', chatController.postContentChat);
         app.post("/chat/list-contact", 'chat.list.contact', chatController.postListContact);
-        app.post("/api/chat/list-contact", 'api.chat.list.contact', chatController.postApiListContact);
 
 
         // --------------------Test ------------------------------------------------
@@ -77,9 +75,17 @@ class Routers {
         // --------------------End Test ------------------------------------------------
 
 
-        app.get('*', function (req, res, next) {
-            res.sendFile(coreHelper.paths.DIST + 'index.html');
-        });
+        // -----------------------------------S Angular 5-------------------------------------------
+
+        // app.get("/api/login", useMiddlewareAngular.authenticatedRegister, userController.getLogin);
+        app.post("/api/login", useMiddlewareAngular.authenticatedRegister, userController.postLoginAngular);
+        app.get("/api/logout", useMiddlewareAngular.authenticatedRegister, userController.getLogoutAngular);
+
+        app.get('/api/as', 'user', homeController.getIndex1);
+        app.get('/api/chat', 'api.chat.index', useMiddlewareAngular.isAuthenticated, chatController.getIndexAngular);
+        app.post("/api/chat/list-contact", 'api.chat.list.contact', chatController.postApiListContact);
+        // -----------------------------------E Angular 5-------------------------------------------
+
 
         return router;
     }

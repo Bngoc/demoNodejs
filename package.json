@@ -95,9 +95,12 @@
     "typescript": "~2.4.2"
   },
   "scripts": {
-    "ng-serve-target": "ng serve --proxy-config proxy.conf.json",
-    "serve-api": "supervisor babel-node ./",
-    "start": "npm run build & concurrently --kill-others \"npm run serve-api\" \"npm run ng-serve-target\"",
+    "ng-serve-target": "ng serve --prod --proxy-config proxy.conf.json",
+    "ng-serve-target-one": "ng serve --aot --proxy-config proxy.conf.json",
+    "serve-api": "babel-node ./",
+    "serve-api-one": "supervisor babel-node ./",
+    "start": "concurrently --kill-others \"npm run serve-api\" \"npm run ng-serve-target\"",
+    "start-one": "npm run build & concurrently --kill-others \"npm run serve-api\" \"npm run ng-serve-target\"",
     "ng": "ng",
     "build": "ng build --prod",
     "ng-serve": "npm run serve",

@@ -473,6 +473,111 @@ class UserController {
             res.redirect('/login');
         }
     }
+
+    // ---------------------------------------------- angular -----------------------------------------
+    postLoginAngular(req, res, next) {
+        if (req.xhr) {
+            var responseDataMap = {
+                url: '',
+                validate: [],
+                msg: '',
+                code: '',
+                status: false
+            };
+
+            if (req.body.loginId && req.body.pwd) {
+                helper.coreHelper.passport('local').authenticate('local', function (err, user, info) {
+                    if (err) return next(err);
+
+                    let infoPassport = info;
+                    //{"code":null,"error":"","msg":"","result":null}'
+                    if (infoPassport.message) {
+                        let dataPassport = JSON.parse(infoPassport.message);
+                        if (dataPassport.code || dataPassport.result == null) {
+                            responseDataMap.code = dataPassport.code || 'ERR0003';
+                            responseDataMap.msg = 'Account not exits';
+                            res.status(200).send(responseDataMap);
+                        } else {
+                            if (dataPassport.result && user) {
+                                req.logIn(user, function (err) {
+                                    if (err) {
+                                        responseDataMap.code = "ERR0003";
+                                        responseDataMap.msg = 'Login Fail....!';
+                                        res.status(200).send(responseDataMap);
+                                    } else {
+                                        var dataRequest = {
+                                            clause: {users_id: user.id},
+                                            dataUpdate: {is_life: 1},
+                                        };
+                                        var newContacts = new Contacts.class();
+                                        newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
+                                            if (errUpdate) next(errUpdate);
+
+                                            req.session.cfg_chat = rsModel.get('cfg_chat');
+                                            responseDataMap.status = true;
+                                            responseDataMap.url = 'chat';
+                                            responseDataMap.msg = 'Login success';
+                                            res.status(200).send(responseDataMap);
+                                        });
+                                    }
+                                });
+                            } else {
+                                responseDataMap.code = "ERR0003";
+                                responseDataMap.msg = 'Account or password not authentication';
+                                res.status(200).send(responseDataMap);
+                            }
+                        }
+                    } else {
+                        responseDataMap.code = "ERR0004";
+                        responseDataMap.msg = 'ERROR: Server Not Response';
+                        res.status(200).send(responseDataMap);
+                    }
+                })(req, res, next);
+            } else {
+                responseDataMap.code = 'ERR0001';
+                responseDataMap.msg = 'Account is empty';
+                var validateMsg = [];
+                if (req.body.loginId == '' && req.body.pwd) {
+                    validateMsg.push({param: 'loginId', msg: 'Account is required'})
+                }
+                else if (req.body.loginId && req.body.pwd == '') {
+                    validateMsg.push({param: 'pwd', smg: 'Password is required'})
+                } else {
+                    validateMsg.push(
+                        {param: 'loginId', msg: 'Account is required'},
+                        {param: 'pwd', msg: 'Password is required'}
+                    );
+                }
+                responseDataMap.validate = validateMsg;
+
+                res.status(200).send(responseDataMap);
+            }
+        } else {
+            res.status(500).send('Not');
+        }
+    }
+
+    getLogoutAngular(req, res, next) {
+        if (req.session !== undefined) {
+            if (req.session.passport.user) {
+                var dataRequest = {
+                    clause: {users_id: req.session.passport.user},
+                    dataUpdate: {is_life: 0},
+                };
+                var newContacts = new Contacts.class();
+                newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
+                    if (errUpdate) next(errUpdate);
+
+                    req.session.destroy();
+                    req.logOut();
+                    res.redirect('/login');
+                });
+            }
+        }
+        // else {
+        res.redirect('/login');
+        // }
+    }
 }
 
 module.exports = UserController;

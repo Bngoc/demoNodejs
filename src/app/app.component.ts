@@ -3,6 +3,7 @@ import {libSupports} from './common/libSupports';
 import {HeaderComponent} from "./components/layouts/header/header.component";
 
 declare var jQuery: any;
+declare var $: any;
 
 @Component({
     selector: 'app-root',
@@ -31,7 +32,4 @@ export class AppComponent extends libSupports implements OnInit {
 
     };
 
-    clicked() {
-        console.log('7777777777777777');
-    }
 }

@@ -52,6 +52,8 @@ const kue = require('kue');
 
 const ViewController = require('./ViewController.js');
 const helper = new ViewController();
+const SupportApiController = require('./SupportApiController.js');
+const supportApi = new SupportApiController();
 
 const User = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Users.js`);
 const Contacts = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Contacts.js`);
@@ -154,23 +156,12 @@ class ChatController extends BaseController {
         }
     }
 
-    getApiIndex(req, res, next) {
+    getIndexAngular(req, res, next) {
+        let supportApiIndexChat = supportApi;
+
         try {
-            let chatController = new ChatController();
-            var showResponse = helper;
+            var showResponse = {};
             const aliasRouter = helper.coreHelper.aliasRouter();
-            showResponse.header = showResponse.getHeader('CHAT');
-            showResponse.cssInclude = showResponse.readFileInclude(['css/chat.custom.css', 'css/chat.test.css'], 'c');
-            showResponse.title = 'Home chat';
-            showResponse.isNotIncludeSidebar = true;
-            showResponse.scriptInclude = showResponse.readFileInclude([
-                "js/support/menu-info-chat.js",
-                "js/support/libCommonChat.js",
-                "js/support/listContacts.js",
-                'js/socket/client.js',
-                'js/socket/chat.js'
-            ]);
-            showResponse.renderViews = 'chat/index.ejs';
 
             let userCurrent = req.user;
             if (userCurrent) {
@@ -215,15 +206,19 @@ class ChatController extends BaseController {
                     req.session.isLife = notiContacts ? (notiContacts.attributes.is_life == 1) : false;
                     req.session.infoParticipant = rsData.infoParticipant;
 
-                    res.send(showResponse);
-                    // res.render(showResponse.renderViews, showResponse);
+                    supportApiIndexChat.data = showResponse;
+
+                    res.status(200).send(supportApiIndexChat);
                 });
             } else {
-                res.redirect('/');
+                supportApiIndexChat.err = 'ERR0001';
+                supportApiIndexChat.msg = 'Need login before use chat';
+                res.status(400).send(supportApiIndexChat);
             }
         } catch (ex) {
-            throw ex;
-            console.log('ERROR TRY_CATCH CHAT INDEX');
+            supportApiIndexChat.err = 'ERR0010';
+            supportApiIndexChat.msg = ex;
+            res.status(400).send(supportApiIndexChat);
         }
     }
 
@@ -535,133 +530,124 @@ class ChatController extends BaseController {
         var s60 = 1000 * 60 * 1;
         io.on('connection', function (socket) {
 
-            socket.on('updateUser', function () {
-                io.sockets.emit('send-data-test', {
-                    content: 'You are connected -- all!',
-                    importance: '1',
-                    'socketID': socket.id
-                });
-            });
-
             let chatController = new ChatController();
+            let newContacts = new Contacts.class();
+            let newUser = new User.class();
+
             let userCurrent = chatController.getSessionByName(socket, 'passport');
             let cfgChatUser = chatController.supportConfigChat(chatController.getSessionByName(socket, 'cfg_chat'));
             chatController.setSessionByName(socket, 'isActiveCurrent', userCurrent.user ? userCurrent.user : null);
             socket.isActiveLoadPageCurrent = userCurrent.user ? userCurrent.user : null;
 
-            if (userCurrent) {
-                let chatController = new ChatController();
-                let newContacts = new Contacts.class();
-                let newUser = new User.class();
-                let currentStatus = chatController.getSessionByName(socket, 'currentStatus');
-                let infoParticipant = chatController.getSessionByName(socket, 'infoParticipant');
-                if (currentStatus && infoParticipant) {
-                    let reqListRooms = infoParticipant.map(function (getRoomId) {
-                        return getRoomId.channel_id;
-                    });
-                    chatController.setSessionByName(socket, 'listRooms', reqListRooms);
-                    chatController.convertDataListSocket(socket, infoParticipant, currentStatus);
-                    chatController.deleteSessionByName(socket, 'infoParticipant');
-
-                    if (!chatController.getSessionByName(socket, 'isLife')) {
-                        var dataRequest = {
-                            clause: {users_id: socket.users_id},
-                            dataUpdate: {
-                                is_life: 1
-                            },
-                        };
-                        chatController.queueUpdateContact(socket, dataRequest, currentStatus);
-                        chatController.updateSessionByName(socket, 'isLife', true);
-                    }
-                }
-
-                socket.on('msgContentChat', function (reqData) {
-                    let conversationId = reqData.data.dataConversation ? parseInt(reqData.data.dataConversation) : null;
-                    let page = reqData.data.page !== undefined ? parseInt(reqData.data.page) : 1;
-
-                    if (conversationId) {
-                        let message = new Messages.class();
-                        let requestMessage = {
-                            id: conversationId,
-                            userCurrentID: userCurrent.user,
-                            limit: cfgChatUser.page_size_number,
-                            offset: cfgChatUser.page_size_number * (page - 1),
-                            sort: 'DESC'
-
-                        };
-
-                        message.getMessageConversation(requestMessage, function (errMessage, modelMessage) {
-                            if (errMessage) {
-                                return 1;
-                            } else {
-                                process.nextTick(function () {
-                                    let reqOption = {
-                                        userCurrent: userCurrent
-                                    };
-                                    let modelMsgArray = modelMessage.models.map(function (eleModel) {
-                                        return eleModel;
-                                    });
-                                    let isScrollTop = reqData.data.isScrollTop !== undefined ? reqData.data.isScrollTop : false;
-                                    if (isScrollTop === false) modelMsgArray.reverse();
-                                    let resModelMessage = chatController.convertListMessage(modelMsgArray, reqOption);
-
-                                    // resModelMessage.isScrollTop = isScrollTop;
-                                    resModelMessage.isLoadTop = reqData.data.isScrollTop !== undefined ? true : false;
-                                    resModelMessage.channelId = reqData.data.dataChannelID;
-                                    socket.emit('msgContent', resModelMessage);
-                                });
-                            }
-                        });
-                    } else {
-                        let resModelMessageNull = {};
-                        resModelMessageNull.isLoadTop = reqData.data.isScrollTop !== undefined ? true : false;
-                        resModelMessageNull.channelId = reqData.data.dataChannelID;
-                        resModelMessageNull.isLength = 0;
-                        socket.emit('msgContent', resModelMessageNull);
-                    }
+            let currentStatus = chatController.getSessionByName(socket, 'currentStatus');
+            let infoParticipant = chatController.getSessionByName(socket, 'infoParticipant');
+            if (currentStatus && infoParticipant) {
+                let reqListRooms = infoParticipant.map(function (getRoomId) {
+                    return getRoomId.channel_id;
                 });
+                chatController.setSessionByName(socket, 'listRooms', reqListRooms);
+                chatController.convertDataListSocket(socket, infoParticipant, currentStatus);
+                chatController.deleteSessionByName(socket, 'infoParticipant');
 
-                socket.on('sendDataMsg', function (dataSendChat) {
-                    if (dataSendChat) {
-                        let message = new Messages.class();
-                        dataSendChat.channelId = dataSendChat.dataChannel;
-                        dataSendChat.valueMsg = dataSendChat.dataValueMsg;
-                        let reqDataInsert = {
-                            conversation_id: dataSendChat.dataConversation,
-                            sender_id: userCurrent.user,
-                            participants_id: dataSendChat.listCodePart,
-                            message_type: messageType[1],
-                            message: dataSendChat.dataValueMsg,
-                            guid: dataSendChat.dataType
-                        };
+                if (!chatController.getSessionByName(socket, 'isLife')) {
+                    var dataRequest = {
+                        clause: {users_id: socket.users_id},
+                        dataUpdate: {
+                            is_life: 1
+                        },
+                    };
+                    chatController.queueUpdateContact(socket, dataRequest, currentStatus);
+                    chatController.updateSessionByName(socket, 'isLife', true);
+                }
+            }
 
-                        message.insert(reqDataInsert, function (err, modelMsg) {
-                            if (err) return 1;
+            socket.on('msgContentChat', function (reqData) {
+                let conversationId = reqData.data.dataConversation ? parseInt(reqData.data.dataConversation) : null;
+                let page = reqData.data.page !== undefined ? parseInt(reqData.data.page) : 1;
 
+                if (conversationId && userCurrent) {
+                    let message = new Messages.class();
+                    let requestMessage = {
+                        id: conversationId,
+                        userCurrentID: userCurrent.user,
+                        limit: cfgChatUser.page_size_number,
+                        offset: cfgChatUser.page_size_number * (page - 1),
+                        sort: 'DESC'
+
+                    };
+
+                    message.getMessageConversation(requestMessage, function (errMessage, modelMessage) {
+                        if (errMessage) {
+                            return 1;
+                        } else {
                             process.nextTick(function () {
                                 let reqOption = {
                                     userCurrent: userCurrent
                                 };
-                                let modelMsgArray = [];
-                                modelMsgArray.push(modelMsg);
+                                let modelMsgArray = modelMessage.models.map(function (eleModel) {
+                                    return eleModel;
+                                });
+                                let isScrollTop = reqData.data.isScrollTop !== undefined ? reqData.data.isScrollTop : false;
+                                if (isScrollTop === false) modelMsgArray.reverse();
                                 let resModelMessage = chatController.convertListMessage(modelMsgArray, reqOption);
-                                resModelMessage.isLoadTop = dataSendChat.isScrollTop !== undefined ? true : false;
 
-                                socket.emit('sendDataPrivate', resModelMessage);
-
-                                if (dataSendChat.dataChannel) {
-                                    // not user current because show for other user
-                                    resModelMessage.listMsg[0].isUserCurrent = false;
-                                    resModelMessage.channelId = dataSendChat.dataChannel;
-                                    socket.broadcast.to(dataSendChat.dataChannel).emit('sendDataBroadCast', resModelMessage);
-                                }
+                                // resModelMessage.isScrollTop = isScrollTop;
+                                resModelMessage.isLoadTop = reqData.data.isScrollTop !== undefined ? true : false;
+                                resModelMessage.channelId = reqData.data.dataChannelID;
+                                socket.emit('msgContent', resModelMessage);
                             });
+                        }
+                    });
+                } else {
+                    let resModelMessageNull = {};
+                    resModelMessageNull.isLoadTop = reqData.data.isScrollTop !== undefined ? true : false;
+                    resModelMessageNull.channelId = reqData.data.dataChannelID;
+                    resModelMessageNull.isLength = 0;
+                    socket.emit('msgContent', resModelMessageNull);
+                }
+            });
+
+            socket.on('sendDataMsg', function (dataSendChat) {
+                if (dataSendChat && userCurrent) {
+                    let message = new Messages.class();
+                    dataSendChat.channelId = dataSendChat.dataChannel;
+                    dataSendChat.valueMsg = dataSendChat.dataValueMsg;
+                    let reqDataInsert = {
+                        conversation_id: dataSendChat.dataConversation,
+                        sender_id: userCurrent.user,
+                        participants_id: dataSendChat.listCodePart,
+                        message_type: messageType[1],
+                        message: dataSendChat.dataValueMsg,
+                        guid: dataSendChat.dataType
+                    };
+
+                    message.insert(reqDataInsert, function (err, modelMsg) {
+                        if (err) return 1;
+
+                        process.nextTick(function () {
+                            let reqOption = {
+                                userCurrent: userCurrent
+                            };
+                            let modelMsgArray = [];
+                            modelMsgArray.push(modelMsg);
+                            let resModelMessage = chatController.convertListMessage(modelMsgArray, reqOption);
+                            resModelMessage.isLoadTop = dataSendChat.isScrollTop !== undefined ? true : false;
+
+                            socket.emit('sendDataPrivate', resModelMessage);
+
+                            if (dataSendChat.dataChannel) {
+                                // not user current because show for other user
+                                resModelMessage.listMsg[0].isUserCurrent = false;
+                                resModelMessage.channelId = dataSendChat.dataChannel;
+                                socket.broadcast.to(dataSendChat.dataChannel).emit('sendDataBroadCast', resModelMessage);
+                            }
                         });
-                    }
-                });
+                    });
+                }
+            });
 
-                socket.on('updateUser', function (reqData) {
-
+            socket.on('updateUser', function (reqData) {
+                if (userCurrent) {
                     var dataRequest = {
                         clause: {users_id: currentStatus.userCurrentID},
                         dataUpdate: {
@@ -670,117 +656,118 @@ class ChatController extends BaseController {
                         },
                     };
                     chatController.queueUpdateContact(socket, dataRequest, currentStatus);
-                });
+                }
+            });
 
-                socket.on('updateActionConversationGroup', function (reqActionConversation) {
-                    if (reqActionConversation.isSingle === true && reqActionConversation.act === 'add') {
-                        // create conversaton
-                        //user part - use current - list author
-                        if (reqActionConversation.userParticipant.length && reqActionConversation.listAuthorId.length) {
-                            let userParticipant = reqActionConversation.userParticipant;
-                            userParticipant.push(userCurrent.user);
-                            let listParticipant = [];
-                            userParticipant.forEach(function (items) {
-                                let temp = {};
-                                temp.users_id = items;
-                                temp.type = conversationType[1];
-                                temp.is_accept_group = 0;
-                                listParticipant.push(temp);
-                            });
+            socket.on('updateActionConversationGroup', function (reqActionConversation) {
+                if (reqActionConversation.isSingle === true && reqActionConversation.act === 'add') {
+                    // create conversaton
+                    //user part - use current - list author
+                    if (userCurrent && reqActionConversation.userParticipant.length && reqActionConversation.listAuthorId.length) {
+                        let userParticipant = reqActionConversation.userParticipant;
+                        userParticipant.push(userCurrent.user);
+                        let listParticipant = [];
+                        userParticipant.forEach(function (items) {
+                            let temp = {};
+                            temp.users_id = items;
+                            temp.type = conversationType[1];
+                            temp.is_accept_group = 0;
+                            listParticipant.push(temp);
+                        });
 
-                            reqActionConversation.listAuthorId.forEach(function (items) {
-                                let temp = {};
-                                temp.users_id = items;
-                                temp.is_accept_group = 1;
-                                temp.type = conversationType[1];
-                                listParticipant.push(temp);
-                            });
-                            let reqModelsInsert = {
-                                title: reqActionConversation.title,
-                                creator_id: userCurrent.user,
-                                channel_id: libFunction.randomStringGenerate(),
-                                listParticipant: listParticipant
-                            };
+                        reqActionConversation.listAuthorId.forEach(function (items) {
+                            let temp = {};
+                            temp.users_id = items;
+                            temp.is_accept_group = 1;
+                            temp.type = conversationType[1];
+                            listParticipant.push(temp);
+                        });
+                        let reqModelsInsert = {
+                            title: reqActionConversation.title,
+                            creator_id: userCurrent.user,
+                            channel_id: libFunction.randomStringGenerate(),
+                            listParticipant: listParticipant
+                        };
 
-                            let conversation = new Conversation.class();
-                            conversation.insertConversation(reqModelsInsert, function (err, modelConversation) {
-                                console.log(reqModelsInsert);
-                            });
-                        }
-                    } else if (reqActionConversation.conversationId && reqActionConversation.act === 'update') {
-                        // update conversation user in table participant
-                        if (reqActionConversation.listAuthorId.length) {
-
-                        }
+                        let conversation = new Conversation.class();
+                        conversation.insertConversation(reqModelsInsert, function (err, modelConversation) {
+                            console.log(reqModelsInsert);
+                        });
                     }
-                });
+                } else if (reqActionConversation.conversationId && reqActionConversation.act === 'update') {
+                    // update conversation user in table participant
+                    if (reqActionConversation.listAuthorId.length) {
 
-                // chi thang phat ra => socket.emit
-                socket.emit('message', {
-                    content: 'You are connected server private!',
-                    importance: '1',
-                    'socketID': socket.id
-                });
+                    }
+                }
+            });
 
-                // gui toan bo trong mang tru thang phat ra => socket.broadcast.emit
-                //socket.broadcast.emit('message', 'Another client has just connected!' + socket.id);
-                // all ==> io.sockets.emit
-                io.sockets.emit('message', {
-                    content: 'You are connected -- all!',
-                    importance: '1',
-                    'socketID': socket.id
-                });
+            // chi thang phat ra => socket.emit
+            socket.emit('message', {
+                content: 'You are connected server private!',
+                importance: '1',
+                'socketID': socket.id
+            });
 
-                socket.on('message', function (message) {
-                    console.log('A client is speaking to me! They’re saying: ' + message);
-                });
+            // gui toan bo trong mang tru thang phat ra => socket.broadcast.emit
+            //socket.broadcast.emit('message', 'Another client has just connected!' + socket.id);
+            // all ==> io.sockets.emit
+            io.sockets.emit('message', {
+                content: 'You are connected -- all!',
+                importance: '1',
+                'socketID': socket.id
+            });
 
-                // var interval_obj = setInterval(function () {
-                //     isReconnectionOn = socket.connected;
-                //     // clearInterval(interval_obj);
-                //     console.log("10x________________________", userCurrent, isReconnectionOn);
-                // }, 10000);
+            socket.on('message', function (message) {
+                console.log('A client is speaking to me! They’re saying: ' + message);
+            });
 
-                // let s60Revert = setTimeout(function () {
-                //     if (socket.isActiveLoadPageCurrent) {
-                //         socket.isActiveLoadPageCurrent = null;
-                //
-                //         console.log('com..................', socket.isActiveLoadPageCurrent);
-                //
-                //         var dataRequest = {
-                //             clause: {users_id: socket.users_id},
-                //             dataUpdate: {
-                //                 status: 2
-                //             }
-                //         };
-                //         chatController.queueUpdateContact(socket, dataRequest, chatController.getSessionByName(socket, 'currentStatus'));
-                //         // io.sockets.emit('expiresTime60', "het 1 minute");
-                //     }
-                // }, s60);
+            // var interval_obj = setInterval(function () {
+            //     isReconnectionOn = socket.connected;
+            //     // clearInterval(interval_obj);
+            //     console.log("10x________________________", userCurrent, isReconnectionOn);
+            // }, 10000);
 
-                //// 3s
-                // socket.on('pingServer', (data) => {
-                // clearTimeout(s60Revert);
-                // });
-                // socket.on('pong', (data) => {
-                // if (socket.isActiveLoadPageCurrent)
-                // if (gh)
-                //     io.emit('ping', userCurrent);
-                // socket.isActiveLoadPageCurrent = userCurrent.user;
-                // });
-                // // 30 minutine - reload page
-                // setTimeout(function () {
-                //     if (socket.isActiveLoadPageCurrent) {
-                //         socket.isActiveLoadPageCurrent = null;
-                //         console.log('com...xxxx..................', socket.isActiveLoadPageCurrent);
-                //         // io.sockets.emit('reload', {});
-                //         socket.emit('expiresTime60', "het 30 minute");
-                //     }
-                // }, 1000 * 60 * 30);
-                // setInterval(function () {
-                // socket.emit('expiresTime60', "--------test------- 3s -> " + socket.isActiveLoadPageCurrent);
-                // }, 3000)
-            }
+            // let s60Revert = setTimeout(function () {
+            //     if (socket.isActiveLoadPageCurrent) {
+            //         socket.isActiveLoadPageCurrent = null;
+            //
+            //         console.log('com..................', socket.isActiveLoadPageCurrent);
+            //
+            //         var dataRequest = {
+            //             clause: {users_id: socket.users_id},
+            //             dataUpdate: {
+            //                 status: 2
+            //             }
+            //         };
+            //         chatController.queueUpdateContact(socket, dataRequest, chatController.getSessionByName(socket, 'currentStatus'));
+            //         // io.sockets.emit('expiresTime60', "het 1 minute");
+            //     }
+            // }, s60);
+
+            //// 3s
+            // socket.on('pingServer', (data) => {
+            // clearTimeout(s60Revert);
+            // });
+            // socket.on('pong', (data) => {
+            // if (socket.isActiveLoadPageCurrent)
+            // if (gh)
+            //     io.emit('ping', userCurrent);
+            // socket.isActiveLoadPageCurrent = userCurrent.user;
+            // });
+            // // 30 minutine - reload page
+            // setTimeout(function () {
+            //     if (socket.isActiveLoadPageCurrent) {
+            //         socket.isActiveLoadPageCurrent = null;
+            //         console.log('com...xxxx..................', socket.isActiveLoadPageCurrent);
+            //         // io.sockets.emit('reload', {});
+            //         socket.emit('expiresTime60', "het 30 minute");
+            //     }
+            // }, 1000 * 60 * 30);
+            // setInterval(function () {
+            // socket.emit('expiresTime60', "--------test------- 3s -> " + socket.isActiveLoadPageCurrent);
+            // }, 3000)
+
 
             //disconnect socket by id
             socket.on('disconnect', function () {

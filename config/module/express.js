@@ -56,7 +56,7 @@ const KEY = 'express.sid';
 
 class Express {
 
-    configExpress(app, server, coreHelper) {
+    configExpress(app, coreHelper) {
 
         app.set('view engine', 'ejs');
         app.engine('html', ejs.renderFile);
@@ -88,7 +88,7 @@ class Express {
         // app.use(passport.session());
         // app.use(flash());
 
-        this.configSession(app);
+        this.configSession(app, coreHelper);
 
         //Global vars
         app.use(function (req, res, next) {
@@ -117,14 +117,16 @@ class Express {
         app.use(favicon(coreHelper.paths.IMAGES + 'favicon.ico'));
     };
 
-    configSocket(server, app) {
+    configSocket(server, app, coreHelper) {
         let io = socketIo(server);
-        io.use(sharedSession(this.configSession(app)), {autoSave: true});
+        io.use(sharedSession(this.configSession(app, coreHelper)), {autoSave: true});
 
         return io;
     }
 
-    configSession(app) {
+    //https secure: true,
+
+    configSession(app, coreHelper) {
         let sessionConfig = session({
             secret: SECRET,
             name: KEY,
@@ -132,7 +134,7 @@ class Express {
             saveUninitialized: true,
             resave: true,
             cookie: {
-                secure: true,
+                secure: coreHelper.sampleConfig.domain.ssl,
                 httpOnly: true,
                 maxAge: (3600000 * 24) * 1, // * day
             }

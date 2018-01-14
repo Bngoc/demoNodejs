@@ -1,6 +1,6 @@
 {
   "/api/*": {
-    "target": "https://local.nodejs.vn:1230",
+    "target": "http://localhost:1230",
     "secure": false,
     "changeOrigin": false
   }

@@ -56,14 +56,14 @@ function CoreHelper() {
 
     this.runSocket = function (runServer) {
         var socket = this.callModule(`${paths.MODULE}/express.js`, true);
-        let io = socket.configSocket(runServer, app);
+        let io = socket.configSocket(runServer, app, this);
         var chatController = this.callModule(`${paths.CONTROLLERS}ChatController.js`, true);
         chatController.socketConnection(io);
     };
 
-    this.runExpress = function (runServer) {
+    this.runExpress = function () {
         var express = this.callModule(`${paths.MODULE}/express.js`, true);
-        return express.configExpress(app, runServer, this);
+        return express.configExpress(app, this);
     };
 
     this.runRoutes = function () {
@@ -102,7 +102,7 @@ function CoreHelper() {
         return setAliasRouter;
     };
 
-    this.createFileConfig = function () {
+    this.createFileConfig = function (callback) {
         let side = (((sampleConfig.domain.ssl === true) ? "https://" : "http://") + `${sampleConfig.domain.host}:${sampleConfig.domain.port}`);
         let apiClient = {
             "/api/*": {
@@ -119,10 +119,13 @@ function CoreHelper() {
         let syncFile = this.callModule(`${paths.LIB}/SyncFile.js`, true);
         syncFile.createFile(reqData, function (err, done) {
             if (err) {
-                return console.log(`Error: ${reqData.path} .....`, err);
+                console.log(`Error: ${reqData.path} .....`, err);
+                callback(err);
+                // return console.log(`Error: ${reqData.path} .....`, err);
             }
-
             console.log(`The file ${reqData.path} was saved!`);
+            callback(null, true);
+
         });
     }
 }

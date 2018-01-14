@@ -1,7 +1,11 @@
 'use strict';
 declare var require: any;
-import {Component, ViewEncapsulation, OnInit} from '@angular/core';
+import {Component, ViewEncapsulation, OnInit, OnDestroy} from '@angular/core';
+import {ApiServiceChat} from './../../services/api-chat.sevice'
 import * as io from 'socket.io-client';
+import {Subscription} from 'rxjs/Subscription';
+import * as lo from 'lodash';
+declare var _: any = lo;
 
 import {libSupports} from "../../../common/libSupports";
 
@@ -12,15 +16,22 @@ import {libSupports} from "../../../common/libSupports";
     styleUrls: ['chat.component.css'],
     encapsulation: ViewEncapsulation.None
 })
-export class ChatComponent extends libSupports implements OnInit {
+export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     private url;
     private socket;
+    error: any;
+    resultData: any = {};
+    resultData1: any = [];
+    rsData: Subscription;
 
-    constructor() {
+    constructor(private apiServiceChat: ApiServiceChat) {
         super();
         this.url = this.urlSide();
-        // this.socket = io(this.url);
 
+    }
+
+    ngOnInit(): void {
+        // this.socket = io(this.url);
         this.loadCss([
             // 'css/chat.custom.css',
             'css/chat.test.css',
@@ -35,15 +46,24 @@ export class ChatComponent extends libSupports implements OnInit {
             'js/socket/client.js',
             'js/socket/chat.js'
         ]);
+
+        // var _this = this;
+
+        let rsData = this.apiServiceChat
+            .getIndexChat()
+            .subscribe(resp => {
+                if (resp.err == '' && resp.code == null) {
+                    var arr = JSON.parse(resp.data.dataContactList);
+                    this.resultData1 = arr.cfgChat.chatStatus;
+                    this.resultData = resp.data;
+                    console.log(this.resultData);
+                }
+            }, err => this.error = err);
+
+        console.log(this.error, rsData, this.resultData);
     }
 
-    ngOnInit() {
-
-        console.log(this.url);
-
-
-        // this.socket.on('send-data-test', function (data) {
-        // console.log('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF =>',data);
-        // });
+    ngOnDestroy() {
+        this.rsData.unsubscribe();
     }
 }
