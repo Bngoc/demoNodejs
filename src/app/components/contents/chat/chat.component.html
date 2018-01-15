@@ -21,40 +21,11 @@
                 <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
                 <div id="status-options">
                     <ul>
-
-                        <li *ngFor="let key of _.keys(resultData.listStatus)" id="status-{{resultData.listStatus[key]}}"
-                            [attr.status]="resultData.listStatus[key]" [attr.data-value]="key"
-                            class="channel-status {{resultData.listStatus[key] == resultData.status ? 'active': ''}}">
+                        <li *ngFor="let items of (resultData.listStatus | cutsKeys)" id="status-{{items.value}}"
+                            [attr.status]="items.value" [attr.data-value]="items.key"
+                            class="channel-status{{items.value == resultData.status ? ' active': ''}}">
                             <span class="status-circle"></span>
-                            <p>{{resultData.listStatus[key]}}</p></li>
-                        <!--<li *ngFor="let key of objectKeys(resultData.listStatus)" id="status-{{resultData.listStatus[key]}}" [attr.status]="resultData.listStatus[key]" [attr.data-value]="key" class="channel-status {{resultData.listStatus[key] == resultData.status ? 'active': ''}}">-->
-                        <!--<span class="status-circle"></span>-->
-                        <!--<p>{{resultData.listStatus[key]}}</p></li>-->
-                        <!--<li *ngFor="let key in resultData.listStatus" id="status-{{resultData.listStatus[key]}}" [attr.status]="resultData.listStatus[key]" [attr.data-value]="key" class="channel-status {{resultData.listStatus[key] == resultData.status ? 'active': ''}}">-->
-                        <!--<span class="status-circle"></span>-->
-                        <!--<p>{{resultData.listStatus[key]}}</p></li>-->
-
-                        <!--<li *ngFor="let item of (resultData.listStatus | cutsKeys)" id="status-{{item.value}}" [attr.status]="item.value" [attr.data-value]="item.key" class="channel-status {{item.value == resultData.status ? 'active': ''}}">-->
-                        <!--<span class="status-circle"></span>-->
-                        <!--<p>{{item.value | ucfirst}}</p></li>-->
-
-
-                        <!--<li id="status-offline" status="offline" data-value="1" class="channel-status "><span-->
-                        <!--class="status-circle"></span>-->
-                        <!--<p>offline</p></li>-->
-
-                        <!--<li id="status-away" status="away" data-value="2" class="channel-status "><span-->
-                        <!--class="status-circle"></span>-->
-                        <!--<p>away</p></li>-->
-
-                        <!--<li id="status-busy" status="busy" data-value="3" class="channel-status "><span-->
-                        <!--class="status-circle"></span>-->
-                        <!--<p>busy</p></li>-->
-
-                        <!--<li id="status-hidden" status="hidden" data-value="4" class="channel-status "><span-->
-                        <!--class="status-circle"></span>-->
-                        <!--<p>hidden</p></li>-->
-
+                            <p>{{items.value}}</p></li>
                     </ul>
                 </div>
                 <div id="expanded">
@@ -72,71 +43,7 @@
             <input id="search-contact" type="text" maxlength="40" placeholder="Search contacts...">
         </div>
         <div id="contacts" [attr.data-url]="resultData.urlChangeContent">
-            <ul id="contacts-your">
-                <li class="contact">
-                    <div class="wrap" data-conversation="1" data-type="single" data-channel="r3f32ew33"
-                         data-owner="12">
-                        <span channel="status.r3f32ew33" class="list-icon-status contact-status "></span>
-                        <img src="/assets/images/users.png" alt="">
-                        <div class="meta"><span class="name-notify">
-                            <p class="name" data-conversation-name="BuiNgoc1 undefined">BuiNgoc1 undefined </p>
-                            <i class="badges-notify">132</i></span>
-                            <p class="preview mood_message">ư </p></div>
-                    </div>
-                </li>
-                <li class="contact">
-                    <div class="wrap" data-conversation="2" data-type="single" data-channel="ccccccc3t"
-                         data-owner="2">
-                        <span channel="status.ccccccc3t" class="list-icon-status contact-status undefined"></span>
-                        <img src="/assets/images/users.png" alt="">
-                        <div class="meta"><span class="name-notify">
-                            <p class="name" data-conversation-name="bqngoc110 undefined">bqngoc110 undefined </p>
-                            <i class="badges-notify">132</i></span>
-                            <p class="preview mood_message">3 </p></div>
-                    </div>
-                </li>
-                <li class="contact">
-                    <div class="wrap" data-conversation="3" data-type="group" data-channel="44534533h"
-                         data-owner="2">
-                        <span channel="status.44534533h" class=""></span><img src="/images/group.png" alt="">
-                        <div class="meta"><span class="name-notify"><p class="name" data-conversation-name="ncncnc">ncncnc </p><i
-                                class="badges-notify">132</i></span>
-                            <p class="preview"> 5 participants</p></div>
-                    </div>
-                </li>
-                <li class="contact">
-                    <div class="wrap" data-conversation="4" data-type="single" data-channel="53636433y"
-                         data-owner="12">
-                        <span channel="status.53636433y" class="list-icon-status contact-status away"></span><img
-                            src="/images/users.png" alt="">
-                        <div class="meta"><span class="name-notify"><p class="name"
-                                                                       data-conversation-name="gsgewq undefined">gsgewq undefined </p><i
-                                class="badges-notify">132</i></span>
-                            <p class="preview mood_message">r </p></div>
-                    </div>
-                </li>
-                <li class="contact">
-                    <div class="wrap" data-conversation="6" data-type="single" data-channel="666666" data-owner="4">
-                        <span channel="status.666666" class="list-icon-status contact-status undefined"></span><img
-                            src="/images/users.png" alt="">
-                        <div class="meta"><span class="name-notify"><p class="name"
-                                                                       data-conversation-name="bqngoc11229 undefine">bqngoc11229 undefine </p><i
-                                class="badges-notify">132</i></span>
-                            <p class="preview mood_message">r </p></div>
-                    </div>
-                </li>
-                <li class="contact">
-                    <div class="wrap" data-conversation="10" data-type="group"
-                         data-channel="md3s57jsnr4xbb6y4p80yhkt9"
-                         data-owner="12"><span channel="status.md3s57jsnr4xbb6y4p80yhkt9" class=""></span><img
-                            src="/images/group.png" alt="">
-                        <div class="meta"><span class="name-notify"><p class="name"
-                                                                       data-conversation-name="Bqngoc119 xxx-xx, Gsgewq undefined">Bqngoc119 xxx-xx, Gsgewq undefined </p><i
-                                class="badges-notify">132</i></span>
-                            <p class="preview"> 2 participants</p></div>
-                    </div>
-                </li>
-            </ul>
+            <ul id="contacts-your"></ul>
         </div>
         <div id="bottom-bar">
             <button id="addcontact"><i class="fa fa-user-plus fa-fw" aria-hidden="true"></i>
@@ -148,16 +55,17 @@
     <div class="content" id="content-chat"></div>
 </div>
 
-<script type="text/javascript">
-    $(document).ready(function () {
+<!--<script type="text/javascript">-->
+<!--$(document).ready(function () {-->
 
-        window.listContacts = {};
-        let dataContactList = JSON.parse('<%- dataContactList %>');
+<!--window.listContacts = {};-->
+<!--let dataContactList = JSON.parse('<%- resultData.dataContactList %>');-->
 
-        let listContact = new listContacts();
-        listContact.showContactListAll(dataContactList);
-    });
-</script>
+<!--console.log(dataContactList);-->
+<!--let listContact = new listContacts();-->
+<!--listContact.showContactListAll(dataContactList);-->
+<!--});-->
+<!--</script>-->
 
 <nav id="context-menu" class="context-menu">
     <ul class="context-menu__items">

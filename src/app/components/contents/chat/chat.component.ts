@@ -1,28 +1,30 @@
 'use strict';
 declare var require: any;
+declare var $: any;
 import {Component, ViewEncapsulation, OnInit, OnDestroy} from '@angular/core';
 import {ApiServiceChat} from './../../services/api-chat.sevice'
 import * as io from 'socket.io-client';
 import {Subscription} from 'rxjs/Subscription';
-import * as lo from 'lodash';
-declare var _: any = lo;
-
 import {libSupports} from "../../../common/libSupports";
+import {ListContacts} from "../../../common/chat/supports/ListContacts";
+import {SendChatMessage} from "../../../common/chat/sokets/client";
 
 
 @Component({
     selector: 'app-contents-chat',
     templateUrl: 'chat.component.html',
     styleUrls: ['chat.component.css'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
 })
 export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     private url;
     private socket;
     error: any;
     resultData: any = {};
-    resultData1: any = [];
     rsData: Subscription;
+    listContactYourSingleAction: any = [];
+    listContactYourSingle: any = [];
+    dataFriend: any;
 
     constructor(private apiServiceChat: ApiServiceChat) {
         super();
@@ -30,8 +32,12 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
     }
 
-    ngOnInit(): void {
-        // this.socket = io(this.url);
+    keys(obj): Array<string> {
+        return obj ? Object.keys(obj) : null;
+    }
+
+    ngOnInit() {
+        this.socket = io(this.url);
         this.loadCss([
             // 'css/chat.custom.css',
             'css/chat.test.css',
@@ -43,24 +49,118 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
             "js/support/menu-info-chat.js",
             "js/support/libCommonChat.js",
             "js/support/listContacts.js",
-            'js/socket/client.js',
+            // 'js/socket/client.js',
             'js/socket/chat.js'
         ]);
 
-        // var _this = this;
+        // $(document).ready(function () {
+        var sendChatMessage = new SendChatMessage();
+        // sendChatMessage.eventSendMsg();
+        sendChatMessage.getDefaultHeightMsgBox();
+        //
+        //     $(window).resize(function () {
+        //         sendChatMessage.getDefaultHeightMsgBox();
+        //         $("#frameListMsg").animate({scrollTop: this.getMinHeightFrameListMsg()}, 500);
+        //     });
+        //     //
+        //     sendChatMessage.scrollEndShowBoxChat(1500);
+        //     //
+        //     this.listContactYourSingleAction = [];
+        //     this.listContactYourSingle = [];
+        // });
+
+
 
         let rsData = this.apiServiceChat
             .getIndexChat()
             .subscribe(resp => {
                 if (resp.err == '' && resp.code == null) {
-                    var arr = JSON.parse(resp.data.dataContactList);
-                    this.resultData1 = arr.cfgChat.chatStatus;
                     this.resultData = resp.data;
-                    console.log(this.resultData);
+                    let listContact = new ListContacts();
+                    let dataContactList = resp.data.dataContactList;
+                    listContact.showContactListAll(JSON.parse(resp.data.dataContactList));
                 }
             }, err => this.error = err);
 
-        console.log(this.error, rsData, this.resultData);
+
+        // socket.on('pong', (data) => {
+//     console.log('Receive "pong"', data);
+// });
+
+        this.socket.on('expiresTime60', (str) => {
+            console.log('-----------------------', str);
+        });
+
+// socket.emit('ping', "xxxx");
+
+        this.socket.on('message', function (message) {
+            $('#showmsg').text('The server has a message for you: ' + message);
+        });
+
+// let s60 = 15000;
+//
+// setInterval(function () {
+//     socket.emit('pingServer', {isCheck: true, ttl: 3000});
+// }, s60);
+
+        this.socket.on('reload', function (data) {
+            location.reload();
+        });
+
+        this.socket.on('sendDataPrivate', function (messageReplies) {
+            let sendChatMessage = new SendChatMessage();
+            let tempHtml = sendChatMessage.htmlContentBoxChat(messageReplies);
+            sendChatMessage.scrollEndShowBoxChat(1000);
+            // $('#frameListMsg').trigger('changeBoxMsg');
+        });
+
+        this.socket.on('sendDataBroadCast', function (messageSent) {
+            let searchDomChannel = $('[channel="status.' + messageSent.channelId + '"]');
+            if (searchDomChannel.closest('li').hasClass('active')) {
+                let sendChatMessage = new SendChatMessage();
+                let tempHtml = sendChatMessage.htmlContentBoxChat(messageSent);
+                if ($('#boxMsgChat').is(':focus')) {
+                    sendChatMessage.scrollEndShowBoxChat(1000);
+                    // $('#frameListMsg').trigger('changeBoxMsg');
+                    //     $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, 200);
+                } else {
+                    $('#newMsgChat').delay(100).css("display", "block");
+                }
+            } else {
+                let badgesNotify = searchDomChannel.closest('.wrap').find('i.badges-notify');
+                if (badgesNotify.length) {
+                    badgesNotify.addClass('badges-color').text('211');
+                }
+            }
+        });
+
+        this.socket.on('listUserConversation', function (listConversation) {
+            $('[channel="status.' + listConversation.channel_id + '"]').removeClass(listConversation.listStatus).addClass(listConversation.classCurrentStatus);
+        });
+
+        this.socket.on('send-data-test', function (listConversation) {
+            console.log(listConversation);
+        });
+
+        this.socket.on('msgContent', function (dataMessage) {
+            this.activeListContact(dataMessage.channelId);
+
+            if (dataMessage.isLength) {
+                var sendChatMessage = new SendChatMessage();
+                let oldScrollHeight = $("#frameListMsg")[0].scrollHeight;
+                sendChatMessage.htmlContentBoxChat(dataMessage);
+
+                sendChatMessage.getDefaultHeightMsgBox();
+                if (dataMessage.isScrollTop === false) {
+                    sendChatMessage.scrollEndShowBoxChat(0);
+                } else {
+                    $('#frameListMsg').animate({scrollTop: ($('#frameListMsg')[0].scrollHeight - oldScrollHeight)}, 100);
+                }
+            } else {
+
+            }
+        });
+
     }
 
     ngOnDestroy() {

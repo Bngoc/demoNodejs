@@ -106,7 +106,6 @@ export abstract class libSupports {
             async: true,
             dataType: "json",
             success: function (dataResult) {
-
                 callback(dataResult);
             },
             error: function (jqXHR, exception, error) {
