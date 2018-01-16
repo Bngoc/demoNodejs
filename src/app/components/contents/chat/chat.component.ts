@@ -7,9 +7,8 @@ import * as io from 'socket.io-client';
 import {Subscription} from 'rxjs/Subscription';
 import {libSupports} from "../../../common/libSupports";
 import {ListContacts} from "../../../common/chat/supports/ListContacts";
-import {SendChatMessage} from "../../../common/chat/sokets/client";
+import {SendChatMessage} from "../../../common/chat/sokets/SendChatMessage";
 import {LibCommonChat} from "../../../common/chat/supports/LibCommonChat";
-
 
 @Component({
     selector: 'app-contents-chat',
@@ -20,6 +19,7 @@ import {LibCommonChat} from "../../../common/chat/supports/LibCommonChat";
 export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     private url;
     private socket;
+    private sendChatMessage: any;
     error: any;
     resultData: any = {};
     rsData: Subscription;
@@ -34,12 +34,10 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
     }
 
-    keys(obj): Array<string> {
-        return obj ? Object.keys(obj) : null;
-    }
-
     ngOnInit() {
+        // let that = this;
         this.socket = io(this.url);
+        this.sendChatMessage = new SendChatMessage();
         this.loadCss([
             // 'css/chat.custom.css',
             'css/chat.test.css',
@@ -48,41 +46,34 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
         this.appendMyScript([
             'js/common.js',
-            "js/support/menu-info-chat.js",
-            "js/support/libCommonChat.js",
-            "js/support/listContacts.js",
+            // "js/support/menu-info-chat.js",
+            // "js/support/libCommonChat.js",
+            // "js/support/listContacts.js",
             // 'js/socket/client.js',
             'js/socket/chat.js'
         ]);
 
-        var sendChatMessage = new SendChatMessage();
-        sendChatMessage.getDefaultHeightMsgBox();
+        this.sendChatMessage.getDefaultHeightMsgBox();
+        this.sendChatMessage.eventClickSend(this.socket);
+        this.sendChatMessage.eventEnterSend(this.socket);
+        this.sendChatMessage.eventClickNotifyBoxMsg();
+        this.sendChatMessage.eventChangeStatusUser(this.socket);
+        this.sendChatMessage.clickContactContentChat(this.socket);
+        this.sendChatMessage.clickListContactContentChat(this.socket);
+        this.sendChatMessage.scrollListener(this.socket);
+        this.sendChatMessage.clickRightContactContentChat();
+        this.sendChatMessage.clickContactAdd();
+        this.sendChatMessage.clickContactSub();
+        this.sendChatMessage.clickContactSearchSingle();
+        this.sendChatMessage.clickActContactConversation(this.socket);
+        this.sendChatMessage.clickSearchContact();
+        this.sendChatMessage.getListContact();
 
-        sendChatMessage.eventClickSend(this.socket);
-        sendChatMessage.eventEnterSend();
-        sendChatMessage.eventClickNotifyBoxMsg();
-        sendChatMessage.eventChangeStatusUser(this.socket);
-        sendChatMessage.clickContactContentChat(this.socket);
-        sendChatMessage.clickListContactContentChat(this.socket);
-        sendChatMessage.scrollListener(this.socket);
-        sendChatMessage.clickRightContactContentChat();
-        sendChatMessage.clickContactAdd();
-        sendChatMessage.clickContactSub();
-        sendChatMessage.clickContactSearchSingle();
-        sendChatMessage.clickActContactConversation();
-        sendChatMessage.clickSearchContact();
-        sendChatMessage.getListContact();
 
-        $(window).resize(function () {
-            sendChatMessage.getDefaultHeightMsgBox();
-            let libcCommonChat = new LibCommonChat();
-            $("#frameListMsg").animate({scrollTop: libcCommonChat.getMinHeightFrameListMsg()}, 500);
-        });
-        sendChatMessage.scrollEndShowBoxChat(1500);
+        // this.sendChatMessage.scrollEndShowBoxChat(1500);
 
         this.listContactYourSingleAction = [];
         this.listContactYourSingle = [];
-
 
         let rsData = this.apiServiceChat
             .getIndexChat()
@@ -97,36 +88,67 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
 
         // socket.on('pong', (data) => {
-//     console.log('Receive "pong"', data);
-// });
+        //     console.log('Receive "pong"', data);
+        // });
 
         this.socket.on('expiresTime60', (str) => {
             console.log('-----------------------', str);
         });
 
-// socket.emit('ping', "xxxx");
+        // socket.emit('ping', "xxxx");
 
         this.socket.on('message', function (message) {
             $('#showmsg').text('The server has a message for you: ' + message);
         });
 
-// let s60 = 15000;
-//
-// setInterval(function () {
-//     socket.emit('pingServer', {isCheck: true, ttl: 3000});
-// }, s60);
+        // let s60 = 15000;
+        //
+        // setInterval(function () {
+        //     socket.emit('pingServer', {isCheck: true, ttl: 3000});
+        // }, s60);
 
+        this.reload();
+
+        this.sendDataPrivate();
+
+        this.sendDataBroadCast();
+
+        this.listUserConversation();
+
+        this.sendDataTest();
+
+        this.msgContent();
+    }
+
+    onResize() {
+        this.sendChatMessage.getDefaultHeightMsgBox();
+        let libcCommonChat = new LibCommonChat();
+        $("#frameListMsg").animate({scrollTop: libcCommonChat.getMinHeightFrameListMsg()}, 500);
+    }
+
+    keys(obj): Array<string> {
+        return obj ? Object.keys(obj) : null;
+    }
+
+    reload() {
+        let that = this;
         this.socket.on('reload', function (data) {
             location.reload();
         });
+    }
 
+    sendDataPrivate() {
+        let that = this;
         this.socket.on('sendDataPrivate', function (messageReplies) {
             let sendChatMessage = new SendChatMessage();
             let tempHtml = sendChatMessage.htmlContentBoxChat(messageReplies);
             sendChatMessage.scrollEndShowBoxChat(1000);
             // $('#frameListMsg').trigger('changeBoxMsg');
         });
+    }
 
+    sendDataBroadCast() {
+        let that = this;
         this.socket.on('sendDataBroadCast', function (messageSent) {
             let searchDomChannel = $('[channel="status.' + messageSent.channelId + '"]');
             if (searchDomChannel.closest('li').hasClass('active')) {
@@ -146,25 +168,37 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
                 }
             }
         });
+    }
 
+    listUserConversation() {
+        let that = this;
         this.socket.on('listUserConversation', function (listConversation) {
             $('[channel="status.' + listConversation.channel_id + '"]').removeClass(listConversation.listStatus).addClass(listConversation.classCurrentStatus);
         });
+    }
 
+    sendDataTest() {
+        let that = this;
         this.socket.on('send-data-test', function (listConversation) {
             console.log(listConversation);
         });
+    }
 
-        this.socket.on('msgContent', function (dataMessage) {
-            this.activeListContact(dataMessage.channelId);
+    msgContent() {
+        let that = this;
+        var sendChatMessage = new SendChatMessage();
+        that.socket.on('msgContent', function (dataMessage) {
+
+            console.log("msgContent socket: ", dataMessage);
+
+            sendChatMessage.activeListContact(dataMessage.channelId);
 
             if (dataMessage.isLength) {
-                var sendChatMessage = new SendChatMessage();
                 let oldScrollHeight = $("#frameListMsg")[0].scrollHeight;
                 sendChatMessage.htmlContentBoxChat(dataMessage);
 
                 sendChatMessage.getDefaultHeightMsgBox();
-                if (dataMessage.isScrollTop === false) {
+                if (dataMessage.isLoadTop === false) {
                     sendChatMessage.scrollEndShowBoxChat(0);
                 } else {
                     $('#frameListMsg').animate({scrollTop: ($('#frameListMsg')[0].scrollHeight - oldScrollHeight)}, 100);
@@ -173,7 +207,6 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
             }
         });
-
     }
 
     ngOnDestroy() {

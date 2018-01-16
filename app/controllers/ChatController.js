@@ -192,7 +192,8 @@ class ChatController extends BaseController {
                     showResponse.userID = notiContacts ? notiContacts.attributes.id : '';
                     showResponse.status = notiContacts ? statusUser : '';
                     showResponse.listStatus = chatStatus;
-                    showResponse.urlChangeContent = aliasRouter.build('chat.change.content');
+                    showResponse.urlChangeContent = aliasRouter.build('api.chat.content.chat');
+                    showResponse.urlListContact = aliasRouter.build('api.chat.list.contact');
 
                     let option = {
                         isSearch: false,
@@ -365,6 +366,188 @@ class ChatController extends BaseController {
                                 res.status(200).send(response);
                             }
                         });
+                    });
+                });
+            } else if ((req.body.dataConversation === "") && parseInt(req.body.valAuthor) && userCurrent) {
+                // NOT FRIEND AND NOT REQUEST
+                showResponseChat.renderViews = 'chat/request.chat.ejs';
+                let user = new User.class();
+
+                user.findUserFullById(parseInt(req.body.valAuthor), function (err, modelUser) {
+                    if (err) return next(err);
+
+                    let useContacts = modelUser.relations.useContacts;
+                    showResponseChat.infoParticipant = modelUser;
+                    showResponseChat.classStatus = cfgChat.class_undefined;
+                    showResponseChat.moodMessageShow = cfgChat.mood_message_request;
+                    showResponseChat.urlImagesAvatar = useContacts.get('path_img') ? useContacts.get('path_img') : cfgChat.img_single_user;
+
+                    res.render(showResponseChat.renderViews, {
+                        data: showResponseChat,
+                        layout: false
+                    }, function (err, renderHtml) {
+                        if (err) {
+                            res.send(err);
+                        } else {
+                            var response = {html: renderHtml, err: err};
+
+                            res.status(200).send(response);
+                        }
+                    });
+                });
+            } else {
+                res.status(500).send('ERR');
+            }
+        } catch (ex) {
+            res.status(500).send('ERR');
+        }
+    }
+
+    postApiContentChat(req, res, next) {
+        var showResponseChat = {};
+        let userCurrent = req.user;
+        req.session.dataChannelID = null;
+
+        try {
+            showResponseChat.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX;
+            showResponseChat.maxHeightInputBoxChat = HEIGHT_INPUT_BOX_MAX;
+            showResponseChat.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN;
+            showResponseChat.page = 1;
+            showResponseChat.userName = req.body.userName;
+            showResponseChat.hexCodeId = userCurrent.attributes.id ? 'hex-' + userCurrent.attributes.id : null;
+            // let chatController = new ChatController();
+
+            if (parseInt(req.body.dataConversation) && userCurrent) {
+                showResponseChat.renderViews = 'chat/content.chat.ejs';
+                let conversation = new Conversation.class();
+                let optionRequest = {
+                    id: parseInt(req.body.dataConversation),
+                    userCurrentID: userCurrent.attributes.id,
+                    userModel: User.model,
+                    statusSingle: cfgChat.status_single
+                };
+
+                conversation.conversationsListSingleUser(optionRequest, function (errPart, modelListUser) {
+                    if (errPart) return next(errPart);
+
+                    let listUserParticipant = modelListUser.map(function (listUser) {
+                        return {
+                            codePartId: listUser.get('id'),
+                            usersId: listUser.get('users_id'),
+                            is_accept_single: listUser.get('is_accept_single'),
+                            is_accept_group: listUser.get('is_accept_group'),
+                            channelId: listUser.relations.parConversation.get('channel_id'),
+                            conversationID: listUser.get('conversation_id')
+                        };
+                    });
+
+                    conversation.conversationsListUser(optionRequest, function (err, infoConversation) {
+                        if (err) return next(err);
+
+                        infoConversation.forEach(function (elem) {
+                            showResponseChat.dataType = elem.type;
+                            showResponseChat.dataChannelId = elem.channel_id;
+                            showResponseChat.dataOwnerId = elem.creator_id;
+                            showResponseChat.isCurrentOwnerId = elem.creator_id == userCurrent.attributes.id;
+                            showResponseChat.dataConversation = elem.idConversation;
+                            showResponseChat.countParticipants = elem.count;
+                            showResponseChat.isTypeSingle = showResponseChat.dataType == cfgChat.status_single;
+                            showResponseChat.is_accept = elem.is_accept_single;
+                            showResponseChat.hiddenStatusName = cfgChat.status_hidden_name;
+                            showResponseChat.replaceStatusName = cfgChat.status_hidden_name_replace;
+
+                            let urlImagesAvatar = "";
+                            let listParticipant = [];
+                            if (showResponseChat.isTypeSingle) {
+                                let eleSingle = elem.infoParticipant;
+                                let useContactsSingle = eleSingle.relations.useContacts;
+                                let indexFindUserSingle = listUserParticipant.findIndex(x => x.usersId == useContactsSingle.get('users_id'));
+                                let moodMessageTemp = "";
+                                let tempClassStatus = "";
+                                let tempChatStatusName = chatStatus[useContactsSingle.get('status')];
+                                if (elem.is_accept_single) {
+                                    moodMessageTemp = showResponseChat.isCurrentOwnerId ? cfgChat.mood_message_request : cfgChat.mood_message_responsive;
+                                    tempClassStatus = cfgChat.class_undefined;
+                                } else {
+                                    if (useContactsSingle.get('mood_message')) {
+                                        moodMessageTemp = useContactsSingle.get('mood_message');
+                                    } else {
+                                        moodMessageTemp = (tempChatStatusName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusName;
+                                    }
+                                    tempClassStatus = (tempChatStatusName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusName;
+                                }
+                                let optionRender = {
+                                    eleSingle: eleSingle,
+                                    strListStatus: Object.values(chatStatus).join(' '),
+                                    moodMessageTemp: moodMessageTemp,
+                                    tempClassStatus: tempClassStatus,
+                                    indexFindUserSingle: indexFindUserSingle,
+                                    tempChatStatusName: tempChatStatusName
+                                };
+                                let tempPartSingle = libFunction.renderDataContentChat(useContactsSingle, listUserParticipant, optionRender);
+
+                                showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
+                                listParticipant.push(tempPartSingle);
+                                urlImagesAvatar = useContactsSingle.get('path_img') ? useContactsSingle.get('path_img') : "assets/" + cfgChat.img_single_user;
+                            } else {
+                                elem.infoParticipant.forEach(function (ele) {
+                                    let relationsUseContacts = ele.relations.useContacts;
+                                    let indexFindUser = listUserParticipant.findIndex(x => x.usersId == relationsUseContacts.get('users_id'));
+                                    let booleanFindUser = (indexFindUser !== -1);
+                                    let tempChatStatusGroupName = chatStatus[relationsUseContacts.get('status')];
+                                    let tempClassStatusGroup = "";
+                                    let tempMoodMessageGroup = "";
+                                    let isFriendCurrent = booleanFindUser ? (listUserParticipant[indexFindUser].is_accept_single != 1) : false;
+
+                                    if (booleanFindUser) {
+                                        if (relationsUseContacts.get('mood_message')) {
+                                            tempMoodMessageGroup = relationsUseContacts.get('mood_message');
+                                        } else {
+                                            tempMoodMessageGroup = (tempChatStatusGroupName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusGroupName;
+                                        }
+                                        tempClassStatusGroup = isFriendCurrent ? ((tempChatStatusGroupName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusGroupName) : cfgChat.class_undefined;
+                                    } else {
+                                        tempMoodMessageGroup = showResponseChat.isCurrentOwnerId ? cfgChat.mood_message_request : cfgChat.mood_message_responsive;
+                                        tempClassStatusGroup = cfgChat.class_undefined;
+                                    }
+
+                                    let optionRender = {
+                                        eleSingle: ele,
+                                        strListStatus: Object.values(chatStatus).join(' '),
+                                        moodMessageTemp: tempMoodMessageGroup,
+                                        tempClassStatus: tempClassStatusGroup,
+                                        indexFindUserSingle: indexFindUser,
+                                        tempChatStatusName: tempChatStatusGroupName
+                                    };
+                                    let tempPartGroup = libFunction.renderDataContentChat(relationsUseContacts, listUserParticipant, optionRender);
+
+                                    listParticipant.push(tempPartGroup);
+                                    urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : "assets/" + cfgChat.img_group_user;
+                                });
+
+                                showResponseChat.isFriendCurrentSingle = true;
+                            }
+
+                            showResponseChat.listParticipant = listParticipant;
+                            showResponseChat.urlImagesAvatar = urlImagesAvatar;
+                        });
+
+                        res.status(200).send(showResponseChat);
+
+                        // zender view before send data
+                        //{layout: 'ajax'}
+                        // res.render(showResponseChat.renderViews, {
+                        //     data: showResponseChat,
+                        //     layout: false
+                        // }, function (err, renderHtml) {
+                        //     if (err) {
+                        //         res.send(err);
+                        //     } else {
+                        //         var response = {html: renderHtml, err: err};
+                        //
+                        //         res.status(200).send(response);
+                        //     }
+                        // });
                     });
                 });
             } else if ((req.body.dataConversation === "") && parseInt(req.body.valAuthor) && userCurrent) {

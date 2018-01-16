@@ -100,7 +100,7 @@ export abstract class libSupports {
 
     public callDataJS(dataRequest, callback) {
         $.ajax({
-            url: `api${dataRequest.url}`,
+            url: dataRequest.url,
             method: "POST",
             data: dataRequest.data,
             async: true,

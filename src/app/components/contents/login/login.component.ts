@@ -10,15 +10,16 @@ import {libSupports} from './../../../common/libSupports';
 
 })
 export class LoginComponent extends libSupports implements OnInit {
-
+    private urlLogin: any;
 
     ngOnInit() {
+        this.urlLogin = 'api/login'
     }
 
     clickLogin() {
         var attrFromLogin = $('#login-form');
         var dataRequest = {
-            url: attrFromLogin.attr('action'),
+            url: this.urlLogin,
             data: attrFromLogin.serialize()
         };
         let _this = this;

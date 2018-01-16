@@ -111,8 +111,5 @@ export class LibCommonChat extends libSupports {
         return $(".content").outerHeight() - $(".contact-profile").outerHeight() - outerHeightParticipant - $("#messageInput").outerHeight() - 1;
     }
 
-    public activeListContact(channelId) {
-        $('#contacts li.contact').removeClass('active');
-        $('[channel="status.' + channelId + '"]').closest('li').addClass('active');
-    }
+
 }

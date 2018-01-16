@@ -1,3 +1,4 @@
+'use strict'
 import {ListContacts} from "../supports/ListContacts";
 import {LibCommonChat} from "../supports/LibCommonChat";
 declare var jQuery: any;
@@ -6,17 +7,8 @@ declare var require: any;
 import * as io from 'socket.io-client';
 import {libSupports} from "../../libSupports";
 import {isUndefined} from "util";
+import {ShowContentChat} from "../supports/ShowContentChat";
 
-
-// var socket = io.connect($('#my-url').attr('data-url'), {
-//     rememberTransport: false,
-//     'reconnect': true,
-//     'reconnection delay': 500,
-//     'max reconnection attempts': 10,
-//     'secure': true,
-//     'pingInterval': 2000,
-//     'pingTimeout': 5000
-// });
 
 // $(document).ready(function () {
 //     var sendChatMessage = new SendChatMessage();
@@ -117,7 +109,7 @@ export class SendChatMessage extends libSupports {
         });
     };
 
-    eventEnterSend = function () {
+    eventEnterSend = function (socket) {
         var that = this;
 
         // create trigger keyUpDown after check enter vs (shift + enter) in textarea
@@ -133,7 +125,7 @@ export class SendChatMessage extends libSupports {
                     $(this).trigger('keyUpDown');
                 });
             } else if (evt.keyCode == 13) {
-                that.sendMsg();
+                that.sendMsg(socket);
                 return false;
             }
             $(this).trigger('keyUpDown');
@@ -201,7 +193,7 @@ export class SendChatMessage extends libSupports {
                     reset: true
                 };
                 //remain time  or value search length min 3 for reset list contact
-                this.remainTime = this.getDateTimeNow() + 0.1 * 60 * 1000;
+                this.remainTime = that.getDateTimeNow() + 0.1 * 60 * 1000;
                 this.reqDataReset = requestListContactDefault;
 
                 listContact.subscribeAfterClickListContact();
@@ -271,29 +263,29 @@ export class SendChatMessage extends libSupports {
             });
     };
 
-    clickActContactConversation = function () {
+    clickActContactConversation = function (socket) {
         var that = this;
         $('body').on('click', '#action-friend .add, #action-friend .create', function () {
-            // let listContact = new ListContacts();
-            // let dataConversation = $('#messageInput').attr("data-conversation");
-            // let dataConversationId = (typeof dataConversation !== typeof isUndefined && dataConversation !== false) ? dataConversation : null;
-            //
-            // let isSingle = this.isSingle === 'true';
-            // let listParticipant = listContact.clickActionContact();
-            // let nameListParticipant = listParticipant.nameAuthorId;
-            // let nameUesrCurrent = $('#profile .user-name-chat')[0].childNodes[0].nodeValue;
-            // nameListParticipant.unshift(that.ucfirst(nameUesrCurrent));
-            //
-            // let reqActionConversation = {
-            //     conversationId: (isSingle ? null : dataConversationId),
-            //     userParticipant: (isSingle ? listContact.getListParticipant() : null),
-            //     listAuthorId: listParticipant.authorId,
-            //     isSingle: isSingle,
-            //     act: (isSingle ? 'add' : 'update'),
-            //     title: (isSingle ? nameListParticipant.join(', ') : null)
-            // };
-            //
-            // this.socket.emit('updateActionConversationGroup', reqActionConversation);
+            let listContact = new ListContacts();
+            let dataConversation = $('#messageInput').attr("data-conversation");
+            let dataConversationId = (typeof dataConversation !== typeof isUndefined && dataConversation !== false) ? dataConversation : null;
+
+            let isSingle = this.isSingle === 'true';
+            let listParticipant = listContact.clickActionContact();
+            let nameListParticipant = listParticipant.nameAuthorId;
+            let nameUesrCurrent = $('#profile .user-name-chat')[0].childNodes[0].nodeValue;
+            nameListParticipant.unshift(that.ucfirst(nameUesrCurrent));
+
+            let reqActionConversation = {
+                conversationId: (isSingle ? null : dataConversationId),
+                userParticipant: (isSingle ? listContact.getListParticipant() : null),
+                listAuthorId: listParticipant.authorId,
+                isSingle: isSingle,
+                act: (isSingle ? 'add' : 'update'),
+                title: (isSingle ? nameListParticipant.join(', ') : null)
+            };
+
+            socket.emit('updateActionConversationGroup', reqActionConversation);
         });
     };
 
@@ -307,16 +299,19 @@ export class SendChatMessage extends libSupports {
                     _method: 'post'
                 }
             };
+            let elem = this;
             let lisContact = new ListContacts();
-            let _that = this;
-            this.callDataJS(requestListContact, function (dataResult) {
+            lisContact.callDataJS(requestListContact, function (dataResult) {
                 if (dataResult.err === '') {
                     let top = $('#list-contact-your').height() * 2;
                     $('#list-your-friend').css({display: 'block', position: 'absolute', top: top, right: 23});
-                    $(_that).attr({show: true});
+                    $(elem).attr({show: true});
+
+                    console.log(dataResult);
 
                     this.listContactYourSingleAction = [];
                     this.listContactYourSingle = dataResult.data;
+                    // $('#list-your-friend').html(lisContact.render(dataResult, []));
                     $('#list-your-friend').html(lisContact.render(dataResult, this.listContactYourSingleAction));
                 }
             });
@@ -428,7 +423,19 @@ export class SendChatMessage extends libSupports {
                     _method: 'post'
                 }
             };
-            that.reloadContentBoxChatAjax(dataRequest, function () {
+            that.reloadContentBoxChatAjax(dataRequest, function (dataResult) {
+                let showContentChat = new ShowContentChat();
+                $('#content-chat').html(showContentChat.isShowContentChat(dataResult));
+//------------------XXXXXXXXXX---------------------------
+                $('#boxChat').css({
+                    "max-height": parseInt(dataResult.maxHeightInputBoxChat),
+                    "height": parseInt(dataResult.minHeightBoxChat)
+                });
+                $('#style-box-sms').css({"max-height": parseInt(dataResult.maxHeightBoxChat)});
+                $('#create-tooltip .tooltiptext').css({display: 'none'});
+                $('#list-your-friend').css({'display': 'none'});
+                that.getDefaultHeightMsgBox();
+//---------------------------------------------
                 socket.emit('msgContentChat', dataRequest);
             });
         });
@@ -458,10 +465,12 @@ export class SendChatMessage extends libSupports {
 
     reloadContentBoxChatAjax = function (dataRequest, callback) {
         this.callDataJS(dataRequest, function (dataResult) {
+
             if (dataResult.html) {
                 $('#content-chat').html(dataResult.html);
                 callback();
             }
+            callback(dataResult);
         });
     };
 
@@ -524,17 +533,17 @@ export class SendChatMessage extends libSupports {
                             $('#boxMsgChat').prepend(htmlTextTopPrivate.htmlOpen + resultHtml + htmlTextTopPrivate.htmlClose);
                         }
                     } else {
-                        // if (msgFirstElementsMsg.hasClass('author-' + element.contactMessage.id)) {
-                        //     msgFirstElementsMsg.find('p').addClass('top-left');
-                        //     let get_4tdx = msgFirstElementsMsg.find('._ua2 ._4tdx');
-                        //     msgFirstElementsMsg.find('._ua2 ._4tdx').remove();
-                        //     msgFirstElementsMsg.find('._ua2').prepend(resultHtml);
-                        //     msgFirstElementsMsg.find('._ua2').prepend(get_4tdx);
-                        // } else {
-                        //     option.lastCreatedAt = element.data[element.data.length - 1].created_at;
-                        //     var htmlTextTopOther = libCommonChat.supportHtmlTextOther(element.contactMessage, option);
-                        //     $('#boxMsgChat').prepend(htmlTextTopOther.htmlOpen + resultHtml + htmlTextTopOther.htmlClose);
-                        // }
+                        if (msgFirstElementsMsg.hasClass('author-' + element.contactMessage.id)) {
+                            msgFirstElementsMsg.find('p').addClass('top-left');
+                            let get_4tdx = msgFirstElementsMsg.find('._ua2 ._4tdx');
+                            msgFirstElementsMsg.find('._ua2 ._4tdx').remove();
+                            msgFirstElementsMsg.find('._ua2').prepend(resultHtml);
+                            msgFirstElementsMsg.find('._ua2').prepend(get_4tdx);
+                        } else {
+                            option['lastCreatedAt'] = element.data[element.data.length - 1].created_at;
+                            var htmlTextTopOther = libCommonChat.supportHtmlTextOther(element.contactMessage, option);
+                            $('#boxMsgChat').prepend(htmlTextTopOther.htmlOpen + resultHtml + htmlTextTopOther.htmlClose);
+                        }
                     }
                 } else {
                     if (option.isUserCurrent === true) {
@@ -546,14 +555,14 @@ export class SendChatMessage extends libSupports {
                             $('#boxMsgChat').append(htmlTextEndPrivate.htmlOpen + resultHtml + htmlTextEndPrivate.htmlClose);
                         }
                     } else {
-                        // if (msgLastElementsMsg.hasClass('author-' + element.contactMessage.id)) {
-                        //     msgLastElementsMsg.find('p').addClass('bottom-left');
-                        //     msgLastElementsMsg.find('._ua2').append(resultHtml);
-                        // } else {
-                        //     option.lastCreatedAt = element.data[element.data.length - 1].created_at;
-                        //     var htmlTextEndOther = libCommonChat.supportHtmlTextOther(element.contactMessage, option);
-                        //     $('#boxMsgChat').append(htmlTextEndOther.htmlOpen + resultHtml + htmlTextEndOther.htmlClose);
-                        // }
+                        if (msgLastElementsMsg.hasClass('author-' + element.contactMessage.id)) {
+                            msgLastElementsMsg.find('p').addClass('bottom-left');
+                            msgLastElementsMsg.find('._ua2').append(resultHtml);
+                        } else {
+                            option['lastCreatedAt'] = element.data[element.data.length - 1].created_at;
+                            var htmlTextEndOther = libCommonChat.supportHtmlTextOther(element.contactMessage, option);
+                            $('#boxMsgChat').append(htmlTextEndOther.htmlOpen + resultHtml + htmlTextEndOther.htmlClose);
+                        }
                     }
                 }
                 // resultHtml += htmlText.htmlOpen + resultHtml + htmlText.htmlClose;
@@ -579,6 +588,11 @@ export class SendChatMessage extends libSupports {
                 that.eventScrollEndBoxChat();
             }
         }, false);
+    };
+
+    activeListContact = function (channelId) {
+        $('#contacts li.contact').removeClass('active');
+        $('[channel="status.' + channelId + '"]').closest('li').addClass('active');
     }
 }
 

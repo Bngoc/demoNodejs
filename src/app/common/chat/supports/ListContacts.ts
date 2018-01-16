@@ -145,7 +145,7 @@ export class ListContacts extends libSupports {
             + 'data-channel="' + element.channel_id + '" data-owner="' + element.creator_id + '">'
             + '<span channel="status.' + element.channel_id + '"'
             + 'class="list-icon-status contact-status ' + (element.is_accept_single ? option.cfgChat.cfg_chat.class_undefined : (element.is_life && classStatusPart) ? classStatusPart : "") + '"></span>'
-            + '<img src="' + (element.path_img ? element.path_img : option.cfgChat.cfg_chat.img_single_user) + '" alt=""/>'
+            + '<img src="' + (element.path_img ? element.path_img : `assets/${option.cfgChat.cfg_chat.img_single_user}`) + '" alt=""/>'
             + '<div class="meta">'
             + '<span class="name-notify"><p class="name" data-conversation-name="' + element.middle_name + '">' + ((element.textSearch != isUndefined ? element.textSearch : element.middle_name ? element.middle_name : "&nbsp;")) + ' </p><i class="badges-notify">132</i></span>'
             + '<p class="preview mood_message">' + (element.mood_message ? element.mood_message : "") + ' </p>'
@@ -161,7 +161,7 @@ export class ListContacts extends libSupports {
             + '<div class="wrap" data-conversation="' + element.idConversation + '" data-type="' + element.type + '"'
             + 'data-channel="' + element.channel_id + '" data-owner="' + element.creator_id + '">'
             + '<span channel="status.' + element.channel_id + '" class=""></span>'
-            + '<img src="' + (element.path_img_group ? element.path_img_group : option.cfgChat.cfg_chat.img_group_user) + '" alt=""/>'
+            + '<img src="' + (element.path_img_group ? element.path_img_group : `assets/${option.cfgChat.cfg_chat.img_group_user}`) + '" alt=""/>'
             + '<div class="meta">'
             + '<span class="name-notify"><p class="name" data-conversation-name="' + element.title + '">' + (element.textSearch != isUndefined ? element.textSearch : element.title) + ' </p><i class="badges-notify">132</i></span>'
             + '<p class="preview"> ' + element.count + '  participants</p>'
@@ -170,19 +170,6 @@ export class ListContacts extends libSupports {
             + '</li>';
 
         return htmlGroupAll;
-    };
-
-    public searchListContactListAll(requestListContact) {
-        let _this = this;
-        _this.callDataJS(requestListContact, function (dataResult) {
-            // if (dataResult.err !== isUndefined && dataResult.err) {
-            //     console.log('ERROR: ', err)
-            // } else {
-            //     this.showContactListAll(dataResult);
-            //     let htmlSearch = '<li id="search-box-contacts" class="search-contact"><div class="wrap"><div class="box-sreach-contact"><input type="button" class="btn btn-primary" value="Search contacts" /></div></div></li>';
-            //     $('#contacts-your').append(requestListContact.reset ? '' : htmlSearch);
-            // }
-        });
     };
 
     public showContactListAll(dataResult) {
@@ -219,6 +206,19 @@ export class ListContacts extends libSupports {
                 clearInterval(remainTime);
             }
         }, 1000);
+    };
+
+    public searchListContactListAll(requestListContact) {
+        let _this = this;
+        this.callDataJS(requestListContact, function (dataResult) {
+            // if (dataResult.err !== isUndefined && dataResult.err) {
+            //     console.log('ERROR: ', err)
+            // } else {
+            //     this.showContactListAll(dataResult);
+            //     let htmlSearch = '<li id="search-box-contacts" class="search-contact"><div class="wrap"><div class="box-sreach-contact"><input type="button" class="btn btn-primary" value="Search contacts" /></div></div></li>';
+            //     $('#contacts-your').append(requestListContact.reset ? '' : htmlSearch);
+            // }
+        });
     };
 }
 

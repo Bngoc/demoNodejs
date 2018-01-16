@@ -1,0 +1,303 @@
+<div class="contact-profile">
+    <img id="participant-profile" src='<%- data.urlImagesAvatar %>' alt="" data-toggle="modal"
+         data-target="#show-information-conversation"/>
+    <div class="info-conversation-participant">
+        <div class="info-participant">
+            <input class="star favorite-participant" type="checkbox" title="bookmark users" checked/>
+            <p><%- data.userName %></p>
+        </div>
+        <div id="extend-participant" class='info-conversation <%- data.isTypeSingle ? "" : "cursor" %>'>
+            <% if (data.isTypeSingle) {
+            if (data.listParticipant.length) {
+            data.listParticipant.forEach((element, index)=> {
+            %>
+            <i channel='status.<%- data.dataChannelId %>' class='favorite-conversation <%- element.classStatus %>'
+               codePartId='<%- element.codePartId %>' code-participant-id='<%- element.users_id %>'
+               aria-hidden="true"></i>
+            <div class="info-group">
+                <span class="status-name"><%- element.moodMessageShow %></span><span class="status-space">|</span><span
+                    class="status-other">fsgsgsgs</span></div>
+            <% });
+            }
+            } else {
+            %>
+            <i class="favorite-conversation fa fa-plus" aria-hidden="true"></i>
+            <div class="info-group"><span><%- data.countParticipants %> Participants</span><span
+                    class="status-space">|</span><span class="status-other">fsgsgsgs</span></div>
+            <% } %>
+        </div>
+    </div>
+    <div class="social-media">
+        <i class="fa fa-facebook" aria-hidden="true"></i>
+        <i class="fa fa-twitter" aria-hidden="true"></i>
+        <i class="fa fa-instagram" aria-hidden="true"></i>
+        <i id="list-contact-your"
+           class='fa <%- data.isTypeSingle ? (data.isFriendCurrentSingle ? "plus-group" : "") : "plus-user" %>'
+           aria-hidden="true"
+           title='<%- data.isTypeSingle ? "Create group" : "Add user" %>' data-toggle="modal"
+           data-target="#list-friend-yours"></i>
+    </div>
+</div>
+
+<% if (!data.isTypeSingle) { %>
+<div class="clearfix"></div>
+<div id="group-participant" class="display-none">
+    <ul class="list-group-part">
+        <% if (data.listParticipant.length) {
+        data.listParticipant.forEach((ele, indz) => { %>
+        <li data-id='<%- ele.conversationID %>' class="task info-contextmenu info-part show-info-participants">
+            <span data-conversation='<%- ele.conversationID %>' data-channel='<%- ele.channelID %>'
+                  data-author="<%- ele.users_id %>" data-username="<%- ele.middle_name %>"
+                  codePartId='<%- ele.codePartId %>' code-participant-id='<%- ele.users_id %>'
+                  channel='status.<%- ele.isFriendCurrent ? ele.channelID : "" %>'
+                  class='status-info-part stype-list <%- ele.classStatus %>'></span>
+            <span class="status-info-name"><%- ele.middle_name %></span></li>
+        <% });
+        } %>
+    </ul>
+</div>
+<% } %>
+<div class="messages" id="frameListMsg" box-raw-msg="<%= data.minHeightBoxChat %>" page='<%= data.page %>'
+     box-change-msg="<%= data.minHeightBoxChat %>">
+    <% if (data.isFriendCurrentSingle) { %>
+    <ul id="boxMsgChat"></ul>
+    <% } else {
+    if (data.isCurrentOwnerId) { %>
+    <div class="send-request-user">contact request sent - <a class="">Resend contact request</a></div>
+    <% } else { %>
+    <div class="clearfix"></div>
+    <div class="" id="request-area">
+        <div class="accept-request-user">
+            <div class="d-block md-col-12" align="center">
+                <span>sslskgmjslgk</span>
+                <button class="btn btn-primary" id="reply-decline-user">decline</button>
+                <button class="btn btn-primary" id="reply-accept-user">accept</button>
+            </div>
+        </div>
+    </div>
+    <% }
+    } %>
+</div>
+<div class="message-input" id="messageInput" data-conversation='<%- data.dataConversation %>'
+     data-channel='<%- data.dataChannelId %>' data-owner='<%- data.dataOwnerId %>' data-type='<%- data.dataType %>'>
+    <div class="wrap">
+        <div class="scrollbar" id="style-box-sms" max-height='<%- data.maxHeightBoxChat %>'
+             min-height='<%= data.minHeightBoxChat %>'>
+            <textarea id="boxChat" class="box_msg" type="text" placeholder="Write your message..."></textarea>
+        </div>
+        <div class="btn-controler-act">
+            <ul class="_552n">
+                <li class="_13gd ">
+                    <form action="#" class="_vzk"
+                          title="Add Files" method="post">
+                        <input type="hidden" name="attach_id" value="">
+                        <input type="hidden" name="images_only" value="false">
+                        <div class="ms_img">
+                            <input id="add_f" type="file" class="" name="attachment[]" multiple="" accept="*"
+                                   title="Add Files">
+                            <label for="add_f" class="_4q61 _6gb _6gg attachment-cst r_file90" tabindex="-1"
+                                   href="#">
+                                <i class="hidden_elem" alt="Camera"></i></label>
+                        </div>
+                    </form>
+                </li>
+                <li class="_13f- ">
+                    <form action="#" class="_vzk"
+                          title="Add Photos" method="post">
+                        <input type="hidden" name="attach_id" value="">
+                        <input type="hidden" name="images_only" value="true">
+                        <div class="ms_img">
+                            <input id="add_i" type="file" class="" name="attachment[]" multiple=""
+                                   accept="image/*"
+                                   title="Add Photos">
+                            <label for="add_i" class="_4q61 _6gb _6ge attachment-cst r_img70" tabindex="-1"
+                                   href="#">
+                                <i class="hidden_elem" alt="Camera"></i></label>
+                        </div>
+                    </form>
+                </li>
+                <li class="_13gg "><a class="_6gb _3oxr attachment-cst r_emoji50" role="button"
+                                      title="Choose an emoji" href="#"><i class="" aria-hidden="true"></i></a>
+                </li>
+                <li class="_13gg "><a id="sendMessageChat" class="sms-send">
+                    <div class="submit attachment-cst r_bt25">
+                        <i class="fa fa-paper-plane" aria-hidden="true"></i></div>
+                </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div id="newMsgChat" style="display: none">
+    <div class="bs"><a id="notifyNewsSms" title="news message">news message</a></div>
+</div>
+
+<div id="create-tooltip" class="cus-tooltip">
+    <div class="uiContextualLayer">
+        <span class="tooltiptext" style="display: none"></span>
+    </div>
+</div>
+
+<div id="list-your-friend"></div>
+
+<!--<script type="text/javascript">-->
+<!--(function () {-->
+<!--"use strict";-->
+
+<!--function init() {-->
+<!--scrollListener();-->
+<!--}-->
+
+<!--function scrollListener() {-->
+<!--document.getElementById('frameListMsg').addEventListener("scroll", function (e) {-->
+<!--var frameListMsg = document.getElementById('frameListMsg');-->
+<!--let scrollTop = frameListMsg.scrollTop;-->
+<!--if (scrollTop === 0) {-->
+<!--frameListMsg.setAttribute('page', (parseInt(frameListMsg.getAttribute('page')) + 1));-->
+<!--let sendChatMessage = new SendChatMessage();-->
+<!--sendChatMessage.eventScrollTopBoxChat();-->
+<!--}-->
+
+<!--if (scrollTop + $('#frameListMsg').innerHeight() >= $('#frameListMsg')[0].scrollHeight) {-->
+<!--let sendChatMessage = new SendChatMessage();-->
+<!--sendChatMessage.eventScrollEndBoxChat();-->
+<!--}-->
+<!--}, false);-->
+<!--}-->
+
+<!--// Run the app.-->
+<!--init();-->
+<!--})();-->
+
+<!--$(document).ready(function () {-->
+<!--$('#boxChat').css({-->
+<!--"max-height": parseInt('<%- data.maxHeightInputBoxChat %>'),-->
+<!--"height": parseInt('<%- data.minHeightBoxChat %>'),-->
+<!--});-->
+<!--$('#style-box-sms').css({"max-height": parseInt('<%- data.maxHeightBoxChat %>')});-->
+<!--$('#create-tooltip .tooltiptext').css({display: 'none'});-->
+<!--window.dataFriend = '<%- data.isFriendCurrentSingle %>';-->
+<!--window.isSingle = '<%- data.isTypeSingle %>';-->
+<!--if (window.dataFriend === 'false') {-->
+<!--$("#messageInput").addClass("disabled-element");-->
+<!--$("#frameListMsg").addClass("remove-scrollbar");-->
+<!--$("#boxChat").attr("placeholder", 'Messsaging disabled until request is accepted');-->
+
+<!--//css box chat with not friend-->
+<!--$('#messageInput .btn-controler-act').remove();-->
+<!--$('#boxChat').addClass('cuts-box-chat-clear center-placeholder');-->
+<!--}-->
+<!--$('#list-your-friend').css({'display': 'none'});-->
+
+
+<!--//        var updatePosition = function() {-->
+<!--//            let currentPosition = document.getElementById('frameListMsg').scrollTop;-->
+<!--//            console.log(currentPosition, 33333333333);-->
+<!--//        };-->
+<!--//        document.getElementById('frameListMsg').addEventListener('scroll', updatePosition);-->
+<!--});-->
+<!--</script>-->
+
+<% if (!data.isTypeSingle) { %>
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Modal Heading</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                Modal body..
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<% } %>
+
+<div class="modal fade" id="show-information-conversation">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Modal Heading</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                Modal body..
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="list-friend-your">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Modal Heading</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                Modal body..
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!--<div class="uiContextualLayerPositioner uiLayer hidden_elemd" data-testid="undefined"-->
+<!--style="width: 877px; top: 199px; opacity: 1; right: 252px;" data-ownerid="js_273">-->
+<!--<div class="uiContextualLayer uiContextualLayerLeft" style="right: 0px;">-->
+<!--<div class="uiTooltipX">-->
+<!--<div class="tooltipContent" data-testid="tooltip_testid" id="js_4g">-->
+<!--<div class="tooltipText"><span>Võ Hải Yến 3:41pm</span></div>-->
+<!--</div>-->
+<!--<i class="arrow"></i></div>-->
+<!--</div>-->
+<!--</div>-->
+
+<div id="menu">
+    <a href="#">
+        <img src="http://puu.sh/nr60s/42df867bf3.png"/> AdBlock Plus <span>Ctrl + ?!</span>
+    </a>
+    <a href="#">
+        <img src="http://puu.sh/nr5Z6/4360098fc1.png"/> SNTX <span>Ctrl + ?!</span>
+    </a>
+    <hr/>
+    <a href="#">
+        <i class="fa fa-fort-awesome"></i> Fort Awesome <span>Ctrl + ?!</span>
+    </a>
+    <a href="#">
+        <i class="fa fa-flag"></i> Font Awesome <span>Ctrl + ?!</span>
+    </a>
+</div>
+

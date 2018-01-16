@@ -616,7 +616,7 @@ a {
     box-sizing: content-box;
     margin: 0 auto;
     padding: 15px;
-    width: 1060px;
+    width: auto;
 }
 
 .container._full #content .inner-content:before, .container._full #content .inner-content:after {
