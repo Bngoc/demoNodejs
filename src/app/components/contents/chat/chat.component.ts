@@ -8,6 +8,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {libSupports} from "../../../common/libSupports";
 import {ListContacts} from "../../../common/chat/supports/ListContacts";
 import {SendChatMessage} from "../../../common/chat/sokets/client";
+import {LibCommonChat} from "../../../common/chat/supports/LibCommonChat";
 
 
 @Component({
@@ -25,6 +26,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     listContactYourSingleAction: any = [];
     listContactYourSingle: any = [];
     dataFriend: any;
+    isSingle: any;
 
     constructor(private apiServiceChat: ApiServiceChat) {
         super();
@@ -53,22 +55,33 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
             'js/socket/chat.js'
         ]);
 
-        // $(document).ready(function () {
         var sendChatMessage = new SendChatMessage();
-        // sendChatMessage.eventSendMsg();
         sendChatMessage.getDefaultHeightMsgBox();
-        //
-        //     $(window).resize(function () {
-        //         sendChatMessage.getDefaultHeightMsgBox();
-        //         $("#frameListMsg").animate({scrollTop: this.getMinHeightFrameListMsg()}, 500);
-        //     });
-        //     //
-        //     sendChatMessage.scrollEndShowBoxChat(1500);
-        //     //
-        //     this.listContactYourSingleAction = [];
-        //     this.listContactYourSingle = [];
-        // });
 
+        sendChatMessage.eventClickSend(this.socket);
+        sendChatMessage.eventEnterSend();
+        sendChatMessage.eventClickNotifyBoxMsg();
+        sendChatMessage.eventChangeStatusUser(this.socket);
+        sendChatMessage.clickContactContentChat(this.socket);
+        sendChatMessage.clickListContactContentChat(this.socket);
+        sendChatMessage.scrollListener(this.socket);
+        sendChatMessage.clickRightContactContentChat();
+        sendChatMessage.clickContactAdd();
+        sendChatMessage.clickContactSub();
+        sendChatMessage.clickContactSearchSingle();
+        sendChatMessage.clickActContactConversation();
+        sendChatMessage.clickSearchContact();
+        sendChatMessage.getListContact();
+
+        $(window).resize(function () {
+            sendChatMessage.getDefaultHeightMsgBox();
+            let libcCommonChat = new LibCommonChat();
+            $("#frameListMsg").animate({scrollTop: libcCommonChat.getMinHeightFrameListMsg()}, 500);
+        });
+        sendChatMessage.scrollEndShowBoxChat(1500);
+
+        this.listContactYourSingleAction = [];
+        this.listContactYourSingle = [];
 
 
         let rsData = this.apiServiceChat

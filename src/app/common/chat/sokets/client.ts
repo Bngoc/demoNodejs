@@ -34,9 +34,6 @@ import {isUndefined} from "util";
 //     window.listContactYourSingle = [];
 // });
 
-// let libSupports = new libSupports();
-// const socket = io(libSupports.urlSide());
-
 export class SendChatMessage extends libSupports {
 
     // private url;
@@ -47,29 +44,9 @@ export class SendChatMessage extends libSupports {
     constructor() {
         super();
         this.socket = io(this.urlSide());
-
-
     }
 
-    // this.eventSendMsg = function () {
-    //     this.eventClickSend();
-    //     this.eventEnterSend();
-    //     this.eventClickNotifyBoxMsg();
-    //     this.eventChangeStatusUser();
-    //
-    //     this.clickContactContentChat();
-    //     this.clickListContactContentChat();
-    //     this.clickRightContactContentChat();
-    //     this.clickContactAdd();
-    //     this.clickContactSub();
-    //     this.clickContactSearchSingle();
-    //     this.clickActContactConversation();
-    //     this.clickSearchContact();
-    //     this.getListContact();
-    // };
-
-
-    getDefaultHeightMsgBox() {
+    getDefaultHeightMsgBox = function () {
         let heightDefault = this.diffHeightBoxMsg();
         let realHeightRaw = $("#messageInput").outerHeight(true);
         let minHeightBoxChat = $('#style-box-sms').attr('min-height');
@@ -88,7 +65,7 @@ export class SendChatMessage extends libSupports {
         });
     };
 
-    diffHeightMsg() {
+    diffHeightMsg = function () {
         const minHeightBoxChat = $('#style-box-sms').attr('min-height');
 
         $('#boxChat').css('height', minHeightBoxChat, '!important');
@@ -104,12 +81,11 @@ export class SendChatMessage extends libSupports {
         return false;
     };
 
-
-    diffHeightBoxMsg() {
+    diffHeightBoxMsg = function () {
         return $("#messageInput").outerHeight();
     };
 
-    sendMsg() {
+    sendMsg = function (socket) {
         var dataValueMsg = $.trim($('#boxChat').val());
         if (dataValueMsg.length) {
             let listContact = new ListContacts();
@@ -128,17 +104,16 @@ export class SendChatMessage extends libSupports {
                     listCodePart: listPart.join(',')
                 };
 
-                this.socket.emit('sendDataMsg', dataSendChat);
+                socket.emit('sendDataMsg', dataSendChat);
                 this.diffHeightMsg();
             }
         }
     };
 
-
-    eventClickSend = function () {
+    eventClickSend = function (socket) {
         var that = this;
         $('body').on('click', '#sendMessageChat', function () {
-            that.sendMsg();
+            that.sendMsg(socket);
         });
     };
 
@@ -163,7 +138,7 @@ export class SendChatMessage extends libSupports {
             }
             $(this).trigger('keyUpDown');
         });
-    }
+    };
 
     eventClickNotifyBoxMsg = function () {
         let that = this;
@@ -174,8 +149,7 @@ export class SendChatMessage extends libSupports {
         })
     };
 
-
-    eventChangeStatusUser = function () {
+    eventChangeStatusUser = function (socket) {
         $('body').on('click', '#status-options .channel-status', function () {
             let dataValue = $(this).attr('data-value');
             let status = $(this).attr('status');
@@ -189,8 +163,8 @@ export class SendChatMessage extends libSupports {
                         }
                     };
 
-                    this.socket.emit('updateUser', dataRequest);
-                    this.socket.on('resUpdateUserPrivate', function (resData) {
+                    socket.emit('updateUser', dataRequest);
+                    socket.on('resUpdateUserPrivate', function (resData) {
                         if (resData.status) {
                             $(this).removeClass("active");
                             $(this).addClass("active");
@@ -204,12 +178,10 @@ export class SendChatMessage extends libSupports {
         });
     };
 
-
     scrollEndShowBoxChat = function (timeAnimal) {
         let timeAnimate = typeof timeAnimal !== 'undefined' ? parseInt(timeAnimal) : 1000;
         $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, timeAnimate);
     };
-
 
     clickSearchContact = function () {
         let that = this;
@@ -245,7 +217,6 @@ export class SendChatMessage extends libSupports {
             });
     };
 
-
     clickRightContactContentChat = function () {
         let that = this;
         $('body').on("mousedown", "#group-participant .show-info-participants", function (ev) {
@@ -256,8 +227,7 @@ export class SendChatMessage extends libSupports {
         });
     };
 
-
-    clickContactContentChat = function () {
+    clickContactContentChat = function (socket) {
         let that = this;
         let click = 0, delay = 500, timer = null;
         $('body')
@@ -291,7 +261,7 @@ export class SendChatMessage extends libSupports {
                     };
 
                     that.reloadContentBoxChatAjax(dataRequest, function () {
-                        this.socket.emit('msgContentChat', dataRequest);
+                        socket.emit('msgContentChat', dataRequest);
                     });
                 }
             })
@@ -326,7 +296,6 @@ export class SendChatMessage extends libSupports {
             // this.socket.emit('updateActionConversationGroup', reqActionConversation);
         });
     };
-
 
     getListContact = function () {
         $('body').on('click', '#list-contact-your', function () {
@@ -395,7 +364,6 @@ export class SendChatMessage extends libSupports {
             });
     };
 
-
     clickContactSub = function () {
         var that = this;
         $('body').on('click', '#box-action-friend i.act-aptach', function () {
@@ -414,7 +382,6 @@ export class SendChatMessage extends libSupports {
             }
         });
     };
-
 
     renderHtmlListContact = function () {
         let listContact = new ListContacts();
@@ -436,13 +403,11 @@ export class SendChatMessage extends libSupports {
         $('#list-contacts').html(htmlListContact);
     };
 
-
     clickTaskContactChat = function () {
         console.log('clickTaskContactChat');
     };
 
-
-    clickListContactContentChat = function () {
+    clickListContactContentChat = function (socket) {
         var that = this;
         $('body').on('click', '#contacts li.contact', function () {
             // $('li.contact').removeClass('active');
@@ -464,7 +429,7 @@ export class SendChatMessage extends libSupports {
                 }
             };
             that.reloadContentBoxChatAjax(dataRequest, function () {
-                this.socket.emit('msgContentChat', dataRequest);
+                socket.emit('msgContentChat', dataRequest);
             });
         });
     };
@@ -474,7 +439,7 @@ export class SendChatMessage extends libSupports {
         console.log('-------------------------- lam cai day');
     };
 
-    eventScrollTopBoxChat = function () {
+    eventScrollTopBoxChat = function (socket) {
         let page = $('#frameListMsg').has('page') ? $('#frameListMsg').attr('page') : 1;
 
         let dataRequest = {
@@ -486,7 +451,7 @@ export class SendChatMessage extends libSupports {
             }
         };
         setTimeout(function () {
-            this.socket.emit('msgContentChat', dataRequest);
+            socket.emit('msgContentChat', dataRequest);
         }, 1000);
 
     };
@@ -499,7 +464,6 @@ export class SendChatMessage extends libSupports {
             }
         });
     };
-
 
     htmlContentBoxChat = function (resultDataMsg) {
         let libCommonChat = new LibCommonChat();
@@ -597,6 +561,24 @@ export class SendChatMessage extends libSupports {
         });
 
         return true;
+    };
+
+    scrollListener = function (socket) {
+        var that = this;
+        $('#frameListMsg').scroll(function (e) {
+            var frameListMsg = document.getElementById('frameListMsg');
+            let scrollTop = frameListMsg.scrollTop;
+            if (scrollTop === 0) {
+                frameListMsg.setAttribute('page', (parseInt(frameListMsg.getAttribute('page')) + 1).toString());
+                // let sendChatMessage = new SendChatMessage();
+                that.eventScrollTopBoxChat(socket);
+            }
+
+            if (scrollTop + $('#frameListMsg').innerHeight() >= $('#frameListMsg')[0].scrollHeight) {
+                // let sendChatMessage = new SendChatMessage();
+                that.eventScrollEndBoxChat();
+            }
+        }, false);
     }
 }
 
