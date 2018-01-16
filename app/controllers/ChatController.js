@@ -72,6 +72,7 @@ const PAGE_SIZE_NUMBER = 10;
 const HEIGHT_BOX_CHAT_MAX = 130;
 const HEIGHT_INPUT_BOX_MAX = 100;
 const HEIGHT_BOX_CHAT_MIN = 56;
+const FIX_HEIGHT_BOX_CHAT_BST3 = 30;
 
 const chatStatus = helper.coreHelper.app.chatStatus;
 const messageType = helper.coreHelper.app.messageType;
@@ -409,9 +410,10 @@ class ChatController extends BaseController {
         req.session.dataChannelID = null;
 
         try {
-            showResponseChat.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX;
-            showResponseChat.maxHeightInputBoxChat = HEIGHT_INPUT_BOX_MAX;
-            showResponseChat.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN;
+
+            showResponseChat.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX + FIX_HEIGHT_BOX_CHAT_BST3;
+            showResponseChat.maxHeightInputBoxChat = HEIGHT_INPUT_BOX_MAX + FIX_HEIGHT_BOX_CHAT_BST3;
+            showResponseChat.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN + FIX_HEIGHT_BOX_CHAT_BST3;
             showResponseChat.page = 1;
             showResponseChat.userName = req.body.userName;
             showResponseChat.hexCodeId = userCurrent.attributes.id ? 'hex-' + userCurrent.attributes.id : null;

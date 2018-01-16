@@ -134,7 +134,6 @@ export class SendChatMessage extends libSupports {
 
     eventClickNotifyBoxMsg = function () {
         let that = this;
-
         $('body').on('click', '#notifyNewsSms', function () {
             that.scrollEndShowBoxChat(1000);
             $('#newMsgChat').delay(2000).css("display", "none");
@@ -142,30 +141,40 @@ export class SendChatMessage extends libSupports {
     };
 
     eventChangeStatusUser = function (socket) {
+        var that = this;
         $('body').on('click', '#status-options .channel-status', function () {
-            let dataValue = $(this).attr('data-value');
-            let status = $(this).attr('status');
+            var elem = this;
+            let dataValue = $(elem).attr('data-value');
+            let status = $(elem).attr('status');
 
-            if (!$('#profile-img').hasClass(status)) {
-                if (typeof dataValue !== typeof undefined && dataValue !== false) {
-                    var dataRequest = {
-                        data: {
-                            status: dataValue,
-                            _method: 'post'
-                        }
-                    };
-
-                    socket.emit('updateUser', dataRequest);
-                    socket.on('resUpdateUserPrivate', function (resData) {
-                        if (resData.status) {
-                            $(this).removeClass("active");
-                            $(this).addClass("active");
-                            $("#profile-img").removeClass(resData.data.listStatus).addClass(resData.data.classCurrentStatus);
-                            $("#user-status-current").removeClass(resData.data.listStatus + " status-hover").addClass(resData.data.classCurrentStatus);
-                        }
-                    });
+            // let checkStatus = $('#status-options .channel-status').hasClass('active') ? 1: 0;
+            let checkStatus = $('#status-options .channel-status').filter(function (index, elem) {
+                if ($(elem).hasClass('active')) {
+                    return $(elem).attr('status');
                 }
-                $("#status-options").removeClass("active");
+            });
+            if (checkStatus.length) {
+                if ($(checkStatus).attr('status') != status) {
+                    if (typeof dataValue !== typeof undefined && dataValue !== false) {
+                        var dataRequest = {
+                            data: {
+                                status: dataValue,
+                                _method: 'post'
+                            }
+                        };
+
+                        socket.emit('updateUser', dataRequest);
+                        socket.on('resUpdateUserPrivate', function (resData) {
+                            if (resData.status) {
+                                $('#status-options .channel-status').removeClass("active");
+                                $(elem).addClass("active");
+                                $("#profile-img").removeClass(resData.data.listStatus).addClass(resData.data.classCurrentStatus);
+                                $("#user-status-current").removeClass(resData.data.listStatus + " status-hover").addClass(resData.data.classCurrentStatus);
+                            }
+                        });
+                    }
+                    $("#status-options").removeClass("active");
+                }
             }
         });
     };
@@ -252,8 +261,11 @@ export class SendChatMessage extends libSupports {
                         }
                     };
 
-                    that.reloadContentBoxChatAjax(dataRequest, function () {
-                        socket.emit('msgContentChat', dataRequest);
+                    that.reloadContentBoxChatAjax(dataRequest, function (resultData) {
+                        that.renderHtmlContentBoxChat(socket, resultData, function () {
+                            socket.emit('msgContentChat', dataRequest);
+                            that.getDefaultHeightMsgBox();
+                        });
                     });
                 }
             })
@@ -272,14 +284,14 @@ export class SendChatMessage extends libSupports {
 
             let isSingle = this.isSingle === 'true';
             let listParticipant = listContact.clickActionContact();
-            let nameListParticipant = listParticipant.nameAuthorId;
+            let nameListParticipant = listParticipant['nameAuthorId'];
             let nameUesrCurrent = $('#profile .user-name-chat')[0].childNodes[0].nodeValue;
             nameListParticipant.unshift(that.ucfirst(nameUesrCurrent));
 
             let reqActionConversation = {
                 conversationId: (isSingle ? null : dataConversationId),
                 userParticipant: (isSingle ? listContact.getListParticipant() : null),
-                listAuthorId: listParticipant.authorId,
+                listAuthorId: listParticipant['authorId'],
                 isSingle: isSingle,
                 act: (isSingle ? 'add' : 'update'),
                 title: (isSingle ? nameListParticipant.join(', ') : null)
@@ -424,19 +436,10 @@ export class SendChatMessage extends libSupports {
                 }
             };
             that.reloadContentBoxChatAjax(dataRequest, function (dataResult) {
-                let showContentChat = new ShowContentChat();
-                $('#content-chat').html(showContentChat.isShowContentChat(dataResult));
-//------------------XXXXXXXXXX---------------------------
-                $('#boxChat').css({
-                    "max-height": parseInt(dataResult.maxHeightInputBoxChat),
-                    "height": parseInt(dataResult.minHeightBoxChat)
+                that.renderHtmlContentBoxChat(socket, dataResult, function () {
+                    socket.emit('msgContentChat', dataRequest);
+                    that.getDefaultHeightMsgBox();
                 });
-                $('#style-box-sms').css({"max-height": parseInt(dataResult.maxHeightBoxChat)});
-                $('#create-tooltip .tooltiptext').css({display: 'none'});
-                $('#list-your-friend').css({'display': 'none'});
-                that.getDefaultHeightMsgBox();
-//---------------------------------------------
-                socket.emit('msgContentChat', dataRequest);
             });
         });
     };
@@ -460,18 +463,30 @@ export class SendChatMessage extends libSupports {
         setTimeout(function () {
             socket.emit('msgContentChat', dataRequest);
         }, 1000);
-
     };
 
     reloadContentBoxChatAjax = function (dataRequest, callback) {
+        var that = this;
         this.callDataJS(dataRequest, function (dataResult) {
-
-            if (dataResult.html) {
-                $('#content-chat').html(dataResult.html);
-                callback();
-            }
             callback(dataResult);
         });
+    };
+
+    renderHtmlContentBoxChat = function (socket, dataResult, callback) {
+        let showContentChat = new ShowContentChat();
+        $('#content-chat').html(showContentChat.isShowContentChat(dataResult));
+        // socket.emit('msgContentChat', dataRequest);
+//------------------XXXXXXXXXX---------------------------
+        $('#boxChat').css({
+            "max-height": parseInt(dataResult.maxHeightInputBoxChat),
+            "height": parseInt(dataResult.minHeightBoxChat)
+        });
+        $('#style-box-sms').css({"max-height": parseInt(dataResult.maxHeightBoxChat)});
+        $('#create-tooltip .tooltiptext').css({display: 'none'});
+        $('#list-your-friend').css({'display': 'none'});
+
+//---------------------------------------------
+        callback();
     };
 
     htmlContentBoxChat = function (resultDataMsg) {
@@ -593,6 +608,25 @@ export class SendChatMessage extends libSupports {
     activeListContact = function (channelId) {
         $('#contacts li.contact').removeClass('active');
         $('[channel="status.' + channelId + '"]').closest('li').addClass('active');
+    };
+
+    getAttributesJavaScript(elementJavaScript, attr) {
+        return elementJavaScript.attributes[attr].nodeValue || null;
+    };
+
+    hasClassJavaScript(elementJavaScript, className) {
+        return elementJavaScript.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
+    }
+
+    addClassJavaScript(elementJavaScript, className) {
+        if (!this.hasClassJavaScript(elementJavaScript, className)) elementJavaScript.className += " " + className;
+    }
+
+    removeClassJavaScript(elementJavaScript, className) {
+        if (this.hasClassJavaScript(elementJavaScript, className)) {
+            var reg = new RegExp('(\\s|^)' + elementJavaScript + '(\\s|$)');
+            elementJavaScript.className = eventJavaScript.className.replace(reg, ' ');
+        }
     }
 }
 

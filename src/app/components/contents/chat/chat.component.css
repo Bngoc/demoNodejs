@@ -608,7 +608,7 @@
     margin-left: 0px;
     position: absolute;
     right: 0;
-    bottom: -2pt;
+    bottom: 2pt;
 }
 
 #contacts ul li.active .wrap .meta .name-notify .badges-notify {

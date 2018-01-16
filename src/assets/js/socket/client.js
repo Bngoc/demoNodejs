@@ -162,7 +162,7 @@ SendChatMessage.prototype.eventChangeStatusUser = function () {
                 socket.emit('updateUser', dataRequest);
                 socket.on('resUpdateUserPrivate', function (resData) {
                     if (resData.status) {
-                        $(this).removeClass("active");
+                        $('#status-options .channel-status').removeClass("active");
                         $(this).addClass("active");
                         $("#profile-img").removeClass(resData.data.listStatus).addClass(resData.data.classCurrentStatus);
                         $("#user-status-current").removeClass(resData.data.listStatus + " status-hover").addClass(resData.data.classCurrentStatus);

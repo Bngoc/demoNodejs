@@ -41,7 +41,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         this.loadCss([
             // 'css/chat.custom.css',
             'css/chat.test.css',
-            "css/fix-angular5.css"
+            "css/fix-bst2-to-bst3-angular5.css"
         ]);
 
         this.appendMyScript([
@@ -57,7 +57,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         this.sendChatMessage.eventClickSend(this.socket);
         this.sendChatMessage.eventEnterSend(this.socket);
         this.sendChatMessage.eventClickNotifyBoxMsg();
-        this.sendChatMessage.eventChangeStatusUser(this.socket);
+
         this.sendChatMessage.clickContactContentChat(this.socket);
         this.sendChatMessage.clickListContactContentChat(this.socket);
         this.sendChatMessage.scrollListener(this.socket);
@@ -69,8 +69,6 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         this.sendChatMessage.clickSearchContact();
         this.sendChatMessage.getListContact();
 
-
-        // this.sendChatMessage.scrollEndShowBoxChat(1500);
 
         this.listContactYourSingleAction = [];
         this.listContactYourSingle = [];
@@ -118,7 +116,17 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         this.sendDataTest();
 
         this.msgContent();
+
+        //C1 CLICK-STRATUS - bo click in template chat
+        // this.sendChatMessage.eventChangeStatusUser(this.socket);
     }
+
+    //C2 CLICK-STRATUS -
+    ngClickChangeStatusUser(event: Event, elem): void {
+        this.sendChatMessage.eventChangeStatusUser(this.socket);
+    };
+
+
 
     onResize() {
         this.sendChatMessage.getDefaultHeightMsgBox();

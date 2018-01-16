@@ -1,7 +1,5 @@
 'use strict';
-/**
- * Module dependencies.
- */
+
 //convert url ?ab=name&f=1
 const url = require('url');
 //authenticate
@@ -31,28 +29,6 @@ const env = process.env.NODE_ENV || 'development';
 const SECRET = '{mySecretRequired}';
 const KEY = 'express.sid';
 
-
-/**
- * include config
- */
-// const paths    = require("../paths");
-// const config   = require(paths.config + "config");
-// const customValidator = require(paths.config_module + "validator");
-
-// var cookieParserConfig = cookieParser();
-// var sessionConfig = session({
-//     secret: config.session_secret,
-//     resave: true,
-//     saveUninitialized: true,
-//     cookie: {
-//         secure: false,
-//         maxAge: (3600000 * 24) * 14, // 2 week
-//     }
-// });
-
-/**
- * Expose
- */
 
 class Express {
 
