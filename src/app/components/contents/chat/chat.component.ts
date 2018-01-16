@@ -130,6 +130,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
     onResize() {
         this.sendChatMessage.getDefaultHeightMsgBox();
+        this.sendChatMessage.getDefaultHeightMsgBox();
         let libcCommonChat = new LibCommonChat();
         $("#frameListMsg").animate({scrollTop: libcCommonChat.getMinHeightFrameListMsg()}, 500);
     }
