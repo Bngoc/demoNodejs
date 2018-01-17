@@ -12,17 +12,20 @@ import {catchError} from 'rxjs/operators';
 
 export class ApiServiceChat {
     optionsHeader: any;
+    headers: any;
 
     constructor(private httpClient: HttpClient) {
-        const headers = new Headers();
-        // headers.append("Content-type", "application/json; charset=utf-8");
-        headers.append("Authorization", 'Bearer ' + localStorage.getItem('idToken'));
-        this.optionsHeader = new RequestOptions({headers: headers});
+        this.headers = new Headers();
+        this.headers.append("Content-type", "application/x-www-form-urlencoded");
+        this.headers.append("Authorization", 'Bearer ' + sessionStorage.getItem('idToken'));
+
+        this.headers = new HttpHeaders().set('Authorization', ('Bearer ' + sessionStorage.getItem('idToken')));
+        // this.optionsHeader = new RequestOptions({headers: this.headers});
     }
 
     getIndexChat() {
         return this.httpClient
-            .get('/api/chat', this.optionsHeader)
+            .get('/api/chat', null, {headers: this.headers})
             .pipe(catchError(this.handleError));
     }
 

@@ -33,11 +33,9 @@ export class LoginComponent extends libSupports implements OnInit {
                         $('input[name="' + val.param + '"]').addClass('error');
                     });
                 }
-
                 if (result.status) {
-                    ////
                     // AuthToken
-                    localStorage.setItem('idToken', result.token);
+                    sessionStorage.setItem('idToken', result.token);
                     window.location.href = result.url;
                 } else {
                     if (result.msg.length)

@@ -53,7 +53,7 @@ class Express {
         app.use(bodyParser.urlencoded({extended: true}));
         //JSON
         app.use(bodyParser.json());
-        app.use(bodyParser.text({type: 'text/html'}));
+        // app.use(bodyParser.text({type: 'text/html'}));
         app.use(expressValidator());
         // app.use(expressValidator(customValidator()));
         app.use(methodOverride('X-HTTP-Method-Override'));

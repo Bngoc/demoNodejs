@@ -83,7 +83,7 @@ class Routers {
         app.get("/api/logout", 'api.logout', useMiddlewareAngular.authenticatedRegister, userController.getLogoutAngular);
 
         app.get('/api/as', 'user', homeController.getIndex1);
-        app.get('/api/chat', 'api.chat.index', useMiddlewareAngular.isAuthenticated, chatController.getIndexAngular);
+        app.get('/api/chat', 'api.chat.index', [useMiddlewareAngular.isAuthenticated], chatController.getIndexAngular);
         app.post("/api/chat/content-chat", 'api.chat.content.chat', useMiddlewareAngular.isAuthenticated, chatController.postApiContentChat);
         app.post("/api/chat/list-contact", 'api.chat.list.contact', useMiddlewareAngular.isAuthenticated, chatController.postApiListContact);
         // -----------------------------------E Angular 5-------------------------------------------
