@@ -1222,7 +1222,7 @@ ul li.contact-list:hover {
 .data-contact {
     overflow-y: scroll;
     background: lavender;
-    padding: 12px 7px;
+    padding: 5px 7px;
     height: 130px;
 }
 

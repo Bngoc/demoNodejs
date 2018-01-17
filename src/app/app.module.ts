@@ -14,6 +14,7 @@ import {NavComponent} from './components/layouts/nav/nav.component';
 import {SidebarComponent} from './components/contents/sidebar/sidebar.component';
 import {ContentsComponent} from './components/contents/contents.component';
 import {ContentsRoutingModule} from "./components/contents/contents-routing.modules";
+import {AuthToken} from "./services/token.service";
 
 @NgModule({
     declarations: [
@@ -29,10 +30,10 @@ import {ContentsRoutingModule} from "./components/contents/contents-routing.modu
     imports: [
         BrowserModule,
         ContentsRoutingModule,
-        AppRoutingModule,
+        AppRoutingModule
 
     ],
-    providers: [],
+    providers: [AuthToken],
     bootstrap: [AppComponent]
 })
 

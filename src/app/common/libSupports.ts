@@ -100,8 +100,12 @@ export abstract class libSupports {
 
     public callDataJS(dataRequest, callback) {
         $.ajax({
-            url: dataRequest.url,
             method: "POST",
+            headers: {
+                "Authorization": ('Bearer ' + (localStorage.getItem('idToken') || ''))
+                // "Content-Type": "application/json"
+            },
+            url: dataRequest.url,
             data: dataRequest.data,
             async: true,
             dataType: "json",

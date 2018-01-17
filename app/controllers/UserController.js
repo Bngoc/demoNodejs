@@ -505,11 +505,12 @@ class UserController {
                                         responseDataMap.msg = 'Login Fail....!';
                                         res.status(200).send(responseDataMap);
                                     } else {
-                                        var dataRequest = {
+                                        let dataRequest = {
                                             clause: {users_id: user.id},
                                             dataUpdate: {is_life: 1},
                                         };
-                                        var newContacts = new Contacts.class();
+                                        let newContacts = new Contacts.class();
+                                        let token = helper.coreHelper.createSignToken(dataRequest);
                                         newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
                                             if (errUpdate) next(errUpdate);
 
@@ -517,6 +518,8 @@ class UserController {
                                             responseDataMap.status = true;
                                             responseDataMap.url = 'chat';
                                             responseDataMap.msg = 'Login success';
+                                            responseDataMap.token = token;
+
                                             res.status(200).send(responseDataMap);
                                         });
                                     }

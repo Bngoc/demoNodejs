@@ -1,5 +1,5 @@
 1. CA
-	cmd:	openssl req -new -x509 -days 360 -key ca.key
+	cmd:	????    openssl req -new -x509 -days 360 -key ca.key
 	cmd:	openssl req -new -x509 -days 360 -key ca.key -out ca.crt													[instal-web]	
 	
 2. Server

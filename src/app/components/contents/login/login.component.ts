@@ -1,3 +1,4 @@
+// import {AuthToken} from "../../../services/token.service";
 declare var $: any;
 import {Component, ViewEncapsulation, OnInit} from '@angular/core';
 import {libSupports} from './../../../common/libSupports';
@@ -34,6 +35,9 @@ export class LoginComponent extends libSupports implements OnInit {
                 }
 
                 if (result.status) {
+                    ////
+                    // AuthToken
+                    localStorage.setItem('idToken', result.token);
                     window.location.href = result.url;
                 } else {
                     if (result.msg.length)

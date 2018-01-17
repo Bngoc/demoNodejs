@@ -2,7 +2,7 @@
 
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpRequest, HttpErrorResponse} from '@angular/common/http';
-import {Http, Response} from '@angular/http';
+import {Http, Response, RequestOptions, Headers} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/catch';
@@ -11,16 +11,18 @@ import {catchError} from 'rxjs/operators';
 @Injectable()
 
 export class ApiServiceChat {
+    optionsHeader: any;
 
     constructor(private httpClient: HttpClient) {
-        // this.headers = new HttpHeaders()
-        //     .set('Content-Type', 'application/json; charset=utf-8')
-        //     .set('Accept', 'application/json');
+        const headers = new Headers();
+        // headers.append("Content-type", "application/json; charset=utf-8");
+        headers.append("Authorization", 'Bearer ' + localStorage.getItem('idToken'));
+        this.optionsHeader = new RequestOptions({headers: headers});
     }
 
     getIndexChat() {
         return this.httpClient
-            .get('/api/chat')
+            .get('/api/chat', this.optionsHeader)
             .pipe(catchError(this.handleError));
     }
 

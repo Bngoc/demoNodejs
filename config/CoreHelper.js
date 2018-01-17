@@ -102,6 +102,11 @@ function CoreHelper() {
         return setAliasRouter;
     };
 
+    this.createSignToken = function (reqData) {
+        var token = this.callModule(`${paths.CONFIG}/token.js`, true);
+        return token.signToken(reqData);
+    };
+
     this.createFileConfig = function (callback) {
         let side = (((sampleConfig.domain.ssl === true) ? "https://" : "http://") + `${sampleConfig.domain.host}:${sampleConfig.domain.port}`);
         let apiClient = {

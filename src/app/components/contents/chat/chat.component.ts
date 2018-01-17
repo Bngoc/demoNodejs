@@ -9,6 +9,7 @@ import {libSupports} from "../../../common/libSupports";
 import {ListContacts} from "../../../common/chat/supports/ListContacts";
 import {SendChatMessage} from "../../../common/chat/sokets/SendChatMessage";
 import {LibCommonChat} from "../../../common/chat/supports/LibCommonChat";
+import {isBoolean} from "util";
 
 @Component({
     selector: 'app-contents-chat',
@@ -27,15 +28,16 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     listContactYourSingle: any = [];
     dataFriend: any;
     isSingle: any;
+    remainTime: number;
 
     constructor(private apiServiceChat: ApiServiceChat) {
         super();
         this.url = this.urlSide();
+        this.remainTime = (0.4 * 60 * 1000);
 
     }
 
     ngOnInit() {
-        // let that = this;
         this.socket = io(this.url);
         this.sendChatMessage = new SendChatMessage();
         this.loadCss([
@@ -54,8 +56,8 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         ]);
 
         this.sendChatMessage.getDefaultHeightMsgBox();
-        this.sendChatMessage.eventClickSend(this.socket);
-        this.sendChatMessage.eventEnterSend(this.socket);
+        this.sendChatMessage.eventClickSend(this.socket, this.dataFriend);
+        this.sendChatMessage.eventEnterSend(this.socket, this.dataFriend);
         this.sendChatMessage.eventClickNotifyBoxMsg();
 
         this.sendChatMessage.clickContactContentChat(this.socket);
@@ -66,9 +68,8 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         this.sendChatMessage.clickContactSub();
         this.sendChatMessage.clickContactSearchSingle();
         this.sendChatMessage.clickActContactConversation(this.socket);
-        this.sendChatMessage.clickSearchContact();
+        this.sendChatMessage.clickSearchContact(this.remainTime);
         this.sendChatMessage.getListContact();
-
 
         this.listContactYourSingleAction = [];
         this.listContactYourSingle = [];
@@ -78,12 +79,12 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
             .subscribe(resp => {
                 if (resp.err == '' && resp.code == null) {
                     this.resultData = resp.data;
+                    this.dataFriend = resp.data.listStatus;
+
                     let listContact = new ListContacts();
-                    let dataContactList = resp.data.dataContactList;
                     listContact.showContactListAll(JSON.parse(resp.data.dataContactList));
                 }
             }, err => this.error = err);
-
 
         // socket.on('pong', (data) => {
         //     console.log('Receive "pong"', data);
@@ -126,13 +127,10 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         this.sendChatMessage.eventChangeStatusUser(this.socket);
     };
 
-
-
     onResize() {
         this.sendChatMessage.getDefaultHeightMsgBox();
-        this.sendChatMessage.getDefaultHeightMsgBox();
-        let libcCommonChat = new LibCommonChat();
-        $("#frameListMsg").animate({scrollTop: libcCommonChat.getMinHeightFrameListMsg()}, 500);
+        // let libcCommonChat = new LibCommonChat();
+        // $("#frameListMsg").animate({scrollTop: libcCommonChat.getMinHeightFrameListMsg()}, 500);
     }
 
     keys(obj): Array<string> {
@@ -197,8 +195,6 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         let that = this;
         var sendChatMessage = new SendChatMessage();
         that.socket.on('msgContent', function (dataMessage) {
-
-            console.log("msgContent socket: ", dataMessage);
 
             sendChatMessage.activeListContact(dataMessage.channelId);
 

@@ -1,6 +1,12 @@
 'use strict';
 
-class AuthenticateAngular {
+const jwt = require('jsonwebtoken');
+
+// jwt.verify(token, 'shhhhh', function(err, decoded) {
+//     console.log(decoded.foo) // bar
+// });
+
+class AuthenticateToken {
     isAuthenticated(req, res, next) {
 
         // do any checks you want to in here
@@ -25,4 +31,4 @@ class AuthenticateAngular {
     }
 }
 
-module.exports = AuthenticateAngular;
+module.exports = AuthenticateToken;

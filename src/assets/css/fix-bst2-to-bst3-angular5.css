@@ -17,3 +17,11 @@
 .btn-controler-act ul._552n li label {
     max-width: unset !important;
 }
+
+.search-contacts .search-single {
+    width: 100%;
+}
+
+.box-action-friend {
+    width: 100%;
+}

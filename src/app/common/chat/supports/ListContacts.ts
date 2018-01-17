@@ -1,7 +1,7 @@
 'use strict';
 import {isUndefined} from "util";
 import {libSupports} from "../../libSupports";
-import {LibCommonChat} from "./LibCommonChat";
+import {isFunction} from "util";
 declare var jQuery: any;
 declare var $: any;
 declare var require: any;
@@ -40,7 +40,7 @@ export class ListContacts extends libSupports {
 
     public supportResultContact(obj) {
         let htmlListContactAction = '';
-        obj.map(function (element) {
+        obj.forEach(function (element) {
             htmlListContactAction += '<div class="name-contact" data-act-freind="' + element.user_id + '" data-author="author.' + element.user_id + '"><span class="name-act">'
                 + (element.middle_name ? element.middle_name : element.user_name)
                 + '</span><i class="act-aptach fa fa-close" aria-hidden="true"></i></div>';
@@ -52,12 +52,12 @@ export class ListContacts extends libSupports {
     public supportListContact(obj) {
         let listParticipant = this.getListParticipant();
         let htmlListContact = '';
-        obj.map(function (element) {
+        obj.forEach(function (element) {
             if (listParticipant.includes(element.user_id)) {
                 return false;
             }
             htmlListContact += '<li class="contact-list"><div class="wap-contact" data-author="author.' + element.user_id + '">'
-                + '<img src="' + (element.path_img ? element.path_img : element.path_img_default) + '" alt="">'
+                + '<img src="' + (element.path_img ? element.path_img : ('assets/' + element.path_img_default)) + '" alt="">'
                 + '<div class="meta-contact"><p class="">';
 
             htmlListContact += (element.hasOwnProperty('textSearch') ? element.textSearch : (element.middle_name ? element.middle_name : element.user_name));
@@ -190,34 +190,40 @@ export class ListContacts extends libSupports {
         $('#contacts-your').html(htmlListContact);
     };
 
-    public subscribeAfterClickListContact() {
+    public subscribeAfterClickListContact(remainTime, reqDataReset) {
         let _this = this;
         let valSearch = $.trim($('#search-contact').val());
-        let remainTime = setInterval(function () {
-            if (this.remainTime !== 'isUndefined' && _this.reqDataReset !== 'isUndefined') {
-                if (this.remainTime <= _this.getDateTimeNow() && valSearch) {
-                    clearInterval(remainTime);
+        let runRemainTime = setInterval(function () {
+            if (remainTime !== 'isUndefined' && reqDataReset !== 'isUndefined') {
+                if (remainTime < _this.getDateTimeNow() && valSearch) {
+                    clearInterval(runRemainTime);
                     $('#search-contact').val('');
-                    _this.searchListContactListAll(_this.reqDataReset);
-                    _this.remainTime = isUndefined;
-                    _this.reqDataReset = isUndefined;
+                    _this.searchListContactListAll(reqDataReset, function () {
+                        remainTime = isUndefined;
+                        reqDataReset = isUndefined;
+                    });
                 }
             } else {
-                clearInterval(remainTime);
+                clearInterval(runRemainTime);
             }
         }, 1000);
     };
 
-    public searchListContactListAll(requestListContact) {
+    public searchListContactListAll(requestListContact, callback: any = false) {
         let _this = this;
         this.callDataJS(requestListContact, function (dataResult) {
-            // if (dataResult.err !== isUndefined && dataResult.err) {
-            //     console.log('ERROR: ', err)
-            // } else {
-            //     this.showContactListAll(dataResult);
-            //     let htmlSearch = '<li id="search-box-contacts" class="search-contact"><div class="wrap"><div class="box-sreach-contact"><input type="button" class="btn btn-primary" value="Search contacts" /></div></div></li>';
-            //     $('#contacts-your').append(requestListContact.reset ? '' : htmlSearch);
-            // }
+            if (dataResult.err) {
+                console.log('ERROR: ', dataResult.err)
+            } else {
+                _this.showContactListAll(dataResult);
+                let htmlSearch = '<li id="search-box-contacts" class="search-contact"><div class="wrap"><div class="box-sreach-contact">'
+                    + '<input type="button" class="btn btn-primary" value="Search contacts" /></div></div></li>';
+                $('#contacts-your').append(requestListContact.reset ? '' : htmlSearch);
+            }
+
+            if (callback == isFunction) {
+                callback();
+            }
         });
     };
 }

@@ -1,4 +1,5 @@
-'use strict'
+'use strict';
+
 import {ListContacts} from "../supports/ListContacts";
 import {LibCommonChat} from "../supports/LibCommonChat";
 declare var jQuery: any;
@@ -8,7 +9,6 @@ import * as io from 'socket.io-client';
 import {libSupports} from "../../libSupports";
 import {isUndefined} from "util";
 import {ShowContentChat} from "../supports/ShowContentChat";
-
 
 // $(document).ready(function () {
 //     var sendChatMessage = new SendChatMessage();
@@ -28,14 +28,12 @@ import {ShowContentChat} from "../supports/ShowContentChat";
 
 export class SendChatMessage extends libSupports {
 
-    // private url;
-    public socket;
-    public dataFriend;
+    public listContactYourSingleAction: any = [];
+    public listContactYourSingle: any = [];
     public isSingle;
 
     constructor() {
         super();
-        this.socket = io(this.urlSide());
     }
 
     getDefaultHeightMsgBox = function () {
@@ -77,14 +75,14 @@ export class SendChatMessage extends libSupports {
         return $("#messageInput").outerHeight();
     };
 
-    sendMsg = function (socket) {
+    sendMsg = function (socket, dataFriend) {
         var dataValueMsg = $.trim($('#boxChat').val());
         if (dataValueMsg.length) {
             let listContact = new ListContacts();
             let messageInput = $('#messageInput');
             let listPart = listContact.getListParticipant();
 
-            if (this.dataFriend === 'true') {
+            if (dataFriend === 'true') {
                 let dataSendChat = {
                     dataConversation: messageInput.attr('data-conversation'),
                     dataChannel: messageInput.attr('data-channel'),
@@ -102,14 +100,14 @@ export class SendChatMessage extends libSupports {
         }
     };
 
-    eventClickSend = function (socket) {
+    eventClickSend = function (socket, dataFriend) {
         var that = this;
         $('body').on('click', '#sendMessageChat', function () {
-            that.sendMsg(socket);
+            that.sendMsg(socket, dataFriend);
         });
     };
 
-    eventEnterSend = function (socket) {
+    eventEnterSend = function (socket, dataFriend) {
         var that = this;
 
         // create trigger keyUpDown after check enter vs (shift + enter) in textarea
@@ -125,7 +123,7 @@ export class SendChatMessage extends libSupports {
                     $(this).trigger('keyUpDown');
                 });
             } else if (evt.keyCode == 13) {
-                that.sendMsg(socket);
+                that.sendMsg(socket, dataFriend);
                 return false;
             }
             $(this).trigger('keyUpDown');
@@ -184,38 +182,34 @@ export class SendChatMessage extends libSupports {
         $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, timeAnimate);
     };
 
-    clickSearchContact = function () {
+    clickSearchContact = function (remainTime) {
         let that = this;
         let listContact = new ListContacts();
-        $('body')
-            .on('keyup copy cut', '#search-contact', function () {
-                let val = $.trim($(this).val());
-                let requestListContactDefault = {
-                    url: $('#box-search-contacts').attr('data-url'),
-                    data: {
-                        dataType: false,
-                        isAuthenticatesSingle: false,
-                        isSearch: false,
-                        valSearch: null,
-                        _method: 'post'
-                    },
-                    reset: true
-                };
-                //remain time  or value search length min 3 for reset list contact
-                this.remainTime = that.getDateTimeNow() + 0.1 * 60 * 1000;
-                this.reqDataReset = requestListContactDefault;
+        $('body').on('keyup copy cut', '#search-contact', function () {
+            let val = $.trim($(this).val());
+            let requestListContactDefault = {
+                url: $('#box-search-contacts').attr('data-url'),
+                data: {
+                    dataType: false,
+                    isAuthenticatesSingle: false,
+                    isSearch: false,
+                    valSearch: null,
+                    _method: 'post'
+                },
+                reset: true
+            };
+            //remain time  or value search length min 3 for reset list contact
+            listContact.subscribeAfterClickListContact((that.getDateTimeNow() + remainTime), requestListContactDefault);
 
-                listContact.subscribeAfterClickListContact();
-                let requestListContact = jQuery.extend(true, {}, requestListContactDefault);
+            let requestListContact = jQuery.extend(true, {}, requestListContactDefault);
+            if (val.length > 2) {
+                requestListContact['data']['isSearch'] = true;
+                requestListContact['data']['valSearch'] = val;
+                requestListContact['reset'] = false;
+            }
 
-                if (val.length > 2) {
-                    requestListContact['data']['isSearch'] = true;
-                    requestListContact['data']['valSearch'] = val;
-                    requestListContact['reset'] = false;
-                }
-
-                listContact.searchListContactListAll(requestListContact);
-            });
+            listContact.searchListContactListAll(requestListContact);
+        });
     };
 
     clickRightContactContentChat = function () {
@@ -263,8 +257,10 @@ export class SendChatMessage extends libSupports {
 
                     that.reloadContentBoxChatAjax(dataRequest, function (resultData) {
                         that.renderHtmlContentBoxChat(socket, resultData, function () {
-                            socket.emit('msgContentChat', dataRequest);
-                            that.getDefaultHeightMsgBox();
+                            if (resultData.booleanConversation) {
+                                socket.emit('msgContentChat', dataRequest);
+                                that.getDefaultHeightMsgBox();
+                            }
                         });
                     });
                 }
@@ -302,6 +298,7 @@ export class SendChatMessage extends libSupports {
     };
 
     getListContact = function () {
+        var that = this;
         $('body').on('click', '#list-contact-your', function () {
             let requestListContact = {
                 url: $('#box-search-contacts').attr('data-url'),
@@ -321,10 +318,9 @@ export class SendChatMessage extends libSupports {
 
                     console.log(dataResult);
 
-                    this.listContactYourSingleAction = [];
-                    this.listContactYourSingle = dataResult.data;
-                    // $('#list-your-friend').html(lisContact.render(dataResult, []));
-                    $('#list-your-friend').html(lisContact.render(dataResult, this.listContactYourSingleAction));
+                    that.listContactYourSingleAction = [];
+                    that.listContactYourSingle = dataResult.data;
+                    $('#list-your-friend').html(lisContact.render(dataResult, that.listContactYourSingleAction));
                 }
             });
         });
@@ -336,10 +332,10 @@ export class SendChatMessage extends libSupports {
             let author = $(this).find('[data-author]').attr('data-author');
             if (typeof author !== typeof undefined && author !== false) {
                 let authorId = author.split('.')[1];
-                let indexFindUser = this.listContactYourSingle.findIndex(x => x.user_id === parseInt(authorId));
+                let indexFindUser = that.listContactYourSingle.findIndex(x => x.user_id === parseInt(authorId));
                 if (indexFindUser !== -1) {
-                    this.listContactYourSingleAction.push(this.listContactYourSingle[indexFindUser]);
-                    this.listContactYourSingle.splice(indexFindUser, 1);
+                    that.listContactYourSingleAction.push(that.listContactYourSingle[indexFindUser]);
+                    that.listContactYourSingle.splice(indexFindUser, 1);
                 }
                 that.renderHtmlListContact();
             }
@@ -354,11 +350,11 @@ export class SendChatMessage extends libSupports {
                 let htmlListContact = '';
                 let listContact = new ListContacts();
                 if (val.length > 2) {
-                    let listContactYourSingleClone = $.extend(true, [], this.listContactYourSingle);
+                    let listContactYourSingleClone = $.extend(true, [], that.listContactYourSingle);
                     let arrayTempListContactSingle = listContact.searchLikeContact(listContactYourSingleClone, val);
                     htmlListContact = arrayTempListContactSingle.length ? listContact.supportListContact(arrayTempListContactSingle) : 'Not result';
                 } else {
-                    htmlListContact = listContact.supportListContact(this.listContactYourSingle);
+                    htmlListContact = listContact.supportListContact(that.listContactYourSingle);
                 }
 
                 $('#list-contacts').html(htmlListContact);
@@ -377,13 +373,13 @@ export class SendChatMessage extends libSupports {
             let author = $(this).closest('[data-author]').attr('data-author');
             if (typeof author !== typeof undefined && author !== false) {
                 let authorId = author.split('.')[1];
-                let indexFindUser = this.listContactYourSingleAction.findIndex(x => x.user_id === parseInt(authorId));
+                let indexFindUser = that.listContactYourSingleAction.findIndex(x => x.user_id === parseInt(authorId));
                 if (indexFindUser !== -1) {
-                    this.listContactYourSingle.push(this.listContactYourSingleAction[indexFindUser]);
-                    this.listContactYourSingle.sort(function (a, b) {
+                    that.listContactYourSingle.push(that.listContactYourSingleAction[indexFindUser]);
+                    that.listContactYourSingle.sort(function (a, b) {
                         return a.created_at - b.created_at;
                     });
-                    this.listContactYourSingleAction.splice(indexFindUser, 1);
+                    that.listContactYourSingleAction.splice(indexFindUser, 1);
                 }
                 that.renderHtmlListContact();
             }
@@ -392,7 +388,6 @@ export class SendChatMessage extends libSupports {
 
     renderHtmlListContact = function () {
         let listContact = new ListContacts();
-
         let htmlListContactAction = listContact.supportResultContact(this.listContactYourSingleAction);
         $('#box-action-friend').html(htmlListContactAction);
         $('#action-friend .add, #action-friend .create').attr({disabled: !this.listContactYourSingleAction.length});
@@ -437,8 +432,10 @@ export class SendChatMessage extends libSupports {
             };
             that.reloadContentBoxChatAjax(dataRequest, function (dataResult) {
                 that.renderHtmlContentBoxChat(socket, dataResult, function () {
-                    socket.emit('msgContentChat', dataRequest);
-                    that.getDefaultHeightMsgBox();
+                    if (dataResult.booleanConversation) {
+                        socket.emit('msgContentChat', dataRequest);
+                        that.getDefaultHeightMsgBox();
+                    }
                 });
             });
         });
@@ -475,8 +472,7 @@ export class SendChatMessage extends libSupports {
     renderHtmlContentBoxChat = function (socket, dataResult, callback) {
         let showContentChat = new ShowContentChat();
         $('#content-chat').html(showContentChat.isShowContentChat(dataResult));
-        // socket.emit('msgContentChat', dataRequest);
-//------------------XXXXXXXXXX---------------------------
+        //------------------XXXXXXXXXX---------------------------
         $('#boxChat').css({
             "max-height": parseInt(dataResult.maxHeightInputBoxChat),
             "height": parseInt(dataResult.minHeightBoxChat)
@@ -485,7 +481,28 @@ export class SendChatMessage extends libSupports {
         $('#create-tooltip .tooltiptext').css({display: 'none'});
         $('#list-your-friend').css({'display': 'none'});
 
-//---------------------------------------------
+        /// ACCEPTED
+        if (dataResult.booleanConversation) {
+            if (!dataResult.isFriendCurrentSingle) {
+                $("#messageInput").addClass("disabled-element");
+                $("#frameListMsg").addClass("remove-scrollbar");
+                $("#boxChat").attr("placeholder", 'Messsaging disabled until request is accepted');
+
+                //css box chat with not friend
+                $('#messageInput .btn-controler-act').remove();
+                $('#boxChat').addClass('cuts-box-chat-clear center-placeholder');
+            }
+        } else {
+            // REQUSET
+            $("#messageInput").addClass("disabled-element");
+            $("#frameListMsg").addClass("remove-scrollbar");
+            $("#boxChat").attr("placeholder", 'Messsaging disabled until request is accepted');
+
+            //css box chat with not friend
+            $('#messageInput .btn-controler-act').remove();
+            $('#boxChat').addClass('cuts-box-chat-clear center-placeholder');
+        }
+        //---------------------------------------------
         callback();
     };
 
@@ -610,22 +627,22 @@ export class SendChatMessage extends libSupports {
         $('[channel="status.' + channelId + '"]').closest('li').addClass('active');
     };
 
-    getAttributesJavaScript(elementJavaScript, attr) {
+    getAttributesJavaScript = function (elementJavaScript, attr) {
         return elementJavaScript.attributes[attr].nodeValue || null;
     };
 
-    hasClassJavaScript(elementJavaScript, className) {
+    hasClassJavaScript = function (elementJavaScript, className) {
         return elementJavaScript.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
     }
 
-    addClassJavaScript(elementJavaScript, className) {
+    addClassJavaScript = function (elementJavaScript, className) {
         if (!this.hasClassJavaScript(elementJavaScript, className)) elementJavaScript.className += " " + className;
     }
 
-    removeClassJavaScript(elementJavaScript, className) {
+    removeClassJavaScript = function (elementJavaScript, className) {
         if (this.hasClassJavaScript(elementJavaScript, className)) {
             var reg = new RegExp('(\\s|^)' + elementJavaScript + '(\\s|$)');
-            elementJavaScript.className = eventJavaScript.className.replace(reg, ' ');
+            elementJavaScript.className = elementJavaScript.className.replace(reg, ' ');
         }
     }
 }

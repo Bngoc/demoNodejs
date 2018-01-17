@@ -305,7 +305,7 @@ class ChatController extends BaseController {
                                     indexFindUserSingle: indexFindUserSingle,
                                     tempChatStatusName: tempChatStatusName
                                 };
-                                let tempPartSingle = libFunction.renderDataContentChat(useContactsSingle, listUserParticipant, optionRender);
+                                let tempPartSingle = libFunction.renderDataContentChat(useContactsSingle, optionRender, listUserParticipant);
 
                                 showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
                                 listParticipant.push(tempPartSingle);
@@ -340,7 +340,7 @@ class ChatController extends BaseController {
                                         indexFindUserSingle: indexFindUser,
                                         tempChatStatusName: tempChatStatusGroupName
                                     };
-                                    let tempPartGroup = libFunction.renderDataContentChat(relationsUseContacts, listUserParticipant, optionRender);
+                                    let tempPartGroup = libFunction.renderDataContentChat(relationsUseContacts, optionRender, listUserParticipant);
 
                                     listParticipant.push(tempPartGroup);
                                     urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : cfgChat.img_group_user;
@@ -410,7 +410,6 @@ class ChatController extends BaseController {
         req.session.dataChannelID = null;
 
         try {
-
             showResponseChat.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX + FIX_HEIGHT_BOX_CHAT_BST3;
             showResponseChat.maxHeightInputBoxChat = HEIGHT_INPUT_BOX_MAX + FIX_HEIGHT_BOX_CHAT_BST3;
             showResponseChat.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN + FIX_HEIGHT_BOX_CHAT_BST3;
@@ -420,7 +419,7 @@ class ChatController extends BaseController {
             // let chatController = new ChatController();
 
             if (parseInt(req.body.dataConversation) && userCurrent) {
-                showResponseChat.renderViews = 'chat/content.chat.ejs';
+                // showResponseChat.renderViews = 'chat/content.chat.ejs';
                 let conversation = new Conversation.class();
                 let optionRequest = {
                     id: parseInt(req.body.dataConversation),
@@ -430,7 +429,10 @@ class ChatController extends BaseController {
                 };
 
                 conversation.conversationsListSingleUser(optionRequest, function (errPart, modelListUser) {
-                    if (errPart) return next(errPart);
+                    if (errPart) {
+                        res.sendStatus(403);
+                        console.log(errPart);
+                    }
 
                     let listUserParticipant = modelListUser.map(function (listUser) {
                         return {
@@ -444,8 +446,10 @@ class ChatController extends BaseController {
                     });
 
                     conversation.conversationsListUser(optionRequest, function (err, infoConversation) {
-                        if (err) return next(err);
-
+                        if (err) {
+                            res.sendStatus(403);
+                            console.log(err);
+                        }
                         infoConversation.forEach(function (elem) {
                             showResponseChat.dataType = elem.type;
                             showResponseChat.dataChannelId = elem.channel_id;
@@ -486,7 +490,7 @@ class ChatController extends BaseController {
                                     indexFindUserSingle: indexFindUserSingle,
                                     tempChatStatusName: tempChatStatusName
                                 };
-                                let tempPartSingle = libFunction.renderDataContentChat(useContactsSingle, listUserParticipant, optionRender);
+                                let tempPartSingle = libFunction.renderDataContentChat(useContactsSingle, optionRender, listUserParticipant);
 
                                 showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
                                 listParticipant.push(tempPartSingle);
@@ -521,7 +525,7 @@ class ChatController extends BaseController {
                                         indexFindUserSingle: indexFindUser,
                                         tempChatStatusName: tempChatStatusGroupName
                                     };
-                                    let tempPartGroup = libFunction.renderDataContentChat(relationsUseContacts, listUserParticipant, optionRender);
+                                    let tempPartGroup = libFunction.renderDataContentChat(relationsUseContacts, optionRender, listUserParticipant);
 
                                     listParticipant.push(tempPartGroup);
                                     urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : "assets/" + cfgChat.img_group_user;
@@ -532,52 +536,41 @@ class ChatController extends BaseController {
 
                             showResponseChat.listParticipant = listParticipant;
                             showResponseChat.urlImagesAvatar = urlImagesAvatar;
+                            showResponseChat.booleanConversation = true;
+
                         });
 
                         res.status(200).send(showResponseChat);
-
-                        // zender view before send data
-                        //{layout: 'ajax'}
-                        // res.render(showResponseChat.renderViews, {
-                        //     data: showResponseChat,
-                        //     layout: false
-                        // }, function (err, renderHtml) {
-                        //     if (err) {
-                        //         res.send(err);
-                        //     } else {
-                        //         var response = {html: renderHtml, err: err};
-                        //
-                        //         res.status(200).send(response);
-                        //     }
-                        // });
                     });
                 });
-            } else if ((req.body.dataConversation === "") && parseInt(req.body.valAuthor) && userCurrent) {
+            } else if ((req.body.dataConversation === "" || req.body.dataConversation === 'null' || req.body.dataConversation == null )
+                && parseInt(req.body.valAuthor) && userCurrent) {
                 // NOT FRIEND AND NOT REQUEST
-                showResponseChat.renderViews = 'chat/request.chat.ejs';
+                // showResponseChat.renderViews = 'chat/request.chat.ejs';
                 let user = new User.class();
-
                 user.findUserFullById(parseInt(req.body.valAuthor), function (err, modelUser) {
-                    if (err) return next(err);
-
+                    if (err) {
+                        console.log(err);
+                        res.sendStatus(403);
+                    }
+                    let listParticipant = [];
                     let useContacts = modelUser.relations.useContacts;
-                    showResponseChat.infoParticipant = modelUser;
                     showResponseChat.classStatus = cfgChat.class_undefined;
                     showResponseChat.moodMessageShow = cfgChat.mood_message_request;
-                    showResponseChat.urlImagesAvatar = useContacts.get('path_img') ? useContacts.get('path_img') : cfgChat.img_single_user;
+                    showResponseChat.urlImagesAvatar = useContacts.get('path_img') ? useContacts.get('path_img') : 'assets/' + cfgChat.img_single_user;
+                    showResponseChat.isFriendCurrentSingle = false;
+                    showResponseChat.booleanConversation = false;
+                    let optionRenderNotFriend = {
+                        strListStatus: Object.values(chatStatus).join(' '),
+                        moodMessageTemp: cfgChat.mood_message_request,
+                        tempClassStatus: cfgChat.class_undefined,
+                    };
+                    let tempPartSingle = libFunction.renderDataContentChat(useContacts, optionRenderNotFriend);
+                    listParticipant.push(tempPartSingle);
 
-                    res.render(showResponseChat.renderViews, {
-                        data: showResponseChat,
-                        layout: false
-                    }, function (err, renderHtml) {
-                        if (err) {
-                            res.send(err);
-                        } else {
-                            var response = {html: renderHtml, err: err};
-
-                            res.status(200).send(response);
-                        }
-                    });
+                    showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
+                    showResponseChat.listParticipant = listParticipant;
+                    res.status(200).send(showResponseChat);
                 });
             } else {
                 res.status(500).send('ERR');
@@ -601,8 +594,8 @@ class ChatController extends BaseController {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                        return conversationType[k]
-                    })),
+                            return conversationType[k]
+                        })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -663,8 +656,8 @@ class ChatController extends BaseController {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                        return conversationType[k]
-                    })),
+                            return conversationType[k]
+                        })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
