@@ -16,6 +16,7 @@ import {Page503Component} from "./errors/page503/page503.component";
 import {PageErrorComponent} from "./errors/page-error/page-error.component";
 import {ApiServiceChat} from "../services/api-chat.sevice";
 import {KeysPipe} from "../../pipes/pipes-keys.pipe";
+import {LogoutComponent} from "./logout/logout.component";
 
 
 const contentsRoutes: Routes = [
@@ -41,7 +42,8 @@ const contentsRoutes: Routes = [
         LoginComponent,
         RegisterComponent,
         ForgotComponent,
-        KeysPipe
+        KeysPipe,
+        LogoutComponent
     ],
     imports: [
         CommonModule,

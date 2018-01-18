@@ -102,8 +102,11 @@ export abstract class libSupports {
         $.ajax({
             method: "POST",
             headers: {
-                "Authorization": ('Bearer ' + (localStorage.getItem('idToken') || ''))
-                // "Content-Type": "application/json"
+                "Authorization": ('Bearer ' + (localStorage.getItem('idToken') || '')),
+                "Content-type": "application/x-www-form-urlencoded",
+                "Access-Control-Allow-Credentials": true,
+                "withCredentials": true,
+                "credentials": 'omit',
             },
             url: dataRequest.url,
             data: dataRequest.data,

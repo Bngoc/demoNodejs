@@ -3,8 +3,8 @@
 const jwt = require('jsonwebtoken');
 
 class Token {
-    signToken(reqData) {
-        return jwt.sign({wft90: reqData.data}, 'secret', {expiresIn: '1d'});
+    signToken(keySecret, reqData) {
+        return jwt.sign({wft90: reqData.data}, keySecret, {expiresIn: '1d'});
     }
 }
 

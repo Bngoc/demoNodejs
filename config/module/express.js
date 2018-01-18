@@ -26,9 +26,6 @@ const sessionStore = new session.MemoryStore();
 // use hander log
 const env = process.env.NODE_ENV || 'development';
 
-const SECRET = '{mySecretRequired}';
-const KEY = 'express.sid';
-
 
 class Express {
 
@@ -53,11 +50,12 @@ class Express {
         app.use(bodyParser.urlencoded({extended: true}));
         //JSON
         app.use(bodyParser.json());
-        // app.use(bodyParser.text({type: 'text/html'}));
+        app.use(bodyParser.text({type: 'text/html'}));
         app.use(expressValidator());
         // app.use(expressValidator(customValidator()));
         app.use(methodOverride('X-HTTP-Method-Override'));
 
+        app.set('secretNode', coreHelper.app.secret);
         // app.use(cookieParser('secret'));
         // app.use(this.configSession());
         // app.use(passport.initialize());
@@ -104,18 +102,18 @@ class Express {
 
     configSession(app, coreHelper) {
         let sessionConfig = session({
-            secret: SECRET,
-            name: KEY,
+            secret: coreHelper.app.secret,
+            name: coreHelper.app.key,
             store: sessionStore,
             saveUninitialized: true,
-            resave: true,
+            resave: false,
             cookie: {
                 secure: coreHelper.sampleConfig.domain.ssl,
                 httpOnly: true,
                 maxAge: (3600000 * 24) * 1, // * day
             }
         });
-        app.use(cookieParser('secret'));
+        app.use(cookieParser(coreHelper.app.secret));
         app.use(sessionConfig);
         app.use(passport.initialize());
         app.use(passport.session());

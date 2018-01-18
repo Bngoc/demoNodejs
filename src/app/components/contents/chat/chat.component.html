@@ -8,11 +8,11 @@
         <div id="profile">
             <div class="wrap">
                 <div id="accCurrent" class="aboutCurrent">
-                    <span class="btn-status-use {{resultData.status}}" id="user-status-current"
+                    <span class="btn-status-use {{resultData.classStatusCurrent}}" id="user-status-current"
                           title="Change status"></span>
                     <img id="profile-img" [attr.user-code-id]="resultData.userID"
                          src="http://emilcarlsson.se/assets/mikeross.png"
-                         class="{{resultData.status}}" alt="your profile" title="your profile">
+                         class="{{resultData.classStatusCurrent}}" alt="your profile" title="your profile">
                 </div>
                 <div class="info-current">
                     <p class="user-name-chat">{{resultData.userName}}</p>

@@ -1,12 +1,13 @@
 'use strict';
 
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpRequest, HttpErrorResponse} from '@angular/common/http';
-import {Http, Response, RequestOptions, Headers} from '@angular/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {Http, Response, Headers} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/catch';
 import {catchError} from 'rxjs/operators';
+import {HttpHeaders} from "@angular/common/http";
 
 @Injectable()
 
@@ -15,17 +16,19 @@ export class ApiServiceChat {
     headers: any;
 
     constructor(private httpClient: HttpClient) {
-        this.headers = new Headers();
-        this.headers.append("Content-type", "application/x-www-form-urlencoded");
-        this.headers.append("Authorization", 'Bearer ' + sessionStorage.getItem('idToken'));
+        this.headers = new HttpHeaders()
+            .set("Content-type", "application/x-www-form-urlencoded")
+            .set("Authorization", ('Bearer ' + localStorage.getItem('idToken')))
+            .set("credentials", 'omit');
 
-        this.headers = new HttpHeaders().set('Authorization', ('Bearer ' + sessionStorage.getItem('idToken')));
-        // this.optionsHeader = new RequestOptions({headers: this.headers});
+        //https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials
+        //CHANGE SESSION IN SERVER NODEIJ  "credentials": 'include' | 'same-origin' | 'omit',
     }
 
     getIndexChat() {
         return this.httpClient
-            .get('/api/chat', null, {headers: this.headers})
+        // .get('/api/chat', {headers: this.headers})
+            .get('/api/chat', {headers: this.headers})
             .pipe(catchError(this.handleError));
     }
 

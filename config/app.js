@@ -1,4 +1,6 @@
 const app = {
+    secret: "{mySecretRequired}",
+    key: "express.sid",
     chatStatus: {
         0: 'online',
         1: 'offline',

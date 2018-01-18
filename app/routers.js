@@ -76,16 +76,16 @@ class Routers {
 
         // -----------------------------------S Angular 5-------------------------------------------
         let useMiddlewareAngular = coreHelper.callModule(`${coreHelper.paths.MIDDLEWARE}Authenticate.angular.js`, true);
-        let useAuthenticateToken = coreHelper.callModule(`${coreHelper.paths.MIDDLEWARE}AuthenticateToken.js`, true);
+        let useAuthenticateApiToken = coreHelper.callModule(`${coreHelper.paths.MIDDLEWARE}AuthenticateApiToken.js`, true);
 
         // app.get("/api/login", useMiddlewareAngular.authenticatedRegister, userController.getLogin);
         app.post("/api/login", 'api.login', [useMiddlewareAngular.authenticatedRegister], userController.postLoginAngular);
         app.get("/api/logout", 'api.logout', useMiddlewareAngular.authenticatedRegister, userController.getLogoutAngular);
 
         app.get('/api/as', 'user', homeController.getIndex1);
-        app.get('/api/chat', 'api.chat.index', [useMiddlewareAngular.isAuthenticated], chatController.getIndexAngular);
-        app.post("/api/chat/content-chat", 'api.chat.content.chat', useMiddlewareAngular.isAuthenticated, chatController.postApiContentChat);
-        app.post("/api/chat/list-contact", 'api.chat.list.contact', useMiddlewareAngular.isAuthenticated, chatController.postApiListContact);
+        app.get('/api/chat', 'api.chat.index', [useAuthenticateApiToken.verifyToken, useMiddlewareAngular.isAuthenticated], chatController.getIndexAngular);
+        app.post("/api/chat/content-chat", 'api.chat.content.chat', [useMiddlewareAngular.isAuthenticated], chatController.postApiContentChat);
+        app.post("/api/chat/list-contact", 'api.chat.list.contact', [useMiddlewareAngular.isAuthenticated], chatController.postApiListContact);
         // -----------------------------------E Angular 5-------------------------------------------
 
 

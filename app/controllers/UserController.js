@@ -200,7 +200,7 @@ class UserController {
                 res.status(200).send(responseDataMap);
             }
         } else {
-            res.status(500).send('Not');
+            res.status(500).send('Not use Jquery requset to server....!');
         }
     }
 
@@ -451,7 +451,7 @@ class UserController {
                 });
             }
         } else {
-            res.status(500).send('Not')
+            res.status(500).send('Not use Jquery requset to server....!')
         }
     }
 
@@ -510,7 +510,7 @@ class UserController {
                                             dataUpdate: {is_life: 1},
                                         };
                                         let newContacts = new Contacts.class();
-                                        let token = helper.coreHelper.createSignToken(dataRequest);
+                                        let token = helper.coreHelper.createSignToken(helper.coreHelper.app.secret, dataRequest);
                                         newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
                                             if (errUpdate) next(errUpdate);
 
@@ -556,7 +556,7 @@ class UserController {
                 res.status(200).send(responseDataMap);
             }
         } else {
-            res.status(500).send('Not');
+            res.status(500).send('Not use Jquery requset to server....!');
         }
     }
 

@@ -102,9 +102,9 @@ function CoreHelper() {
         return setAliasRouter;
     };
 
-    this.createSignToken = function (reqData) {
+    this.createSignToken = function (keySecret, reqData) {
         var token = this.callModule(`${paths.CONFIG}/token.js`, true);
-        return token.signToken(reqData);
+        return token.signToken(keySecret, reqData);
     };
 
     this.createFileConfig = function (callback) {

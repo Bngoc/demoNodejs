@@ -35,7 +35,7 @@ export class LoginComponent extends libSupports implements OnInit {
                 }
                 if (result.status) {
                     // AuthToken
-                    sessionStorage.setItem('idToken', result.token);
+                    localStorage.setItem('idToken', result.token);
                     window.location.href = result.url;
                 } else {
                     if (result.msg.length)
@@ -43,8 +43,5 @@ export class LoginComponent extends libSupports implements OnInit {
                 }
             }
         });
-        console.log(dataRequest);
     }
-
-
 }

@@ -24,8 +24,8 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     error: any;
     resultData: any = {};
     rsData: Subscription;
-    listContactYourSingleAction: any = [];
-    listContactYourSingle: any = [];
+    // listContactYourSingleAction: any = [];
+    // listContactYourSingle: any = [];
     dataFriend: any;
     isSingle: any;
     remainTime: number;
@@ -33,13 +33,28 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     constructor(private apiServiceChat: ApiServiceChat) {
         super();
         this.url = this.urlSide();
-        this.remainTime = (0.4 * 60 * 1000);
+        let rsData = this.apiServiceChat
+            .getIndexChat()
+            .subscribe(resp => {
+                if (resp.err == '' && resp.code == null) {
+                    this.resultData = resp.data;
+                    let dataFriend = resp.data.listStatus;
 
+                    let listContact = new ListContacts();
+                    listContact.showContactListAll(JSON.parse(resp.data.dataContactList));
+
+                    let sendChatMessage = new SendChatMessage();
+                    sendChatMessage.eventClickSend(this.socket, dataFriend);
+                    sendChatMessage.eventEnterSend(this.socket, dataFriend);
+                }
+            }, err => this.error = err);
     }
 
     ngOnInit() {
+        this.remainTime = (0.4 * 60 * 1000);
+
         this.socket = io(this.url);
-        this.sendChatMessage = new SendChatMessage();
+
         this.loadCss([
             // 'css/chat.custom.css',
             'css/chat.test.css',
@@ -55,11 +70,12 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
             'js/socket/chat.js'
         ]);
 
-        this.sendChatMessage.getDefaultHeightMsgBox();
-        this.sendChatMessage.eventClickSend(this.socket, this.dataFriend);
-        this.sendChatMessage.eventEnterSend(this.socket, this.dataFriend);
-        this.sendChatMessage.eventClickNotifyBoxMsg();
+        this.sendChatMessage = new SendChatMessage();
 
+        this.sendChatMessage.getDefaultHeightMsgBox();
+        this.sendChatMessage.eventClickNotifyBoxMsg();
+        // this.sendChatMessage.eventClickSend(this.socket, this.dataFriend);
+        // this.sendChatMessage.eventEnterSend(this.socket, this.dataFriend);
         this.sendChatMessage.clickContactContentChat(this.socket);
         this.sendChatMessage.clickListContactContentChat(this.socket);
         this.sendChatMessage.scrollListener(this.socket);
@@ -70,21 +86,6 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         this.sendChatMessage.clickActContactConversation(this.socket);
         this.sendChatMessage.clickSearchContact(this.remainTime);
         this.sendChatMessage.getListContact();
-
-        this.listContactYourSingleAction = [];
-        this.listContactYourSingle = [];
-
-        let rsData = this.apiServiceChat
-            .getIndexChat()
-            .subscribe(resp => {
-                if (resp.err == '' && resp.code == null) {
-                    this.resultData = resp.data;
-                    this.dataFriend = resp.data.listStatus;
-
-                    let listContact = new ListContacts();
-                    listContact.showContactListAll(JSON.parse(resp.data.dataContactList));
-                }
-            }, err => this.error = err);
 
         // socket.on('pong', (data) => {
         //     console.log('Receive "pong"', data);
