@@ -102,8 +102,8 @@ class Express {
 
     configSession(app, coreHelper) {
         let sessionConfig = session({
-            secret: coreHelper.app.secret,
-            name: coreHelper.app.key,
+            secret: coreHelper.sampleConfig.APP_SECRET,
+            name: coreHelper.sampleConfig.APP_KEY,
             store: sessionStore,
             saveUninitialized: true,
             resave: false,
@@ -113,7 +113,7 @@ class Express {
                 maxAge: (3600000 * 24) * 1, // * day
             }
         });
-        app.use(cookieParser(coreHelper.app.secret));
+        app.use(cookieParser(coreHelper.sampleConfig.APP_SECRET));
         app.use(sessionConfig);
         app.use(passport.initialize());
         app.use(passport.session());

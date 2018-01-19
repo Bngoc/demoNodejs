@@ -2,14 +2,8 @@
 
 import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
-
-// import { CanDeactivateGuard }       from './services/auth/can-deactivate-guard.service';
-// import { AuthGuard }                from './services/auth/auth-guard.service';
-
 import {CommonModule} from '@angular/common';
-// import {ChatComponent} from './components/admin/chat/chat.component';
 import {Page404Component} from './components/contents/errors/page404/page404.component';
-
 
 
 const appRoutes: Routes = [

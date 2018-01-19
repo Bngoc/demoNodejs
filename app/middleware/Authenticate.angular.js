@@ -5,15 +5,14 @@ class AuthenticateAngular {
         if (req.isAuthenticated())
             return next();
 
-        res.sendStatus(401);
-        // res.redirect('/login');
+        res.status(401).send({url: '/login'});
     }
 
     authenticatedRegister(req, res, next) {
         if (!req.isAuthenticated())
             return next();
 
-        res.redirect('/');
+        res.status(401).send({url: '/'});
     }
 }
 

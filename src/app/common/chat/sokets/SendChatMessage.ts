@@ -75,14 +75,14 @@ export class SendChatMessage extends libSupports {
         return $("#messageInput").outerHeight();
     };
 
-    sendMsg = function (socket, dataFriend) {
+    sendMsg = function (socket, isDataFriend) {
         var dataValueMsg = $.trim($('#boxChat').val());
         if (dataValueMsg.length) {
             let listContact = new ListContacts();
             let messageInput = $('#messageInput');
             let listPart = listContact.getListParticipant();
 
-            if (dataFriend === 'true') {
+            if (isDataFriend === true) {
                 let dataSendChat = {
                     dataConversation: messageInput.attr('data-conversation'),
                     dataChannel: messageInput.attr('data-channel'),
@@ -100,14 +100,14 @@ export class SendChatMessage extends libSupports {
         }
     };
 
-    eventClickSend = function (socket, dataFriend) {
+    eventClickSend = function (socket, isDataFriend) {
         var that = this;
         $('body').on('click', '#sendMessageChat', function () {
-            that.sendMsg(socket, dataFriend);
+            that.sendMsg(socket, isDataFriend);
         });
     };
 
-    eventEnterSend = function (socket, dataFriend) {
+    eventEnterSend = function (socket, isDataFriend) {
         var that = this;
 
         // create trigger keyUpDown after check enter vs (shift + enter) in textarea
@@ -123,7 +123,7 @@ export class SendChatMessage extends libSupports {
                     $(this).trigger('keyUpDown');
                 });
             } else if (evt.keyCode == 13) {
-                that.sendMsg(socket, dataFriend);
+                that.sendMsg(socket, isDataFriend);
                 return false;
             }
             $(this).trigger('keyUpDown');
@@ -271,14 +271,13 @@ export class SendChatMessage extends libSupports {
             });
     };
 
-    clickActContactConversation = function (socket) {
+    clickActContactConversation = function (socket, isSingle) {
         var that = this;
         $('body').on('click', '#action-friend .add, #action-friend .create', function () {
             let listContact = new ListContacts();
             let dataConversation = $('#messageInput').attr("data-conversation");
             let dataConversationId = (typeof dataConversation !== typeof isUndefined && dataConversation !== false) ? dataConversation : null;
 
-            let isSingle = this.isSingle === 'true';
             let listParticipant = listContact.clickActionContact();
             let nameListParticipant = listParticipant['nameAuthorId'];
             let nameUesrCurrent = $('#profile .user-name-chat')[0].childNodes[0].nodeValue;
@@ -315,8 +314,6 @@ export class SendChatMessage extends libSupports {
                     let top = $('#list-contact-your').height() * 2;
                     $('#list-your-friend').css({display: 'block', position: 'absolute', top: top, right: 23});
                     $(elem).attr({show: true});
-
-                    console.log(dataResult);
 
                     that.listContactYourSingleAction = [];
                     that.listContactYourSingle = dataResult.data;
@@ -409,7 +406,7 @@ export class SendChatMessage extends libSupports {
         console.log('clickTaskContactChat');
     };
 
-    clickListContactContentChat = function (socket) {
+    clickListContactContentChat = function (socket, callback) {
         var that = this;
         $('body').on('click', '#contacts li.contact', function () {
             // $('li.contact').removeClass('active');
@@ -436,6 +433,8 @@ export class SendChatMessage extends libSupports {
                         socket.emit('msgContentChat', dataRequest);
                         that.getDefaultHeightMsgBox();
                     }
+                    let isSingle = dataResult.hasOwnProperty('isTypeSingle') ? dataResult.isTypeSingle : null;
+                    callback({isDataFriend: dataResult.isFriendCurrentSingle, isSingle: isSingle});
                 });
             });
         });

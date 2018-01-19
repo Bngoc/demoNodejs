@@ -2,7 +2,7 @@
 declare var require: any;
 declare var $: any;
 import {Component, ViewEncapsulation, OnInit, OnDestroy} from '@angular/core';
-import {ApiServiceChat} from './../../services/api-chat.sevice'
+import {ApiServiceChat} from '../../services/api-chat.service'
 import * as io from 'socket.io-client';
 import {Subscription} from 'rxjs/Subscription';
 import {libSupports} from "../../../common/libSupports";
@@ -19,42 +19,26 @@ import {isBoolean} from "util";
 })
 export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     private url;
-    private socket;
     private sendChatMessage: any;
     error: any;
     resultData: any = {};
     rsData: Subscription;
     // listContactYourSingleAction: any = [];
     // listContactYourSingle: any = [];
-    dataFriend: any;
-    isSingle: any;
+    isDataFriend: any = false;
+    isSingle: any = false;
     remainTime: number;
+    socket: any;
+
 
     constructor(private apiServiceChat: ApiServiceChat) {
         super();
         this.url = this.urlSide();
-        let rsData = this.apiServiceChat
-            .getIndexChat()
-            .subscribe(resp => {
-                if (resp.err == '' && resp.code == null) {
-                    this.resultData = resp.data;
-                    let dataFriend = resp.data.listStatus;
-
-                    let listContact = new ListContacts();
-                    listContact.showContactListAll(JSON.parse(resp.data.dataContactList));
-
-                    let sendChatMessage = new SendChatMessage();
-                    sendChatMessage.eventClickSend(this.socket, dataFriend);
-                    sendChatMessage.eventEnterSend(this.socket, dataFriend);
-                }
-            }, err => this.error = err);
     }
 
     ngOnInit() {
         this.remainTime = (0.4 * 60 * 1000);
-
-        this.socket = io(this.url);
-
+        this.sendChatMessage = new SendChatMessage();
         this.loadCss([
             // 'css/chat.custom.css',
             'css/chat.test.css',
@@ -69,58 +53,83 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
             // 'js/socket/client.js',
             'js/socket/chat.js'
         ]);
+        let self = this;
+        let rsData = this.apiServiceChat
+            .getIndexChat()
+            .subscribe(resp => {
+                if (resp.err == '' && resp.code == null) {
+                    this.resultData = resp.data;
+                    let dataFriend = resp.data.listStatus;
 
-        this.sendChatMessage = new SendChatMessage();
+                    let listContact = new ListContacts();
+                    listContact.showContactListAll(JSON.parse(resp.data.dataContactList));
 
-        this.sendChatMessage.getDefaultHeightMsgBox();
-        this.sendChatMessage.eventClickNotifyBoxMsg();
-        // this.sendChatMessage.eventClickSend(this.socket, this.dataFriend);
-        // this.sendChatMessage.eventEnterSend(this.socket, this.dataFriend);
-        this.sendChatMessage.clickContactContentChat(this.socket);
-        this.sendChatMessage.clickListContactContentChat(this.socket);
-        this.sendChatMessage.scrollListener(this.socket);
-        this.sendChatMessage.clickRightContactContentChat();
-        this.sendChatMessage.clickContactAdd();
-        this.sendChatMessage.clickContactSub();
-        this.sendChatMessage.clickContactSearchSingle();
-        this.sendChatMessage.clickActContactConversation(this.socket);
-        this.sendChatMessage.clickSearchContact(this.remainTime);
-        this.sendChatMessage.getListContact();
+                    // let sendChatMessage = new SendChatMessage();
+                    // this.sendChatMessage.eventClickSend(socket, dataFriend);
+                    // this.sendChatMessage.eventEnterSend(socket, dataFriend);
+                    let socket = io(this.url);
+                    this.socket = socket;
 
-        // socket.on('pong', (data) => {
-        //     console.log('Receive "pong"', data);
-        // });
+                    this.sendChatMessage.getDefaultHeightMsgBox();
+                    this.sendChatMessage.eventClickNotifyBoxMsg();
 
-        this.socket.on('expiresTime60', (str) => {
-            console.log('-----------------------', str);
-        });
+                    this.sendChatMessage.clickContactContentChat(socket);
+                    this.sendChatMessage.clickListContactContentChat(socket, function (resultCallback) {
+                        if (resultCallback.isDataFriend === true) {
+                            self.isDataFriend = true;
+                            self.sendChatMessage.eventClickSend(socket, self.isDataFriend);
+                            self.sendChatMessage.eventEnterSend(socket, self.isDataFriend);
+                        }
+                        if (resultCallback.isSingle !== null) {
+                            self.isSingle = true;
+                            self.sendChatMessage.clickActContactConversation(socket, self.isSingle);
+                        }
+                    });
+                    this.sendChatMessage.scrollListener(socket);
+                    this.sendChatMessage.clickRightContactContentChat();
+                    this.sendChatMessage.clickContactAdd();
+                    this.sendChatMessage.clickContactSub();
+                    this.sendChatMessage.clickContactSearchSingle();
 
-        // socket.emit('ping', "xxxx");
+                    this.sendChatMessage.clickSearchContact(this.remainTime);
+                    this.sendChatMessage.getListContact();
 
-        this.socket.on('message', function (message) {
-            $('#showmsg').text('The server has a message for you: ' + message);
-        });
 
-        // let s60 = 15000;
-        //
-        // setInterval(function () {
-        //     socket.emit('pingServer', {isCheck: true, ttl: 3000});
-        // }, s60);
+                    // socket.on('pong', (data) => {
+                    //     console.log('Receive "pong"', data);
+                    // });
 
-        this.reload();
+                    socket.on('expiresTime60', (str) => {
+                        console.log('-----------------------', str);
+                    });
 
-        this.sendDataPrivate();
+                    // socket.emit('ping', "xxxx");
 
-        this.sendDataBroadCast();
+                    socket.on('message', function (message) {
+                        $('#showmsg').text('The server has a message for you: ' + message);
+                    });
 
-        this.listUserConversation();
+                    // let s60 = 15000;
+                    //
+                    // setInterval(function () {
+                    //     socket.emit('pingServer', {isCheck: true, ttl: 3000});
+                    // }, s60);
 
-        this.sendDataTest();
+                    this.reload(socket);
+                    this.sendDataPrivate(socket);
+                    this.sendDataBroadCast(socket);
+                    this.listUserConversation(socket);
+                    this.sendDataTest(socket);
+                    this.msgContent(socket);
 
-        this.msgContent();
-
-        //C1 CLICK-STRATUS - bo click in template chat
-        // this.sendChatMessage.eventChangeStatusUser(this.socket);
+                    //C1 CLICK-STRATUS - bo click in template chat
+                    // this.sendChatMessage.eventChangeStatusUser(socket);
+                }
+            }, err => {
+                this.error = err;
+                // window.location.href = this.error.handleError.url;
+                console.log('11111111111111111111111111111111111111111111', err);
+            });
     }
 
     //C2 CLICK-STRATUS -
@@ -138,16 +147,16 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         return obj ? Object.keys(obj) : null;
     }
 
-    reload() {
+    reload(socket) {
         let that = this;
-        this.socket.on('reload', function (data) {
+        socket.on('reload', function (data) {
             location.reload();
         });
     }
 
-    sendDataPrivate() {
+    sendDataPrivate(socket) {
         let that = this;
-        this.socket.on('sendDataPrivate', function (messageReplies) {
+        socket.on('sendDataPrivate', function (messageReplies) {
             let sendChatMessage = new SendChatMessage();
             let tempHtml = sendChatMessage.htmlContentBoxChat(messageReplies);
             sendChatMessage.scrollEndShowBoxChat(1000);
@@ -155,9 +164,9 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         });
     }
 
-    sendDataBroadCast() {
+    sendDataBroadCast(socket) {
         let that = this;
-        this.socket.on('sendDataBroadCast', function (messageSent) {
+        socket.on('sendDataBroadCast', function (messageSent) {
             let searchDomChannel = $('[channel="status.' + messageSent.channelId + '"]');
             if (searchDomChannel.closest('li').hasClass('active')) {
                 let sendChatMessage = new SendChatMessage();
@@ -178,24 +187,23 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         });
     }
 
-    listUserConversation() {
+    listUserConversation(socket) {
         let that = this;
-        this.socket.on('listUserConversation', function (listConversation) {
+        socket.on('listUserConversation', function (listConversation) {
             $('[channel="status.' + listConversation.channel_id + '"]').removeClass(listConversation.listStatus).addClass(listConversation.classCurrentStatus);
         });
     }
 
-    sendDataTest() {
+    sendDataTest(socket) {
         let that = this;
-        this.socket.on('send-data-test', function (listConversation) {
+        socket.on('send-data-test', function (listConversation) {
             console.log(listConversation);
         });
     }
 
-    msgContent() {
-        let that = this;
+    msgContent(socket) {
         var sendChatMessage = new SendChatMessage();
-        that.socket.on('msgContent', function (dataMessage) {
+        socket.on('msgContent', function (dataMessage) {
 
             sendChatMessage.activeListContact(dataMessage.channelId);
 

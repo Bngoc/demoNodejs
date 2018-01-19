@@ -109,13 +109,14 @@ export class ListContacts extends libSupports {
         let listParticipant = {};
         let tempAuthorId = [];
         let tempNameAuthorId = [];
+        let that = this;
         $('.name-contact[data-act-freind]').each(function (index, element) {
             let authorId = $(element).attr('data-act-freind');
             let nameAuthorId = $(element).find('.name-act')[0].childNodes[0].nodeValue;
 
             if (typeof authorId !== typeof isUndefined && authorId !== false) {
                 tempAuthorId.push(parseInt(authorId));
-                tempNameAuthorId.push(this.ucfirst(nameAuthorId));
+                tempNameAuthorId.push(that.ucfirst(nameAuthorId));
             }
         });
 
@@ -147,7 +148,7 @@ export class ListContacts extends libSupports {
             + 'class="list-icon-status contact-status ' + (element.is_accept_single ? option.cfgChat.cfg_chat.class_undefined : (element.is_life && classStatusPart) ? classStatusPart : "") + '"></span>'
             + '<img src="' + (element.path_img ? element.path_img : `assets/${option.cfgChat.cfg_chat.img_single_user}`) + '" alt=""/>'
             + '<div class="meta">'
-            + '<span class="name-notify"><p class="name" data-conversation-name="' + element.middle_name + '">' + ((element.textSearch != isUndefined ? element.textSearch : element.middle_name ? element.middle_name : "&nbsp;")) + ' </p><i class="badges-notify">132</i></span>'
+            + '<span class="name-notify"><p class="name" data-conversation-name="' + element.middle_name + '">' + (element.hasOwnProperty('textSearch') ? element.textSearch : (element.middle_name ? element.middle_name : "&nbsp;")) + ' </p><i class="badges-notify">132</i></span>'
             + '<p class="preview mood_message">' + (element.mood_message ? element.mood_message : "") + ' </p>'
             + '</div>'
             + '</div>'
@@ -163,7 +164,7 @@ export class ListContacts extends libSupports {
             + '<span channel="status.' + element.channel_id + '" class=""></span>'
             + '<img src="' + (element.path_img_group ? element.path_img_group : `assets/${option.cfgChat.cfg_chat.img_group_user}`) + '" alt=""/>'
             + '<div class="meta">'
-            + '<span class="name-notify"><p class="name" data-conversation-name="' + element.title + '">' + (element.textSearch != isUndefined ? element.textSearch : element.title) + ' </p><i class="badges-notify">132</i></span>'
+            + '<span class="name-notify"><p class="name" data-conversation-name="' + element.title + '">' + (element.hasOwnProperty('textSearch') ? element.textSearch : element.title) + '</p><i class="badges-notify">132</i></span>'
             + '<p class="preview"> ' + element.count + '  participants</p>'
             + '</div>'
             + '</div>'

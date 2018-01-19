@@ -401,7 +401,6 @@ class ChatController extends BaseController {
 
     getIndexAngular(req, res, next) {
         let supportApiIndexChat = supportApi;
-
         try {
             var showResponse = {};
             const aliasRouter = helper.coreHelper.aliasRouter();
@@ -451,7 +450,6 @@ class ChatController extends BaseController {
                     };
                     showResponse.dataContactList = JSON.stringify(libFunction.renderContactListAll(rsData.infoParticipant, option), true);
                     supportApiIndexChat.data = showResponse;
-
                     res.status(200).send(supportApiIndexChat);
                 });
             } else {

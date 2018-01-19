@@ -8,11 +8,12 @@ import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/catch';
 import {catchError} from 'rxjs/operators';
 import {HttpHeaders} from "@angular/common/http";
+import {tap} from "rxjs/operators/tap";
+
 
 @Injectable()
 
 export class ApiServiceChat {
-    optionsHeader: any;
     headers: any;
 
     constructor(private httpClient: HttpClient) {
@@ -28,9 +29,11 @@ export class ApiServiceChat {
 
     getIndexChat() {
         return this.httpClient
-        // .get('/api/chat', {headers: this.headers})
             .get('/api/chat', {headers: this.headers})
-            .pipe(catchError(this.handleError));
+            .pipe(
+                tap(data => data),
+                catchError(this.handleError)
+            );
     }
 
     hack(myObj) {
@@ -47,6 +50,16 @@ export class ApiServiceChat {
     // Implement a method to handle errors if any
     private handleError(err: HttpErrorResponse | any) {
         console.error('An error occurred', err);
-        return Observable.throw(err.message || err);
+        // let cutsError = {
+        //     statusText: err.statusText,
+        //     message: err.message,
+        //     status: err.status,
+        //     url: err.error.url,
+        // };
+        if (err.hasOwnProperty('error')) {
+            window.location.href = err.error.url;
+        }
+        // return {handleError: cutsError};
+        return Observable.throw(err);
     }
 }

@@ -36,7 +36,7 @@ export class LoginComponent extends libSupports implements OnInit {
                 if (result.status) {
                     // AuthToken
                     localStorage.setItem('idToken', result.token);
-                    window.location.href = result.url;
+                    window.location.replace(document.location.origin + result.url);
                 } else {
                     if (result.msg.length)
                         $('#message').html(_this.cnMessagesShow([result.msg], 'e'));

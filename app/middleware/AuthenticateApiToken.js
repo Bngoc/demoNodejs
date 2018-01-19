@@ -10,10 +10,7 @@ class AuthenticateToken {
                 let token = req.headers.authorization.split(" ")[1];
                 jwt.verify(token, req.secret, (err, decoded) => {
                     if (err) {
-                        console.log('verifyToken API => ', err, decoded);
-                        // res.redirect('/');
-                        // res.status(401).send('login');
-                        res.sendStatus(401);
+                        res.status(401).send({url: 'login'});
                     } else {
                         return next();
                     }
@@ -21,8 +18,6 @@ class AuthenticateToken {
             }
         } catch (ex) {
             res.sendStatus(401);
-            // res.redirect('/');
-            // res.status(401).send('I need login');
         }
     }
 }

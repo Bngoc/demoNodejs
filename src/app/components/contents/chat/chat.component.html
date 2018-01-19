@@ -21,8 +21,8 @@
                 <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
                 <div id="status-options">
                     <ul>
-                        <li *ngFor="let items of (resultData.listStatus | cutsKeys)"
-                            (click)="ngClickChangeStatusUser($event, items.key)" id="status-{{items.value}}"
+                        <li *ngFor="let items of (resultData.listStatus | cutsKeys)" id="status-{{items.value}}"
+                            (click)="ngClickChangeStatusUser($event, items.key)"
                             [attr.status]="items.value" [attr.data-value]="items.key"
                             class="channel-status{{items.value == resultData.status ? ' active': ''}}">
                             <span class="status-circle"></span>
@@ -69,7 +69,7 @@
 <!--});-->
 <!--</script>-->
 
-<nav id="context-menu" class="context-menu">
+<nav id="context-menu" class="context-menu" style="display: none">
     <ul class="context-menu__items">
         <li class="context-menu__item">
             <a href="#" class="context-menu__link" data-action="view"><i class="fa fa-eye"></i> View Task</a>
