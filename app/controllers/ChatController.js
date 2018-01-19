@@ -450,7 +450,6 @@ class ChatController extends BaseController {
                         cfg_chat: helper.coreHelper.app
                     };
                     showResponse.dataContactList = JSON.stringify(libFunction.renderContactListAll(rsData.infoParticipant, option), true);
-
                     supportApiIndexChat.data = showResponse;
 
                     res.status(200).send(supportApiIndexChat);

@@ -9,8 +9,8 @@ class AuthenticateToken {
             if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
                 let token = req.headers.authorization.split(" ")[1];
                 jwt.verify(token, req.secret, (err, decoded) => {
-                    // console.log(err, decoded);
                     if (err) {
+                        console.log('verifyToken API => ', err, decoded);
                         // res.redirect('/');
                         // res.status(401).send('login');
                         res.sendStatus(401);

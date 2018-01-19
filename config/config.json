@@ -8,7 +8,7 @@
     "family": "IPv4",
     "ssl": false,
     "secure": false,
-    "changeOrigin": false
+    "changeOrigin": true
   },
   "APP_ENV": "local",
   "APP_DEBUG": false,

@@ -18,8 +18,9 @@ export class ApiServiceChat {
     constructor(private httpClient: HttpClient) {
         this.headers = new HttpHeaders()
             .set("Content-type", "application/x-www-form-urlencoded")
+            .set("Access-Control-Allow-Credentials", "true")
             .set("Authorization", ('Bearer ' + localStorage.getItem('idToken')))
-            .set("credentials", 'omit');
+            .set("credentials", 'same-origin');
 
         //https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials
         //CHANGE SESSION IN SERVER NODEIJ  "credentials": 'include' | 'same-origin' | 'omit',

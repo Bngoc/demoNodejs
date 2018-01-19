@@ -106,7 +106,7 @@ export abstract class libSupports {
                 "Content-type": "application/x-www-form-urlencoded",
                 "Access-Control-Allow-Credentials": true,
                 "withCredentials": true,
-                "credentials": 'omit',
+                "credentials": 'same-origin',
             },
             url: dataRequest.url,
             data: dataRequest.data,
