@@ -2,7 +2,6 @@
 
 const jwt = require('jsonwebtoken');
 
-
 class AuthenticateToken {
     verifyToken(req, res, next) {
         try {
@@ -10,13 +9,17 @@ class AuthenticateToken {
                 let token = req.headers.authorization.split(" ")[1];
                 jwt.verify(token, req.secret, (err, decoded) => {
                     if (err) {
-                        res.status(401).send({url: 'login'});
+                        req.session.destroy();
+                        req.logOut();
+                        res.status(401).send({url: '/login'});
                     } else {
                         return next();
                     }
                 });
             }
         } catch (ex) {
+            req.session.destroy();
+            req.logOut();
             res.sendStatus(401);
         }
     }

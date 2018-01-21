@@ -5,6 +5,8 @@ class AuthenticateAngular {
         if (req.isAuthenticated())
             return next();
 
+        req.session.destroy();
+        req.logOut();
         res.status(401).send({url: '/login'});
     }
 
@@ -12,7 +14,13 @@ class AuthenticateAngular {
         if (!req.isAuthenticated())
             return next();
 
-        res.status(401).send({url: '/'});
+        if (req.headers.authorization.split(" ")[1] === undefined) {
+            req.session.destroy();
+            req.logOut();
+            res.sendStatus(401);
+        } else {
+            res.status(401).send({url: '/'});
+        }
     }
 }
 

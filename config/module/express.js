@@ -12,13 +12,11 @@ const methodOverride = require('method-override');
 const express = require('express');
 const i18n = require('i18n');
 const expressValidator = require('express-validator');
-
 const errorhandler = require('errorhandler');
 const favicon = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
-
 const sharedSession = require("express-socket.io-session");
 const socketIo = require('socket.io');
 const sessionStore = new session.MemoryStore();
@@ -35,7 +33,7 @@ class Express {
         app.engine('html', ejs.renderFile);
         app.set('views', coreHelper.paths.VIEWS);
         app.set('layout', 'layouts/master');
-        // Set True NOT use elemment CSS SCRIPT ... response.render()
+        // Set True NOT use element CSS SCRIPT ... response.render()
         app.set("layout extractScripts", false);
         app.set("layout extractStyles", false);
         app.set("layout extractMetas", true);
@@ -84,7 +82,7 @@ class Express {
             }
         }));
 
-        // public folfer public
+        // public folder public
         app.use(express.static(coreHelper.paths.PUBLIC));
 
         app.use(errorhandler());
@@ -99,7 +97,6 @@ class Express {
     }
 
     //https secure: true,
-
     configSession(app, coreHelper) {
         let sessionConfig = session({
             secret: coreHelper.sampleConfig.APP_SECRET,
@@ -110,7 +107,7 @@ class Express {
             cookie: {
                 secure: coreHelper.sampleConfig.domain.ssl,
                 httpOnly: true,
-                maxAge: (3600000 * 24) * 1, // * day
+                maxAge: coreHelper.sampleConfig.domain.maxAge * 1000,
             }
         });
         app.use(cookieParser(coreHelper.sampleConfig.APP_SECRET));

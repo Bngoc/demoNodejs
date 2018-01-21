@@ -1,4 +1,5 @@
 'use strict';
+
 declare var require: any;
 declare var $: any;
 import {Component, ViewEncapsulation, OnInit, OnDestroy} from '@angular/core';
@@ -10,6 +11,8 @@ import {ListContacts} from "../../../common/chat/supports/ListContacts";
 import {SendChatMessage} from "../../../common/chat/sokets/SendChatMessage";
 import {LibCommonChat} from "../../../common/chat/supports/LibCommonChat";
 import {isBoolean} from "util";
+import {Router} from '@angular/router';
+
 
 @Component({
     selector: 'app-contents-chat',
@@ -29,14 +32,15 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     isSingle: any = false;
     remainTime: number;
     socket: any;
+    messageError: any;
 
-
-    constructor(private apiServiceChat: ApiServiceChat) {
+    constructor(private apiServiceChat: ApiServiceChat, private router: Router) {
         super();
         this.url = this.urlSide();
     }
 
     ngOnInit() {
+
         this.remainTime = (0.4 * 60 * 1000);
         this.sendChatMessage = new SendChatMessage();
         this.loadCss([
@@ -127,8 +131,16 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
                 }
             }, err => {
                 this.error = err;
+                console.log(this.error);
                 // window.location.href = this.error.handleError.url;
                 console.log('11111111111111111111111111111111111111111111', err);
+                if (err.error.hasOwnProperty('url')) {
+                    window.location.href = err.error.url;
+                } else {
+                    // this.router.navigate([`error/${err.status}`]);
+                    //     // window.location.href = `error/${err.status}`;
+                    self.messageError = JSON.stringify(err);
+                }
             });
     }
 

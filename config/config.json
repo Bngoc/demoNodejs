@@ -8,7 +8,8 @@
     "family": "IPv4",
     "ssl": false,
     "secure": false,
-    "changeOrigin": true
+    "changeOrigin": true,
+    "maxAge": 86400
   },
   "APP_SECRET": "{mySecretRequired}",
   "APP_KEY": "express.sid",

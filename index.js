@@ -1,7 +1,5 @@
 'use strict';
 
-const express = require('express');
-
 var CoreHelper = require('./config/CoreHelper.js');
 var callCoreHelper = new CoreHelper();
 
