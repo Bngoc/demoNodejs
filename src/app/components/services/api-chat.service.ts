@@ -5,6 +5,7 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Http, Response, Headers} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/throw';
 import 'rxjs/add/operator/catch';
 import {catchError} from 'rxjs/operators';
 import {HttpHeaders} from "@angular/common/http";
@@ -48,18 +49,7 @@ export class ApiServiceChat {
     }
 
     // Implement a method to handle errors if any
-    private handleError(err: HttpErrorResponse | any) {
-        console.error('An error occurred', err);
-        // let cutsError = {
-        //     statusText: err.statusText,
-        //     message: err.message,
-        //     status: err.status,
-        //     url: err.error.url,
-        // };
-        if (err.hasOwnProperty('error')) {
-            window.location.href = err.error.url;
-        }
-        // return {handleError: cutsError};
+    public handleError(err: HttpErrorResponse | any) {
         return Observable.throw(err);
     }
 }

@@ -1,4 +1,5 @@
 'use strict';
+
 import {isUndefined} from "util";
 import {libSupports} from "../../libSupports";
 import {isFunction} from "util";

@@ -162,7 +162,6 @@ export class ShowContentChat {
         return htmlActionContentChat;
     }
 
-
     htmlActionMenuContentChat() {
         let htmlMenu = '<div id="menu">'
             + '<a href="#"><img src="http://puu.sh/nr60s/42df867bf3.png"/> AdBlock Plus <span>Ctrl + ?!</span></a>'
@@ -180,15 +179,5 @@ export class ShowContentChat {
             + this.htmlBoxContentChat(dataResult)
             + this.htmlActionContentChat(dataResult)
             + this.htmlActionMenuContentChat();
-
-    }
-
-    isRequestFriend() {
-    }
-
-    isResponseFriend() {
-    }
-
-    isAcceptFriend() {
     }
 }

@@ -7,7 +7,7 @@ import {Component, ViewEncapsulation, OnInit} from '@angular/core';
     encapsulation: ViewEncapsulation.None
 })
 export class ContentsComponent implements OnInit {
-
+    messageError: any;
     constructor() {
     }
 

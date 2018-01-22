@@ -79,7 +79,7 @@ class Routers {
         let useAuthenticateApiToken = coreHelper.callModule(`${coreHelper.paths.MIDDLEWARE}AuthenticateApiToken.js`, true);
 
         app.post("/api/login", 'api.login', [useMiddlewareAngular.authenticatedRegister], userController.postLoginAngular);
-        app.get("/api/logout", 'api.logout', [useAuthenticateApiToken.verifyToken, useMiddlewareAngular.authenticatedRegister], userController.getLogoutAngular);
+        app.post("/api/logout", 'api.logout', [useAuthenticateApiToken.verifyToken], userController.getLogoutAngular);
 
         app.get('/api/as', 'user', homeController.getIndex1);
         app.get('/api/chat', 'api.chat.index', [useAuthenticateApiToken.verifyToken, useMiddlewareAngular.isAuthenticated], chatController.getIndexAngular);

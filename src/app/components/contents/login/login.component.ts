@@ -1,6 +1,9 @@
-// import {AuthToken} from "../../../services/token.service";
+'use strict';
+
+import {AuthService} from "../../../services/auth/auth.service";
 declare var $: any;
 import {Component, ViewEncapsulation, OnInit} from '@angular/core';
+import {Router, NavigationExtras} from '@angular/router';
 import {libSupports} from './../../../common/libSupports';
 
 @Component({
@@ -13,6 +16,10 @@ import {libSupports} from './../../../common/libSupports';
 export class LoginComponent extends libSupports implements OnInit {
     private urlLogin: any;
 
+    constructor(private authService: AuthService, private router: Router) {
+        super();
+    }
+
     ngOnInit() {
         this.urlLogin = 'api/login'
     }
@@ -23,25 +30,37 @@ export class LoginComponent extends libSupports implements OnInit {
             url: this.urlLogin,
             data: attrFromLogin.serialize()
         };
-        let _this = this;
+        let self = this;
 
+        // AuthService
         this.callDataJS(dataRequest, function (result) {
-            if (result) {
-                if (result.validate) {
-                    result.validate.forEach(function (val) {
-                        console.log(val);
-                        $('input[name="' + val.param + '"]').addClass('error');
-                    });
+            self.authService.login().subscribe(()=> {
+                localStorage.removeItem('idToken');
+                if (result) {
+                    if (result.validate) {
+                        result.validate.forEach(function (val) {
+                            console.log(val);
+                            $('input[name="' + val.param + '"]').addClass('error');
+                        });
+                    }
+                    if (result.status) {
+                        // AuthToken
+                        localStorage.setItem('idToken', result.token);
+
+                        let navigationExtras: NavigationExtras = {
+                            queryParamsHandling: 'preserve',
+                            preserveFragment: true
+                        };
+
+                        self.router.navigate([result.url], navigationExtras);
+                    } else {
+                        if (result.msg.length)
+                            $('#message').html(self.cnMessagesShow([result.msg], 'e'));
+                    }
+
                 }
-                if (result.status) {
-                    // AuthToken
-                    localStorage.setItem('idToken', result.token);
-                    window.location.replace(document.location.origin + result.url);
-                } else {
-                    if (result.msg.length)
-                        $('#message').html(_this.cnMessagesShow([result.msg], 'e'));
-                }
-            }
+            });
+
         });
     }
 }

@@ -632,17 +632,17 @@ export class SendChatMessage extends libSupports {
 
     hasClassJavaScript = function (elementJavaScript, className) {
         return elementJavaScript.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
-    }
+    };
 
     addClassJavaScript = function (elementJavaScript, className) {
         if (!this.hasClassJavaScript(elementJavaScript, className)) elementJavaScript.className += " " + className;
-    }
+    };
 
     removeClassJavaScript = function (elementJavaScript, className) {
         if (this.hasClassJavaScript(elementJavaScript, className)) {
             var reg = new RegExp('(\\s|^)' + elementJavaScript + '(\\s|$)');
             elementJavaScript.className = elementJavaScript.className.replace(reg, ' ');
         }
-    }
+    };
 }
 

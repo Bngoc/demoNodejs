@@ -1,4 +1,5 @@
 'use strict';
+
 import {isUndefined} from "util";
 import {libSupports} from "../../libSupports";
 import {ListContacts} from "./ListContacts";
@@ -110,6 +111,4 @@ export class LibCommonChat extends libSupports {
         let outerHeightParticipant = $("#group-participant").hasClass('display-show') ? $("#group-participant").outerHeight() : 0;
         return $(".content").outerHeight() - $(".contact-profile").outerHeight() - outerHeightParticipant - $("#messageInput").outerHeight() - 1;
     }
-
-
 }

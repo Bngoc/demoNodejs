@@ -93,7 +93,7 @@ class UserController {
         }
     }
 
-    // c1 login submit hmtl - user filter middleware
+    // c1 login submit html - user filter middleware
 
     // c2 login submit html - authenticate
     postLoginClone(req, res, next) {
@@ -200,7 +200,7 @@ class UserController {
                 res.status(200).send(responseDataMap);
             }
         } else {
-            res.status(500).send('Not use Jquery requset to server....!');
+            res.status(500).send('Not use Jquery request to server....!');
         }
     }
 
@@ -451,7 +451,7 @@ class UserController {
                 });
             }
         } else {
-            res.status(500).send('Not use Jquery requset to server....!')
+            res.status(500).send('Not use Jquery request to server....!')
         }
     }
 
@@ -510,7 +510,13 @@ class UserController {
                                             dataUpdate: {is_life: 1},
                                         };
                                         let newContacts = new Contacts.class();
-                                        let token = helper.coreHelper.createSignToken(helper.coreHelper.sampleConfig.APP_SECRET, dataRequest);
+                                        let dataRequestToken = {
+                                            data: {
+                                                users_id: user.id,
+                                            },
+                                            expiresIn: helper.coreHelper.sampleConfig.domain.maxAge
+                                        };
+                                        let token = helper.coreHelper.createSignToken(helper.coreHelper.sampleConfig.APP_SECRET, dataRequestToken);
                                         newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
                                             if (errUpdate) next(errUpdate);
 
@@ -556,7 +562,7 @@ class UserController {
                 res.status(200).send(responseDataMap);
             }
         } else {
-            res.status(500).send('Not use Jquery requset to server....!');
+            res.status(500).send('Not use Jquery request to server....!');
         }
     }
 

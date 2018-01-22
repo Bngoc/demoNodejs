@@ -15,16 +15,21 @@ import {PageErrorComponent} from "./errors/page-error/page-error.component";
 import {ApiServiceChat} from "../services/api-chat.service";
 import {KeysPipe} from "../../pipes/pipes-keys.pipe";
 import {LogoutComponent} from "./logout/logout.component";
+import {AuthGuard} from "../../services/auth/auth-guard.service";
+import {AuthService} from "../../services/auth/auth.service";
+import {CanDeactivateGuard} from "../../services/auth/can-deactivate-guard.service";
 
 
 const contentsRoutes: Routes = [
     {path: 'register', component: RegisterComponent, data: {title: 'Register'}, pathMatch: 'full'},
     {path: 'login', component: LoginComponent, data: {title: 'Login'}, pathMatch: 'full'},
     {path: 'logout', component: LogoutComponent, data: {title: 'Logout'}, pathMatch: 'full'},
-    {path: 'forgot', component: ForgotComponent, data: {title: 'Login'}, pathMatch: 'full'},
-    {path: 'chat', component: ChatComponent, data: {title: 'Home chat'}, pathMatch: 'full'},
+    {path: 'forgot', component: ForgotComponent, canLoad: [AuthGuard], data: {title: 'Login'}, pathMatch: 'full'},
+    {path: 'chat', component: ChatComponent, canActivate: [AuthGuard], data: {title: 'Home chat'}, pathMatch: 'full'},
     {path: 'home', component: HomeComponent, pathMatch: 'full'},
     {path: '', redirectTo: '/home', pathMatch: 'full'},
+    // {path: 'error', component: PageErrorComponent},
+    {path: 'error/:status', component: PageErrorComponent},
     {path: '**', component: Page404Component}
 ];
 
@@ -49,7 +54,12 @@ const contentsRoutes: Routes = [
     exports: [
         RouterModule
     ],
-    providers: [ApiServiceChat]
+    providers: [
+        ApiServiceChat,
+        AuthGuard,
+        AuthService,
+        CanDeactivateGuard
+    ]
 })
 export class ContentsRoutingModule {
 }
