@@ -31,11 +31,10 @@ export class LoginComponent extends libSupports implements OnInit {
             data: attrFromLogin.serialize()
         };
         let self = this;
-
+        localStorage.removeItem('idToken');
         // AuthService
         this.callDataJS(dataRequest, function (result) {
             self.authService.login().subscribe(()=> {
-                localStorage.removeItem('idToken');
                 if (result) {
                     if (result.validate) {
                         result.validate.forEach(function (val) {
@@ -60,7 +59,6 @@ export class LoginComponent extends libSupports implements OnInit {
 
                 }
             });
-
         });
     }
 }

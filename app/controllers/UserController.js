@@ -566,26 +566,27 @@ class UserController {
         }
     }
 
-    getLogoutAngular(req, res, next) {
+    postLogoutAngular(req, res, next) {
         if (req.session !== undefined) {
-            if (req.session.passport.user) {
-                var dataRequest = {
-                    clause: {users_id: req.session.passport.user},
-                    dataUpdate: {is_life: 0},
-                };
-                var newContacts = new Contacts.class();
-                newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
-                    if (errUpdate) next(errUpdate);
+            if (req.session.hasOwnProperty('passport')) {
+                if (req.session.passport.user) {
+                    var dataRequest = {
+                        clause: {users_id: req.session.passport.user},
+                        dataUpdate: {is_life: 0},
+                    };
+                    var newContacts = new Contacts.class();
+                    newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
+                        if (errUpdate) next(errUpdate);
 
-                    req.session.destroy();
-                    req.logOut();
-                    res.redirect('/login');
-                });
+                        req.session.destroy();
+                        req.logOut();
+                        res.status(200).send(['/login']);
+                    });
+                }
             }
+        } else {
+            res.status(200).send(['/login']);
         }
-        // else {
-        res.redirect('/login');
-        // }
     }
 }
 

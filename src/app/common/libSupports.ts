@@ -126,8 +126,10 @@ export abstract class libSupports {
                     msg = 'Requested page not found. [404]';
                 } else if (jqXHR.status == 401) {
                     msg = 'Login Failed. [401]';
-                    if (jqXHR.responseJSON.hasOwnProperty('url')) {
-                        window.location.href = jqXHR.responseJSON.url;
+                    if (jqXHR.responseJSON !== isUndefined) {
+                        if (jqXHR.responseJSON.hasOwnProperty('url')) {
+                            window.location.href = jqXHR.responseJSON.url;
+                        }
                     }
                 } else if (jqXHR.status == 500) {
                     msg = 'Internal Server Error [500].';

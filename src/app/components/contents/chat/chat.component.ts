@@ -26,8 +26,6 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     error: any;
     resultData: any = {};
     rsData: Subscription;
-    // listContactYourSingleAction: any = [];
-    // listContactYourSingle: any = [];
     isDataFriend: any = false;
     isSingle: any = false;
     remainTime: number;
@@ -41,7 +39,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
     ngOnInit() {
 
-        this.remainTime = (0.4 * 60 * 1000);
+        this.remainTime = (0.3 * 60 * 1000);
         this.sendChatMessage = new SendChatMessage();
         this.loadCss([
             // 'css/chat.custom.css',
@@ -153,11 +151,11 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         this.sendChatMessage.getDefaultHeightMsgBox();
         // let libcCommonChat = new LibCommonChat();
         // $("#frameListMsg").animate({scrollTop: libcCommonChat.getMinHeightFrameListMsg()}, 500);
-    }
+    };
 
     keys(obj): Array<string> {
         return obj ? Object.keys(obj) : null;
-    }
+    };
 
     reload(socket) {
         let that = this;
@@ -174,7 +172,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
             sendChatMessage.scrollEndShowBoxChat(1000);
             // $('#frameListMsg').trigger('changeBoxMsg');
         });
-    }
+    };
 
     sendDataBroadCast(socket) {
         let that = this;
@@ -197,21 +195,21 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
                 }
             }
         });
-    }
+    };
 
     listUserConversation(socket) {
         let that = this;
         socket.on('listUserConversation', function (listConversation) {
             $('[channel="status.' + listConversation.channel_id + '"]').removeClass(listConversation.listStatus).addClass(listConversation.classCurrentStatus);
         });
-    }
+    };
 
     sendDataTest(socket) {
         let that = this;
         socket.on('send-data-test', function (listConversation) {
             console.log(listConversation);
         });
-    }
+    };
 
     msgContent(socket) {
         var sendChatMessage = new SendChatMessage();
@@ -233,9 +231,9 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
             }
         });
-    }
+    };
 
     ngOnDestroy() {
         this.rsData.unsubscribe();
-    }
+    };
 }

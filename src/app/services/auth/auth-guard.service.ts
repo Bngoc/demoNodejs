@@ -1,11 +1,15 @@
+'use strict';
+
 import {Injectable}       from '@angular/core';
 import {
-    CanActivate, Router,
+    CanActivate,
+    Router,
     ActivatedRouteSnapshot,
     RouterStateSnapshot,
     CanActivateChild,
     NavigationExtras,
-    CanLoad, Route
+    CanLoad,
+    Route
 }                           from '@angular/router';
 import {AuthService} from "./auth.service";
 

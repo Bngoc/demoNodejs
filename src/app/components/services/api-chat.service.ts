@@ -1,39 +1,29 @@
 'use strict';
 
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Http, Response, Headers} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/throw';
 import 'rxjs/add/operator/catch';
 import {catchError} from 'rxjs/operators';
-import {HttpHeaders} from "@angular/common/http";
 import {tap} from "rxjs/operators/tap";
+import {CustomsHttpClient} from "../../common/CustomsHttpClient";
 
 
 @Injectable()
 
 export class ApiServiceChat {
-    headers: any;
 
-    constructor(private httpClient: HttpClient) {
-        this.headers = new HttpHeaders()
-            .set("Content-type", "application/x-www-form-urlencoded")
-            .set("Access-Control-Allow-Credentials", "true")
-            .set("Authorization", ('Bearer ' + localStorage.getItem('idToken')))
-            .set("credentials", 'same-origin');
-
-        //https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials
-        //CHANGE SESSION IN SERVER NODEIJ  "credentials": 'include' | 'same-origin' | 'omit',
+    constructor(private httpClient: HttpClient, private customsHttpClient: CustomsHttpClient) {
     }
 
     getIndexChat() {
         return this.httpClient
-            .get('/api/chat', {headers: this.headers})
+            .get('/api/chat', {headers: this.customsHttpClient.setHeader()})
             .pipe(
                 tap(data => data),
-                catchError(this.handleError)
+                catchError(this.customsHttpClient.handleError)
             );
     }
 
@@ -46,10 +36,5 @@ export class ApiServiceChat {
     // Create a shared method that shows an alert when someone buys a deal
     purchase(item) {
         alert(`You bought the: ${item}`);
-    }
-
-    // Implement a method to handle errors if any
-    public handleError(err: HttpErrorResponse | any) {
-        return Observable.throw(err);
     }
 }

@@ -18,11 +18,26 @@ import {LogoutComponent} from "./logout/logout.component";
 import {AuthGuard} from "../../services/auth/auth-guard.service";
 import {AuthService} from "../../services/auth/auth.service";
 import {CanDeactivateGuard} from "../../services/auth/can-deactivate-guard.service";
+import {RoleLoginGuardService} from "../../services/auth/role-login-guard.service";
+import {CustomsHttpClient} from "../../common/CustomsHttpClient";
+import {ApiServiceUser} from "../services/api-user.service";
 
 
 const contentsRoutes: Routes = [
-    {path: 'register', component: RegisterComponent, data: {title: 'Register'}, pathMatch: 'full'},
-    {path: 'login', component: LoginComponent, data: {title: 'Login'}, pathMatch: 'full'},
+    {
+        path: 'register',
+        component: RegisterComponent,
+        canActivate: [RoleLoginGuardService],
+        data: {title: 'Register'},
+        pathMatch: 'full'
+    },
+    {
+        path: 'login',
+        component: LoginComponent,
+        canActivate: [RoleLoginGuardService],
+        data: {title: 'Login'},
+        pathMatch: 'full'
+    },
     {path: 'logout', component: LogoutComponent, data: {title: 'Logout'}, pathMatch: 'full'},
     {path: 'forgot', component: ForgotComponent, canLoad: [AuthGuard], data: {title: 'Login'}, pathMatch: 'full'},
     {path: 'chat', component: ChatComponent, canActivate: [AuthGuard], data: {title: 'Home chat'}, pathMatch: 'full'},
@@ -58,7 +73,10 @@ const contentsRoutes: Routes = [
         ApiServiceChat,
         AuthGuard,
         AuthService,
-        CanDeactivateGuard
+        CanDeactivateGuard,
+        RoleLoginGuardService,
+        CustomsHttpClient,
+        ApiServiceUser
     ]
 })
 export class ContentsRoutingModule {
