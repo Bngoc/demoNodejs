@@ -125,6 +125,7 @@ export abstract class libSupports {
                 } else if (jqXHR.status == 404) {
                     msg = 'Requested page not found. [404]';
                 } else if (jqXHR.status == 401) {
+                    localStorage.removeItem('idToken');
                     msg = 'Login Failed. [401]';
                     if (jqXHR.responseJSON !== isUndefined) {
                         if (jqXHR.responseJSON.hasOwnProperty('url')) {

@@ -17,7 +17,7 @@ class AuthenticateAngular {
         if (req.headers.authorization.split(" ")[1] === undefined) {
             req.session.destroy();
             req.logOut();
-            res.sendStatus(401);
+            res.status(401).send({url: '/login'});
         } else {
             res.status(401).send({url: '/'});
         }

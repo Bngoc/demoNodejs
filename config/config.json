@@ -9,7 +9,7 @@
     "ssl": false,
     "secure": false,
     "changeOrigin": true,
-    "maxAge": 90
+    "maxAge": 900
   },
   "APP_SECRET": "{mySecretRequired}",
   "APP_KEY": "express.sid",
