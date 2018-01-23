@@ -12,7 +12,7 @@
                     <span class="btn-status-use {{resultData.classStatusCurrent}}" id="user-status-current"
                           title="Change status"></span>
                     <img id="profile-img" [attr.user-code-id]="resultData.userID"
-                         src="assets{{resultData.pathImgCurrent}}"
+                         src="{{resultData.pathImgCurrent ? 'assets' + resultData.pathImgCurrent : ''}}"
                          class="{{resultData.classStatusCurrent}}" alt="your profile" title="your profile">
                 </div>
                 <div class="info-current">
@@ -57,18 +57,6 @@
 
     <div class="content" id="content-chat"></div>
 </div>
-
-<!--<script type="text/javascript">-->
-<!--$(document).ready(function () {-->
-
-<!--window.listContacts = {};-->
-<!--let dataContactList = JSON.parse('<%- resultData.dataContactList %>');-->
-
-<!--console.log(dataContactList);-->
-<!--let listContact = new listContacts();-->
-<!--listContact.showContactListAll(dataContactList);-->
-<!--});-->
-<!--</script>-->
 
 <nav id="context-menu" class="context-menu" style="display: none">
     <ul class="context-menu__items">

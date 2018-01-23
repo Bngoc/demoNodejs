@@ -12,6 +12,7 @@ import {SendChatMessage} from "../../../common/chat/sokets/SendChatMessage";
 import {LibCommonChat} from "../../../common/chat/supports/LibCommonChat";
 import {isBoolean} from "util";
 import {Router} from '@angular/router';
+import {MenuInfoChat} from "../../../common/chat/supports/MenuInfoChat";
 
 
 @Component({
@@ -23,6 +24,7 @@ import {Router} from '@angular/router';
 export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     private url;
     private sendChatMessage: any;
+    private menuInfoChat: any;
     error: any;
     resultData: any = {};
     rsData: Subscription;
@@ -41,6 +43,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
         this.remainTime = (0.3 * 60 * 1000);
         this.sendChatMessage = new SendChatMessage();
+        this.menuInfoChat = new MenuInfoChat();
         this.loadCss([
             // 'css/chat.custom.css',
             'css/chat.test.css',
@@ -89,6 +92,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
                         self.sendChatMessage.scrollListener(socket);
                         self.sendChatMessage.scrollContentChat();
+                        self.menuInfoChat.runInit();
                     });
                     this.sendChatMessage.clickRightContactContentChat();
                     this.sendChatMessage.clickContactAdd();
