@@ -442,6 +442,7 @@ class ChatController extends BaseController {
                     showResponse.listStatus = chatStatus;
                     showResponse.urlChangeContent = aliasRouter.build('api.chat.content.chat');
                     showResponse.urlListContact = aliasRouter.build('api.chat.list.contact');
+                    showResponse.pathImgCurrent = notiContacts.get('path_img') ? notiContacts.get('path_img') : cfgChat.img_single_user;
 
                     let option = {
                         isSearch: false,

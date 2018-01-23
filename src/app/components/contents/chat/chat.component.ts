@@ -86,13 +86,14 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
                             self.isSingle = true;
                             self.sendChatMessage.clickActContactConversation(socket, self.isSingle);
                         }
+
+                        self.sendChatMessage.scrollListener(socket);
+                        self.sendChatMessage.scrollContentChat();
                     });
-                    this.sendChatMessage.scrollListener(socket);
                     this.sendChatMessage.clickRightContactContentChat();
                     this.sendChatMessage.clickContactAdd();
                     this.sendChatMessage.clickContactSub();
                     this.sendChatMessage.clickContactSearchSingle();
-
                     this.sendChatMessage.clickSearchContact(this.remainTime);
                     this.sendChatMessage.getListContact();
 
@@ -130,13 +131,11 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
             }, err => {
                 this.error = err;
                 console.log(this.error);
-                // window.location.href = this.error.handleError.url;
-                console.log('11111111111111111111111111111111111111111111', err);
                 if (err.error.hasOwnProperty('url')) {
                     window.location.href = err.error.url;
                 } else {
                     // this.router.navigate([`error/${err.status}`]);
-                    //     // window.location.href = `error/${err.status}`;
+                    // window.location.href = `error/${err.status}`;
                     self.messageError = JSON.stringify(err);
                 }
             });
@@ -151,6 +150,9 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         this.sendChatMessage.getDefaultHeightMsgBox();
         // let libcCommonChat = new LibCommonChat();
         // $("#frameListMsg").animate({scrollTop: libcCommonChat.getMinHeightFrameListMsg()}, 500);
+
+        // scroll box chat content
+        this.sendChatMessage.scrollContentChat();
     };
 
     keys(obj): Array<string> {

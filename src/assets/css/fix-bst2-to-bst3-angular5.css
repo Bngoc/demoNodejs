@@ -7,7 +7,7 @@
 }
 
 #frame #sidepanel #profile .wrap img {
-    width: 60px !important;
+    width: 60px;
 }
 
 #frame .content .message-input .wrap .box_msg {

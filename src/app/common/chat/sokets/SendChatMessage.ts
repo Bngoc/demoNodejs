@@ -605,20 +605,21 @@ export class SendChatMessage extends libSupports {
 
     scrollListener = function (socket) {
         var that = this;
-        $('#frameListMsg').scroll(function (e) {
-            var frameListMsg = document.getElementById('frameListMsg');
-            let scrollTop = frameListMsg.scrollTop;
-            if (scrollTop === 0) {
-                frameListMsg.setAttribute('page', (parseInt(frameListMsg.getAttribute('page')) + 1).toString());
-                // let sendChatMessage = new SendChatMessage();
-                that.eventScrollTopBoxChat(socket);
-            }
+        let elem = document.getElementById('frameListMsg');
+        if (elem) {
+            elem.addEventListener("scroll", function (e) {
+                var frameListMsg = document.getElementById('frameListMsg');
+                let scrollTop = frameListMsg.scrollTop;
+                if (scrollTop === 0) {
+                    frameListMsg.setAttribute('page', (parseInt(frameListMsg.getAttribute('page')) + 1).toString());
+                    that.eventScrollTopBoxChat(socket);
+                }
 
-            if (scrollTop + $('#frameListMsg').innerHeight() >= $('#frameListMsg')[0].scrollHeight) {
-                // let sendChatMessage = new SendChatMessage();
-                that.eventScrollEndBoxChat();
-            }
-        }, false);
+                if (scrollTop + $('#frameListMsg').innerHeight() >= $('#frameListMsg')[0].scrollHeight) {
+                    that.eventScrollEndBoxChat();
+                }
+            }, false);
+        }
     };
 
     activeListContact = function (channelId) {
@@ -644,5 +645,9 @@ export class SendChatMessage extends libSupports {
             elementJavaScript.className = elementJavaScript.className.replace(reg, ' ');
         }
     };
+
+    scrollContentChat = function () {
+        $('#content-chat').css({"width": ($('#frame').width() - $('#sidepanel').width() )});
+    }
 }
 

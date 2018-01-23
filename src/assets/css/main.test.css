@@ -33,7 +33,6 @@ body {
     line-height: 1.3em;
     color: #242729;
     background: #FFF;
-    min-width: 1075px;
 }
 
 input[type="text"], input[type="password"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="datetime"], input[type="datetime-local"], input[type="date"], textarea {
