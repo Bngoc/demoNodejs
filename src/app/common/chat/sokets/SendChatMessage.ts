@@ -36,6 +36,18 @@ export class SendChatMessage extends libSupports {
         super();
     }
 
+    runInitChatMessage = function (opt, socket) {
+        this.clickContactContentChat(socket);
+        this.getDefaultHeightMsgBox();
+        this.eventClickNotifyBoxMsg();
+        this.clickRightContactContentChat();
+        this.clickContactAdd();
+        this.clickContactSub();
+        this.clickContactSearchSingle();
+        this.clickSearchContact(opt.remainTime);
+        this.getListContact();
+    };
+
     getDefaultHeightMsgBox = function () {
         let heightDefault = this.diffHeightBoxMsg();
         let realHeightRaw = $("#messageInput").outerHeight(true);
@@ -239,30 +251,7 @@ export class SendChatMessage extends libSupports {
                 } else {
                     clearTimeout(timer);
                     click = 0;
-                    let userName = $(this).find('span.status-info-part').attr("data-username");
-                    let dataChannelID = $(this).find('span.status-info-part').attr("data-channel");
-                    let valAuthor = $(this).find('span.status-info-part').attr("data-author");
-                    let dataConversation = $(this).find('span.status-info-part').attr("data-conversation");
-
-                    let dataRequest = {
-                        url: $('#contacts').attr('data-url'),
-                        data: {
-                            userName: userName,
-                            dataChannelID: dataChannelID,
-                            valAuthor: valAuthor,
-                            dataConversation: dataConversation,
-                            _method: 'post'
-                        }
-                    };
-
-                    that.reloadContentBoxChatAjax(dataRequest, function (resultData) {
-                        that.renderHtmlContentBoxChat(socket, resultData, function () {
-                            if (resultData.booleanConversation) {
-                                socket.emit('msgContentChat', dataRequest);
-                                that.getDefaultHeightMsgBox();
-                            }
-                        });
-                    });
+                    that.clickTaskContactChat($(this), socket);
                 }
             })
             .on('dblclick', '.show-info-participants', function (e) {
@@ -402,8 +391,33 @@ export class SendChatMessage extends libSupports {
         $('#list-contacts').html(htmlListContact);
     };
 
-    clickTaskContactChat = function () {
-        console.log('clickTaskContactChat');
+    clickTaskContactChat = function (ele, socket) {
+        if (ele.length) {
+            let userName = ele.find('span.status-info-part').attr("data-username");
+            let dataChannelID = ele.find('span.status-info-part').attr("data-channel");
+            let valAuthor = ele.find('span.status-info-part').attr("data-author");
+            let dataConversation = ele.find('span.status-info-part').attr("data-conversation");
+
+            let dataRequest = {
+                url: $('#contacts').attr('data-url'),
+                data: {
+                    userName: userName,
+                    dataChannelID: dataChannelID,
+                    valAuthor: valAuthor,
+                    dataConversation: dataConversation,
+                    _method: 'post'
+                }
+            };
+            let self = this;
+            self.reloadContentBoxChatAjax(dataRequest, function (resultData) {
+                self.renderHtmlContentBoxChat(socket, resultData, function () {
+                    if (resultData.booleanConversation) {
+                        socket.emit('msgContentChat', dataRequest);
+                        self.getDefaultHeightMsgBox();
+                    }
+                });
+            });
+        }
     };
 
     clickListContactContentChat = function (socket, callback) {

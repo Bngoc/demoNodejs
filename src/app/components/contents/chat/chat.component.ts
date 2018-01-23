@@ -69,21 +69,20 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
                     let listContact = new ListContacts();
                     listContact.showContactListAll(JSON.parse(resp.data.dataContactList));
 
-                    // let sendChatMessage = new SendChatMessage();
-                    // this.sendChatMessage.eventClickSend(socket, dataFriend);
-                    // this.sendChatMessage.eventEnterSend(socket, dataFriend);
                     let socket = io(this.url);
                     this.socket = socket;
 
-                    this.sendChatMessage.getDefaultHeightMsgBox();
-                    this.sendChatMessage.eventClickNotifyBoxMsg();
+                    let optionInit = {
+                        remainTime: this.remainTime
+                    };
+                    this.sendChatMessage.runInitChatMessage(optionInit, socket);
 
-                    this.sendChatMessage.clickContactContentChat(socket);
                     this.sendChatMessage.clickListContactContentChat(socket, function (resultCallback) {
                         if (resultCallback.isDataFriend === true) {
                             self.isDataFriend = true;
                             self.sendChatMessage.eventClickSend(socket, self.isDataFriend);
                             self.sendChatMessage.eventEnterSend(socket, self.isDataFriend);
+                            self.menuInfoChat.runInit(socket);
                         }
                         if (resultCallback.isSingle !== null) {
                             self.isSingle = true;
@@ -92,15 +91,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
                         self.sendChatMessage.scrollListener(socket);
                         self.sendChatMessage.scrollContentChat();
-                        self.menuInfoChat.runInit();
                     });
-                    this.sendChatMessage.clickRightContactContentChat();
-                    this.sendChatMessage.clickContactAdd();
-                    this.sendChatMessage.clickContactSub();
-                    this.sendChatMessage.clickContactSearchSingle();
-                    this.sendChatMessage.clickSearchContact(this.remainTime);
-                    this.sendChatMessage.getListContact();
-
 
                     // socket.on('pong', (data) => {
                     //     console.log('Receive "pong"', data);

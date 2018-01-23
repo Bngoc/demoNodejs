@@ -1,4 +1,6 @@
 'use strict';
+declare let $: any;
+
 import {SendChatMessage} from "../sokets/SendChatMessage";
 
 export class MenuInfoChat {
@@ -77,14 +79,14 @@ export class MenuInfoChat {
         });
     };
 
-    public clickListener = function () {
+    public clickListener = function (socket) {
         let self = this;
         document.addEventListener("click", function (e) {
             var clickeElIsLink = self.clickInsideElement(e, self.contextMenuLinkClassName);
 
             if (clickeElIsLink) {
                 e.preventDefault();
-                self.menuItemListener(clickeElIsLink);
+                self.menuItemListener(clickeElIsLink, socket);
             } else {
                 var button = e.which || e.button;
                 if (button === 1) {
@@ -154,12 +156,12 @@ export class MenuInfoChat {
         this.menu.style['z-index'] = 99999;
     };
 
-    public menuItemListener = function (link) {
+    public menuItemListener = function (link, socket) {
         let sendChatMessage = new SendChatMessage();
         let action = link.getAttribute("data-action");
         switch (action) {
             case 'view':
-                sendChatMessage.clickTaskContactChat();
+                sendChatMessage.clickTaskContactChat($('li[data-id="' + this.taskItemInContext.getAttribute("data-id") + '"]'), socket);
                 break;
             default:
 
@@ -169,9 +171,9 @@ export class MenuInfoChat {
         this.toggleMenuOff();
     };
 
-    public runInit = function () {
+    public runInit = function (socket) {
         this.contextListener();
-        this.clickListener();
+        this.clickListener(socket);
         this.keyupListener();
         this.resizeListener();
     }
