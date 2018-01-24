@@ -29,7 +29,6 @@ export class MenuInfoChat {
     private windowWidth;
     private windowHeight;
 
-
     public clickInsideElement = function (e, className) {
         var el = e.srcElement || e.target;
 
@@ -138,9 +137,6 @@ export class MenuInfoChat {
         this.windowWidth = window.innerWidth;
         this.windowHeight = window.innerHeight;
 
-
-        console.log(this.windowWidth, this.windowHeight, this.clickCoordsX, this.clickCoordsY, this.menuWidth, this.menuHeight);
-
         if ((this.windowWidth - this.clickCoordsX) < this.menuWidth) {
             this.menu.style.left = this.windowWidth - this.menuWidth + "px";
         } else {
@@ -164,7 +160,6 @@ export class MenuInfoChat {
                 sendChatMessage.clickTaskContactChat($('li[data-id="' + this.taskItemInContext.getAttribute("data-id") + '"]'), socket);
                 break;
             default:
-
         }
 
         console.log("Task ID - " + this.taskItemInContext.getAttribute("data-id") + ", Task action - " + link.getAttribute("data-action"));

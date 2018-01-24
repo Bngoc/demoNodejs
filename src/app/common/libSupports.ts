@@ -80,13 +80,13 @@ export abstract class libSupports {
 
     public customDateTime(dateTime, timestampLastWeek) {
         if (dateTime == undefined) return '';
-        var weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        var weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         let objDate = new Date(dateTime);
         let strTime = '';
         if (this.activeLastWeek(dateTime, timestampLastWeek)) {
             strTime = weekday[objDate.getDay()];
         } else {
-            strTime = objDate.toLocaleString("en-us", {month: "long"}) + ' ' + objDate.getDate();
+            strTime = objDate.toLocaleString("en-us", {month: "short"}) + ' ' + objDate.getDate();
         }
 
         strTime += ', ' + objDate.toLocaleString('en-US', {

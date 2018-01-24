@@ -45,8 +45,8 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         this.sendChatMessage = new SendChatMessage();
         this.menuInfoChat = new MenuInfoChat();
         this.loadCss([
-            // 'css/chat.custom.css',
-            'css/chat.test.css',
+            // 'css/chat/chat.custom.css',
+            'css/chat/chat.test.css',
             "css/fix-bst2-to-bst3-angular5.css"
         ]);
 

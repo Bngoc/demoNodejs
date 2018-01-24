@@ -46,6 +46,7 @@ export class SendChatMessage extends libSupports {
         this.clickContactSearchSingle();
         this.clickSearchContact(opt.remainTime);
         this.getListContact();
+        this.clickShowParticipantProfile();
     };
 
     getDefaultHeightMsgBox = function () {
@@ -243,7 +244,7 @@ export class SendChatMessage extends libSupports {
                 click++;
                 if (click === 1) {
                     timer = setTimeout(function () {
-                        $('#myModal').modal({
+                        $('#myModalParticipant').modal({
                             show: 'false'
                         });
                         click = 0;
@@ -453,6 +454,18 @@ export class SendChatMessage extends libSupports {
             });
         });
     };
+
+    clickShowParticipantProfile = function () {
+        $('body').on('click', '#participant-profile', function () {
+            $('#myModalParticipant').modal({
+                show: 'false'
+            });
+
+            console.log('333333333333333333333333');
+            // $('body').css({"opacity": 0.5});
+            // $('#modal-box-profile').css({"opacity": "1 !important", "z-index": 999999, "display": "block", "position": "absolute", "left": 333, "top": 30})
+        });
+    }
 
     eventScrollEndBoxChat = function () {
         //     $('#newMsgChat').delay(10).css("display", "none");

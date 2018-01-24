@@ -129,7 +129,7 @@
 
 #profile .wrap #accCurrent .status-hover,
 #profile .wrap #accCurrent .btn-status-use:hover {
-    background-image: url("./../images/play-green.png") !important;
+    background-image: url("../../images/play-green.png") !important;
 
 }
 
@@ -521,7 +521,7 @@
 #frame .content .contact-profile .info-conversation i.offline,
 #frame .content #group-participant .list-group-part .info-part span.offline {
     /*background: #95a5a6;*/
-    background-image: url("./../images/offline.png");
+    background-image: url("../../images/offline.png");
     background-size: 12px 12px;
     background-repeat: no-repeat;
 }
@@ -531,7 +531,7 @@
 #frame .content .contact-profile .info-conversation i.online,
 #frame .content #group-participant .list-group-part .info-part span.online {
     /*background: #2ecc71;*/
-    background-image: url("./../images/online.png");
+    background-image: url("../../images/online.png");
     background-size: 12px 12px;
     background-repeat: no-repeat;
 }
@@ -541,7 +541,7 @@
 #frame .content .contact-profile .info-conversation i.away,
 #frame .content #group-participant .list-group-part .info-part span.away {
     /*background: #f1c40f;*/
-    background-image: url("./../images/away.png");
+    background-image: url("../../images/away.png");
     background-size: 12px 12px;
     background-repeat: no-repeat;
 }
@@ -551,7 +551,7 @@
 #frame .content .contact-profile .info-conversation i.busy,
 #frame .content #group-participant .list-group-part .info-part span.busy {
     /*background: #e74c3c;*/
-    background-image: url("./../images/busy.png");
+    background-image: url("../../images/busy.png");
     background-size: 12px 12px;
     background-repeat: no-repeat;
 }
@@ -559,7 +559,7 @@
 #frame #sidepanel #contacts ul li.contact .wrap span.undefined,
 #frame .content .contact-profile .info-conversation i.undefined,
 #frame .content #group-participant .list-group-part .info-part span.undefined {
-    background-image: url("./../images/undefined.png");
+    background-image: url("../../images/undefined.png");
     background-size: 12px 12px;
     background-repeat: no-repeat;
 }
@@ -871,7 +871,7 @@
 }
 
 #frame .content .contact-profile .social-media .plus-user {
-    background-image: url("./../images/plus-user.png");
+    background-image: url("../../images/plus-user.png");
     background-size: 19px 19px;
     background-repeat: round;
     width: 19px;
@@ -879,7 +879,7 @@
 }
 
 #frame .content .contact-profile .social-media .plus-group {
-    background-image: url(./../images/plus-group.png);
+    background-image: url(../../images/plus-group.png);
     background-size: 19px 19px;
     background-repeat: round;
     width: 19px;
