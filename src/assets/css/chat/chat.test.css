@@ -305,19 +305,19 @@ input {
     padding-left: 25px;
 }
 
-#modal-box-profile .info-profile .data-show-lable {
+#modal-box-profile .info-profile .data-show-label {
     list-style: none;
     padding: 1px 2px;
 }
 
-#modal-box-profile .data-show-lable .title-name {
+#modal-box-profile .data-show-label .title-name {
     font-size: inherit;
     font-weight: bold;
     font-size: 16px;
     text-transform: lowercase;
 }
 
-#modal-box-profile .data-show-lable .title-name:first-letter {
+#modal-box-profile .data-show-label .title-name:first-letter {
     text-transform: uppercase;
 }
 

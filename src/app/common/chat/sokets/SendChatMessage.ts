@@ -9,28 +9,13 @@ import * as io from 'socket.io-client';
 import {libSupports} from "../../libSupports";
 import {isUndefined} from "util";
 import {ShowContentChat} from "../supports/ShowContentChat";
-
-// $(document).ready(function () {
-//     var sendChatMessage = new SendChatMessage();
-//     sendChatMessage.eventSendMsg();
-//     sendChatMessage.getDefaultHeightMsgBox();
-//
-//     $(window).resize(function () {
-//         sendChatMessage.getDefaultHeightMsgBox();
-//         $("#frameListMsg").animate({scrollTop: getMinHeightFrameListMsg()}, 500);
-//     });
-//
-//     //sendChatMessage.scrollEndShowBoxChat(1500);
-//
-//     window.listContactYourSingleAction = [];
-//     window.listContactYourSingle = [];
-// });
+import {ShowProfileParticipantChat} from "../supports/ShowProfileParticipantChat";
 
 export class SendChatMessage extends libSupports {
 
     public listContactYourSingleAction: any = [];
     public listContactYourSingle: any = [];
-    public isSingle;
+    public dataConversationProfile: any = {};
 
     constructor() {
         super();
@@ -240,14 +225,20 @@ export class SendChatMessage extends libSupports {
         let click = 0, delay = 500, timer = null;
         $('body')
             .on('click', '.show-info-participants', function (e) {
+                let self = this;
                 e.preventDefault();
                 click++;
                 if (click === 1) {
                     timer = setTimeout(function () {
-                        $('#myModalParticipant').modal({
-                            show: 'false'
+                        let dataAuthor = $(self).find('span[data-author]').attr('data-author');
+                        let showProfileParticipantChat = new ShowProfileParticipantChat();
+                        showProfileParticipantChat.renderHtmlProfileParticipants(that.convertDataGroupToSingleParticipant(that.dataConversationProfile, dataAuthor), function () {
+                            $('#myModalParticipant').modal({
+                                show: 'false'
+                            });
+                            click = 0;
                         });
-                        click = 0;
+
                     }, delay);
                 } else {
                     clearTimeout(timer);
@@ -456,16 +447,17 @@ export class SendChatMessage extends libSupports {
     };
 
     clickShowParticipantProfile = function () {
+        let self = this;
         $('body').on('click', '#participant-profile', function () {
-            $('#myModalParticipant').modal({
-                show: 'false'
-            });
+            let showProfileParticipantChat = new ShowProfileParticipantChat();
 
-            console.log('333333333333333333333333');
-            // $('body').css({"opacity": 0.5});
-            // $('#modal-box-profile').css({"opacity": "1 !important", "z-index": 999999, "display": "block", "position": "absolute", "left": 333, "top": 30})
+            showProfileParticipantChat.renderHtmlProfileParticipants(self.dataConversationProfile, function () {
+                $('#myModalParticipant').modal({
+                    show: 'false'
+                });
+            });
         });
-    }
+    };
 
     eventScrollEndBoxChat = function () {
         //     $('#newMsgChat').delay(10).css("display", "none");
@@ -495,21 +487,22 @@ export class SendChatMessage extends libSupports {
         });
     };
 
-    renderHtmlContentBoxChat = function (socket, dataResult, callback) {
+    renderHtmlContentBoxChat = function (socket, dataRequest, callback) {
         let showContentChat = new ShowContentChat();
-        $('#content-chat').html(showContentChat.isShowContentChat(dataResult));
+        this.dataConversationProfile = dataRequest;
+        $('#content-chat').html(showContentChat.getShowContentChat(dataRequest));
         //------------------XXXXXXXXXX---------------------------
         $('#boxChat').css({
-            "max-height": parseInt(dataResult.maxHeightInputBoxChat),
-            "height": parseInt(dataResult.minHeightBoxChat)
+            "max-height": parseInt(dataRequest.maxHeightInputBoxChat),
+            "height": parseInt(dataRequest.minHeightBoxChat)
         });
-        $('#style-box-sms').css({"max-height": parseInt(dataResult.maxHeightBoxChat)});
+        $('#style-box-sms').css({"max-height": parseInt(dataRequest.maxHeightBoxChat)});
         $('#create-tooltip .tooltiptext').css({display: 'none'});
         $('#list-your-friend').css({'display': 'none'});
 
         /// ACCEPTED
-        if (dataResult.booleanConversation) {
-            if (!dataResult.isFriendCurrentSingle) {
+        if (dataRequest.booleanConversation) {
+            if (!dataRequest.isFriendCurrentSingle) {
                 $("#messageInput").addClass("disabled-element");
                 $("#frameListMsg").addClass("remove-scrollbar");
                 $("#boxChat").attr("placeholder", 'Messsaging disabled until request is accepted');

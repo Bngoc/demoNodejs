@@ -374,7 +374,7 @@ class ChatController extends BaseController {
                         } else {
                             showResponseChat.option.isConversationSingle = isAuthenticatesSingle ? req.body.dataType === conversationType[0] : null;
 
-                            let option = {single: conversationType[0]};
+                            let option = {single: conversationType[0], cfg_chat: helper.coreHelper.app};
                             let dataResult = libFunction.getListContactSingle(tempModelConversation, option);
                             dataResult.sort(function (a, b) {
                                 return a.created_at - b.created_at;
@@ -492,7 +492,6 @@ class ChatController extends BaseController {
                 conversation.conversationsListSingleUser(optionRequest, function (errPart, modelListUser) {
                     if (errPart) {
                         res.sendStatus(403);
-                        console.log(errPart);
                     }
 
                     let listUserParticipant = modelListUser.map(function (listUser) {
@@ -509,7 +508,6 @@ class ChatController extends BaseController {
                     conversation.conversationsListUser(optionRequest, function (err, infoConversation) {
                         if (err) {
                             res.sendStatus(403);
-                            console.log(err);
                         }
                         infoConversation.forEach(function (elem) {
                             showResponseChat.dataType = elem.type;
@@ -555,7 +553,8 @@ class ChatController extends BaseController {
 
                                 showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
                                 listParticipant.push(tempPartSingle);
-                                urlImagesAvatar = useContactsSingle.get('path_img') ? useContactsSingle.get('path_img') : "assets/" + cfgChat.img_single_user;
+                                urlImagesAvatar = useContactsSingle.get('path_img') ? useContactsSingle.get('path_img') : cfgChat.img_single_user;
+                                tempPartSingle.urlImagesAvatarSingle = urlImagesAvatar;
                             } else {
                                 elem.infoParticipant.forEach(function (ele) {
                                     let relationsUseContacts = ele.relations.useContacts;
@@ -587,9 +586,9 @@ class ChatController extends BaseController {
                                         tempChatStatusName: tempChatStatusGroupName
                                     };
                                     let tempPartGroup = libFunction.renderDataContentChat(relationsUseContacts, optionRender, listUserParticipant);
-
+                                    tempPartGroup.urlImagesAvatarSingle = relationsUseContacts.get('path_img') ? relationsUseContacts.get('path_img') : cfgChat.img_single_user;
                                     listParticipant.push(tempPartGroup);
-                                    urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : "assets/" + cfgChat.img_group_user;
+                                    urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : cfgChat.img_group_user;
                                 });
 
                                 showResponseChat.isFriendCurrentSingle = true;
@@ -611,14 +610,13 @@ class ChatController extends BaseController {
                 let user = new User.class();
                 user.findUserFullById(parseInt(req.body.valAuthor), function (err, modelUser) {
                     if (err) {
-                        console.log(err);
                         res.sendStatus(403);
                     }
                     let listParticipant = [];
                     let useContacts = modelUser.relations.useContacts;
                     showResponseChat.classStatus = cfgChat.class_undefined;
                     showResponseChat.moodMessageShow = cfgChat.mood_message_request;
-                    showResponseChat.urlImagesAvatar = useContacts.get('path_img') ? useContacts.get('path_img') : 'assets/' + cfgChat.img_single_user;
+                    showResponseChat.urlImagesAvatar = useContacts.get('path_img') ? useContacts.get('path_img') : cfgChat.img_single_user;
                     showResponseChat.isFriendCurrentSingle = false;
                     showResponseChat.booleanConversation = false;
                     let optionRenderNotFriend = {
@@ -627,6 +625,7 @@ class ChatController extends BaseController {
                         tempClassStatus: cfgChat.class_undefined,
                     };
                     let tempPartSingle = libFunction.renderDataContentChat(useContacts, optionRenderNotFriend);
+                    tempPartSingle.urlImagesAvatarSingle = showResponseChat.urlImagesAvatar;
                     listParticipant.push(tempPartSingle);
 
                     showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
@@ -678,7 +677,7 @@ class ChatController extends BaseController {
                         } else {
                             showResponseChat.option.isConversationSingle = isAuthenticatesSingle ? req.body.dataType === conversationType[0] : null;
 
-                            let option = {single: conversationType[0]};
+                            let option = {single: conversationType[0], cfg_chat: helper.coreHelper.app};
                             let dataResult = libFunction.getListContactSingle(tempModelConversation, option);
                             dataResult.sort(function (a, b) {
                                 return a.created_at - b.created_at;

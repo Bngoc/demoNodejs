@@ -58,7 +58,6 @@ export class MenuInfoChat {
             posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
         }
 
-        console.log('x = {0}, y = {1}', [posx, posy])
         return {x: posx, y: posy}
     };
 

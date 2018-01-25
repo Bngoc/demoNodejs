@@ -234,4 +234,19 @@ export abstract class libSupports {
         }
         return ret;
     }
+
+    public convertDataGroupToSingleParticipant(dataRequest, dataAuthor) {
+        console.log(dataRequest, dataAuthor);
+        let dataResult = $.extend(true, {}, dataRequest);
+        dataResult.listParticipant = [];
+        dataResult.isTypeSingle = true;
+
+        dataRequest.listParticipant.forEach(function (elem) {
+            if (dataAuthor && elem.users_id == dataAuthor) {
+                dataResult.listParticipant.push(elem);
+            }
+        });
+
+        return dataResult
+    }
 }

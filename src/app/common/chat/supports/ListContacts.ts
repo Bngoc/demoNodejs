@@ -58,7 +58,7 @@ export class ListContacts extends libSupports {
                 return false;
             }
             htmlListContact += '<li class="contact-list"><div class="wap-contact" data-author="author.' + element.user_id + '">'
-                + '<img src="' + (element.path_img ? element.path_img : ('assets/' + element.path_img_default)) + '" alt="">'
+                + '<img src="' + (element.path_img ? element.path_img : element.path_img_default) + '" alt="">'
                 + '<div class="meta-contact"><p class="">';
 
             htmlListContact += (element.hasOwnProperty('textSearch') ? element.textSearch : (element.middle_name ? element.middle_name : element.user_name));
@@ -147,7 +147,7 @@ export class ListContacts extends libSupports {
             + 'data-channel="' + element.channel_id + '" data-owner="' + element.creator_id + '">'
             + '<span channel="status.' + element.channel_id + '"'
             + 'class="list-icon-status contact-status ' + (element.is_accept_single ? option.cfgChat.cfg_chat.class_undefined : (element.is_life && classStatusPart) ? classStatusPart : "") + '"></span>'
-            + '<img src="' + (element.path_img ? element.path_img : `assets/${option.cfgChat.cfg_chat.img_single_user}`) + '" alt=""/>'
+            + '<img src="' + (element.path_img ? element.path_img : option.cfgChat.cfg_chat.img_single_user) + '" alt=""/>'
             + '<div class="meta">'
             + '<span class="name-notify"><p class="name" data-conversation-name="' + element.middle_name + '">' + (element.hasOwnProperty('textSearch') ? element.textSearch : (element.middle_name ? element.middle_name : "&nbsp;")) + ' </p><i class="badges-notify">132</i></span>'
             + '<p class="preview mood_message">' + (element.mood_message ? element.mood_message : "") + ' </p>'
@@ -163,7 +163,7 @@ export class ListContacts extends libSupports {
             + '<div class="wrap" data-conversation="' + element.idConversation + '" data-type="' + element.type + '"'
             + 'data-channel="' + element.channel_id + '" data-owner="' + element.creator_id + '">'
             + '<span channel="status.' + element.channel_id + '" class=""></span>'
-            + '<img src="' + (element.path_img_group ? element.path_img_group : `assets/${option.cfgChat.cfg_chat.img_group_user}`) + '" alt=""/>'
+            + '<img src="' + (element.path_img_group ? element.path_img_group : option.cfgChat.cfg_chat.img_group_user) + '" alt=""/>'
             + '<div class="meta">'
             + '<span class="name-notify"><p class="name" data-conversation-name="' + element.title + '">' + (element.hasOwnProperty('textSearch') ? element.textSearch : element.title) + '</p><i class="badges-notify">132</i></span>'
             + '<p class="preview"> ' + element.count + '  participants</p>'

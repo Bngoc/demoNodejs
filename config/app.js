@@ -18,8 +18,8 @@ const app = {
     },
     cfg_chat: {
         class_undefined: 'undefined',
-        img_single_user: '/images/users.png',
-        img_group_user: '/images/group.png',
+        img_single_user: '/assets/images/users.png',
+        img_group_user: '/assets/images/group.png',
         status_single: 'single',
         status_group: 'group',
         status_hidden_name: 'hidden',

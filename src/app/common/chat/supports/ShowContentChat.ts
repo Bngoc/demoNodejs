@@ -174,7 +174,7 @@ export class ShowContentChat {
         return htmlMenu;
     }
 
-    isShowContentChat(dataResult) {
+    getShowContentChat(dataResult) {
         return this.headerHtmlContentChat(dataResult)
             + this.htmlBoxContentChat(dataResult)
             + this.htmlActionContentChat(dataResult)

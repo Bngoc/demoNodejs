@@ -117,6 +117,7 @@
     white-space: nowrap;
     float: left;
     margin-top: 14px;
+    width: 65%;
 }
 
 #frame #sidepanel #profile .wrap p {
@@ -127,6 +128,10 @@
 #frame #sidepanel #profile .wrap .info-current p.user-name-chat {
     line-height: initial;
     cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
 }
 
 #frame #sidepanel #profile .wrap .info-current .mood-msg-current {
@@ -136,6 +141,9 @@
     margin-left: 15px;
     white-space: nowrap;
     margin-top: 7px;
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
 }
 
 #frame #sidepanel #profile .wrap i.expand-button {
@@ -445,12 +453,15 @@
 }
 
 #frame #sidepanel #contacts ul li.contact .wrap .meta {
-    display: grid;
+    width: calc(100% - 50px);
+    display: block;
+    float: left;
 }
 
 #contacts ul li.contact .wrap .name-notify {
     position: relative;
     float: left;
+    width: 90%;
 }
 
 #contacts ul li.contact .wrap .meta .name {
@@ -468,7 +479,7 @@
     text-align: center;
     margin-left: 0px;
     position: absolute;
-    right: 0;
+    left: 80%;
     bottom: 2pt;
 }
 
@@ -485,8 +496,6 @@
 }
 
 #frame #sidepanel #contacts ul li.contact .wrap .meta .preview {
-    /*margin: 5px 0 0 0;*/
-    /*padding: 0 0 1px;*/
     font-weight: 400;
     white-space: nowrap;
     overflow: hidden;
@@ -495,6 +504,7 @@
     -o-transition: 1s all ease;
     -webkit-transition: 1s all ease;
     transition: 1s all ease;
+    clear: both;
 }
 
 #frame #sidepanel #contacts ul li.contact .wrap .meta .preview span {
@@ -544,7 +554,7 @@
 
 #frame .content {
     float: right;
-    width: 67.7%;
+    /*width: 67.7%;*/
     height: 100%;
     /*overflow: hidden;*/
     position: relative;
@@ -561,7 +571,7 @@
 
 #frame .content .contact-profile .info-conversation-participant {
     float: left;
-    width: 70%;
+    width: 60%;
     position: relative;
     margin-top: 12px;
 }
@@ -603,10 +613,13 @@
 #frame .content .contact-profile .info-participant {
     line-height: normal;
     line-height: 0px;
+    display: block;
 }
 
 #frame .content .contact-profile .info-participant .favorite-participant {
     float: left;
+    width: 25px;
+    margin-right: 5px;
 }
 
 #frame .content .contact-profile .info-conversation .favorite-conversation {
@@ -632,6 +645,12 @@
     left: 25px;
     margin-bottom: inherit;
     white-space: nowrap;
+}
+
+#frame .content .contact-profile .info-participant p {
+    overflow: hidden;
+    width: calc(100% - 35px);
+    text-overflow: ellipsis;
 }
 
 #frame .content .contact-profile .cursor {
@@ -661,8 +680,11 @@
 #frame .content .contact-profile .info-conversation .info-group {
     /*margin: 0px !important;*/
     padding: 0;
-    display: block;
+    display: inline-flex;
     margin: 3px 0px 0px 7px;
+    overflow: hidden;
+    width: calc(100% - 35px);
+    text-overflow: ellipsis;
 }
 
 #frame .content .contact-profile .info-conversation span.status-space {
@@ -1028,7 +1050,8 @@ li.contact-list {
     z-index: 9999;
     overflow: visible;
     margin: 2px 0;
-    padding: 5px 0;
+    padding: 3px 0;
+    display: block;
 }
 
 .wap-contact .meta-contact p {
@@ -1075,6 +1098,10 @@ li.contact-list {
     .container {
         width: 800px;
     }
+
+    #contacts ul li.contact .wrap .name-notify {
+        width: 95%;
+    }
 }
 
 @media screen and (min-width: 900px) {
@@ -1086,6 +1113,10 @@ li.contact-list {
 @media (min-width: 992px) {
     .container {
         width: 970px;
+    }
+
+    #contacts ul li.contact .wrap .name-notify {
+        width: 100%;
     }
 }
 
