@@ -65,15 +65,16 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
                 if (resp.err == '' && resp.code == null) {
                     this.resultData = resp.data;
                     let dataFriend = resp.data.listStatus;
+                    let resultListContacts = JSON.parse(resp.data.dataContactList);
 
                     let listContact = new ListContacts();
-                    listContact.showContactListAll(JSON.parse(resp.data.dataContactList));
-
+                    listContact.showContactListAll(resultListContacts);
                     let socket = io(this.url);
                     this.socket = socket;
 
                     let optionInit = {
-                        remainTime: this.remainTime
+                        remainTime: this.remainTime,
+                        listContacts: resultListContacts.contactList
                     };
                     this.sendChatMessage.runInitChatMessage(optionInit, socket);
 

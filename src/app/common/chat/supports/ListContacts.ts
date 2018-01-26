@@ -3,13 +3,14 @@
 import {isUndefined} from "util";
 import {libSupports} from "../../libSupports";
 import {isFunction} from "util";
+import {el} from "@angular/platform-browser/testing/src/browser_util";
 declare var jQuery: any;
 declare var $: any;
 declare var require: any;
+declare var window: any;
 
 export class ListContacts extends libSupports {
 
-    public listContacts: any;
     public remainTime: any;
     public reqDataReset: any;
 
@@ -176,7 +177,6 @@ export class ListContacts extends libSupports {
 
     public showContactListAll(dataResult) {
         let _this = this;
-        this.listContacts = dataResult;
         let htmlListContact = '';
         let option = {
             cfgChat: dataResult.cfgChat
@@ -203,6 +203,7 @@ export class ListContacts extends libSupports {
                     _this.searchListContactListAll(reqDataReset, function () {
                         remainTime = isUndefined;
                         reqDataReset = isUndefined;
+                        window.listContactSearchDynamic = [];
                     });
                 }
             } else {
@@ -218,8 +219,9 @@ export class ListContacts extends libSupports {
                 console.log('ERROR: ', dataResult.err)
             } else {
                 _this.showContactListAll(dataResult);
+                window.listContactSearchDynamic = $.extend(true, [], dataResult.contactList);
                 let htmlSearch = '<li id="search-box-contacts" class="search-contact"><div class="wrap"><div class="box-sreach-contact">'
-                    + '<input type="button" class="btn btn-primary" value="Search contacts" /></div></div></li>';
+                    + '<input id="searchContacts" type="button" class="btn btn-primary" value="Search contacts" /></div></div></li>';
                 $('#contacts-your').append(requestListContact.reset ? '' : htmlSearch);
             }
 
@@ -228,5 +230,28 @@ export class ListContacts extends libSupports {
             }
         });
     };
+
+    public searchOnContacts = function (listContacts) {
+        let listUnsetConversation = $.map(listContacts, function (elem) {
+            if (elem.isSingle === true) {
+                return elem.idConversation;
+            }
+        });
+
+        let request = {
+            url: '/api/chat/search-contacts-all',
+            data: {
+                listContactConversation: listUnsetConversation,
+                _method: "post",
+            }
+        };
+
+        this.callDataJS(request, function (resultDataListContactSearch) {
+
+            console.log(resultDataListContactSearch, 'resultDataListContactSearch');
+            console.log(window.listContactSearchDynamic, 242);
+            console.log(listUnsetConversation, 231);
+        });
+    }
 }
 

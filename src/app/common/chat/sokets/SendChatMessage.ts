@@ -5,6 +5,7 @@ import {LibCommonChat} from "../supports/LibCommonChat";
 declare var jQuery: any;
 declare var $: any;
 declare var require: any;
+declare var window: any;
 import * as io from 'socket.io-client';
 import {libSupports} from "../../libSupports";
 import {isUndefined} from "util";
@@ -32,6 +33,10 @@ export class SendChatMessage extends libSupports {
         this.clickSearchContact(opt.remainTime);
         this.getListContact();
         this.clickShowParticipantProfile();
+        this.clickSearchContacts();
+
+        //add available list contacts
+        window.listContacts = opt.listContacts;
     };
 
     getDefaultHeightMsgBox = function () {
@@ -640,6 +645,13 @@ export class SendChatMessage extends libSupports {
                 }
             }, false);
         }
+    };
+
+    clickSearchContacts = function () {
+        $('body').on('click', '#searchContacts', function () {
+            let listContact = new ListContacts();
+            listContact.searchOnContacts(window.listContacts);
+        });
     };
 
     activeListContact = function (channelId) {

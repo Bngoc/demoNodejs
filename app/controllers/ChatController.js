@@ -351,8 +351,8 @@ class ChatController extends BaseController {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                        return conversationType[k]
-                    })),
+                            return conversationType[k]
+                        })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -654,8 +654,8 @@ class ChatController extends BaseController {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                        return conversationType[k]
-                    })),
+                            return conversationType[k]
+                        })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -699,6 +699,22 @@ class ChatController extends BaseController {
             }
         } catch (ex) {
             res.status(500).send(ex)
+        }
+    }
+
+    postApiListSearchContactAll(req, res, next) {
+        try {
+            if (req.xhr) {
+                if (req.body.listContactConversation) {
+                    return res.status(200).send(true);
+                }
+
+                return res.status(401).send('ERROR');
+            } else {
+                return res.status(500).send('Not use Jquery request to server....!');
+            }
+        } catch (ex) {
+            return res.status(500);
         }
     }
 
