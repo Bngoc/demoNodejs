@@ -63,13 +63,11 @@ export class ShowContentChat {
 
                 if (reqDataContentChat.listParticipant.length) {
                     reqDataContentChat.listParticipant.forEach((ele) => {
-                        htmlProfile += '<li data-id="' + ele.conversationID + '" class="task info-contextmenu info-part show-info-participants">'
-                            + '<span data-conversation="' + ele.conversationID + '" data-channel="' + ele.channelID + '"'
-                            + 'data-author="' + ele.users_id + '" data-username="' + ele.middle_name + '"'
-                            + 'codePartId="' + ele.codePartId + '" code-participant-id="' + ele.users_id + '"'
-                            + 'channel="status.' + (ele.isFriendCurrent ? ele.channelID : "") + '"'
-                            + 'class="status-info-part stype-list ' + ele.classStatus + '"></span>'
-                            + '<span class="status-info-name">' + ele.middle_name + '</span></li>';
+                        htmlProfile += `<li data-id="' + ele.conversationID + '" class="task info-contextmenu info-part show-info-participants">
+                            <span data-conversation="${ele.conversationID}" data-channel="${ele.channelID}" data-author="${ele.users_id}" data-username="${ele.middle_name}"
+                            codePartId="${ele.codePartId}" code-participant-id="${ele.users_id}" channel="status.${(ele.isFriendCurrent ? ele.channelID : "")}"
+                            class="status-info-part stype-list ${ele.classStatus}"></span>
+                            <span class="status-info-name">${ele.middle_name}</span></li>`;
                     });
                 }
                 htmlProfile += ' </ul></div>';
@@ -102,11 +100,12 @@ export class ShowContentChat {
         } else {
             //NOT FRIEND
             htmlBoxContentChat += '<div class="clearfix"></div>';
-            htmlBoxContentChat += '<div class="" id="request-area">'
-                + '<div class="accept-request-user">'
-                + '<div class="d-block md-col-12" align="center">'
-                + '<span><p class="name-partici-req">' + reqBoxContentChat.userName + '</p> is not in your contacts</span>'
-                + '<button class="btn btn-primary" id="add-contact-user">Add to contacts</button>';
+            htmlBoxContentChat += `<div class="" id="request-area">
+                <div class="accept-request-user">
+                <div class="d-block md-col-12" align="center">
+                <span><p class="name-partici-req">${reqBoxContentChat.userName}</p> is not in your contacts</span>
+                <button class="btn btn-primary" id="add-contact-user">Add to contacts</button>`;
+
             htmlBoxContentChat += '</div></div></div>';
         }
 
@@ -142,10 +141,9 @@ export class ShowContentChat {
                 + '</div>'
                 + '</form></li>';
 
-
-            htmlActionContentChat += '<li class="_13gg ">'
-                + '<a class="_6gb _3oxr attachment-cst r_emoji50" role="button" title="Choose an emoji" href="#"><i class="" aria-hidden="true"></i></a>'
-                + '</li>';
+            htmlActionContentChat += `<li class="_13gg ">
+                <a class="_6gb _3oxr attachment-cst r_emoji50" role="button" title="Choose an emoji" href="#"><i class="" aria-hidden="true"></i></a>
+                </li>`;
 
             htmlActionContentChat += '<li class="_13gg ">'
                 + '<a id="sendMessageChat" class="sms-send"><div class="submit attachment-cst r_bt25"><i class="fa fa-paper-plane" aria-hidden="true"></i></div></a>'

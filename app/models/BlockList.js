@@ -76,17 +76,17 @@ BlockList.prototype.getListBlockConversation = function (user_id, callback) {
         .then(function (modelBlockList) {
             let resultBlockList = {};
             let blockListConversation = [];
-            let blocklistParticipantGroup = [];
+            let blockListParticipantGroup = [];
             modelBlockList.forEach(function (elementItem) {
                 if (elementItem.get('is_single_group') === 0 || elementItem.get('is_single_group') === 1 && elementItem.get('prevent_participant') === user_id) {
                     blockListConversation.push(elementItem.get('conversation_id'));
                 } else {
-                    blocklistParticipantGroup.push(elementItem.get('prevent_participant'));
+                    blockListParticipantGroup.push(elementItem.get('prevent_participant'));
                 }
             });
 
             resultBlockList.blockListConversation = blockListConversation;
-            resultBlockList.blockListParticipantGroup = blocklistParticipantGroup;
+            resultBlockList.blockListParticipantGroup = blockListParticipantGroup;
 
             callback(null, resultBlockList);
         })

@@ -38,14 +38,14 @@ export class ShowProfileParticipantChat {
     };
 
     htmlCloseShowProfile = function () {
-        return '<div class="clearfix"></div>'
-            + '<div class="modal-footer act-box">'
-            + '<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>'
-            + '</div>';
+        return `<div class="clearfix"></div>
+            <div class="modal-footer act-box">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>`;
     };
 
     htmlGroup = function (dataParticipants) {
-        let htmlGroupBoxProfile = '<li class="label-profile title-name">' + dataParticipants.userName + '</li>';
+        let htmlGroupBoxProfile = `<li class="label-profile title-name">${dataParticipants.userName}</li>`;
         return htmlGroupBoxProfile;
     };
 
@@ -63,22 +63,14 @@ export class ShowProfileParticipantChat {
         // htmlSingleBoxProfile += '<li class="label-profile title-language">' + profiltPart.middle_name + '</li>';
         // htmlSingleBoxProfile += '<li class="label-profile title-birth">' + profiltPart.middle_name + '</li>';
 
-        // <li class="label-profile">
-        // country
-        // </li>
-        // <li class="label-profile">
-        //
-        // </li>
+        // <li class="label-profile"> country </li>
+        // <li class="label-profile"></li>
         // <hr>
-        //     <li class="label-profile">
-        // nick
-        // </li>
-        // <li class="label-profile">
-        // email
-        // </li>
+        // <li class="label-profile"> nick </li>
+        // <li class="label-profile"> email </li>
         // <li class="label-profile">num telephone</li>
         // <hr>
-        //     <li class="label-profile">Sex</li>
+        // <li class="label-profile">Sex</li>
         // <li class="label-profile">language</li>
 
         return htmlSingleBoxProfile;

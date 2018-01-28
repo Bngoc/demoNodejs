@@ -96,6 +96,7 @@ User.prototype.findUserFullById = function (id, callback) {
 User.prototype.findConversation = function (request, callback) {
     let _this = this;
     let responseData = {};
+    let unsetConversation = request.hasOwnProperty('unsetConversation') ? request.unsetConversation : [];
     Users.where({id: request.userCurrentID}).fetch({withRelated: ['useContacts']}).then(function (data) {
         responseData['infoAccount'] = data;
         let blockList = new BlockList.class();
@@ -115,7 +116,7 @@ User.prototype.findConversation = function (request, callback) {
             Participants.model
                 .query(function (qd) {
                     // qd.where('id', 'not in', blockList);
-                    qd.where('conversation_id', 'not in', blockListConversation.blockListConversation);
+                    qd.where('conversation_id', 'not in', blockListConversation.blockListConversation.concat(unsetConversation));
                     qd.where({"users_id": data.get('id')});
                     qd.where("type", 'in', request.conversationType);//single vs group
                 })
@@ -161,18 +162,17 @@ User.prototype.findByIdChat = function (request, callback) {
     let responseData = {};
     let isAuthenticatesSingle = request.isAuthenticatesSingle !== undefined ? request.isAuthenticatesSingle : false;
     this.findConversation(request, function (err, modelConversation) {
-
         if (err) {
             callback(err)
         } else {
             responseData['infoAccount'] = modelConversation.infoAccount;
             let modelConver = modelConversation.modelConversation;
-            let blockList = modelConversation.blockList;
+            // let blockList = modelConversation.blockList;
             let infoParticipantClone = [];
 
             modelConver.forEach(function (elem) {
                 elem.relations.conParticipant.forEach(function (elemUser) {
-
+                    // check friend search add group conversation
                     if (isAuthenticatesSingle === true && elemUser.get('is_accept_single') === 1) {
                         return false;
                     }
@@ -192,6 +192,19 @@ User.prototype.findByIdChat = function (request, callback) {
                             Users
                                 .forge({id: elemUser.get('users_id')})
                                 .fetch({withRelated: ['useContacts'], require: true})
+                                //     .query(function (qb) {
+                                //         qb.where('id', elemUser.get('users_id'))
+                                //             .andWhere(function () {
+                                //                 this.where('phone', 'like', 'enabled').orWhere('email', 'like', 'enabled');
+                                //             });
+                                //     })
+                                //     .fetch({
+                                //         withRelated: [{
+                                //             'useContacts': function (q) {
+                                //                 q.where('middle_name', 'like', 'enabled').orWhere('user_name', 'like', 'enabled');
+                                //             }
+                                //         }]
+                                //     })
                                 .then(function (dtModel) {
                                     resolveOne(dtModel);
                                 })
@@ -261,8 +274,7 @@ User.prototype.findUser = function (dataRequest, callback) {
     let response = result;
     Users
         .query(function (qb) {
-            qb
-                .where('phone', '=', dataRequest.loginId)
+            qb.where('phone', '=', dataRequest.loginId)
                 .orWhere('email', '=', dataRequest.loginId);
         })
         .fetch()
@@ -362,18 +374,6 @@ User.prototype.insert = function (connect, configDb, dataRequest, callback) {
         }
         callback(resultSql);
     });
-};
-
-User.prototype.show = function (connect, dataRequest, callback) {
-
-};
-
-User.prototype.update = function (connect, dataRequest, callback) {
-
-};
-
-User.prototype.delete = function (connect, dataRequest, callback) {
-
 };
 
 User.prototype.checkExistUserName = function (connect, dataRequest, callback) {

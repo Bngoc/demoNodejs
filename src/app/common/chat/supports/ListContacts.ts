@@ -1,5 +1,6 @@
 'use strict';
 
+import * as _ from 'lodash';
 import {isUndefined} from "util";
 import {libSupports} from "../../libSupports";
 import {isFunction} from "util";
@@ -237,12 +238,17 @@ export class ListContacts extends libSupports {
                 return elem.idConversation;
             }
         });
+        let listUnsetConversationSearchDynamic = $.map(window.listContactSearchDynamic, function (elem) {
+            if (elem.isSingle === true) {
+                return elem.idConversation;
+            }
+        });
 
         let request = {
             url: '/api/chat/search-contacts-all',
             data: {
-                listContactConversation: listUnsetConversation,
-                _method: "post",
+                listContactConversation: _.union(listUnsetConversation, listUnsetConversationSearchDynamic),
+                _method: "post"
             }
         };
 

@@ -20,7 +20,6 @@ const flash = require('connect-flash');
 const sharedSession = require("express-socket.io-session");
 const socketIo = require('socket.io');
 const sessionStore = new session.MemoryStore();
-
 // use hander log
 const env = process.env.NODE_ENV || 'development';
 

@@ -79,7 +79,7 @@ const messageType = helper.coreHelper.app.messageType;
 const conversationType = helper.coreHelper.app.participants;
 const cfgChat = helper.coreHelper.app.cfg_chat;
 const typeMsgSwapKeyValue = libFunction.swap(messageType);
-// const typeConversationSwapKeyValue = libFunction.swap(conversationType);
+
 
 class ChatController extends BaseController {
 
@@ -351,8 +351,8 @@ class ChatController extends BaseController {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                            return conversationType[k]
-                        })),
+                        return conversationType[k]
+                    })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -654,8 +654,8 @@ class ChatController extends BaseController {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                            return conversationType[k]
-                        })),
+                        return conversationType[k]
+                    })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -702,14 +702,32 @@ class ChatController extends BaseController {
         }
     }
 
-    postApiListSearchContactAll(req, res, next) {
+    postApiListSearchContactAll(req, res) {
+        var responseListSearchContact = {data: [], option: {}, done: false, err: '', msg: ''};
         try {
             if (req.xhr) {
-                if (req.body.listContactConversation) {
-                    return res.status(200).send(true);
+                if (req.body.listContactConversation && req.session) {
+                    let reqListSearchAllContactsSingle = {
+                        userCurrentID: req.session.passport.user,
+                        conversationType: [conversationType[0]],
+                        isAuthenticatesSingle: false,
+                        unsetConversation: req.body.listContactConversation
+                    };
+                    let user = new User.class();
+                    user.findByIdChat(reqListSearchAllContactsSingle, function (errCon, modelListSearchContactAll) {
+                        if (errCon) {
+                            responseListSearchContact.err = "ERR002";
+                            responseListSearchContact.msg = errCon;
+                            return res.status(401).send(responseListSearchContact);
+                        }
+                        responseListSearchContact.data = modelListSearchContactAll;
+                        return res.status(200).send(responseListSearchContact);
+                    });
+                } else {
+                    responseListSearchContact.err = "ERR0001";
+                    responseListSearchContact.msg = "ERROR";
+                    return res.status(401).send(responseListSearchContact);
                 }
-
-                return res.status(401).send('ERROR');
             } else {
                 return res.status(500).send('Not use Jquery request to server....!');
             }

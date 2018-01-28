@@ -26,21 +26,21 @@ var Participants = bookshelf.Model.extend({
 let Participant = function () {
 }
 
-Participant.prototype.getConversation = function (dataRes, callback) {
-    Participants
-        .where('id', 'not in', dataRes.blockList)
-        .where({
-            "users_id": dataRes.users_id
-        })
-        // .fetchAll()
-        .fetchAll({withRelated: ['parConversation']})
-        // .fetchAll({withRelated: ['conversations'], columns: ['id', 'title', 'creator_id', 'channel_id']})
-        .then(function (modelParticipant) {
-            callback(null, modelParticipant)
-        })
-        .catch(function (err) {
-            callback(err);
-        });
-}
+// Participant.prototype.getConversation = function (dataRes, callback) {
+//     Participants
+//         .where('id', 'not in', dataRes.blockList)
+//         .where({
+//             "users_id": dataRes.users_id
+//         })
+//         // .fetchAll()
+//         .fetchAll({withRelated: ['parConversation']})
+//         // .fetchAll({withRelated: ['conversations'], columns: ['id', 'title', 'creator_id', 'channel_id']})
+//         .then(function (modelParticipant) {
+//             callback(null, modelParticipant)
+//         })
+//         .catch(function (err) {
+//             callback(err);
+//         });
+// }
 
 module.exports = {model: Participants, class: Participant};

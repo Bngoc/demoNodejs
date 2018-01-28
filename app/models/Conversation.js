@@ -39,14 +39,12 @@ Conversation.prototype.getConversations = function (id, users_id, callback) {
         Conversations
             .where({id: id})
             .fetchAll({
-                withRelated: [
-                    {
-                        'conParticipant': function (qb) {
-                            qb.where('users_id', '!=', users_id)
-                                .where('users_id', 'not in', blockList.blockListParticipantGroup);
-                        }
+                withRelated: [{
+                    'conParticipant': function (qb) {
+                        qb.where('users_id', '!=', users_id)
+                            .where('users_id', 'not in', blockList.blockListParticipantGroup);
                     }
-                ]
+                }]
             })
             .then(function (modelConver) {
                 callback(null, modelConver)
