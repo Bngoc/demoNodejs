@@ -30,7 +30,8 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     rsData: Subscription;
     isDataFriend: any = false;
     isSingle: any = false;
-    remainTime: number;
+    remainTimeDefault: number;
+    remainTimeSearch: number;
     socket: any;
     messageError: any;
 
@@ -41,7 +42,8 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
     ngOnInit() {
 
-        this.remainTime = (0.3 * 60 * 1000);
+        this.remainTimeDefault = (0.3 * 60 * 1000);
+        this.remainTimeSearch = (1 * 60 * 1000);
         this.sendChatMessage = new SendChatMessage();
         this.menuInfoChat = new MenuInfoChat();
         this.loadCss([
@@ -73,11 +75,11 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
                     this.socket = socket;
 
                     let optionInit = {
-                        remainTime: this.remainTime,
+                        remainTimeDefault: this.remainTimeDefault,
+                        remainTimeSearch: this.remainTimeSearch,
                         listContacts: resultListContacts.contactList
                     };
                     this.sendChatMessage.runInitChatMessage(optionInit, socket);
-
                     this.sendChatMessage.clickListContactContentChat(socket, function (resultCallback) {
                         if (resultCallback.isDataFriend === true) {
                             self.isDataFriend = true;

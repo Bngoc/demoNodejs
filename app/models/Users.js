@@ -94,9 +94,9 @@ User.prototype.findUserFullById = function (id, callback) {
 };
 
 User.prototype.findConversation = function (request, callback) {
-    let _this = this;
     let responseData = {};
     let unsetConversation = request.hasOwnProperty('unsetConversation') ? request.unsetConversation : [];
+
     Users.where({id: request.userCurrentID}).fetch({withRelated: ['useContacts']}).then(function (data) {
         responseData['infoAccount'] = data;
         let blockList = new BlockList.class();
@@ -117,7 +117,11 @@ User.prototype.findConversation = function (request, callback) {
                 .query(function (qd) {
                     // qd.where('id', 'not in', blockList);
                     qd.where('conversation_id', 'not in', blockListConversation.blockListConversation.concat(unsetConversation));
-                    qd.where({"users_id": data.get('id')});
+                    if (request.hasOwnProperty('unsetConversation')) {
+                        qd.where("users_id", '!=', data.get('id'));
+                    } else {
+                        qd.where({"users_id": data.get('id')});
+                    }
                     qd.where("type", 'in', request.conversationType);//single vs group
                 })
                 .fetchAll({columns: ['id', 'conversation_id', 'users_id']})

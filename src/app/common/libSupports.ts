@@ -237,6 +237,7 @@ export abstract class libSupports {
 
     public convertDataGroupToSingleParticipant(dataRequest, dataAuthor) {
         console.log(dataRequest, dataAuthor);
+
         let dataResult = $.extend(true, {}, dataRequest);
         dataResult.listParticipant = [];
         dataResult.isTypeSingle = true;

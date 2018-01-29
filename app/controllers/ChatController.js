@@ -399,7 +399,8 @@ class ChatController extends BaseController {
         }
     }
 
-    getIndexAngular(req, res, next) {
+    // ---------------------------S Angular 5-------------------------------
+    getIndexAngular(req, res) {
         let supportApiIndexChat = supportApi;
         try {
             var showResponse = {};
@@ -465,7 +466,7 @@ class ChatController extends BaseController {
         }
     }
 
-    postApiContentChat(req, res, next) {
+    postApiContentChat(req, res) {
         var showResponseChat = {};
         let userCurrent = req.user;
         req.session.dataChannelID = null;
@@ -640,7 +641,7 @@ class ChatController extends BaseController {
         }
     }
 
-    postApiListContact(req, res, next) {
+    postApiListContact(req, res) {
         var showResponseChat = {
             data: [],
             option: {},
@@ -661,7 +662,7 @@ class ChatController extends BaseController {
                 let user = new User.class();
                 user.findByIdChat(requestConversation, function (errConversation, modelConversation) {
                     if (errConversation) {
-                        res.status(500).send(errConversation)
+                        return res.status(500).send(errConversation)
                     } else {
                         let tempModelConversation = modelConversation.infoParticipant;
                         if (isAuthenticatesSingle === false) {
@@ -673,7 +674,7 @@ class ChatController extends BaseController {
 
                             let resultListContactAll = libFunction.renderContactListAll(tempModelConversation, option);
 
-                            res.status(200).send(resultListContactAll);
+                            return res.status(200).send(resultListContactAll);
                         } else {
                             showResponseChat.option.isConversationSingle = isAuthenticatesSingle ? req.body.dataType === conversationType[0] : null;
 
@@ -687,7 +688,7 @@ class ChatController extends BaseController {
                             showResponseChat.done = true;
                             showResponseChat.msg = 'success';
 
-                            res.status(200).send(showResponseChat);
+                            return res.status(200).send(showResponseChat);
                         }
                     }
                 });
@@ -695,10 +696,10 @@ class ChatController extends BaseController {
                 showResponseChat.err = 'ERR0002';
                 showResponseChat.done = 'failed';
                 showResponseChat.msg = 'ERR0003';
-                res.status(200).send(showResponseChat)
+                return res.status(200).send(showResponseChat)
             }
         } catch (ex) {
-            res.status(500).send(ex)
+            return res.status(500).send(ex)
         }
     }
 
@@ -706,7 +707,7 @@ class ChatController extends BaseController {
         var responseListSearchContact = {data: [], option: {}, done: false, err: '', msg: ''};
         try {
             if (req.xhr) {
-                if (req.body.listContactConversation && req.session) {
+                if (req.body.listContactConversation && req.body.valSearchContact && req.session) {
                     let reqListSearchAllContactsSingle = {
                         userCurrentID: req.session.passport.user,
                         conversationType: [conversationType[0]],
@@ -720,7 +721,14 @@ class ChatController extends BaseController {
                             responseListSearchContact.msg = errCon;
                             return res.status(401).send(responseListSearchContact);
                         }
-                        responseListSearchContact.data = modelListSearchContactAll;
+                        let option = {
+                            isSearch: true,
+                            valSearch: req.body.valSearchContact,
+                            cfg_chat: helper.coreHelper.app,
+                            unsetAcceptUser: true
+                        };
+                        responseListSearchContact.data = JSON.stringify(libFunction.renderContactListAll(modelListSearchContactAll.infoParticipant, option), true);
+
                         return res.status(200).send(responseListSearchContact);
                     });
                 } else {
@@ -1181,7 +1189,7 @@ ChatController.prototype.queueUpdateContact = function (socket, dataRequest, cur
     // });
     // });
     // }, updateLastMinute);
-}
+};
 
 ChatController.prototype.convertListMessage = function (modelArrayMessage, reqOption) {
     let resModelMessage = {};
@@ -1221,7 +1229,7 @@ ChatController.prototype.convertListMessage = function (modelArrayMessage, reqOp
 
     }
     return resModelMessage;
-}
+};
 
 ChatController.prototype.supportConfigChat = function (jsonConfigChat) {
     try {
@@ -1229,7 +1237,7 @@ ChatController.prototype.supportConfigChat = function (jsonConfigChat) {
     } catch (ex) {
         return null;
     }
-}
+};
 
 // kue.Job.rangeByState('complete', 0, 0, 'asc', function (err, jobs) {
 //     jobs.forEach(function (job) {

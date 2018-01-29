@@ -23,7 +23,7 @@ export class ListContacts extends libSupports {
     };
 
     public renderSearch() {
-        return '<div class="search-contacts"><input class="search-single" id="search-single" type="text" value="" maxlength="20"></div>';
+        return `<div class="search-contacts"><input class="search-single" id="search-single" type="text" value="" maxlength="20"></div>`;
     };
 
     public renderListContact() {
@@ -44,9 +44,10 @@ export class ListContacts extends libSupports {
     public supportResultContact(obj) {
         let htmlListContactAction = '';
         obj.forEach(function (element) {
-            htmlListContactAction += '<div class="name-contact" data-act-freind="' + element.user_id + '" data-author="author.' + element.user_id + '"><span class="name-act">'
-                + (element.middle_name ? element.middle_name : element.user_name)
-                + '</span><i class="act-aptach fa fa-close" aria-hidden="true"></i></div>';
+            htmlListContactAction += `<div class="name-contact" data-act-freind="${element.user_id}" data-author="author.${element.user_id}">
+                    <span class="name-act">${(element.middle_name ? element.middle_name : element.user_name)}</span>
+                    <i class="act-aptach fa fa-close" aria-hidden="true"></i>
+                </div>`;
         });
 
         return htmlListContactAction;
@@ -59,12 +60,14 @@ export class ListContacts extends libSupports {
             if (listParticipant.includes(element.user_id)) {
                 return false;
             }
-            htmlListContact += '<li class="contact-list"><div class="wap-contact" data-author="author.' + element.user_id + '">'
-                + '<img src="' + (element.path_img ? element.path_img : element.path_img_default) + '" alt="">'
-                + '<div class="meta-contact"><p class="">';
-
-            htmlListContact += (element.hasOwnProperty('textSearch') ? element.textSearch : (element.middle_name ? element.middle_name : element.user_name));
-            htmlListContact += '</p><p class="">' + (element.mood_message ? element.mood_message : '') + '</p></div></div></li>';
+            htmlListContact += `<li class="contact-list">
+                <div class="wap-contact" data-author="author.${element.user_id}">
+                    <img src="${(element.path_img ? element.path_img : element.path_img_default)}" alt="">
+                    <div class="meta-contact">
+                        <p class="">${(element.hasOwnProperty('textSearch') ? element.textSearch : element.showUser)}</p>
+                        <p class="">${(element.mood_message ? element.mood_message : '')}</p>
+                    </div>
+                 </div></li>`;
         });
 
         return htmlListContact;
@@ -88,8 +91,7 @@ export class ListContacts extends libSupports {
             let middle_name = search.test(items.middle_name);
             let email = search.test(items.email);
             let user_name = search.test(items.user_name);
-
-            let textSearch = items.middle_name;
+            let textSearch = items.showUser;
             let textSearchOption = '';
             if (middle_name) {
                 textSearch = items.middle_name.replace(search, `<mark>${strSearch}</mark>`);
@@ -143,40 +145,38 @@ export class ListContacts extends libSupports {
     public renderContactSingle(element, option) {
         let statusPart = option.cfgChat.chatStatus[element.status] ? option.cfgChat.chatStatus[element.status] : "";
         let classStatusPart = statusPart ? ((statusPart == option.cfgChat.cfg_chat.status_hidden_name) ? option.cfgChat.cfg_chat.status_hidden_name_replace : statusPart) : statusPart;
+        let valAuthor = element.hasOwnProperty('unsetConverstion') && element.hasOwnProperty('users_id') ? `data-author="${element.users_id}"` : '';
 
-        let htmlSingleAll = '<li class="contact">'
-            + '<div class="wrap" data-conversation="' + element.idConversation + '" data-type="' + element.type + '"'
-            + 'data-channel="' + element.channel_id + '" data-owner="' + element.creator_id + '">'
-            + '<span channel="status.' + element.channel_id + '"'
-            + 'class="list-icon-status contact-status ' + (element.is_accept_single ? option.cfgChat.cfg_chat.class_undefined : (element.is_life && classStatusPart) ? classStatusPart : "") + '"></span>'
-            + '<img src="' + (element.path_img ? element.path_img : option.cfgChat.cfg_chat.img_single_user) + '" alt=""/>'
-            + '<div class="meta">'
-            + '<span class="name-notify"><p class="name" data-conversation-name="' + element.middle_name + '">' + (element.hasOwnProperty('textSearch') ? element.textSearch : (element.middle_name ? element.middle_name : "&nbsp;")) + ' </p><i class="badges-notify">132</i></span>'
-            + '<p class="preview mood_message">' + (element.mood_message ? element.mood_message : "") + ' </p>'
-            + '</div>'
-            + '</div>'
-            + '</li>';
+        let htmlSingleAll = `<li class="contact">
+            <div class="wrap" data-conversation="${element.idConversation}" data-type="${element.type}" data-channel="${element.channel_id}" data-owner="${element.creator_id}" ${valAuthor}>
+                <span channel="status.${element.channel_id}" class="list-icon-status contact-status ${(element.is_accept_single ? option.cfgChat.cfg_chat.class_undefined : (element.is_life && classStatusPart) ? classStatusPart : "")}"></span>
+                <img src="${(element.path_img ? element.path_img : option.cfgChat.cfg_chat.img_single_user)}" alt=""/>
+                <div class="meta">
+                    <span class="name-notify"><p class="name" data-conversation-name="${element.showUser}">${(element.hasOwnProperty('textSearch') ? element.textSearch : (element.middle_name ? element.middle_name : "&nbsp;"))} </p><i class="badges-notify">132</i></span>
+                <p class="preview mood_message">${(element.mood_message ? element.mood_message : "")} </p>
+                </div>
+                </div>
+            </li>`;
 
         return htmlSingleAll;
     };
 
     public renderContactGroup(element, option) {
-        let htmlGroupAll = '<li class="contact">'
-            + '<div class="wrap" data-conversation="' + element.idConversation + '" data-type="' + element.type + '"'
-            + 'data-channel="' + element.channel_id + '" data-owner="' + element.creator_id + '">'
-            + '<span channel="status.' + element.channel_id + '" class=""></span>'
-            + '<img src="' + (element.path_img_group ? element.path_img_group : option.cfgChat.cfg_chat.img_group_user) + '" alt=""/>'
-            + '<div class="meta">'
-            + '<span class="name-notify"><p class="name" data-conversation-name="' + element.title + '">' + (element.hasOwnProperty('textSearch') ? element.textSearch : element.title) + '</p><i class="badges-notify">132</i></span>'
-            + '<p class="preview"> ' + element.count + '  participants</p>'
-            + '</div>'
-            + '</div>'
-            + '</li>';
+        let htmlGroupAll = `<li class="contact">
+            <div class="wrap" data-conversation="${element.idConversation}" data-type="${element.type}" data-channel="${element.channel_id}" data-owner="${element.creator_id}">
+                <span channel="status.${element.channel_id}" class=""></span>
+                <img src="${(element.path_img_group ? element.path_img_group : option.cfgChat.cfg_chat.img_group_user)}" alt=""/>
+                <div class="meta">
+                    <span class="name-notify"><p class="name" data-conversation-name="${element.title}">${(element.hasOwnProperty('textSearch') ? element.textSearch : element.title)}</p><i class="badges-notify">132</i></span>
+                    <p class="preview">${element.count} participants</p>
+                </div>
+            </div>
+            </li>`;
 
         return htmlGroupAll;
     };
 
-    public showContactListAll(dataResult) {
+    public showContactListAll(dataResult, otpReplace = false) {
         let _this = this;
         let htmlListContact = '';
         let option = {
@@ -190,20 +190,23 @@ export class ListContacts extends libSupports {
             }
         });
 
-        $('#contacts-your').html(htmlListContact);
+        if (otpReplace === false) $('#contacts-your').html(htmlListContact);
+
+        return htmlListContact;
     };
 
-    public subscribeAfterClickListContact(remainTime, reqDataReset) {
+    public subscribeAfterClickListContact() {
+        // public subscribeAfterClickListContact(remainTime, reqDataReset) {
         let _this = this;
         let valSearch = $.trim($('#search-contact').val());
         let runRemainTime = setInterval(function () {
-            if (remainTime !== 'isUndefined' && reqDataReset !== 'isUndefined') {
-                if (remainTime < _this.getDateTimeNow() && valSearch) {
+            if (window.remainTime && window.requestListContactDefault) {
+                if (window.remainTime < _this.getDateTimeNow() && valSearch) {
                     clearInterval(runRemainTime);
                     $('#search-contact').val('');
-                    _this.searchListContactListAll(reqDataReset, function () {
-                        remainTime = isUndefined;
-                        reqDataReset = isUndefined;
+                    _this.searchListContactListAll(window.requestListContactDefault, function () {
+                        window.remainTime = 0;
+                        // window.requestListContactDefault = isUndefined;
                         window.listContactSearchDynamic = [];
                     });
                 }
@@ -211,6 +214,24 @@ export class ListContacts extends libSupports {
                 clearInterval(runRemainTime);
             }
         }, 1000);
+    };
+
+    public appendNotFoundListSearchContact = function () {
+        return `<li id="search-box-contacts" class="search-contact">
+            <div class="wrap">
+                <div class="box-sreach-contact not-found">
+                   Contact not found 
+                </div>
+            </div></li>`;
+    };
+
+    public appendCloseListSearchContact = function () {
+        return `<li id="search-box-contacts" class="search-contact">
+            <div class="wrap">
+                <div class="box-sreach-contact">
+                    <input id="searchContacts" type="button" class="btn btn-primary" value="Search contacts" />
+                </div>
+            </div></li>`;
     };
 
     public searchListContactListAll(requestListContact, callback: any = false) {
@@ -221,9 +242,8 @@ export class ListContacts extends libSupports {
             } else {
                 _this.showContactListAll(dataResult);
                 window.listContactSearchDynamic = $.extend(true, [], dataResult.contactList);
-                let htmlSearch = '<li id="search-box-contacts" class="search-contact"><div class="wrap"><div class="box-sreach-contact">'
-                    + '<input id="searchContacts" type="button" class="btn btn-primary" value="Search contacts" /></div></div></li>';
-                $('#contacts-your').append(requestListContact.reset ? '' : htmlSearch);
+
+                $('#contacts-your').append(requestListContact.reset ? '' : _this.appendCloseListSearchContact());
             }
 
             if (callback == isFunction) {
@@ -243,21 +263,25 @@ export class ListContacts extends libSupports {
                 return elem.idConversation;
             }
         });
-
         let request = {
             url: '/api/chat/search-contacts-all',
             data: {
                 listContactConversation: _.union(listUnsetConversation, listUnsetConversationSearchDynamic),
+                valSearchContact: $.trim($('#search-contact').val()),
                 _method: "post"
             }
         };
+        let self = this;
+        this.callDataJS(request, function (resultListContactSearch) {
+            let listContactSearch = JSON.parse(resultListContactSearch.data);
+            let lengthContacts = $('#contacts-your li').length - 1;
 
-        this.callDataJS(request, function (resultDataListContactSearch) {
-
-            console.log(resultDataListContactSearch, 'resultDataListContactSearch');
-            console.log(window.listContactSearchDynamic, 242);
-            console.log(listUnsetConversation, 231);
+            if (listContactSearch.contactList.length) {
+                $($("#contacts-your li")[lengthContacts]).before($(self.showContactListAll(listContactSearch, true)));
+            } else {
+                $($("#contacts-your li")[lengthContacts]).before($(self.appendNotFoundListSearchContact()));
+            }
+            $('#searchContacts').attr({disabled: true});
         });
     }
 }
-

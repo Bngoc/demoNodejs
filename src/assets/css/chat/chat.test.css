@@ -104,11 +104,8 @@ input {
 }
 
 #newMsgChat {
-    margin: 0px 0px 45px 0;
     position: absolute;
-    bottom: 43px;
     color: beige;
-    width: 100%;
     -moz-animation-delay: 3.5s;
     -webkit-animation-delay: 3.5s;
     -o-animation-delay: 3.5s;
@@ -117,13 +114,17 @@ input {
     transition: height 600ms ease 0ms;
 }
 
+#newMsgChat .bs:hover {
+    transition: 0.1s;
+    background: #8888f7;
+}
+
 #newMsgChat .bs {
     background: blue;
     padding: 5px 10px;
     border-radius: 5px;
     line-height: 23px;
     text-align: center;
-    width: 17%;
     margin: auto;
 }
 
@@ -133,6 +134,12 @@ input {
 
 #boxMsgChat li:last-child {
     margin-bottom: 5px;
+}
+
+#newMsgChat #notifyNewsSms {
+    color: wheat;
+    font-size: small;
+    text-decoration: none;
 }
 
 .scrollbar {

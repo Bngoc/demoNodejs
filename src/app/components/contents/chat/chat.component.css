@@ -879,16 +879,6 @@
     line-height: 130%;
 }
 
-@media screen and (min-width: 735px) {
-    #frame .content .messages ul li p {
-        max-width: 72%;
-    }
-
-    #frame .content .contact-profile .info-conversation-participant {
-        width: 65%;
-    }
-}
-
 #frame .content .message-input {
     position: absolute;
     bottom: 0;
@@ -967,7 +957,7 @@
 /*---------------------------S list contact -------------------------*/
 .list-contact {
     position: relative;
-    width: 250px;
+    width: 290px;
     display: block;
     z-index: 999;
     border: 1px solid;
@@ -1085,12 +1075,28 @@ li.contact-list {
     margin-right: 0px;
 }
 
+#contacts .not-found {
+    color: #90e358;
+    text-align: justify;
+    font-style: italic;
+}
+
 /* ------------------------ Responsive ------------------------------ */
 
 @media screen and (max-width: 360px) {
     #frame {
         width: 100%;
         height: 100vh;
+    }
+}
+
+@media screen and (min-width: 735px) {
+    #frame .content .messages ul li p {
+        max-width: 72%;
+    }
+
+    #frame .content .contact-profile .info-conversation-participant {
+        width: 65%;
     }
 }
 
@@ -1124,6 +1130,13 @@ li.contact-list {
     .container {
         width: 1170px;
     }
+}
+
+@media screen and (min-width: 735px) and (max-width: 992px) {
+    #frame .content .contact-profile .info-conversation-participant {
+        width: 58%;
+    }
+
 }
 
 @media screen and (max-width: 735px) {

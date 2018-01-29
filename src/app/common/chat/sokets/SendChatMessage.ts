@@ -30,10 +30,10 @@ export class SendChatMessage extends libSupports {
         this.clickContactAdd();
         this.clickContactSub();
         this.clickContactSearchSingle();
-        this.clickSearchContact(opt.remainTime);
+        this.clickSearchContact(opt.remainTimeDefault);
         this.getListContact();
         this.clickShowParticipantProfile();
-        this.clickSearchContacts();
+        this.clickSearchContacts(opt.remainTimeSearch);
 
         //add available list contacts
         window.listContacts = opt.listContacts;
@@ -55,6 +55,11 @@ export class SendChatMessage extends libSupports {
         $('#frameListMsg').css({
             'min-height': minHeightFrameListMsg,
             'height': minHeightFrameListMsg
+        });
+        // left - bottom notification newMsgChat
+        $('#newMsgChat').css({
+            "bottom": parseInt(heightDefault) + 4 + 'px',
+            "left": ($('#content-chat').width() / 2 - $('#newMsgChat').width() / 2) + 'px'
         });
     };
 
@@ -201,8 +206,11 @@ export class SendChatMessage extends libSupports {
                 },
                 reset: true
             };
+
             //remain time  or value search length min 3 for reset list contact
-            listContact.subscribeAfterClickListContact((that.getDateTimeNow() + remainTime), requestListContactDefault);
+            window.remainTime = that.getDateTimeNow() + remainTime;
+            window.requestListContactDefault = requestListContactDefault;
+            listContact.subscribeAfterClickListContact();
 
             let requestListContact = jQuery.extend(true, {}, requestListContactDefault);
             if (val.length > 2) {
@@ -427,6 +435,7 @@ export class SendChatMessage extends libSupports {
             let dataChannelID = $(this).find('.wrap').attr("data-channel");
             let dataOwnerID = $(this).find('.wrap').attr("data-owner");
             let dataConversation = $(this).find('.wrap').attr("data-conversation");
+            let valAuthor = $(this).find('.wrap').attr("data-author");
 
             let dataRequest = {
                 url: $('#contacts').attr('data-url'),
@@ -435,6 +444,7 @@ export class SendChatMessage extends libSupports {
                     dataChannelID: dataChannelID,
                     dataOwnerID: dataOwnerID,
                     dataConversation: dataConversation,
+                    valAuthor: ((typeof valAuthor !== typeof undefined && valAuthor !== false) ? valAuthor : null),
                     _method: 'post'
                 }
             };
@@ -647,8 +657,10 @@ export class SendChatMessage extends libSupports {
         }
     };
 
-    clickSearchContacts = function () {
+    clickSearchContacts = function (remainTimeSearch) {
+        let that = this;
         $('body').on('click', '#searchContacts', function () {
+            window.remainTime = that.getDateTimeNow() + remainTimeSearch;
             let listContact = new ListContacts();
             listContact.searchOnContacts(window.listContacts);
         });
