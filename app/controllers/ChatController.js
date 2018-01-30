@@ -30,7 +30,6 @@ const kue = require('kue');
 //     console.log("get =>  ", err, apply);
 // });
 
-
 // const queue = kue.createQueue();
 
 ///////////////////////// ============> var Sentinel = require('redis-sentinel');
@@ -338,21 +337,15 @@ class ChatController extends BaseController {
     }
 
     postListContact(req, res, next) {
-        var showResponseChat = {
-            data: [],
-            option: {},
-            done: false,
-            err: '',
-            msg: ''
-        };
+        let showResponseChat = {data: [], option: {}, done: false, err: '', msg: ''};
         try {
             if (req.user) {
                 let isAuthenticatesSingle = req.body.isAuthenticatesSingle === 'true';
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                        return conversationType[k]
-                    })),
+                            return conversationType[k]
+                        })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -405,7 +398,6 @@ class ChatController extends BaseController {
         try {
             var showResponse = {};
             const aliasRouter = helper.coreHelper.aliasRouter();
-
             let userCurrent = req.user;
             if (userCurrent) {
                 let requestSql = {
@@ -470,8 +462,12 @@ class ChatController extends BaseController {
         var showResponseChat = {};
         let userCurrent = req.user;
         req.session.dataChannelID = null;
-
         try {
+            const aliasRouter = helper.coreHelper.aliasRouter();
+            showResponseChat.urlAction = {
+                actionAddContact: aliasRouter.build('api.chat.add.contacts')
+            };
+
             showResponseChat.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX + FIX_HEIGHT_BOX_CHAT_BST3;
             showResponseChat.maxHeightInputBoxChat = HEIGHT_INPUT_BOX_MAX + FIX_HEIGHT_BOX_CHAT_BST3;
             showResponseChat.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN + FIX_HEIGHT_BOX_CHAT_BST3;
@@ -481,7 +477,6 @@ class ChatController extends BaseController {
             // let chatController = new ChatController();
 
             if (parseInt(req.body.dataConversation) && userCurrent) {
-                // showResponseChat.renderViews = 'chat/content.chat.ejs';
                 let conversation = new Conversation.class();
                 let optionRequest = {
                     id: parseInt(req.body.dataConversation),
@@ -598,7 +593,6 @@ class ChatController extends BaseController {
                             showResponseChat.listParticipant = listParticipant;
                             showResponseChat.urlImagesAvatar = urlImagesAvatar;
                             showResponseChat.booleanConversation = true;
-
                         });
 
                         res.status(200).send(showResponseChat);
@@ -607,11 +601,10 @@ class ChatController extends BaseController {
             } else if ((req.body.dataConversation === "" || req.body.dataConversation === 'null' || req.body.dataConversation == null )
                 && parseInt(req.body.valAuthor) && userCurrent) {
                 // NOT FRIEND AND NOT REQUEST
-                // showResponseChat.renderViews = 'chat/request.chat.ejs';
                 let user = new User.class();
                 user.findUserFullById(parseInt(req.body.valAuthor), function (err, modelUser) {
                     if (err) {
-                        res.sendStatus(403);
+                        return res.sendStatus(403);
                     }
                     let listParticipant = [];
                     let useContacts = modelUser.relations.useContacts;
@@ -620,6 +613,7 @@ class ChatController extends BaseController {
                     showResponseChat.urlImagesAvatar = useContacts.get('path_img') ? useContacts.get('path_img') : cfgChat.img_single_user;
                     showResponseChat.isFriendCurrentSingle = false;
                     showResponseChat.booleanConversation = false;
+
                     let optionRenderNotFriend = {
                         strListStatus: Object.values(chatStatus).join(' '),
                         moodMessageTemp: cfgChat.mood_message_request,
@@ -631,32 +625,27 @@ class ChatController extends BaseController {
 
                     showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
                     showResponseChat.listParticipant = listParticipant;
-                    res.status(200).send(showResponseChat);
+                    return res.status(200).send(showResponseChat);
                 });
             } else {
-                res.status(403).send('ERR');
+                return res.status(403).send('ERR');
             }
         } catch (ex) {
-            res.status(403).send('ERR');
+            return res.status(403).send('ERR');
         }
     }
 
     postApiListContact(req, res) {
-        var showResponseChat = {
-            data: [],
-            option: {},
-            done: false,
-            err: '',
-            msg: ''
-        };
+        var showResponseChat = {data: [], option: {}, done: false, err: '', msg: ''};
         try {
             if (req.user) {
+                const aliasRouter = helper.coreHelper.aliasRouter();
                 let isAuthenticatesSingle = req.body.isAuthenticatesSingle === 'true';
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                        return conversationType[k]
-                    })),
+                            return conversationType[k]
+                        })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -665,6 +654,7 @@ class ChatController extends BaseController {
                         return res.status(500).send(errConversation)
                     } else {
                         let tempModelConversation = modelConversation.infoParticipant;
+                        showResponseChat.option.dataUrlSearchAll = aliasRouter.build('api.chat.list.search.contacts.all');
                         if (isAuthenticatesSingle === false) {
                             let option = {
                                 isSearch: req.body.isSearch !== undefined ? req.body.isSearch === 'true' : false,
@@ -672,9 +662,11 @@ class ChatController extends BaseController {
                                 cfg_chat: helper.coreHelper.app
                             };
 
-                            let resultListContactAll = libFunction.renderContactListAll(tempModelConversation, option);
+                            showResponseChat.data = libFunction.renderContactListAll(tempModelConversation, option);
+                            showResponseChat.done = true;
+                            showResponseChat.msg = 'success';
 
-                            return res.status(200).send(resultListContactAll);
+                            return res.status(200).send(showResponseChat);
                         } else {
                             showResponseChat.option.isConversationSingle = isAuthenticatesSingle ? req.body.dataType === conversationType[0] : null;
 
@@ -694,28 +686,29 @@ class ChatController extends BaseController {
                 });
             } else {
                 showResponseChat.err = 'ERR0002';
-                showResponseChat.done = 'failed';
+                showResponseChat.done = 'Failed';
                 showResponseChat.msg = 'ERR0003';
-                return res.status(200).send(showResponseChat)
+                return res.status(401).send(showResponseChat)
             }
         } catch (ex) {
             return res.status(500).send(ex)
         }
     }
 
+    // search all all list contact single
     postApiListSearchContactAll(req, res) {
         var responseListSearchContact = {data: [], option: {}, done: false, err: '', msg: ''};
         try {
             if (req.xhr) {
-                if (req.body.listContactConversation && req.body.valSearchContact && req.session) {
+                if (req.body.listContactParticipant && req.body.valSearchContact && req.session) {
                     let reqListSearchAllContactsSingle = {
                         userCurrentID: req.session.passport.user,
                         conversationType: [conversationType[0]],
                         isAuthenticatesSingle: false,
-                        unsetConversation: req.body.listContactConversation
+                        unsetParticipants: req.body.listContactParticipant
                     };
                     let user = new User.class();
-                    user.findByIdChat(reqListSearchAllContactsSingle, function (errCon, modelListSearchContactAll) {
+                    user.searchListParticipants(reqListSearchAllContactsSingle, function (errCon, modelSearchContactAll) {
                         if (errCon) {
                             responseListSearchContact.err = "ERR002";
                             responseListSearchContact.msg = errCon;
@@ -727,7 +720,7 @@ class ChatController extends BaseController {
                             cfg_chat: helper.coreHelper.app,
                             unsetAcceptUser: true
                         };
-                        responseListSearchContact.data = JSON.stringify(libFunction.renderContactListAll(modelListSearchContactAll.infoParticipant, option), true);
+                        responseListSearchContact.data = JSON.stringify(libFunction.renderContactListAll(modelSearchContactAll.infoParticipant, option), true);
 
                         return res.status(200).send(responseListSearchContact);
                     });
@@ -741,6 +734,76 @@ class ChatController extends BaseController {
             }
         } catch (ex) {
             return res.status(500);
+        }
+    }
+
+    postApiAddContact(req, res) {
+        var responseAddContact = {data: [], option: {}, done: false, err: '', msg: ''};
+        if (req.xhr) {
+
+            if (req.body.participantID && req.session) {
+                const aliasRouter = helper.coreHelper.aliasRouter();
+                let checkParticipant = {
+                    userCurrentID: req.session.passport.user,
+                    listUserID: [req.body.participantID]
+                };
+                let user = new User.class();
+                user.checkExitsListUsers(checkParticipant, function (errCheck, resultDataCheck) {
+                    if (errCheck) return res.status(401).send(errCheck);
+
+                    let listPartSingle = resultDataCheck.listParticipant.map(function (items) {
+                        if (!resultDataCheck.blockListParticipants.includes(items.get('id'))) {
+                            return items.get('id');
+                        }
+                    });
+                    if (listPartSingle.length) {
+                        let listParticipant = [
+                            {users_id: req.session.passport.user, type: conversationType[0]},
+                            {users_id: listPartSingle[0], type: conversationType[0]}
+                        ];
+                        let dataChannelID = libFunction.randomStringGenerate();
+                        let reqModelsInsert = {
+                            title: req.body.hasOwnProperty('title') ? req.body.title : '',
+                            creator_id: req.session.passport.user,
+                            channel_id: dataChannelID,
+                            listParticipant: listParticipant
+                        };
+
+                        let conversation = new Conversation.class();
+                        conversation.insertConversation(reqModelsInsert, function (errModel, modelConversation) {
+                            if (errModel) {
+                                responseAddContact.err = "ER003";
+                                responseAddContact.msg = errModel;
+
+                                return res.status(401).send(responseAddContact);
+                            }
+                            let infoParticipant = req.body.hasOwnProperty('infoParticipant') ? req.body.infoParticipant : null;
+                            let response = {
+                                url: aliasRouter.build('api.chat.content.chat'),
+                                userName: infoParticipant ? infoParticipant.userName : '',
+                                dataChannelID: dataChannelID,
+                                dataOwnerID: req.user,
+                                dataConversation: modelConversation.get('id'),
+                                valAuthor: listPartSingle[0],
+                            };
+
+                            return res.status(200).send(response);
+                        });
+                    } else {
+                        responseAddContact.err = "ERR004";
+                        responseAddContact.msg = "Not data request Participant by block";
+
+                        return res.status(401).send(responseAddContact);
+                    }
+                });
+            } else {
+                responseAddContact.err = "ERR002";
+                responseAddContact.msg = "Not data request";
+
+                return res.status(401).send(responseAddContact);
+            }
+        } else {
+            return res.status(500).send('Not use Jquery request to server....!');
         }
     }
 

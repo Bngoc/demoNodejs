@@ -176,7 +176,6 @@ Conversation.prototype.insertConversation = function (reqInsert, callback) {
             .save(null, {transacting: t})
             .tap(function (modelDataConversation) {
                 return Promise.map(reqInsert.listParticipant, function (info) {
-                    // Some validation could take place here.
                     return new Participants.model(info).save({'conversation_id': modelDataConversation.id}, {transacting: t});
                 });
             });
@@ -186,6 +185,5 @@ Conversation.prototype.insertConversation = function (reqInsert, callback) {
         callback(err);
     });
 };
-
 
 module.exports = {model: Conversations, class: Conversation};

@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `conversation` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(40) NULL,
   `creator_id` INT NOT NULL,
-  `channel_id` VARCHAR(45) NULL,
+  `channel_id` VARCHAR(45) NOT NULL,
   `deleted_users_id` int(11) NOT NULL,
   `is_deleted` tinyint(1) NULL DEFAULT 0,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,

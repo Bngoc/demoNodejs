@@ -34,7 +34,7 @@ export class SendChatMessage extends libSupports {
         this.getListContact();
         this.clickShowParticipantProfile();
         this.clickSearchContacts(opt.remainTimeSearch);
-
+        this.clickAddContact(socket);
         //add available list contacts
         window.listContacts = opt.listContacts;
     };
@@ -293,6 +293,7 @@ export class SendChatMessage extends libSupports {
     getListContact = function () {
         var that = this;
         $('body').on('click', '#list-contact-your', function () {
+            window.remainTime = 1;
             let requestListContact = {
                 url: $('#box-search-contacts').attr('data-url'),
                 data: {
@@ -402,25 +403,17 @@ export class SendChatMessage extends libSupports {
             let dataChannelID = ele.find('span.status-info-part').attr("data-channel");
             let valAuthor = ele.find('span.status-info-part').attr("data-author");
             let dataConversation = ele.find('span.status-info-part').attr("data-conversation");
-
             let dataRequest = {
                 url: $('#contacts').attr('data-url'),
-                data: {
-                    userName: userName,
-                    dataChannelID: dataChannelID,
-                    valAuthor: valAuthor,
-                    dataConversation: dataConversation,
-                    _method: 'post'
-                }
+                userName: userName,
+                dataChannelID: dataChannelID,
+                valAuthor: valAuthor,
+                dataConversation: dataConversation,
             };
             let self = this;
-            self.reloadContentBoxChatAjax(dataRequest, function (resultData) {
-                self.renderHtmlContentBoxChat(socket, resultData, function () {
-                    if (resultData.booleanConversation) {
-                        socket.emit('msgContentChat', dataRequest);
-                        self.getDefaultHeightMsgBox();
-                    }
-                });
+
+            self.reloadContentBoxChatAjax(dataRequest, socket, function (resultCallback) {
+                // callback(resultCallback);
             });
         }
     };
@@ -428,35 +421,48 @@ export class SendChatMessage extends libSupports {
     clickListContactContentChat = function (socket, callback) {
         var that = this;
         $('body').on('click', '#contacts li.contact', function () {
-            // $('li.contact').removeClass('active');
-            // $(this).addClass('active');
-
             let userName = $(this).find('.meta p.name').attr('data-conversation-name');
             let dataChannelID = $(this).find('.wrap').attr("data-channel");
             let dataOwnerID = $(this).find('.wrap').attr("data-owner");
             let dataConversation = $(this).find('.wrap').attr("data-conversation");
             let valAuthor = $(this).find('.wrap').attr("data-author");
-
             let dataRequest = {
                 url: $('#contacts').attr('data-url'),
-                data: {
-                    userName: userName,
-                    dataChannelID: dataChannelID,
-                    dataOwnerID: dataOwnerID,
-                    dataConversation: dataConversation,
-                    valAuthor: ((typeof valAuthor !== typeof undefined && valAuthor !== false) ? valAuthor : null),
-                    _method: 'post'
-                }
+                userName: userName,
+                dataChannelID: dataChannelID,
+                dataOwnerID: dataOwnerID,
+                dataConversation: dataConversation,
+                valAuthor: valAuthor
             };
-            that.reloadContentBoxChatAjax(dataRequest, function (dataResult) {
-                that.renderHtmlContentBoxChat(socket, dataResult, function () {
-                    if (dataResult.booleanConversation) {
-                        socket.emit('msgContentChat', dataRequest);
-                        that.getDefaultHeightMsgBox();
-                    }
-                    let isSingle = dataResult.hasOwnProperty('isTypeSingle') ? dataResult.isTypeSingle : null;
-                    callback({isDataFriend: dataResult.isFriendCurrentSingle, isSingle: isSingle});
-                });
+
+            that.reloadContentBoxChatAjax(dataRequest, socket, function (resultCallback) {
+                callback(resultCallback);
+            });
+        });
+    };
+
+    reloadContentBoxChatAjax = function (request, socket, callback) {
+        let self = this;
+        let dataRequest = {
+            url: request.hasOwnProperty('url') && request.url ? request.url : '',
+            data: {
+                userName: request.hasOwnProperty('userName') && request.userName ? request.userName : 'undefined user',
+                dataChannelID: request.hasOwnProperty('dataChannelID') && request.dataChannelID ? request.dataChannelID : null,
+                dataOwnerID: request.hasOwnProperty('dataOwnerID') && request.dataOwnerID ? request.dataOwnerID : null,
+                dataConversation: request.hasOwnProperty('dataConversation') && request.dataConversation ? request.dataConversation : null,
+                valAuthor: request.hasOwnProperty('valAuthor') && request.valAuthor ? request.valAuthor : null,
+                _method: 'post'
+            }
+        };
+
+        this.callDataJS(dataRequest, function (dataResult) {
+            self.renderHtmlContentBoxChat(socket, dataResult, function () {
+                if (dataResult.booleanConversation) {
+                    socket.emit('msgContentChat', dataRequest);
+                    self.getDefaultHeightMsgBox();
+                }
+                let isSingle = dataResult.hasOwnProperty('isTypeSingle') ? dataResult.isTypeSingle : null;
+                callback({isDataFriend: dataResult.isFriendCurrentSingle, isSingle: isSingle, dataResult: dataResult});
             });
         });
     };
@@ -469,6 +475,40 @@ export class SendChatMessage extends libSupports {
             showProfileParticipantChat.renderHtmlProfileParticipants(self.dataConversationProfile, function () {
                 $('#myModalParticipant').modal({
                     show: 'false'
+                });
+            });
+        });
+    };
+
+    clickAddContact = function (socket) {
+        let self = this;
+        $('body').on('click', '#add-contact-user', function () {
+            let checkParticopantId = $('#extend-participant i[code-participant-id]').attr('code-participant-id');
+            let participantID = typeof checkParticopantId !== "undefined" ? checkParticopantId : null;
+            let userName = $('#participant-user-name').text();
+            let imgAvatar = $('#participant-profile').attr('src');
+            let requestData = {
+                url: $(this).attr('data-url'),
+                data: {
+                    participantID: participantID,
+                    infoParticipant: {userName: userName, imgAvatar: imgAvatar},
+                    _method: "post"
+                }
+            };
+            let listContact = new ListContacts();
+            self.callDataJS(requestData, function (dataResult) {
+                let dataRequest = {
+                    url: dataResult.url,
+                    userName: dataResult.userName,
+                    dataChannelID: dataResult.dataChannelID,
+                    dataOwnerID: dataResult.dataOwnerID,
+                    dataConversation: dataResult.dataConversation,
+                    valAuthor: dataResult.valAuthor
+                };
+
+                self.reloadContentBoxChatAjax(dataRequest, socket, function (dataResultContact) {
+                    window.remainTime = 1;
+                    listContact.subscribeAfterClickListContact();
                 });
             });
         });
@@ -493,13 +533,6 @@ export class SendChatMessage extends libSupports {
         setTimeout(function () {
             socket.emit('msgContentChat', dataRequest);
         }, 1000);
-    };
-
-    reloadContentBoxChatAjax = function (dataRequest, callback) {
-        var that = this;
-        this.callDataJS(dataRequest, function (dataResult) {
-            callback(dataResult);
-        });
     };
 
     renderHtmlContentBoxChat = function (socket, dataRequest, callback) {

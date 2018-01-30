@@ -144,118 +144,144 @@ User.prototype.findConversation = function (request, callback) {
                                 }
                             }]
                         })
-                        .then(function (modelConver) {
+                        .then((modelConver) => {
                             responseData['modelConversation'] = modelConver;
-
                             callback(null, responseData);
                         })
-                        .catch(function (errPartici) {
-                            callback(errPartici);
-                        });
-
-                }).catch(function (errPartici) {
-                callback(errPartici);
-            });
+                        .catch((errCon) => callback(errCon));
+                }).catch((errPart) => callback(errPart));
         });
-    }).catch(function (err) {
-        callback(err);
-    });
+    }).catch((err) => callback(err));
 };
 
 User.prototype.findByIdChat = function (request, callback) {
     let responseData = {};
     let isAuthenticatesSingle = request.isAuthenticatesSingle !== undefined ? request.isAuthenticatesSingle : false;
+    let self = this;
     this.findConversation(request, function (err, modelConversation) {
-        if (err) {
-            callback(err)
-        } else {
-            responseData['infoAccount'] = modelConversation.infoAccount;
-            let modelConver = modelConversation.modelConversation;
-            // let blockList = modelConversation.blockList;
-            let infoParticipantClone = [];
+        if (err) callback(err);
 
-            modelConver.forEach(function (elem) {
-                elem.relations.conParticipant.forEach(function (elemUser) {
-                    // check friend search add group conversation
-                    if (isAuthenticatesSingle === true && elemUser.get('is_accept_single') === 1) {
-                        return false;
-                    }
+        responseData['infoAccount'] = modelConversation.infoAccount;
+        let modelConver = modelConversation.modelConversation;
+        let infoParticipantClone = [];
 
-                    let infoParticipant = {};
-                    infoParticipant['idConversation'] = elem.get('id');
-                    infoParticipant['title'] = elem.get('title');
-                    infoParticipant['creator_id'] = elem.get('creator_id');
-                    infoParticipant['channel_id'] = elem.get('channel_id');
-                    infoParticipant['type'] = elemUser.get('type');
-                    infoParticipant['is_accept_single'] = elemUser.get('is_accept_single');
-                    infoParticipant['is_accept_group'] = elemUser.get('is_accept_group');
+        modelConver.forEach(function (elem) {
+            elem.relations.conParticipant.forEach(function (elemUser) {
+                // check friend search add group conversation
+                if (isAuthenticatesSingle === true && elemUser.get('is_accept_single') === 1) {
+                    return false;
+                }
 
-                    infoParticipantClone.push(
-                        new Promise(function (resolveOne, rejectOne) {
+                let infoParticipant = {};
+                infoParticipant['idConversation'] = elem.get('id');
+                infoParticipant['title'] = elem.get('title');
+                infoParticipant['creator_id'] = elem.get('creator_id');
+                infoParticipant['channel_id'] = elem.get('channel_id');
+                infoParticipant['type'] = elemUser.get('type');
+                infoParticipant['is_accept_single'] = elemUser.get('is_accept_single');
+                infoParticipant['is_accept_group'] = elemUser.get('is_accept_group');
 
-                            Users
-                                .forge({id: elemUser.get('users_id')})
-                                .fetch({withRelated: ['useContacts'], require: true})
-                                //     .query(function (qb) {
-                                //         qb.where('id', elemUser.get('users_id'))
-                                //             .andWhere(function () {
-                                //                 this.where('phone', 'like', 'enabled').orWhere('email', 'like', 'enabled');
-                                //             });
-                                //     })
-                                //     .fetch({
-                                //         withRelated: [{
-                                //             'useContacts': function (q) {
-                                //                 q.where('middle_name', 'like', 'enabled').orWhere('user_name', 'like', 'enabled');
-                                //             }
-                                //         }]
-                                //     })
-                                .then(function (dtModel) {
-                                    resolveOne(dtModel);
-                                })
-                                .catch(function (errUser) {
-                                    rejectOne(errUser);
-                                });
-
-                        }).then(function (resultUser) {
-
-                            infoParticipant['infoAccountParticipant'] = resultUser;
-                            return infoParticipant;
-                        })
-                    );
-                });
+                infoParticipantClone.push(
+                    new Promise(function (resolveOne, rejectOne) {
+                        Users
+                            .forge({id: elemUser.get('users_id')})
+                            .fetch({withRelated: ['useContacts'], require: true})
+                            .then((dtModel) => resolveOne(dtModel))
+                            .catch((errUser) => rejectOne(errUser));
+                    }).then(function (resultUser) {
+                        infoParticipant['infoAccountParticipant'] = resultUser;
+                        return infoParticipant;
+                    })
+                );
             });
+        });
 
-            let resultDataParticipant = [];
+        self.promiseAllParticipants(infoParticipantClone, function (ex, result) {
+            if (ex) callback(ex);
 
-            Promise.all(infoParticipantClone)
-                .then(function (resultValueAllPromise) {
-                    resultValueAllPromise.forEach((element) => {
-                        if (element.type === coreHelper.app.participants[0]) {
-                            element.count = 1;
-                            resultDataParticipant.push(element);
-                        } else {
-                            // Group
-                            let indexId = resultDataParticipant.findIndex(x => x.idConversation == element.idConversation);
-                            if (indexId !== -1) {
-                                resultDataParticipant[indexId].count += 1;
-                                resultDataParticipant[indexId].infoAccountParticipant.push(element.infoAccountParticipant);
-                            } else {
-                                let tmp = element.infoAccountParticipant;
-                                element.count = 1;
-                                element.infoAccountParticipant = [];
-                                element.infoAccountParticipant.push(tmp);
+            responseData['infoParticipant'] = result;
+            callback(null, responseData);
+        });
+    });
+};
 
-                                resultDataParticipant.push(element);
-                            }
-                        }
+User.prototype.promiseAllParticipants = function (infoParticipantClone, callback) {
+    let resultDataParticipant = [];
+    Promise.all(infoParticipantClone).then((resultValueAllPromise) => {
+        resultValueAllPromise.forEach((element) => {
+            if (element.type === coreHelper.app.participants[0]) {
+                element.count = 1;
+                resultDataParticipant.push(element);
+            } else {
+                // Group
+                let indexId = resultDataParticipant.findIndex(x => x.idConversation == element.idConversation);
+                if (indexId !== -1) {
+                    resultDataParticipant[indexId].count += 1;
+                    resultDataParticipant[indexId].infoAccountParticipant.push(element.infoAccountParticipant);
+                } else {
+                    let tmp = element.infoAccountParticipant;
+                    element.count = 1;
+                    element.infoAccountParticipant = [];
+                    element.infoAccountParticipant.push(tmp);
+
+                    resultDataParticipant.push(element);
+                }
+            }
+        });
+
+        callback(null, resultDataParticipant);
+    }).catch(ex => callback(ex));
+};
+
+User.prototype.searchListParticipants = function (request, callback) {
+    let responseData = {};
+    let unsetParticipants = request.hasOwnProperty('unsetParticipants') ? request.unsetParticipants : [];
+    let self = this;
+    Users.where({id: request.userCurrentID}).fetch().then(function (data) {
+        let blockList = new BlockList.class();
+        blockList.getListBlockConversation(request.userCurrentID, function (errBlockList, rsBlockList) {
+            if (errBlockList) callback(errBlockList);
+
+            Users
+                .query((qb) => {
+                    qb.where('id', 'not in', rsBlockList.blockListParticipants.concat(unsetParticipants));
+                })
+                .fetchAll({colums: ['id']})
+                .then((resultMode) => {
+
+                    let infoParticipants = [];
+                    resultMode.forEach(function (items) {
+                        let infoParticipant = {};
+                        infoParticipant['type'] = request.conversationType[0];
+                        infoParticipant['idConversation'] = null;
+                        infoParticipant['title'] = '';
+                        infoParticipant['creator_id'] = null;
+                        infoParticipant['channel_id'] = null;
+
+                        infoParticipants.push(
+                            new Promise(function (resolveOne, rejectOne) {
+                                Users
+                                    .forge({id: items.get('id')})
+                                    .fetch({withRelated: ['useContacts'], require: true})
+                                    .then((dtModel) => resolveOne(dtModel))
+                                    .catch((errUser) => rejectOne(errUser));
+                            }).then(function (resultUser) {
+                                infoParticipant['infoAccountParticipant'] = resultUser;
+                                return infoParticipant;
+                            })
+                        );
                     });
 
-                    responseData['infoParticipant'] = resultDataParticipant;
-                    callback(null, responseData);
-                });
-        }
-    });
+                    self.promiseAllParticipants(infoParticipants, function (exPromise, result) {
+                        if (exPromise) callback(exPromise);
 
+                        responseData['infoParticipant'] = result;
+                        callback(null, responseData);
+                    });
+                })
+                .catch((ex) => callback(ex));
+        });
+    }).catch((exUser) => callback(exUser));
 };
 
 // Users.prototype.findByIdChat = function (id, callback) {
@@ -265,6 +291,20 @@ User.prototype.findByIdChat = function (request, callback) {
 //         callback(err);
 //     });
 // };
+
+User.prototype.checkExitsListUsers = function (request, callback) {
+    let blockList = new BlockList.class();
+    blockList.getListBlockConversation(request.userCurrentID, function (errBlockList, blockList) {
+        if (errBlockList) callback(errBlockList);
+        Users
+            .query((dq) => dq.where('id', 'in', request.listUserID))
+            .fetchAll({columns: ["id"]})
+            .then((modeData) => {
+                callback(null, {blockListParticipants: blockList.blockListParticipants, listParticipant: modeData})
+            })
+            .catch(ex => callback(ex))
+    });
+};
 
 User.prototype.findOne = function (dataRequest, callback) {
     Users.where({id: dataRequest.id}).fetch().then(function (data) {
@@ -345,7 +385,6 @@ User.prototype.insertUser = function (dataRequest, callback) {
 };
 
 User.prototype.insert = function (connect, configDb, dataRequest, callback) {
-
     const MyAppModel = mysqlModel.createConnection(configDb);
 
     var modelUserData = {

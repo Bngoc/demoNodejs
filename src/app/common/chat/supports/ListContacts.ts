@@ -145,7 +145,7 @@ export class ListContacts extends libSupports {
     public renderContactSingle(element, option) {
         let statusPart = option.cfgChat.chatStatus[element.status] ? option.cfgChat.chatStatus[element.status] : "";
         let classStatusPart = statusPart ? ((statusPart == option.cfgChat.cfg_chat.status_hidden_name) ? option.cfgChat.cfg_chat.status_hidden_name_replace : statusPart) : statusPart;
-        let valAuthor = element.hasOwnProperty('unsetConverstion') && element.hasOwnProperty('users_id') ? `data-author="${element.users_id}"` : '';
+        let valAuthor = element.hasOwnProperty('listContactParticipant') && element.hasOwnProperty('users_id') ? `data-author="${element.users_id}"` : '';
 
         let htmlSingleAll = `<li class="contact">
             <div class="wrap" data-conversation="${element.idConversation}" data-type="${element.type}" data-channel="${element.channel_id}" data-owner="${element.creator_id}" ${valAuthor}>
@@ -153,7 +153,7 @@ export class ListContacts extends libSupports {
                 <img src="${(element.path_img ? element.path_img : option.cfgChat.cfg_chat.img_single_user)}" alt=""/>
                 <div class="meta">
                     <span class="name-notify"><p class="name" data-conversation-name="${element.showUser}">${(element.hasOwnProperty('textSearch') ? element.textSearch : (element.middle_name ? element.middle_name : "&nbsp;"))} </p><i class="badges-notify">132</i></span>
-                <p class="preview mood_message">${(element.mood_message ? element.mood_message : "")} </p>
+                <p class="preview mood_message">${(element.hasOwnProperty('mood_message') && element.mood_message ? element.mood_message : "")} </p>
                 </div>
                 </div>
             </li>`;
@@ -225,11 +225,11 @@ export class ListContacts extends libSupports {
             </div></li>`;
     };
 
-    public appendCloseListSearchContact = function () {
+    public appendCloseListSearchContact = function (option) {
         return `<li id="search-box-contacts" class="search-contact">
             <div class="wrap">
                 <div class="box-sreach-contact">
-                    <input id="searchContacts" type="button" class="btn btn-primary" value="Search contacts" />
+                    <input id="searchContacts" data-url="${option.dataUrlSearchAll}" type="button" class="btn btn-primary" value="Search contacts" />
                 </div>
             </div></li>`;
     };
@@ -240,10 +240,10 @@ export class ListContacts extends libSupports {
             if (dataResult.err) {
                 console.log('ERROR: ', dataResult.err)
             } else {
-                _this.showContactListAll(dataResult);
-                window.listContactSearchDynamic = $.extend(true, [], dataResult.contactList);
+                _this.showContactListAll(dataResult.data);
+                window.listContactSearchDynamic = $.extend(true, [], dataResult.data.contactList);
 
-                $('#contacts-your').append(requestListContact.reset ? '' : _this.appendCloseListSearchContact());
+                $('#contacts-your').append(requestListContact.reset ? '' : _this.appendCloseListSearchContact(dataResult.option));
             }
 
             if (callback == isFunction) {
@@ -253,20 +253,20 @@ export class ListContacts extends libSupports {
     };
 
     public searchOnContacts = function (listContacts) {
-        let listUnsetConversation = $.map(listContacts, function (elem) {
+        let listUnsetAuthor = $.map(listContacts, function (elem) {
             if (elem.isSingle === true) {
-                return elem.idConversation;
+                return elem.users_id;
             }
         });
-        let listUnsetConversationSearchDynamic = $.map(window.listContactSearchDynamic, function (elem) {
+        let listUnsetAuthorSearchDynamic = $.map(window.listContactSearchDynamic, function (elem) {
             if (elem.isSingle === true) {
-                return elem.idConversation;
+                return elem.users_id;
             }
         });
         let request = {
-            url: '/api/chat/search-contacts-all',
+            url: $('#searchContacts').attr('data-url'),
             data: {
-                listContactConversation: _.union(listUnsetConversation, listUnsetConversationSearchDynamic),
+                listContactParticipant: _.union(listUnsetAuthor, listUnsetAuthorSearchDynamic),
                 valSearchContact: $.trim($('#search-contact').val()),
                 _method: "post"
             }

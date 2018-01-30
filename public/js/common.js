@@ -61,7 +61,7 @@ function getDateTimeNow() {
 }
 
 function customDateTime(dateTime, timestampLastWeek) {
-    if (dateTime == undefined) return '';
+    if (typeof dateTime == undefined) return '';
     var weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     let objDate = new Date(dateTime);
     let strTime = '';

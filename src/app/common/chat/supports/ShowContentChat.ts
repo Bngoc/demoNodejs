@@ -27,7 +27,7 @@ export class ShowContentChat {
 
         htmlProfile += `<div class="info-participant">
             <input class="star favorite-participant" type="checkbox" title="bookmark users" checked/>
-            <p>${reqDataContentChat.userName}</p></div>`;
+            <p id="participant-user-name">${reqDataContentChat.userName}</p></div>`;
 
         htmlProfile += `<div id="extend-participant" class="info-conversation ${(reqDataContentChat.hasOwnProperty('isTypeSingle') ? reqDataContentChat.isTypeSingle ? "" : " cursor" : "")}">`;
 
@@ -82,6 +82,8 @@ export class ShowContentChat {
     }
 
     htmlBoxContentChat(reqBoxContentChat) {
+        let optUrl = reqBoxContentChat.urlAction;
+
         let htmlBoxContentChat = `<div class="messages" id="frameListMsg" box-raw-msg="${reqBoxContentChat.minHeightBoxChat}"
             page="${reqBoxContentChat.page}" box-change-msg="${reqBoxContentChat.minHeightBoxChat}">`;
 
@@ -90,12 +92,12 @@ export class ShowContentChat {
                 htmlBoxContentChat += '<ul id="boxMsgChat"></ul>';
             } else {
                 if (reqBoxContentChat.isCurrentOwnerId) {
-                    htmlBoxContentChat += '<div class="send-request-user">contact request sent - <a class="">Resend contact request</a></div>';
+                    htmlBoxContentChat += `<div class="send-request-user">contact request sent - <a class="">Resend contact request</a></div>`;
                 } else {
                     htmlBoxContentChat += `<div class="clearfix"></div>
                         <div class="" id="request-area"><div class="accept-request-user">
                             <div class="d-block md-col-12" align="center">
-                                <span>sslskgmjslgk</span>
+                                <span>XXXXXXXXXXXXXXXXXXXXXXXXX</span>
                                 <button class="btn btn-primary" id="reply-decline-user">decline</button>
                                 <button class="btn btn-primary" id="reply-accept-user">accept</button>
                             </div>
@@ -108,7 +110,7 @@ export class ShowContentChat {
                 <div class="" id="request-area"><div class="accept-request-user">
                     <div class="d-block md-col-12" align="center">
                         <span><p class="name-partici-req">${reqBoxContentChat.userName}</p> is not in your contacts</span>
-                        <button class="btn btn-primary" id="add-contact-user">Add to contacts</button>
+                        <button data-url="${optUrl.actionAddContact}" class="btn btn-primary" id="add-contact-user">Add to contacts</button>
                     </div>
                 </div></div>`;
         }

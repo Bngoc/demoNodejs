@@ -87,6 +87,8 @@ class Routers {
         app.post("/api/chat/content-chat", 'api.chat.content.chat', [useAuthenticateApiToken.verifyToken, useMiddlewareAngular.isAuthenticated], chatController.postApiContentChat);
         app.post("/api/chat/list-contact", 'api.chat.list.contact', [useAuthenticateApiToken.verifyToken, useMiddlewareAngular.isAuthenticated], chatController.postApiListContact);
         app.post("/api/chat/search-contacts-all", 'api.chat.list.search.contacts.all', [useAuthenticateApiToken.verifyToken, useMiddlewareAngular.isAuthenticated], chatController.postApiListSearchContactAll);
+
+        app.post("/api/chat/add-contacts", 'api.chat.add.contacts', [useAuthenticateApiToken.verifyToken, useMiddlewareAngular.isAuthenticated], chatController.postApiAddContact);
         // -----------------------------------E Angular 5-------------------------------------------
 
         return router;
