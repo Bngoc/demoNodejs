@@ -1,11 +1,10 @@
 'use strict';
 
 const path = require('path');
-
 const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const coreHelper = new CoreHelper();
-
 const bookshelf = require('bookshelf')(coreHelper.connectKnex());
+
 
 let BlockLists = bookshelf.Model.extend({
     tableName: 'block_list',

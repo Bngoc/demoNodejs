@@ -1,7 +1,6 @@
 'use strict';
 
 const path = require('path');
-
 const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const coreHelper = new CoreHelper();
 const bookshelf = coreHelper.bookshelf();

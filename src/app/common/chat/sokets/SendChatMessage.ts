@@ -412,7 +412,7 @@ export class SendChatMessage extends libSupports {
                 dataConversation: dataConversation,
             };
             let self = this;
-
+            self.activeListContact(null);
             self.reloadContentBoxChatAjax(dataRequest, socket, function (resultCallback) {
                 // callback(resultCallback);
             });
@@ -435,8 +435,9 @@ export class SendChatMessage extends libSupports {
                 dataConversation: dataConversation,
                 valAuthor: valAuthor
             };
-
+            let elem = this;
             that.reloadContentBoxChatAjax(dataRequest, socket, function (resultCallback) {
+                that.activeListContact(elem);
                 callback(resultCallback);
             });
         });
@@ -499,10 +500,13 @@ export class SendChatMessage extends libSupports {
                     _method: "post"
                 }
             };
+            let elem = this;
             if (requestData.url) {
                 let listContact = new ListContacts();
                 self.callDataJS(requestData, function (result) {
                     let dataResult = result.data;
+                    window.remainTime = 1;
+                    window.valSearchAnonymous = true;
                     if (dataResult.resendRequest == 1) {
                         let dataRequest = {
                             url: dataResult.url,
@@ -513,12 +517,16 @@ export class SendChatMessage extends libSupports {
                             valAuthor: dataResult.valAuthor
                         };
 
-                        self.reloadContentBoxChatAjax(dataRequest, socket, function (dataResultContact) {
-                            window.remainTime = 1;
-                            listContact.subscribeAfterClickListContact();
+                        self.reloadContentBoxChatAjax(dataRequest, socket, () => {
+                            listContact.subscribeAfterClickListContact(() => {
+                                self.activeListContact(elem, dataResult.dataChannelID);
+                            });
                         });
                     } else {
-                        console.log('dddddddddddd resend request contact')
+                        $(elem).attr({'disabled': true});
+                        listContact.subscribeAfterClickListContact(() => {
+                            self.activeListContact(elem, dataResult.dataChannelID);
+                        });
                     }
                 });
             }
@@ -571,7 +579,7 @@ export class SendChatMessage extends libSupports {
                 $('#boxChat').addClass('cuts-box-chat-clear center-placeholder');
             }
         } else {
-            // REQUSET
+            // REQUEST
             $("#messageInput").addClass("disabled-element");
             $("#frameListMsg").addClass("remove-scrollbar");
             $("#boxChat").attr("placeholder", 'Messsaging disabled until request is accepted');
@@ -710,9 +718,13 @@ export class SendChatMessage extends libSupports {
         });
     };
 
-    activeListContact = function (channelId) {
+    activeListContact = function (elem, channelId = null) {
         $('#contacts li.contact').removeClass('active');
-        $('[channel="status.' + channelId + '"]').closest('li').addClass('active');
+
+        if (channelId) $('[channel="status.' + channelId + '"]').closest('li').addClass('active');
+        else if (elem) $(elem).closest('li').addClass('active');
+        else {
+        }
     };
 
     getAttributesJavaScript = function (elementJavaScript, attr) {

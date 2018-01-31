@@ -7,9 +7,6 @@ import {Page404Component} from './components/contents/errors/page404/page404.com
 
 
 const appRoutes: Routes = [
-    // {path: 'crisis-center', component: CrisisListComponent},
-    // {path: 'hero/:id', component: HeroDetailComponent},
-    // {path: 'chat', component: ChatComponent, data: {title: 'Homexxxx chat'}, pathMatch:'full'},
     {path: '', redirectTo: '/', pathMatch: 'full'},
     {path: '**', component: Page404Component}
 ];

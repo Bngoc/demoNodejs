@@ -225,9 +225,6 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     msgContent(socket) {
         var sendChatMessage = new SendChatMessage();
         socket.on('msgContent', function (dataMessage) {
-
-            sendChatMessage.activeListContact(dataMessage.channelId);
-
             if (dataMessage.isLength) {
                 let oldScrollHeight = $("#frameListMsg")[0].scrollHeight;
                 sendChatMessage.htmlContentBoxChat(dataMessage);
@@ -238,8 +235,6 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
                 } else {
                     $('#frameListMsg').animate({scrollTop: ($('#frameListMsg')[0].scrollHeight - oldScrollHeight)}, 100);
                 }
-            } else {
-
             }
         });
     };

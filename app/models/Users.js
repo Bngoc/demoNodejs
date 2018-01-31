@@ -10,20 +10,16 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 const Promise = require('bluebird');
 const _ = require('underscore');
-
 const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const coreHelper = new CoreHelper();
-
 const knex = coreHelper.connectKnex();
 const bookshelf = coreHelper.bookshelf();
-
 const Conversations = coreHelper.callModule(`${coreHelper.paths.MODELS}Conversation.js`);
 const BlockList = coreHelper.callModule(`${coreHelper.paths.MODELS}BlockList.js`);
 const Participants = coreHelper.callModule(`${coreHelper.paths.MODELS}Participants.js`);
 const Contacts = coreHelper.callModule(`${coreHelper.paths.MODELS}Contacts.js`);
 
 // Note - use require model other, because relationship not working
-
 var Users = bookshelf.Model.extend({
     tableName: 'users',
     hasTimestamps: true,
@@ -43,7 +39,6 @@ var Users = bookshelf.Model.extend({
     useContacts: function () {
         return this.hasOne(coreHelper.callModule(`${coreHelper.paths.MODELS}Contacts.js`).model, 'users_id');
     },
-
     useBlockList: function () {
         return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}BlockList.js`).model, 'users_id');
     },
@@ -57,21 +52,10 @@ var Users = bookshelf.Model.extend({
         return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}Participants.js`).model, 'users_id');
     },
 });
-
 // --------------------------------------End relationship -------------------------
 
-var result = {
-    code: null,
-    error: '',
-    msg: '',
-    result: null
-};
-
-var resultSql = {
-    error: '',
-    msg: '',
-    result: null
-};
+var result = {code: null, error: '', msg: '', result: null};
+var resultSql = {error: '', msg: '', result: null};
 
 var User = function () {
 };
@@ -168,9 +152,8 @@ User.prototype.findByIdChat = function (request, callback) {
         modelConver.forEach(function (elem) {
             elem.relations.conParticipant.forEach(function (elemUser) {
                 // check friend search add group conversation
-                if (isAuthenticatesSingle === true && elemUser.get('is_accept_single') === 1) {
-                    return false;
-                }
+                if (isAuthenticatesSingle === true && elemUser.get('is_accept_single') === 1) return false;
+
 
                 let infoParticipant = {};
                 infoParticipant['idConversation'] = elem.get('id');

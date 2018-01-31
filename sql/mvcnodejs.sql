@@ -214,24 +214,6 @@ ENGINE = InnoDB;
 
 SHOW WARNINGS;
 
--- -----------------------------------------------------
--- Table `deleted_conversations`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `deleted_conversations` ;
-
-SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `deleted_conversations` (
-  `id` INT NOT NULL,
-  `conversation_id` INT NOT NULL,
-  `users_id` INT NOT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `is_deleted` tinyint(1) NULL DEFAULT 0,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `conversationId_user_UNIQUE` (`conversation_id`, `users_id`))
-ENGINE = InnoDB;
-
-SHOW WARNINGS;
 
 -- -----------------------------------------------------
 -- Table `devices`

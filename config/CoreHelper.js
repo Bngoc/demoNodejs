@@ -4,7 +4,6 @@ const MySQL = require("mysql");
 const pg = require('pg');
 const express = require('express');
 const app = express();
-
 const sampleRequirePaths = require('./../config/paths.js');
 const paths = new sampleRequirePaths();
 const sampleDB = require(`${paths.CONFIG}/db.json`);
@@ -12,6 +11,7 @@ const sampleConfig = require(`${paths.CONFIG}/config.json`);
 const samplePackage = require(`${paths.ROOT}/package.json`);
 const sampleApp = require(`${paths.CONFIG}/app.js`);
 var setAliasRouter = {};
+
 
 function CoreHelper() {
 
@@ -130,7 +130,6 @@ function CoreHelper() {
             }
             console.log(`The file ${reqData.path} was saved!`);
             callback(null, true);
-
         });
     }
 }

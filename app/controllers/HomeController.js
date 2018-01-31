@@ -7,7 +7,6 @@ var BaseController = require('./BaseController.js');
 
 class HomeController extends BaseController {
 
-
     getIndex1(requset, response, next) {
 
         response.send('111111111111111');

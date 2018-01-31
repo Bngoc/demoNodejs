@@ -22,13 +22,11 @@ import {ContentsRoutingModule} from "./components/contents/contents-routing.modu
         NavComponent,
         SidebarComponent,
         ContentsComponent,
-
     ],
     imports: [
         BrowserModule,
         ContentsRoutingModule,
         AppRoutingModule
-
     ],
     providers: [],
     bootstrap: [AppComponent]

@@ -195,17 +195,19 @@ export class ListContacts extends libSupports {
         return htmlListContact;
     };
 
-    public subscribeAfterClickListContact() {
+    public subscribeAfterClickListContact(callback: any = false) {
         let _this = this;
         let valSearch = $.trim($('#search-contact').val());
         let runRemainTime = setInterval(function () {
             if (window.remainTime && window.requestListContactDefault) {
-                if (window.remainTime < _this.getDateTimeNow() && valSearch) {
+                if (window.remainTime < _this.getDateTimeNow() && (valSearch || window.valSearchAnonymous)) {
                     clearInterval(runRemainTime);
+                    window.valSearchAnonymous = false;
+                    window.remainTime = 0;
+                    window.listContactSearchDynamic = [];
                     $('#search-contact').val('');
-                    _this.searchListContactListAll(window.requestListContactDefault, function () {
-                        window.remainTime = 0;
-                        window.listContactSearchDynamic = [];
+                    _this.searchListContactListAll(window.requestListContactDefault, ()=> {
+                        if (typeof callback === "function")  callback();
                     });
                 }
             } else {
@@ -244,9 +246,7 @@ export class ListContacts extends libSupports {
                 $('#contacts-your').append(requestListContact.reset ? '' : _this.appendCloseListSearchContact(dataResult.option));
             }
 
-            if (callback == isFunction) {
-                callback();
-            }
+            if (typeof callback === "function")  callback();
         });
     };
 

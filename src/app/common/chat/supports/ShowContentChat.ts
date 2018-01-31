@@ -9,7 +9,7 @@ export class ShowContentChat {
 
     supportHeaderHtmlContentChat(dataHeaderContentChat) {
         let supportHtmlProfile = '';
-        if (dataHeaderContentChat.listParticipant.length) {
+        if (dataHeaderContentChat.listParticipant.hasOwnProperty('length') && dataHeaderContentChat.listParticipant.length) {
             dataHeaderContentChat.listParticipant.forEach((element) => {
                 supportHtmlProfile += '<i channel="status.' + dataHeaderContentChat.dataChannelId + '" class="favorite-conversation ' + element.classStatus + '"'
                     + 'codePartId="' + element.codePartId + '" code-participant-id="' + element.users_id + '" aria-hidden="true"></i>';
@@ -65,7 +65,7 @@ export class ShowContentChat {
                 htmlProfile += `<div class="clearfix"></div><div id="group-participant" class="display-none">
                     <ul class="list-group-part">`;
 
-                if (reqDataContentChat.listParticipant.length) {
+                if (reqDataContentChat.listParticipant.hasOwnProperty('length') && reqDataContentChat.listParticipant.length) {
                     reqDataContentChat.listParticipant.forEach((ele) => {
                         htmlProfile += `<li data-id="${ele.conversationID}" class="task info-contextmenu info-part show-info-participants">
                             <span data-conversation="${ele.conversationID}" data-channel="${ele.channelID}" data-author="${ele.users_id}" data-username="${ele.middle_name}"
@@ -174,15 +174,13 @@ export class ShowContentChat {
     }
 
     htmlActionMenuContentChat() {
-        let htmlMenu = `<div id="menu">
+        return `<div id="menu">
                 <a href="#"><img src="http://puu.sh/nr60s/42df867bf3.png"/> AdBlock Plus <span>Ctrl + ?!</span></a>
                 <a href="#"><img src="http://puu.sh/nr5Z6/4360098fc1.png"/> SNTX <span>Ctrl + ?!</span></a>
                 <hr/>
                 <a href="#"><i class="fa fa-fort-awesome"></i> Fort Awesome <span>Ctrl + ?!</span></a>
                 <a href="#"><i class="fa fa-flag"></i> Font Awesome <span>Ctrl + ?!</span></a>
             </div>`;
-
-        return htmlMenu;
     }
 
     getShowContentChat(dataResult) {

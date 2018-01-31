@@ -10,7 +10,6 @@ declare var $: any;
 export abstract class libSupports {
 
     public urlSide() {
-
         return mainAng['/api/*'].target;
     }
 
