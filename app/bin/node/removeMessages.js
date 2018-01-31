@@ -18,7 +18,7 @@ var job = new CronJob({
 
 
         let message = new Message.class();
-        message.cornDeleteMessage(function (err, modelMessage) {
+        message.cronDeleteMessage(function (err, modelMessage) {
 
             console.log('running a task every minute', err, JSON.stringify(modelMessage));
         });

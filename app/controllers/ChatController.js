@@ -465,7 +465,8 @@ class ChatController extends BaseController {
         try {
             const aliasRouter = helper.coreHelper.aliasRouter();
             showResponseChat.urlAction = {
-                actionAddContact: aliasRouter.build('api.chat.add.contacts')
+                actionAddContact: aliasRouter.build('api.chat.add.contacts'),
+                actionAcceptContact: aliasRouter.build('api.chat.accept.contacts')
             };
 
             showResponseChat.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX + FIX_HEIGHT_BOX_CHAT_BST3;
@@ -738,11 +739,10 @@ class ChatController extends BaseController {
     }
 
     postApiAddContact(req, res) {
-        var responseAddContact = {data: [], option: {}, done: false, err: '', msg: ''};
+        let responseAddContact = {data: [], option: {}, done: false, err: '', msg: ''};
         if (req.xhr) {
+            if (req.body.hasOwnProperty('participantID') && req.body.hasOwnProperty('resendRequest') && req.session) {
 
-            if (req.body.participantID && req.session) {
-                const aliasRouter = helper.coreHelper.aliasRouter();
                 let checkParticipant = {
                     userCurrentID: req.session.passport.user,
                     listUserID: [req.body.participantID]
@@ -762,33 +762,42 @@ class ChatController extends BaseController {
                             {users_id: listPartSingle[0], type: conversationType[0]}
                         ];
                         let dataChannelID = libFunction.randomStringGenerate();
-                        let reqModelsInsert = {
+                        let reqModelInsert = {
                             title: req.body.hasOwnProperty('title') ? req.body.title : '',
                             creator_id: req.session.passport.user,
                             channel_id: dataChannelID,
                             listParticipant: listParticipant
                         };
-
+                        let chatController = new ChatController();
                         let conversation = new Conversation.class();
-                        conversation.insertConversation(reqModelsInsert, function (errModel, modelConversation) {
-                            if (errModel) {
-                                responseAddContact.err = "ER003";
-                                responseAddContact.msg = errModel;
-
-                                return res.status(401).send(responseAddContact);
-                            }
-                            let infoParticipant = req.body.hasOwnProperty('infoParticipant') ? req.body.infoParticipant : null;
-                            let response = {
-                                url: aliasRouter.build('api.chat.content.chat'),
-                                userName: infoParticipant ? infoParticipant.userName : '',
+                        let optSupport = {
+                            reqModelInsert: reqModelInsert,
+                            responseAddContact: responseAddContact,
+                            data: {
                                 dataChannelID: dataChannelID,
-                                dataOwnerID: req.user,
-                                dataConversation: modelConversation.get('id'),
-                                valAuthor: listPartSingle[0],
-                            };
+                                listPartSingle: listPartSingle
+                            }
+                        };
 
-                            return res.status(200).send(response);
-                        });
+                        if (req.body.resendRequest == 1 && (req.body.conversationID == null || req.body.conversationID == "")) {
+                            chatController.supportAddContacts(req, res, optSupport);
+                        } else if (req.body.hasOwnProperty('conversationID') && req.body.conversationID) {
+                            //update conversation
+                            let reqDeleConversation = {
+                                conversationID: req.body.conversationID
+                            };
+                            conversation.deleteConversationParticipants(reqDeleConversation, function (errDelete, resultDelete) {
+                                if (errDelete) {
+                                    responseAddContact.err = "ER003";
+                                    responseAddContact.msg = errDelete;
+                                    return res.status(401).send(responseAddContact);
+                                }
+
+                                chatController.supportAddContacts(req, res, optSupport);
+                            });
+                        } else {
+                            return res.sendStatus(401);
+                        }
                     } else {
                         responseAddContact.err = "ERR004";
                         responseAddContact.msg = "Not data request Participant by block";
@@ -805,6 +814,33 @@ class ChatController extends BaseController {
         } else {
             return res.status(500).send('Not use Jquery request to server....!');
         }
+    }
+
+    postApiAcceptContact(req, res) {
+        // let reqUpdate = {
+        //     conversationID: req.body.conversationID,
+        //     data: {
+        //         is_deleted: 0,
+        //         deleted_users_id: null
+        //     }
+        // };
+        //
+        // conversation.updateConversation(reqUpdate, function (errModel, resultModel) {
+        //     if (errModel) {
+        //         responseAddContact.err = "ER003";
+        //         responseAddContact.msg = errModel;
+        //         return res.status(401).send(responseAddContact);
+        //     }
+        //
+        //     let responseResend = {
+        //         resendRequest: req.body.resendRequest
+        //     };
+        //
+        //     responseAddContact.done = true;
+        //     responseAddContact.data = responseResend;
+        //
+        //     return res.status(200).send(responseAddContact);
+        // });
     }
 
     socketConnection(io) {
@@ -961,7 +997,7 @@ class ChatController extends BaseController {
                             temp.type = conversationType[1];
                             listParticipant.push(temp);
                         });
-                        let reqModelsInsert = {
+                        let reqModelInsert = {
                             title: reqActionConversation.title,
                             creator_id: userCurrent.user,
                             channel_id: libFunction.randomStringGenerate(),
@@ -969,8 +1005,8 @@ class ChatController extends BaseController {
                         };
 
                         let conversation = new Conversation.class();
-                        conversation.insertConversation(reqModelsInsert, function (err, modelConversation) {
-                            console.log(reqModelsInsert);
+                        conversation.insertConversation(reqModelInsert, function (err, modelConversation) {
+                            console.log(reqModelInsert);
                         });
                     }
                 } else if (reqActionConversation.conversationId && reqActionConversation.act === 'update') {
@@ -1300,6 +1336,35 @@ ChatController.prototype.supportConfigChat = function (jsonConfigChat) {
     } catch (ex) {
         return null;
     }
+};
+
+ChatController.prototype.supportAddContacts = function (req, res, opt) {
+    let responseAddContact = opt.responseAddContact;
+    let conversation = new Conversation.class();
+    const aliasRouter = helper.coreHelper.aliasRouter();
+    conversation.insertConversation(opt.reqModelInsert, function (errModel, modelConversation) {
+        if (errModel) {
+            responseAddContact.err = "ER003";
+            responseAddContact.msg = errModel;
+
+            return res.status(401).send(responseAddContact);
+        }
+        let infoParticipant = req.body.hasOwnProperty('infoParticipant') ? req.body.infoParticipant : null;
+        let response = {
+            url: aliasRouter.build('api.chat.content.chat'),
+            userName: infoParticipant ? infoParticipant.userName : '',
+            dataChannelID: opt.data.dataChannelID,
+            dataOwnerID: req.user,
+            dataConversation: modelConversation.get('id'),
+            valAuthor: opt.data.listPartSingle[0],
+            resendRequest: req.body.resendRequest
+        };
+
+        responseAddContact.done = true;
+        responseAddContact.data = response;
+
+        return res.status(200).send(responseAddContact);
+    });
 };
 
 // kue.Job.rangeByState('complete', 0, 0, 'asc', function (err, jobs) {

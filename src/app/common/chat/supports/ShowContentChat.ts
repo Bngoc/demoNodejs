@@ -92,14 +92,19 @@ export class ShowContentChat {
                 htmlBoxContentChat += '<ul id="boxMsgChat"></ul>';
             } else {
                 if (reqBoxContentChat.isCurrentOwnerId) {
-                    htmlBoxContentChat += `<div class="send-request-user">contact request sent - <a class="">Resend contact request</a></div>`;
+                    htmlBoxContentChat += `<div class="clearfix"></div>
+                        <div class="mr-t20 col-md-12" id="request-area">
+                            <div class="send-request-user col-md-offset-4">
+                                <span>contact request sent - <button data-act-request="0" data-conversation="${reqBoxContentChat.dataConversation}" id="resend-contact-request" class="btn btn-primary">Resend contact request</button></span>
+                            </div>
+                        </div>`;
                 } else {
                     htmlBoxContentChat += `<div class="clearfix"></div>
                         <div class="" id="request-area"><div class="accept-request-user">
-                            <div class="d-block md-col-12" align="center">
+                            <div class="mr-t20 col-md-12" align="center" data-conversation="${reqBoxContentChat.dataConversation}">
                                 <span>XXXXXXXXXXXXXXXXXXXXXXXXX</span>
-                                <button class="btn btn-primary" id="reply-decline-user">decline</button>
-                                <button class="btn btn-primary" id="reply-accept-user">accept</button>
+                                <button class="btn btn-primary" data-act-result="0" id="reply-decline-user">decline</button>
+                                <button class="btn btn-primary" data-act-result="1" id="reply-accept-user">accept</button>
                             </div>
                         </div></div>`;
                 }
@@ -108,9 +113,9 @@ export class ShowContentChat {
             //NOT FRIEND
             htmlBoxContentChat += `<div class="clearfix"></div>
                 <div class="" id="request-area"><div class="accept-request-user">
-                    <div class="d-block md-col-12" align="center">
+                    <div class="mr-t20 col-md-12" align="center">
                         <span><p class="name-partici-req">${reqBoxContentChat.userName}</p> is not in your contacts</span>
-                        <button data-url="${optUrl.actionAddContact}" class="btn btn-primary" id="add-contact-user">Add to contacts</button>
+                        <button data-url="${optUrl.actionAddContact}" class="btn btn-primary" data-act-request="1" id="add-contact-user">Add to contacts</button>
                     </div>
                 </div></div>`;
         }

@@ -43,4 +43,66 @@ let Participant = function () {
 //         });
 // }
 
+Participant.prototype.updateParticipant = function (reqUpdate, callback) {
+    bookshelf
+        .transaction(function (t) {
+            Conversations
+                .query((qb) => {
+                    qb.where({'id': reqUpdate.conversationID})
+                })
+                .fetch({require: true})
+                .then((dataModel) => {
+                    reqUpdate.clauseUpdate = {
+                        'is_accept_single': 122 || dataModel.get('is_accept_single'),
+                        'is_accept_group': 122 || dataModel.get('is_accept_group')
+                    };
+                    dataModel
+                        .save(reqUpdate.clauseUpdate, {transacting: t})
+                        .then((resultModel) => callback(null, resultModel))
+                        .catch((exUpdate) => callback(exUpdate));
+                }).catch((ex) => callback(ex));
+        })
+        .then((modelConversation) => callback(null, modelConversation))
+        .catch((err) => callback(err));
+};
+
+
+// Conversation.prototype.deleteParticipant = function (reqDelete, callback) {
+//     bookshelf
+//         .transaction(function (t) {
+//             Conversations
+//                 .query((qb) => {
+//                     qb.where({'id': reqDelete.ParticipantID})
+//                 })
+//                 .fetch({require: true})
+//                 .then((dataModel) => {
+//                     dataModel
+//                         .destroy({transacting: t})
+//                         .then((resultModel) => callback(null, resultModel))
+//                         .catch((exDelete) => callback(exDelete));
+//                 }).catch((exGet) => callback(exGet));
+//         })
+//         .then((modelConversation) => callback(null, modelConversation))
+//         .catch((err) => callback(err));
+// };
+//
+// Participant.prototype.deleteParticipantConversation = function (reqDelete, callback) {
+//     bookshelf
+//         .transaction(function (t) {
+//             Conversations
+//                 .query((qb) => {
+//                     qb.where({'conversation_id': reqDelete.conversationID})
+//                 })
+//                 .fetch({require: true})
+//                 .then((dataModel) => {
+//                     dataModel
+//                         .destroy({transacting: t})
+//                         .then((resultModel) => callback(null, resultModel))
+//                         .catch((exDelete) => callback(exDelete));
+//                 }).catch((exGet) => callback(exGet));
+//         })
+//         .then((modelConversation) => callback(null, modelConversation))
+//         .catch((err) => callback(err));
+// };
+
 module.exports = {model: Participants, class: Participant};

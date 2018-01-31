@@ -2,6 +2,8 @@
 
 declare var require: any;
 declare var $: any;
+declare var window: any;
+declare var jQuery: any;
 import {Component, ViewEncapsulation, OnInit, OnDestroy} from '@angular/core';
 import {ApiServiceChat} from '../../services/api-chat.service'
 import * as io from 'socket.io-client';
@@ -74,13 +76,22 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
                     let socket = io(this.url);
                     this.socket = socket;
 
+                    window.dataGlobal = {
+                        urlAction: {
+                            urlListContact: this.resultData.urlListContact,
+                            urlChangeContent: this.resultData.urlChangeContent
+                        }
+                    };
+
                     let optionInit = {
                         remainTimeDefault: this.remainTimeDefault,
                         remainTimeSearch: this.remainTimeSearch,
-                        listContacts: resultListContacts.contactList
+                        listContacts: resultListContacts.contactList,
+                        urlAction: window.dataGlobal.urlAction
                     };
                     this.sendChatMessage.runInitChatMessage(optionInit, socket);
                     this.sendChatMessage.clickListContactContentChat(socket, function (resultCallback) {
+                        jQuery.extend(window.dataGlobal.urlAction, resultCallback.dataResult.urlAction);
                         if (resultCallback.isDataFriend === true) {
                             self.isDataFriend = true;
                             self.sendChatMessage.eventClickSend(socket, self.isDataFriend);

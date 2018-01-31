@@ -2,16 +2,11 @@
 
 const path = require('path');
 const Promise = require('bluebird');
-
 const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const coreHelper = new CoreHelper();
-
 const knex = coreHelper.connectKnex();
 const bookshelf = coreHelper.bookshelf();
-
-
 const Participants = coreHelper.callModule(`${coreHelper.paths.MODELS}Participants.js`);
-// const DeletedConversations = coreHelper.callModule(`${coreHelper.paths.MODELS}DeletedConversations.js`);
 const BlockList = coreHelper.callModule(`${coreHelper.paths.MODELS}BlockList.js`);
 
 var Conversations = bookshelf.Model.extend({
@@ -20,11 +15,8 @@ var Conversations = bookshelf.Model.extend({
     conUser: function () {
         return this.belongsTo(coreHelper.callModule(`${coreHelper.paths.MODELS}Users.js`).model, 'id');
     },
-    // conDeletedConversation: function () {
-    //     return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}DeletedConversations.js`).model, 'conversation_id');
-    // },
     conParticipant: function () {
-        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}Participants.js`).model, 'conversation_id', 'id'); //table , keyFK keylocal
+        return this.hasMany(coreHelper.callModule(`${coreHelper.paths.MODELS}Participants.js`).model, 'conversation_id', 'id', {onDestroy: 'cascade'}); //table , keyFK keylocal
     }
 });
 
@@ -136,7 +128,7 @@ Conversation.prototype.participantByUserId = function (req, callback) {
         .catch(function (err) {
             callback(err);
         });
-}
+};
 
 Conversation.prototype.conversationsListSingleUser = function (req, callback) {
     this.participantByUserId(req, function (err, modelPartici) {
@@ -184,6 +176,125 @@ Conversation.prototype.insertConversation = function (reqInsert, callback) {
     }).catch(function (err) {
         callback(err);
     });
+};
+
+Conversation.prototype.updateConversation = function (reqUpdate, callback) {
+    bookshelf
+        .transaction(function (t) {
+            Conversations
+                .query((qb) => {
+                    qb.where({'id': reqUpdate.conversationID})
+                })
+                .fetch({require: true})
+                .then((dataModel) => {
+                    reqUpdate.clauseUpdate = {
+                        'is_deleted': reqUpdate.data.is_deleted || dataModel.get('is_deleted'),
+                        'deleted_users_id': reqUpdate.data.deleted_users_id || dataModel.get('deleted_users_id')
+                    };
+
+                    dataModel
+                        .save(reqUpdate.clauseUpdate, {transacting: t})
+                        .then((resultModel) => callback(null, resultModel))
+                        .catch((exUpdate) => callback(exUpdate));
+                }).catch((ex) => callback(ex));
+        })
+        .then((modelConversation) => callback(null, modelConversation))
+        .catch((err) => callback(err));
+};
+
+// Conversation.prototype.deleteConversation = function (reqDelete, callback) {
+//     bookshelf
+//         .transaction(function (t) {
+//             Conversations
+//                 .query((qb) => {
+//                     qb.where({'id': reqDelete.conversationID})
+//                 })
+//                 .fetch({require: true})
+//                 .then((dataModel) => {
+//                     dataModel
+//                         .destroy({transacting: t})
+//                         .then((resultModel) => callback(null, resultModel))
+//                         .catch((exDelete) => callback(exDelete));
+//                 }).catch((exGet) => callback(exGet));
+//         })
+//         .then((modelConversation) => callback(null, modelConversation))
+//         .catch((err) => callback(err));
+// };
+
+//one destroy conversation - participant
+Conversation.prototype.deleteConversationParticipant = function (reqDelete, callback) {
+    bookshelf
+        .transaction(function (t) {
+            Participants
+                .model
+                .query((qb) => {
+                    qb.where({'conversation_id': reqDelete.conversationID})
+                })
+                .fetch({require: true})
+                .then((dataModelParticipant) => {
+                    destroy()
+                        .then((resultModel) => {
+                            Conversations
+                                .query((qb) => {
+                                    qb.where({'id': reqDelete.conversationID})
+                                })
+                                .fetch({require: true})
+                                .then((dataModelConversation) => {
+                                    dataModelConversation
+                                        .destroy({transacting: t})
+                                        .then((resultModel) => {
+                                            callback(null, true)
+                                        })
+                                        .catch((exDelete) => callback(exDelete));
+                                })
+                                .catch((exGet) => callback(exGet));
+
+                        })
+                        .catch((exDelete) => callback(exDelete));
+                }).catch((exGetParticipant) => callback(exGetParticipant));
+        })
+        .then((modelConversation) => {
+            callback(modelConversation)
+        })
+        .catch((err) => callback(err));
+};
+
+Conversation.prototype.deleteConversationParticipants = function (reqDelete, callback) {
+    // bookshelf
+    //     .transaction(function (t) {
+    // Participants
+    //     .model
+    //     .query((qb) => {
+    //         qb.where({'conversation_id': reqDelete.conversationID})
+    //     })
+    //     .fetch({require: true})
+    //     .then((dataModelParticipant) => {
+    //         destroy()
+    //             .then((resultModel) => {
+    return Conversations
+        .query((qb) => {
+            qb.where({'id': reqDelete.conversationID})
+        })
+        .fetch({withRelated: ['conParticipant'], require: true})
+        .then((dataModelConversation) => {
+            // dataModelConversation.conParticipant().attach(reqDelete.conversationID);
+            dataModelConversation
+                .destroy()
+                .then((resultModel) => {
+                    callback(null, true)
+                })
+                .catch((exDelete) => callback(exDelete));
+        })
+        .catch((exGet) => callback(exGet));
+
+    // })
+    // .catch((exDelete) => callback(exDelete));
+    // }).catch((exGetParticipant) => callback(exGetParticipant));
+    // })
+    // .then((modelConversation) => {
+    //     callback(modelConversation)
+    // })
+    // .catch((err) => callback(err));
 };
 
 module.exports = {model: Conversations, class: Conversation};

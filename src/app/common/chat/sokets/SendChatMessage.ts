@@ -35,8 +35,25 @@ export class SendChatMessage extends libSupports {
         this.clickShowParticipantProfile();
         this.clickSearchContacts(opt.remainTimeSearch);
         this.clickAddContact(socket);
+        this.commonGllobalDefault(opt);
         //add available list contacts
         window.listContacts = opt.listContacts;
+
+    };
+
+    commonGllobalDefault = function (opt) {
+        let resetListContactDefault = {
+            url: opt.urlAction.urlListContact,
+            data: {
+                dataType: false,
+                isAuthenticatesSingle: false,
+                isSearch: false,
+                valSearch: null,
+                _method: 'post'
+            },
+            reset: true
+        };
+        window.requestListContactDefault = resetListContactDefault;
     };
 
     getDefaultHeightMsgBox = function () {
@@ -95,9 +112,6 @@ export class SendChatMessage extends libSupports {
                     dataConversation: messageInput.attr('data-conversation'),
                     dataChannel: messageInput.attr('data-channel'),
                     dataType: messageInput.attr('data-type'),
-                    // dataOwner: messageInput.attr('data-owner'),
-                    // hexClassSend: $('#profile-img').attr('user-code-id'),
-                    // hexClassNameSend: $('#profile .user-name-chat').contents().get(0).nodeValue,
                     dataValueMsg: dataValueMsg,
                     listCodePart: listPart.join(',')
                 };
@@ -195,24 +209,11 @@ export class SendChatMessage extends libSupports {
         let listContact = new ListContacts();
         $('body').on('keyup copy cut', '#search-contact', function () {
             let val = $.trim($(this).val());
-            let requestListContactDefault = {
-                url: $('#box-search-contacts').attr('data-url'),
-                data: {
-                    dataType: false,
-                    isAuthenticatesSingle: false,
-                    isSearch: false,
-                    valSearch: null,
-                    _method: 'post'
-                },
-                reset: true
-            };
-
             //remain time  or value search length min 3 for reset list contact
             window.remainTime = that.getDateTimeNow() + remainTime;
-            window.requestListContactDefault = requestListContactDefault;
             listContact.subscribeAfterClickListContact();
 
-            let requestListContact = jQuery.extend(true, {}, requestListContactDefault);
+            let requestListContact = jQuery.extend(true, {}, window.requestListContactDefault);
             if (val.length > 2) {
                 requestListContact['data']['isSearch'] = true;
                 requestListContact['data']['valSearch'] = val;
@@ -482,35 +483,45 @@ export class SendChatMessage extends libSupports {
 
     clickAddContact = function (socket) {
         let self = this;
-        $('body').on('click', '#add-contact-user', function () {
+        $('body').on('click', '#add-contact-user, #resend-contact-request', function () {
             let checkParticopantId = $('#extend-participant i[code-participant-id]').attr('code-participant-id');
             let participantID = typeof checkParticopantId !== "undefined" ? checkParticopantId : null;
             let userName = $('#participant-user-name').text();
-            let imgAvatar = $('#participant-profile').attr('src');
+            let resendRequest = $(this).attr('data-act-request');
+            let conversationID = $(this).attr('data-conversation');
             let requestData = {
-                url: $(this).attr('data-url'),
+                url: window.dataGlobal.urlAction.hasOwnProperty('actionAddContact') ? window.dataGlobal.urlAction.actionAddContact : null,
                 data: {
                     participantID: participantID,
-                    infoParticipant: {userName: userName, imgAvatar: imgAvatar},
+                    infoParticipant: {userName: userName},
+                    resendRequest: (typeof resendRequest !== "undefined" ? resendRequest : null),
+                    conversationID: (typeof conversationID !== "undefined" ? conversationID : null),
                     _method: "post"
                 }
             };
-            let listContact = new ListContacts();
-            self.callDataJS(requestData, function (dataResult) {
-                let dataRequest = {
-                    url: dataResult.url,
-                    userName: dataResult.userName,
-                    dataChannelID: dataResult.dataChannelID,
-                    dataOwnerID: dataResult.dataOwnerID,
-                    dataConversation: dataResult.dataConversation,
-                    valAuthor: dataResult.valAuthor
-                };
+            if (requestData.url) {
+                let listContact = new ListContacts();
+                self.callDataJS(requestData, function (result) {
+                    let dataResult = result.data;
+                    if (dataResult.resendRequest == 1) {
+                        let dataRequest = {
+                            url: dataResult.url,
+                            userName: dataResult.userName,
+                            dataChannelID: dataResult.dataChannelID,
+                            dataOwnerID: dataResult.dataOwnerID,
+                            dataConversation: dataResult.dataConversation,
+                            valAuthor: dataResult.valAuthor
+                        };
 
-                self.reloadContentBoxChatAjax(dataRequest, socket, function (dataResultContact) {
-                    window.remainTime = 1;
-                    listContact.subscribeAfterClickListContact();
+                        self.reloadContentBoxChatAjax(dataRequest, socket, function (dataResultContact) {
+                            window.remainTime = 1;
+                            listContact.subscribeAfterClickListContact();
+                        });
+                    } else {
+                        console.log('dddddddddddd resend request contact')
+                    }
                 });
-            });
+            }
         });
     };
 

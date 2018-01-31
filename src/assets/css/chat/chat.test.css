@@ -349,3 +349,41 @@ input {
 }
 
 /*-------------------------------E Box Show information--------------------------------*/
+
+/*-------------------------------S shortcut --------------------------------*/
+
+.mr-block {
+    margin-top: 20px;
+}
+
+.mr-t20 {
+    margin-top: 20px;
+}
+
+.mr-r20 {
+    margin-right: 20px;
+}
+
+.mr-b20 {
+    margin-bottom: 20px;
+}
+
+.mr-l20 {
+    margin-left: 20px;
+}
+
+.pd-t20 {
+    padding-top: 20px;
+}
+
+.pd-r20 {
+    padding-right: 20px;
+}
+
+.pd-b20 {
+    padding-bottom: 20px;
+}
+
+.pd-l20 {
+    padding-left: 20px;
+}

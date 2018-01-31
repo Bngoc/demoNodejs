@@ -196,7 +196,6 @@ export class ListContacts extends libSupports {
     };
 
     public subscribeAfterClickListContact() {
-        // public subscribeAfterClickListContact(remainTime, reqDataReset) {
         let _this = this;
         let valSearch = $.trim($('#search-contact').val());
         let runRemainTime = setInterval(function () {
@@ -206,7 +205,6 @@ export class ListContacts extends libSupports {
                     $('#search-contact').val('');
                     _this.searchListContactListAll(window.requestListContactDefault, function () {
                         window.remainTime = 0;
-                        // window.requestListContactDefault = isUndefined;
                         window.listContactSearchDynamic = [];
                     });
                 }

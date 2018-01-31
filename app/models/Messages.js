@@ -77,7 +77,7 @@ Message.prototype.insert = function (dataInsert, callback) {
     });
 }
 
-Message.prototype.cornDeleteMessage = function (callback) {
+Message.prototype.cronDeleteMessage = function (callback) {
     Messages
         .query((q) => {
             q.where('created_at', '<=', "2018-11-01");
