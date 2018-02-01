@@ -14,7 +14,7 @@ import {SendChatMessage} from "../../../common/chat/sokets/SendChatMessage";
 import {LibCommonChat} from "../../../common/chat/supports/LibCommonChat";
 import {isBoolean} from "util";
 import {Router} from '@angular/router';
-import {MenuInfoChat} from "../../../common/chat/supports/MenuInfoChat";
+// import {MenuInfoChat} from "../../../common/chat/supports/MenuInfoChat";
 
 
 @Component({
@@ -26,7 +26,7 @@ import {MenuInfoChat} from "../../../common/chat/supports/MenuInfoChat";
 export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     private url;
     private sendChatMessage: any;
-    private menuInfoChat: any;
+    // private menuInfoChat: any;
     error: any;
     resultData: any = {};
     rsData: Subscription;
@@ -92,12 +92,12 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
                     this.sendChatMessage.runInitChatMessage(optionInit, socket);
                     this.sendChatMessage.clickListContactContentChat(socket, function (resultCallback) {
                         // jQuery.extend(window.dataGlobal.urlAction, resultCallback.dataResult.urlAction);
-                        if (resultCallback.isDataFriend === true) {
+                        // if (resultCallback.isDataFriend === true) {
                             //     self.isDataFriend = true;
                             //     self.sendChatMessage.eventClickSend(socket, self.isDataFriend);
                             //     self.sendChatMessage.eventEnterSend(socket, self.isDataFriend);
-                            self.menuInfoChat.runInit(socket);
-                        }
+                        // self.menuInfoChat.runInit(socket);
+                        // }
                         // if (resultCallback.isSingle !== null) {
                         //     self.isSingle = true;
                         //     self.sendChatMessage.clickActContactConversation(socket, self.isSingle);

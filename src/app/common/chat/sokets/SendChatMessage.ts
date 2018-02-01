@@ -10,7 +10,7 @@ import {libSupports} from "../../libSupports";
 import {isUndefined} from "util";
 import {ShowContentChat} from "../supports/ShowContentChat";
 import {ShowProfileParticipantChat} from "../supports/ShowProfileParticipantChat";
-// import {MenuInfoChat} from "../supports/MenuInfoChat";
+import {MenuInfoChat} from "../supports/MenuInfoChat";
 
 export class SendChatMessage extends libSupports {
 
@@ -39,7 +39,6 @@ export class SendChatMessage extends libSupports {
         this.commonGllobalDefault(opt);
         //add available list contacts
         window.listContacts = opt.listContacts;
-
     };
 
     commonGllobalDefault = function (opt) {
@@ -55,6 +54,14 @@ export class SendChatMessage extends libSupports {
             reset: true
         };
         window.requestListContactDefault = resetListContactDefault;
+    };
+
+    runInitMenuInfoChat = function (socket) {
+        let menuInfoChat = new MenuInfoChat();
+        menuInfoChat.contextListener();
+        menuInfoChat.clickListener(this, socket);
+        menuInfoChat.keyupListener();
+        menuInfoChat.resizeListener();
     };
 
     getDefaultHeightMsgBox = function () {
@@ -449,10 +456,9 @@ export class SendChatMessage extends libSupports {
         jQuery.extend(window.dataGlobal.urlAction, resultReadyChat.dataResult.urlAction);
         if (resultReadyChat.isDataFriend === true) {
             let isDataFriend = true;
-            // let menuInfoChat = new MenuInfoChat();
             this.eventClickSend(socket, isDataFriend);
             this.eventEnterSend(socket, isDataFriend);
-            // this.runInit(socket);
+            this.runInitMenuInfoChat(socket);
         }
         if (resultReadyChat.isSingle !== null) {
             let isSingle = true;
@@ -462,7 +468,7 @@ export class SendChatMessage extends libSupports {
         this.scrollListener(socket);
         this.scrollContentChat();
 
-        if (typeof callback !== 'function') callback(resultReadyChat);
+        if (typeof callback === "function") callback(resultReadyChat);
     };
 
     reloadContentBoxChatAjax = function (request, socket, callback) {
@@ -590,9 +596,9 @@ export class SendChatMessage extends libSupports {
 
                         if (dataRequest.url) {
                             self.reloadContentBoxChatAjax(dataRequest, socket, (resultReload) => {
-                                self.readyChatParticipant(socket, resultReload, () => {
+                                self.readyChatParticipant(socket, resultReload, (result) => {
                                     listContact.subscribeAfterClickListContact(() => {
-                                        let dataChannelID = (resultContact.data.hasOwnProperty('dataChannelID')) ? resultContact.data.dataChannelID : null;
+                                        let dataChannelID = (result.dataResult.hasOwnProperty('dataChannelId')) ? result.dataResult.dataChannelId : null;
                                         self.activeListContact(null, dataChannelID);
                                     });
                                 });

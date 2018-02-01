@@ -1,8 +1,6 @@
 'use strict';
 declare let $: any;
 
-import {SendChatMessage} from "../sokets/SendChatMessage";
-
 export class MenuInfoChat {
 
     private contextMenuClassName: any = "context-menu";
@@ -77,14 +75,14 @@ export class MenuInfoChat {
         });
     };
 
-    public clickListener = function (socket) {
+    public clickListener = function (sendChatMessage, socket) {
         let self = this;
         document.addEventListener("click", function (e) {
-            var clickeElIsLink = self.clickInsideElement(e, self.contextMenuLinkClassName);
+            var clickElIsLink = self.clickInsideElement(e, self.contextMenuLinkClassName);
 
-            if (clickeElIsLink) {
+            if (clickElIsLink) {
                 e.preventDefault();
-                self.menuItemListener(clickeElIsLink, socket);
+                self.menuItemListener(sendChatMessage, socket, clickElIsLink);
             } else {
                 var button = e.which || e.button;
                 if (button === 1) {
@@ -151,8 +149,7 @@ export class MenuInfoChat {
         this.menu.style['z-index'] = 99999;
     };
 
-    public menuItemListener = function (link, socket) {
-        let sendChatMessage = new SendChatMessage();
+    public menuItemListener = function (sendChatMessage, socket, link) {
         let action = link.getAttribute("data-action");
         switch (action) {
             case 'view':
@@ -164,11 +161,4 @@ export class MenuInfoChat {
         console.log("Task ID - " + this.taskItemInContext.getAttribute("data-id") + ", Task action - " + link.getAttribute("data-action"));
         this.toggleMenuOff();
     };
-
-    public runInit = function (socket) {
-        this.contextListener();
-        this.clickListener(socket);
-        this.keyupListener();
-        this.resizeListener();
-    }
 }

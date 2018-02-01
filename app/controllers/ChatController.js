@@ -382,7 +382,7 @@ class ChatController extends BaseController {
                 });
             } else {
                 showResponseChat.err = 'ERR0002';
-                showResponseChat.done = 'failed';
+                showResponseChat.done = false;
                 showResponseChat.msg = 'ERR0003';
                 res.status(403).send(showResponseChat)
             }
@@ -868,22 +868,23 @@ class ChatController extends BaseController {
                             });
                         } else if (req.body.dataActResult == 0) {
                             // decline
-                            let reqDeleConversation = {conversationID: req.body.conversationID};
-                            conversation.deleteConversationParticipants(reqDeleConversation, function (errDelete, resultDelete) {
+                            let reqDeleteConversation = {conversationID: req.body.conversationID};
+                            conversation.deleteConversationParticipants(reqDeleleConversation, function (errDelete, resultDelete) {
                                 if (errDelete) {
                                     responseAddContact.err = "ERR003";
                                     responseAddContact.msg = errDelete;
                                     return res.status(401).send(responseAddContact);
+                                } else {
+                                    responseAddContact.done = true;
+                                    responseAddContact.data = {
+                                        valAuthor: req.body.userRequest,
+                                        dataOwnerID: result.get('creator_id')
+                                    };
+                                    responseAddContact.option = {
+                                        activeResult: false
+                                    };
+                                    return res.status(200).send(responseAddContact);
                                 }
-                                responseAddContact.done = true;
-                                responseAddContact.data = {
-                                    valAuthor: req.body.userRequest,
-                                    dataOwnerID: result.get('creator_id')
-                                };
-                                responseAddContact.option = {
-                                    activeResult: false
-                                };
-                                return res.status(200).send(responseAddContact);
                             });
                         } else {
                             return res.sendStatus(401);
