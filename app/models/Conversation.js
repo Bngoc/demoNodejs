@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('underscore');
 const path = require('path');
 const Promise = require('bluebird');
 const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
@@ -182,20 +183,33 @@ Conversation.prototype.updateConversation = function (reqUpdate, callback) {
     bookshelf
         .transaction(function (t) {
             return Conversations
-                .query((qb) => qb.where({'id': reqUpdate.conversationID})).fetch({require: true}).then((dataModel) => {
-                    reqUpdate.clauseUpdate = {
-                        'is_deleted': reqUpdate.data.is_deleted || dataModel.get('is_deleted'),
-                        'deleted_users_id': reqUpdate.data.deleted_users_id || dataModel.get('deleted_users_id')
+                .query((qb) => qb.where({'id': reqUpdate.conversationID})).fetch({
+                    withRelated: ['conParticipant'],
+                    require: true
+                }).then((dataModel) => {
+                    let clauseUpdateParticipantListPromise = [];
+                    let clauseUpdateConversation = {
+                        'is_deleted': reqUpdate.data.hasOwnProperty('is_deleted') ? reqUpdate.data.is_deleted : dataModel.get('is_deleted'),
+                        'deleted_users_id': reqUpdate.data.hasOwnProperty('deleted_users_id') ? reqUpdate.data.deleted_users_id : dataModel.get('deleted_users_id')
                     };
+                    _.each(dataModel.related('conParticipant').models, (items) => {
+                        let clauseUpdateParticipant = {
+                            'is_accept_single': reqUpdate.data.hasOwnProperty('is_accept_single') ? reqUpdate.data.is_accept_single : items.get('is_accept_single'),
+                            'is_accept_group': reqUpdate.data.hasOwnProperty('is_accept_group') ? reqUpdate.data.is_accept_group : items.get('is_accept_group')
+                        };
+                        clauseUpdateParticipantListPromise.push(dataModel.related('conParticipant').invokeThen('save', clauseUpdateParticipant, {transacting: t}));
+                    });
 
-                    dataModel
-                        .save(reqUpdate.clauseUpdate, {transacting: t})
-                        .then((resultModel) => {
-                        })
-                        .catch((exUpdate) => callback(exUpdate));
+                    return Promise.all(clauseUpdateParticipantListPromise).then(() => {
+                        return dataModel.save(clauseUpdateConversation, {transacting: t}).then((resultModel) => {
+                            return resultModel;
+                        });
+                    });
                 }).catch((ex) => callback(ex));
         })
-        .then((modelConversation) => callback(null, modelConversation))
+        .then((modelConversation) => {
+            callback(null, modelConversation)
+        })
         .catch((err) => callback(err));
 };
 
@@ -207,8 +221,8 @@ Conversation.prototype.deleteConversationParticipants = function (reqDelete, cal
                 .query((qb) => qb.where({'id': reqDelete.conversationID}))
                 .fetch({withRelated: ['conParticipant'], require: true})
                 .then((dataModelConversation) => {
-                    return dataModelConversation.related('conParticipant').invokeThen('destroy', {transacting: t}).then(()=> {
-                        return dataModelConversation.destroy({transacting: t}).then(()=> {
+                    return dataModelConversation.related('conParticipant').invokeThen('destroy', {transacting: t}).then(() => {
+                        return dataModelConversation.destroy({transacting: t}).then(() => {
                         });
                     });
                 }).catch((exGet) => callback(exGet));

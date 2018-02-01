@@ -265,8 +265,9 @@ export class ListContacts extends libSupports {
             url: $('#searchContacts').attr('data-url'),
             data: {
                 listContactParticipant: _.union(listUnsetAuthor, listUnsetAuthorSearchDynamic),
+                // listContactParticipant: [],
                 valSearchContact: $.trim($('#search-contact').val()),
-                _method: "post"
+                _method: "POST"
             }
         };
         let self = this;

@@ -700,12 +700,13 @@ class ChatController extends BaseController {
         var responseListSearchContact = {data: [], option: {}, done: false, err: '', msg: ''};
         try {
             if (req.xhr) {
-                if (req.body.listContactParticipant && req.body.valSearchContact && req.session) {
+                if (req.body.valSearchContact && req.session) {
+                    let unsetParticipants = req.body.hasOwnProperty('listContactParticipant') ? req.body.listContactParticipant : [];
                     let reqListSearchAllContactsSingle = {
                         userCurrentID: req.session.passport.user,
                         conversationType: [conversationType[0]],
                         isAuthenticatesSingle: false,
-                        unsetParticipants: req.body.listContactParticipant
+                        unsetParticipants: unsetParticipants
                     };
                     let user = new User.class();
                     user.searchListParticipants(reqListSearchAllContactsSingle, function (errCon, modelSearchContactAll) {
@@ -816,30 +817,91 @@ class ChatController extends BaseController {
     }
 
     postApiAcceptContact(req, res) {
-        // let reqUpdate = {
-        //     conversationID: req.body.conversationID,
-        //     data: {
-        //         is_deleted: 0,
-        //         deleted_users_id: null
-        //     }
-        // };
-        //
-        // conversation.updateConversation(reqUpdate, function (errModel, resultModel) {
-        //     if (errModel) {
-        //         responseAddContact.err = "ER003";
-        //         responseAddContact.msg = errModel;
-        //         return res.status(401).send(responseAddContact);
-        //     }
-        //
-        //     let responseResend = {
-        //         resendRequest: req.body.resendRequest
-        //     };
-        //
-        //     responseAddContact.done = true;
-        //     responseAddContact.data = responseResend;
-        //
-        //     return res.status(200).send(responseAddContact);
-        // });
+        let responseAddContact = {data: [], option: {}, done: false, err: '', msg: ''};
+        if (req.xhr) {
+            if (req.body.hasOwnProperty('conversationID') && req.body.hasOwnProperty('userRequest') && req.session) {
+
+                let checkParticipant = {
+                    userCurrentID: req.session.passport.user,
+                    listUserID: [req.body.userRequest]
+                };
+                let user = new User.class();
+                user.checkExitsListUsers(checkParticipant, function (errCheck, resultDataCheck) {
+                    if (errCheck) return res.status(401).send(errCheck);
+
+                    let listPartSingle = resultDataCheck.listParticipant.map(function (items) {
+                        if (!resultDataCheck.blockListParticipants.includes(items.get('id'))) {
+                            return items.get('id');
+                        }
+                    });
+                    if (listPartSingle.length) {
+                        let conversation = new Conversation.class();
+                        if (req.body.dataActResult == 1) {
+                            // accept
+                            let reqUpdate = {
+                                conversationID: req.body.conversationID,
+                                data: {
+                                    is_accept_group: 0,
+                                    is_accept_single: 0,
+                                }
+                            };
+
+                            conversation.updateConversation(reqUpdate, (errModel, result) => {
+                                if (errModel) {
+                                    responseAddContact.err = "ERR003";
+                                    responseAddContact.msg = errModel;
+                                    return res.status(401).send(responseAddContact);
+                                }
+
+                                responseAddContact.done = true;
+                                responseAddContact.data = {
+                                    dataChannelID: result.get('channel_id'),
+                                    valAuthor: req.body.userRequest,
+                                    dataConversation: result.get('id'),
+                                    dataOwnerID: result.get('creator_id')
+                                };
+                                responseAddContact.option = {
+                                    activeResult: true
+                                };
+
+                                return res.status(200).send(responseAddContact);
+                            });
+                        } else if (req.body.dataActResult == 0) {
+                            // decline
+                            let reqDeleConversation = {conversationID: req.body.conversationID};
+                            conversation.deleteConversationParticipants(reqDeleConversation, function (errDelete, resultDelete) {
+                                if (errDelete) {
+                                    responseAddContact.err = "ERR003";
+                                    responseAddContact.msg = errDelete;
+                                    return res.status(401).send(responseAddContact);
+                                }
+                                responseAddContact.done = true;
+                                responseAddContact.data = {
+                                    valAuthor: req.body.userRequest,
+                                    dataOwnerID: result.get('creator_id')
+                                };
+                                responseAddContact.option = {
+                                    activeResult: false
+                                };
+                                return res.status(200).send(responseAddContact);
+                            });
+                        } else {
+                            return res.sendStatus(401);
+                        }
+                    } else {
+                        responseAddContact.err = "ERR004";
+                        responseAddContact.msg = "Not data request Participant by block";
+                        return res.status(401).send(responseAddContact);
+                    }
+                });
+            } else {
+                responseAddContact.err = "ERR002";
+                responseAddContact.msg = "Not data request";
+                return res.status(401).send(responseAddContact);
+            }
+        } else {
+            return res.status(500).send('Not use Jquery request to server....!');
+        }
     }
 
     socketConnection(io) {

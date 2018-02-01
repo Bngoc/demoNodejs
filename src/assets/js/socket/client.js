@@ -108,7 +108,7 @@ SendChatMessage.prototype.sendMsg = function () {
 
 SendChatMessage.prototype.eventClickSend = function () {
     var _this = this;
-    $('body').on('click', '#sendMessageChat', function () {
+    $(document).on('click', '#sendMessageChat', function () {
         _this.sendMsg();
     });
 };
@@ -117,11 +117,11 @@ SendChatMessage.prototype.eventEnterSend = function () {
     var _this = this;
 
     // create trigger keyUpDown after check enter vs (shift + enter) in textarea
-    $('body').on('keyUpDown', '#boxChat', function (e) {
+    $(document).on('keyUpDown', '#boxChat', function (e) {
         e.stopPropagation();
     });
 
-    $('body').on('keypress', '#boxChat', function (evt) {
+    $(document).on('keypress', '#boxChat', function (evt) {
         var valTextarea = $.trim($('#boxChat').val());
 
         if (evt.shiftKey && evt.keyCode == 13) {
@@ -139,14 +139,14 @@ SendChatMessage.prototype.eventEnterSend = function () {
 SendChatMessage.prototype.eventClickNotifyBoxMsg = function () {
     let _this = this;
 
-    $('body').on('click', '#notifyNewsSms', function () {
+    $(document).on('click', '#notifyNewsSms', function () {
         _this.scrollEndShowBoxChat(1000);
         $('#newMsgChat').delay(2000).css("display", "none");
     })
 };
 
 SendChatMessage.prototype.eventChangeStatusUser = function () {
-    $('body').on('click', '#status-options .channel-status', function () {
+    $(document).on('click', '#status-options .channel-status', function () {
         let dataValue = $(this).attr('data-value');
         let status = $(this).attr('status');
 
@@ -182,7 +182,7 @@ SendChatMessage.prototype.scrollEndShowBoxChat = function (timeAnimal) {
 SendChatMessage.prototype.clickSearchContact = function () {
     let _this = this;
     let listContact = new listContacts();
-    $('body')
+    $(document)
         .on('keyup copy cut', '#search-contact', function () {
             let val = $.trim($(this).val());
             let requestListContactDefault = {
@@ -215,7 +215,7 @@ SendChatMessage.prototype.clickSearchContact = function () {
 
 SendChatMessage.prototype.clickRightContactContentChat = function () {
     let _this = this;
-    $('body').on("mousedown", "#group-participant .show-info-participants", function (ev) {
+    $(document).on("mousedown", "#group-participant .show-info-participants", function (ev) {
         if (ev.which == 1 || ev.which == 3) {
             $('.show-info-participants').removeClass('check-participant');
             $(this).addClass('check-participant');
@@ -226,7 +226,7 @@ SendChatMessage.prototype.clickRightContactContentChat = function () {
 SendChatMessage.prototype.clickContactContentChat = function () {
     let _this = this;
     let click = 0, delay = 500, timer = null;
-    $('body')
+    $(document)
         .on('click', '.show-info-participants', function (e) {
             e.preventDefault();
             click++;
@@ -268,7 +268,7 @@ SendChatMessage.prototype.clickContactContentChat = function () {
 };
 
 SendChatMessage.prototype.clickActContactConversation = function () {
-    $('body').on('click', '#action-friend .add, #action-friend .create', function () {
+    $(document).on('click', '#action-friend .add, #action-friend .create', function () {
         let listContact = new listContacts();
         let dataConversation = $('#messageInput').attr("data-conversation");
         let dataConversationId = (typeof dataConversation !== typeof undefined && dataConversation !== false) ? dataConversation : null;
@@ -293,7 +293,7 @@ SendChatMessage.prototype.clickActContactConversation = function () {
 };
 
 SendChatMessage.prototype.getListContact = function () {
-    $('body').on('click', '#list-contact-your', function () {
+    $(document).on('click', '#list-contact-your', function () {
         let requestListContact = {
             url: $('#box-search-contacts').attr('data-url'),
             data: {
@@ -320,7 +320,7 @@ SendChatMessage.prototype.getListContact = function () {
 
 SendChatMessage.prototype.clickContactAdd = function () {
     var _this = this;
-    $('body').on('click', '#data-contact li.contact-list', function () {
+    $(document).on('click', '#data-contact li.contact-list', function () {
         let author = $(this).find('[data-author]').attr('data-author');
         if (typeof author !== typeof undefined && author !== false) {
             let authorId = author.split('.')[1];
@@ -336,7 +336,7 @@ SendChatMessage.prototype.clickContactAdd = function () {
 
 SendChatMessage.prototype.clickContactSearchSingle = function () {
     var _this = this;
-    $('body')
+    $(document)
         .on('keyup copy cut', '#search-single', function () {
             let val = $.trim($(this).val());
             let htmlListContact = '';
@@ -361,7 +361,7 @@ SendChatMessage.prototype.clickContactSearchSingle = function () {
 
 SendChatMessage.prototype.clickContactSub = function () {
     var _this = this;
-    $('body').on('click', '#box-action-friend i.act-aptach', function () {
+    $(document).on('click', '#box-action-friend i.act-aptach', function () {
         let author = $(this).closest('[data-author]').attr('data-author');
         if (typeof author !== typeof undefined && author !== false) {
             let authorId = author.split('.')[1];
@@ -404,7 +404,7 @@ SendChatMessage.prototype.clickTaskContactChat = function () {
 
 SendChatMessage.prototype.clickListContactContentChat = function () {
     var _this = this;
-    $('body').on('click', '#contacts li.contact', function () {
+    $(document).on('click', '#contacts li.contact', function () {
         // $('li.contact').removeClass('active');
         // $(this).addClass('active');
 

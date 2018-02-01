@@ -11,9 +11,14 @@ export class ShowContentChat {
         let supportHtmlProfile = '';
         if (dataHeaderContentChat.listParticipant.hasOwnProperty('length') && dataHeaderContentChat.listParticipant.length) {
             dataHeaderContentChat.listParticipant.forEach((element) => {
-                supportHtmlProfile += '<i channel="status.' + dataHeaderContentChat.dataChannelId + '" class="favorite-conversation ' + element.classStatus + '"'
-                    + 'codePartId="' + element.codePartId + '" code-participant-id="' + element.users_id + '" aria-hidden="true"></i>';
-                supportHtmlProfile += '<div class="info-group"><span class="status-name">' + element.moodMessageShow + '</span><span class="status-space">|</span><span class="status-other">fsgsgsgs</span></div>';
+                supportHtmlProfile += `<i channel="status.${dataHeaderContentChat.dataChannelId}" class="favorite-conversation ${element.classStatus}"
+                    codePartId="${element.codePartId}" code-participant-id="${element.users_id}" aria-hidden="true"></i>`;
+
+                supportHtmlProfile += `<div class="info-group">
+                        <span class="status-name">${element.moodMessageShow}</span>
+                        <span class="status-space">|</span>
+                        <span class="status-other">fsgsgsgs</span>
+                    </div>`;
             });
         }
 
@@ -100,9 +105,9 @@ export class ShowContentChat {
                         </div>`;
                 } else {
                     htmlBoxContentChat += `<div class="clearfix"></div>
-                        <div class="" id="request-area"><div class="accept-request-user">
-                            <div class="mr-t20 col-md-12" align="center" data-conversation="${reqBoxContentChat.dataConversation}">
-                                <span>XXXXXXXXXXXXXXXXXXXXXXXXX</span>
+                        <div class="request-area-contact"><div class="accept-request-user">
+                            <div class="mr-t20 col-md-12" id="request-area-contact" align="center" data-conversation="${reqBoxContentChat.dataConversation}">
+                                <span>Sent you a friend request</span>
                                 <button class="btn btn-primary" data-act-result="0" id="reply-decline-user">decline</button>
                                 <button class="btn btn-primary" data-act-result="1" id="reply-accept-user">accept</button>
                             </div>

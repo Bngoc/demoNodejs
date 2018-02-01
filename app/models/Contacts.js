@@ -32,7 +32,7 @@ Contact.prototype.updateContact = function (dataRequest, callback) {
             modelContact
                 .save(
                     {
-                        status: dataRequest.dataUpdate.hasOwnProperty('status') || modelContact.get('status'),
+                        status: dataRequest.dataUpdate.hasOwnProperty('status') ? dataRequest.dataUpdate.status : modelContact.get('status'),
                         is_life: (typeof dataRequest.dataUpdate.is_life !== 'undefined' ? dataRequest.dataUpdate.is_life : modelContact.get('is_life')),
                         country: (typeof dataRequest.dataUpdate.country !== 'undefined' ? dataRequest.dataUpdate.country : modelContact.get('country')),
                         gender: (typeof dataRequest.dataUpdate.gender !== 'undefined' ? dataRequest.dataUpdate.gender : modelContact.get('gender')),

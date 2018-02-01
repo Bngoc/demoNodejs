@@ -24,8 +24,8 @@ const app = {
         status_group: 'group',
         status_hidden_name: 'hidden',
         status_hidden_name_replace: 'offline',
-        mood_message_request: 'User not share information',
-        mood_message_responsive: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+        mood_message_request: 'User do not share information',
+        mood_message_responsive: 'You share more information',
     }
 };
 

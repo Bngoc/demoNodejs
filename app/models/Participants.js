@@ -1,14 +1,10 @@
 'use strict';
 
 const path = require('path');
-
 const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const coreHelper = new CoreHelper();
-
 const knex = coreHelper.connectKnex();
 const bookshelf = coreHelper.bookshelf();
-
-
 const Users = coreHelper.callModule(`${coreHelper.paths.MODELS}Users.js`);
 const Conversation = coreHelper.callModule(`${coreHelper.paths.MODELS}Conversation.js`);
 
@@ -24,27 +20,6 @@ var Participants = bookshelf.Model.extend({
 });
 
 let Participant = function () {
-}
-
-
-Participant.prototype.updateParticipant = function (reqUpdate, callback) {
-    bookshelf
-        .transaction(function (t) {
-            return Conversations.model.query((qb) => qb.where({'id': reqUpdate.conversationID})).fetch({require: true})
-                .then((dataModel) => {
-                    reqUpdate.clauseUpdate = {
-                        'is_accept_single': 122 || dataModel.get('is_accept_single'),
-                        'is_accept_group': 122 || dataModel.get('is_accept_group')
-                    };
-                    dataModel.save(reqUpdate.clauseUpdate, {transacting: t})
-                        .then(() => {
-                        })
-                        // .then((resultModel) => callback(null, resultModel))
-                        .catch((exUpdate) => callback(exUpdate));
-                }).catch((ex) => callback(ex));
-        })
-        .then((modelConversation) => callback(null, modelConversation))
-        .catch((err) => callback(err));
 };
 
 module.exports = {model: Participants, class: Participant};

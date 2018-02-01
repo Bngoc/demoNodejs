@@ -47,7 +47,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         this.remainTimeDefault = (0.3 * 60 * 1000);
         this.remainTimeSearch = (1 * 60 * 1000);
         this.sendChatMessage = new SendChatMessage();
-        this.menuInfoChat = new MenuInfoChat();
+        // this.menuInfoChat = new MenuInfoChat();
         this.loadCss([
             // 'css/chat/chat.custom.css',
             'css/chat/chat.test.css',
@@ -91,20 +91,20 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
                     };
                     this.sendChatMessage.runInitChatMessage(optionInit, socket);
                     this.sendChatMessage.clickListContactContentChat(socket, function (resultCallback) {
-                        jQuery.extend(window.dataGlobal.urlAction, resultCallback.dataResult.urlAction);
+                        // jQuery.extend(window.dataGlobal.urlAction, resultCallback.dataResult.urlAction);
                         if (resultCallback.isDataFriend === true) {
-                            self.isDataFriend = true;
-                            self.sendChatMessage.eventClickSend(socket, self.isDataFriend);
-                            self.sendChatMessage.eventEnterSend(socket, self.isDataFriend);
+                            //     self.isDataFriend = true;
+                            //     self.sendChatMessage.eventClickSend(socket, self.isDataFriend);
+                            //     self.sendChatMessage.eventEnterSend(socket, self.isDataFriend);
                             self.menuInfoChat.runInit(socket);
                         }
-                        if (resultCallback.isSingle !== null) {
-                            self.isSingle = true;
-                            self.sendChatMessage.clickActContactConversation(socket, self.isSingle);
-                        }
-
-                        self.sendChatMessage.scrollListener(socket);
-                        self.sendChatMessage.scrollContentChat();
+                        // if (resultCallback.isSingle !== null) {
+                        //     self.isSingle = true;
+                        //     self.sendChatMessage.clickActContactConversation(socket, self.isSingle);
+                        // }
+                        //
+                        // self.sendChatMessage.scrollListener(socket);
+                        // self.sendChatMessage.scrollContentChat();
                     });
 
                     // socket.on('pong', (data) => {

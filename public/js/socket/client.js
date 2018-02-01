@@ -155,7 +155,7 @@ SendChatMessage.prototype.eventChangeStatusUser = function () {
                 var dataRequest = {
                     data: {
                         status: dataValue,
-                        _method: 'post'
+                        _method: 'POST'
                     }
                 };
 
@@ -192,7 +192,7 @@ SendChatMessage.prototype.clickSearchContact = function () {
                     isAuthenticatesSingle: false,
                     isSearch: false,
                     valSearch: null,
-                    _method: 'post'
+                    _method: 'POST'
                 },
                 reset: true
             };
@@ -252,7 +252,7 @@ SendChatMessage.prototype.clickContactContentChat = function () {
                         dataChannelID: dataChannelID,
                         valAuthor: valAuthor,
                         dataConversation: dataConversation,
-                        _method: 'post'
+                        _method: 'POST'
                     }
                 };
 
@@ -299,7 +299,7 @@ SendChatMessage.prototype.getListContact = function () {
             data: {
                 dataType: $('#messageInput').attr('data-type'),
                 isAuthenticatesSingle: true,
-                _method: 'post'
+                _method: 'POST'
             }
         };
         let lisContact = new listContacts();
@@ -420,7 +420,7 @@ SendChatMessage.prototype.clickListContactContentChat = function () {
                 dataChannelID: dataChannelID,
                 dataOwnerID: dataOwnerID,
                 dataConversation: dataConversation,
-                _method: 'post'
+                _method: 'POST'
             }
         };
         _this.reloadContentBoxChatAjax(dataRequest, function () {

@@ -6,11 +6,11 @@ declare var jQuery: any;
 declare var $: any;
 declare var require: any;
 declare var window: any;
-import * as io from 'socket.io-client';
 import {libSupports} from "../../libSupports";
 import {isUndefined} from "util";
 import {ShowContentChat} from "../supports/ShowContentChat";
 import {ShowProfileParticipantChat} from "../supports/ShowProfileParticipantChat";
+// import {MenuInfoChat} from "../supports/MenuInfoChat";
 
 export class SendChatMessage extends libSupports {
 
@@ -35,6 +35,7 @@ export class SendChatMessage extends libSupports {
         this.clickShowParticipantProfile();
         this.clickSearchContacts(opt.remainTimeSearch);
         this.clickAddContact(socket);
+        this.clickResultAddContact(socket);
         this.commonGllobalDefault(opt);
         //add available list contacts
         window.listContacts = opt.listContacts;
@@ -49,7 +50,7 @@ export class SendChatMessage extends libSupports {
                 isAuthenticatesSingle: false,
                 isSearch: false,
                 valSearch: null,
-                _method: 'post'
+                _method: 'POST'
             },
             reset: true
         };
@@ -124,7 +125,7 @@ export class SendChatMessage extends libSupports {
 
     eventClickSend = function (socket, isDataFriend) {
         var that = this;
-        $('body').on('click', '#sendMessageChat', function () {
+        $(document).on('click', '#sendMessageChat', function () {
             that.sendMsg(socket, isDataFriend);
         });
     };
@@ -133,11 +134,11 @@ export class SendChatMessage extends libSupports {
         var that = this;
 
         // create trigger keyUpDown after check enter vs (shift + enter) in textarea
-        $('body').on('keyUpDown', '#boxChat', function (e) {
+        $(document).on('keyUpDown', '#boxChat', function (e) {
             e.stopPropagation();
         });
 
-        $('body').on('keypress', '#boxChat', function (evt) {
+        $(document).on('keypress', '#boxChat', function (evt) {
             var valTextarea = $.trim($('#boxChat').val());
 
             if (evt.shiftKey && evt.keyCode == 13) {
@@ -154,7 +155,7 @@ export class SendChatMessage extends libSupports {
 
     eventClickNotifyBoxMsg = function () {
         let that = this;
-        $('body').on('click', '#notifyNewsSms', function () {
+        $(document).on('click', '#notifyNewsSms', function () {
             that.scrollEndShowBoxChat(1000);
             $('#newMsgChat').delay(2000).css("display", "none");
         })
@@ -162,7 +163,7 @@ export class SendChatMessage extends libSupports {
 
     eventChangeStatusUser = function (socket) {
         var that = this;
-        $('body').on('click', '#status-options .channel-status', function () {
+        $(document).on('click', '#status-options .channel-status', function () {
             var elem = this;
             let dataValue = $(elem).attr('data-value');
             let status = $(elem).attr('status');
@@ -179,7 +180,7 @@ export class SendChatMessage extends libSupports {
                         var dataRequest = {
                             data: {
                                 status: dataValue,
-                                _method: 'post'
+                                _method: 'POST'
                             }
                         };
 
@@ -207,7 +208,7 @@ export class SendChatMessage extends libSupports {
     clickSearchContact = function (remainTime) {
         let that = this;
         let listContact = new ListContacts();
-        $('body').on('keyup copy cut', '#search-contact', function () {
+        $(document).on('keyup copy cut', '#search-contact', function () {
             let val = $.trim($(this).val());
             //remain time  or value search length min 3 for reset list contact
             window.remainTime = that.getDateTimeNow() + remainTime;
@@ -226,7 +227,7 @@ export class SendChatMessage extends libSupports {
 
     clickRightContactContentChat = function () {
         let that = this;
-        $('body').on("mousedown", "#group-participant .show-info-participants", function (ev) {
+        $(document).on("mousedown", "#group-participant .show-info-participants", function (ev) {
             if (ev.which == 1 || ev.which == 3) {
                 $('.show-info-participants').removeClass('check-participant');
                 $(this).addClass('check-participant');
@@ -237,7 +238,7 @@ export class SendChatMessage extends libSupports {
     clickContactContentChat = function (socket) {
         let that = this;
         let click = 0, delay = 500, timer = null;
-        $('body')
+        $(document)
             .on('click', '.show-info-participants', function (e) {
                 let self = this;
                 e.preventDefault();
@@ -268,7 +269,7 @@ export class SendChatMessage extends libSupports {
 
     clickActContactConversation = function (socket, isSingle) {
         var that = this;
-        $('body').on('click', '#action-friend .add, #action-friend .create', function () {
+        $(document).on('click', '#action-friend .add, #action-friend .create', function () {
             let listContact = new ListContacts();
             let dataConversation = $('#messageInput').attr("data-conversation");
             let dataConversationId = (typeof dataConversation !== typeof isUndefined && dataConversation !== false) ? dataConversation : null;
@@ -293,14 +294,14 @@ export class SendChatMessage extends libSupports {
 
     getListContact = function () {
         var that = this;
-        $('body').on('click', '#list-contact-your', function () {
+        $(document).on('click', '#list-contact-your', function () {
             window.remainTime = 1;
             let requestListContact = {
                 url: $('#box-search-contacts').attr('data-url'),
                 data: {
                     dataType: $('#messageInput').attr('data-type'),
                     isAuthenticatesSingle: true,
-                    _method: 'post'
+                    _method: 'POST'
                 }
             };
             let elem = this;
@@ -321,7 +322,7 @@ export class SendChatMessage extends libSupports {
 
     clickContactAdd = function () {
         var that = this;
-        $('body').on('click', '#data-contact li.contact-list', function () {
+        $(document).on('click', '#data-contact li.contact-list', function () {
             let author = $(this).find('[data-author]').attr('data-author');
             if (typeof author !== typeof undefined && author !== false) {
                 let authorId = author.split('.')[1];
@@ -337,7 +338,7 @@ export class SendChatMessage extends libSupports {
 
     clickContactSearchSingle = function () {
         var that = this;
-        $('body')
+        $(document)
             .on('keyup copy cut', '#search-single', function () {
                 let val = $.trim($(this).val());
                 let htmlListContact = '';
@@ -362,7 +363,7 @@ export class SendChatMessage extends libSupports {
 
     clickContactSub = function () {
         var that = this;
-        $('body').on('click', '#box-action-friend i.act-aptach', function () {
+        $(document).on('click', '#box-action-friend i.act-aptach', function () {
             let author = $(this).closest('[data-author]').attr('data-author');
             if (typeof author !== typeof undefined && author !== false) {
                 let authorId = author.split('.')[1];
@@ -421,7 +422,7 @@ export class SendChatMessage extends libSupports {
 
     clickListContactContentChat = function (socket, callback) {
         var that = this;
-        $('body').on('click', '#contacts li.contact', function () {
+        $(document).on('click', '#contacts li.contact', function () {
             let userName = $(this).find('.meta p.name').attr('data-conversation-name');
             let dataChannelID = $(this).find('.wrap').attr("data-channel");
             let dataOwnerID = $(this).find('.wrap').attr("data-owner");
@@ -438,9 +439,30 @@ export class SendChatMessage extends libSupports {
             let elem = this;
             that.reloadContentBoxChatAjax(dataRequest, socket, function (resultCallback) {
                 that.activeListContact(elem);
-                callback(resultCallback);
+                // callback(resultCallback);
+                that.readyChatParticipant(socket, resultCallback, () => callback(resultCallback));
             });
         });
+    };
+
+    readyChatParticipant = function (socket, resultReadyChat, callback: any = false) {
+        jQuery.extend(window.dataGlobal.urlAction, resultReadyChat.dataResult.urlAction);
+        if (resultReadyChat.isDataFriend === true) {
+            let isDataFriend = true;
+            // let menuInfoChat = new MenuInfoChat();
+            this.eventClickSend(socket, isDataFriend);
+            this.eventEnterSend(socket, isDataFriend);
+            // this.runInit(socket);
+        }
+        if (resultReadyChat.isSingle !== null) {
+            let isSingle = true;
+            this.clickActContactConversation(socket, isSingle);
+        }
+
+        this.scrollListener(socket);
+        this.scrollContentChat();
+
+        if (typeof callback !== 'function') callback(resultReadyChat);
     };
 
     reloadContentBoxChatAjax = function (request, socket, callback) {
@@ -453,7 +475,7 @@ export class SendChatMessage extends libSupports {
                 dataOwnerID: request.hasOwnProperty('dataOwnerID') && request.dataOwnerID ? request.dataOwnerID : null,
                 dataConversation: request.hasOwnProperty('dataConversation') && request.dataConversation ? request.dataConversation : null,
                 valAuthor: request.hasOwnProperty('valAuthor') && request.valAuthor ? request.valAuthor : null,
-                _method: 'post'
+                _method: 'POST'
             }
         };
 
@@ -471,7 +493,7 @@ export class SendChatMessage extends libSupports {
 
     clickShowParticipantProfile = function () {
         let self = this;
-        $('body').on('click', '#participant-profile', function () {
+        $(document).on('click', '#participant-profile', function () {
             let showProfileParticipantChat = new ShowProfileParticipantChat();
 
             showProfileParticipantChat.renderHtmlProfileParticipants(self.dataConversationProfile, function () {
@@ -484,7 +506,7 @@ export class SendChatMessage extends libSupports {
 
     clickAddContact = function (socket) {
         let self = this;
-        $('body').on('click', '#add-contact-user, #resend-contact-request', function () {
+        $(document).on('click', '#add-contact-user, #resend-contact-request', function () {
             let checkParticopantId = $('#extend-participant i[code-participant-id]').attr('code-participant-id');
             let participantID = typeof checkParticopantId !== "undefined" ? checkParticopantId : null;
             let userName = $('#participant-user-name').text();
@@ -497,7 +519,7 @@ export class SendChatMessage extends libSupports {
                     infoParticipant: {userName: userName},
                     resendRequest: (typeof resendRequest !== "undefined" ? resendRequest : null),
                     conversationID: (typeof conversationID !== "undefined" ? conversationID : null),
-                    _method: "post"
+                    _method: "POST"
                 }
             };
             let elem = this;
@@ -527,6 +549,55 @@ export class SendChatMessage extends libSupports {
                         listContact.subscribeAfterClickListContact(() => {
                             self.activeListContact(elem, dataResult.dataChannelID);
                         });
+                    }
+                });
+            }
+        });
+    };
+
+    clickResultAddContact = function (socket) {
+        let self = this;
+        $(document).on('click', '#reply-accept-user, #reply-decline-user', function () {
+            let dataActResult = $(this).attr('data-act-result');
+            let userName = $('#participant-user-name').text();
+            let userRequest = $('#extend-participant').find('i[code-participant-id]').attr('code-participant-id');
+            let conversationID = $('#request-area-contact').attr('data-conversation');
+            let reqResultAddContact = {
+                url: window.dataGlobal.urlAction.hasOwnProperty('actionAcceptContact') ? window.dataGlobal.urlAction.actionAcceptContact : null,
+                data: {
+                    dataActResult: dataActResult,
+                    userRequest: userRequest,
+                    userName: userName,
+                    conversationID: conversationID,
+                    _method: "POST"
+                }
+            };
+            if (reqResultAddContact.url) {
+                let listContact = new ListContacts();
+                self.callDataJS(reqResultAddContact, (resultContact) => {
+                    if (resultContact.option.hasOwnProperty('activeResult')) {
+                        window.remainTime = 1;
+                        window.valSearchAnonymous = true;
+                        let booleanActiveResult = resultContact.option.activeResult;
+                        let dataRequest = {
+                            url: window.dataGlobal.urlAction.hasOwnProperty('urlChangeContent') ? window.dataGlobal.urlAction.urlChangeContent : null,
+                            userName: userName,
+                            dataChannelID: booleanActiveResult && resultContact.data.hasOwnProperty('dataChannelID') ? resultContact.data.dataChannelID : null,
+                            dataOwnerID: resultContact.data.dataOwnerID,
+                            dataConversation: booleanActiveResult && resultContact.data.hasOwnProperty('dataConversation') ? resultContact.data.dataConversation : null,
+                            valAuthor: resultContact.option.activeResult ? null : resultContact.option.valAuthor
+                        };
+
+                        if (dataRequest.url) {
+                            self.reloadContentBoxChatAjax(dataRequest, socket, (resultReload) => {
+                                self.readyChatParticipant(socket, resultReload, () => {
+                                    listContact.subscribeAfterClickListContact(() => {
+                                        let dataChannelID = (resultContact.data.hasOwnProperty('dataChannelID')) ? resultContact.data.dataChannelID : null;
+                                        self.activeListContact(null, dataChannelID);
+                                    });
+                                });
+                            });
+                        }
                     }
                 });
             }
@@ -711,7 +782,7 @@ export class SendChatMessage extends libSupports {
 
     clickSearchContacts = function (remainTimeSearch) {
         let that = this;
-        $('body').on('click', '#searchContacts', function () {
+        $(document).on('click', '#searchContacts', function () {
             window.remainTime = that.getDateTimeNow() + remainTimeSearch;
             let listContact = new ListContacts();
             listContact.searchOnContacts(window.listContacts);

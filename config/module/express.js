@@ -43,9 +43,7 @@ class Express {
         app.use(expressLayouts);
 
         app.use(logger('dev'));
-        // use encode url
         app.use(bodyParser.urlencoded({extended: true}));
-        //JSON
         app.use(bodyParser.json());
         app.use(bodyParser.text({type: 'text/html'}));
         app.use(expressValidator());

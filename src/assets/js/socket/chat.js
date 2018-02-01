@@ -1,4 +1,4 @@
-$('body').on('input', 'textarea#boxChat', function () {
+$(document).on('input', 'textarea#boxChat', function () {
     if ($('#frameListMsg').height()) {
         $(this).outerHeight(38).outerHeight(this.scrollHeight);
         $('#frameListMsg').attr('box-change-msg', $(this).height());
@@ -7,7 +7,7 @@ $('body').on('input', 'textarea#boxChat', function () {
 });
 
 // add listen trigger changeBoxMsg
-$('body').on('changeBoxMsg', '#frameListMsg', function () {
+$(document).on('changeBoxMsg', '#frameListMsg', function () {
     var minHeightFrameListMsg = getMinHeightFrameListMsg();
     $(this).css({'min-height': minHeightFrameListMsg, 'height': minHeightFrameListMsg});
 
