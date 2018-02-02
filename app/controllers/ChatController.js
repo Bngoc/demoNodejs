@@ -697,7 +697,7 @@ class ChatController extends BaseController {
 
     // search all all list contact single
     postApiListSearchContactAll(req, res) {
-        var responseListSearchContact = {data: [], option: {}, done: false, err: '', msg: ''};
+        let responseListSearchContact = {data: [], option: {}, done: false, err: '', msg: ''};
         try {
             if (req.xhr) {
                 if (req.body.valSearchContact && req.session) {
@@ -858,7 +858,7 @@ class ChatController extends BaseController {
                                     dataChannelID: result.get('channel_id'),
                                     valAuthor: req.body.userRequest,
                                     dataConversation: result.get('id'),
-                                    dataOwnerID: result.get('creator_id')
+                                    userAcceptID: req.user
                                 };
                                 responseAddContact.option = {
                                     activeResult: true
@@ -869,7 +869,7 @@ class ChatController extends BaseController {
                         } else if (req.body.dataActResult == 0) {
                             // decline
                             let reqDeleteConversation = {conversationID: req.body.conversationID};
-                            conversation.deleteConversationParticipants(reqDeleleConversation, function (errDelete, resultDelete) {
+                            conversation.deleteConversationParticipants(reqDeleteConversation, function (errDelete, resultDelete) {
                                 if (errDelete) {
                                     responseAddContact.err = "ERR003";
                                     responseAddContact.msg = errDelete;
@@ -878,7 +878,7 @@ class ChatController extends BaseController {
                                     responseAddContact.done = true;
                                     responseAddContact.data = {
                                         valAuthor: req.body.userRequest,
-                                        dataOwnerID: result.get('creator_id')
+                                        userAcceptID: req.user
                                     };
                                     responseAddContact.option = {
                                         activeResult: false

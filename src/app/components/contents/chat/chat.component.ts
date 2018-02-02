@@ -14,7 +14,6 @@ import {SendChatMessage} from "../../../common/chat/sokets/SendChatMessage";
 import {LibCommonChat} from "../../../common/chat/supports/LibCommonChat";
 import {isBoolean} from "util";
 import {Router} from '@angular/router';
-// import {MenuInfoChat} from "../../../common/chat/supports/MenuInfoChat";
 
 
 @Component({
@@ -26,7 +25,6 @@ import {Router} from '@angular/router';
 export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     private url;
     private sendChatMessage: any;
-    // private menuInfoChat: any;
     error: any;
     resultData: any = {};
     rsData: Subscription;
@@ -47,7 +45,6 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         this.remainTimeDefault = (0.3 * 60 * 1000);
         this.remainTimeSearch = (1 * 60 * 1000);
         this.sendChatMessage = new SendChatMessage();
-        // this.menuInfoChat = new MenuInfoChat();
         this.loadCss([
             // 'css/chat/chat.custom.css',
             'css/chat/chat.test.css',
@@ -90,42 +87,16 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
                         urlAction: window.dataGlobal.urlAction
                     };
                     this.sendChatMessage.runInitChatMessage(optionInit, socket);
-                    this.sendChatMessage.clickListContactContentChat(socket, function (resultCallback) {
-                        // jQuery.extend(window.dataGlobal.urlAction, resultCallback.dataResult.urlAction);
-                        // if (resultCallback.isDataFriend === true) {
-                            //     self.isDataFriend = true;
-                            //     self.sendChatMessage.eventClickSend(socket, self.isDataFriend);
-                            //     self.sendChatMessage.eventEnterSend(socket, self.isDataFriend);
-                        // self.menuInfoChat.runInit(socket);
-                        // }
-                        // if (resultCallback.isSingle !== null) {
-                        //     self.isSingle = true;
-                        //     self.sendChatMessage.clickActContactConversation(socket, self.isSingle);
-                        // }
-                        //
-                        // self.sendChatMessage.scrollListener(socket);
-                        // self.sendChatMessage.scrollContentChat();
+                    this.sendChatMessage.clickListContactContentChat(socket, (resultCallback) => {
                     });
-
-                    // socket.on('pong', (data) => {
-                    //     console.log('Receive "pong"', data);
-                    // });
 
                     socket.on('expiresTime60', (str) => {
                         console.log('-----------------------', str);
                     });
 
-                    // socket.emit('ping', "xxxx");
-
                     socket.on('message', function (message) {
                         $('#showmsg').text('The server has a message for you: ' + message);
                     });
-
-                    // let s60 = 15000;
-                    //
-                    // setInterval(function () {
-                    //     socket.emit('pingServer', {isCheck: true, ttl: 3000});
-                    // }, s60);
 
                     this.reload(socket);
                     this.sendDataPrivate(socket);

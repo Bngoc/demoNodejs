@@ -589,9 +589,9 @@ export class SendChatMessage extends libSupports {
                             url: window.dataGlobal.urlAction.hasOwnProperty('urlChangeContent') ? window.dataGlobal.urlAction.urlChangeContent : null,
                             userName: userName,
                             dataChannelID: booleanActiveResult && resultContact.data.hasOwnProperty('dataChannelID') ? resultContact.data.dataChannelID : null,
-                            dataOwnerID: resultContact.data.dataOwnerID,
+                            dataOwnerID: resultContact.data.valAuthor,
                             dataConversation: booleanActiveResult && resultContact.data.hasOwnProperty('dataConversation') ? resultContact.data.dataConversation : null,
-                            valAuthor: resultContact.option.activeResult ? null : resultContact.option.valAuthor
+                            valAuthor: resultContact.option.activeResult ? null : resultContact.data.valAuthor
                         };
 
                         if (dataRequest.url) {
