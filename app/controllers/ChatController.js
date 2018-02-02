@@ -702,6 +702,7 @@ class ChatController extends BaseController {
             if (req.xhr) {
                 if (req.body.valSearchContact && req.session) {
                     let unsetParticipants = req.body.hasOwnProperty('listContactParticipant') ? req.body.listContactParticipant : [];
+                    unsetParticipants.push(req.user.id);
                     let reqListSearchAllContactsSingle = {
                         userCurrentID: req.session.passport.user,
                         conversationType: [conversationType[0]],
