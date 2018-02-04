@@ -7,18 +7,34 @@ declare var require: any;
 
 export class ShowContentChat {
 
-    supportHeaderHtmlContentChat(dataHeaderContentChat) {
+    supportHeaderHtmlMoodMessageChat(element, isFriend) {
+        let htmlProfileMoodMessage = `<div class="info-group"><span class="status-name">${element.moodMessageShow}</span>`;
+        if (isFriend == true) {
+            if (element.hasOwnProperty('dataListMoodMessage') && element.dataListMoodMessage) {
+                element.dataListMoodMessage.forEach(function (elem) {
+                    if (elem.exits)
+                        htmlProfileMoodMessage += `<span class="status-space">|</span><span class="status-other">${elem.moreMoodMsg}</span>`;
+                    // supportHtmlProfile += `<div class="info-group">
+                    //         <span class="status-name">${element.moodMessageShow}</span>
+                    //         <span class="status-space">|</span>
+                    //         <span class="status-other">fsgsgsgs</span>
+                    //     </div>`;
+                });
+            }
+        }
+        htmlProfileMoodMessage += `</div>`;
+
+        return htmlProfileMoodMessage;
+    }
+
+    supportHeaderHtmlContentChat(dataHeaderContentChat, isFriend: any = false) {
         let supportHtmlProfile = '';
         if (dataHeaderContentChat.listParticipant.hasOwnProperty('length') && dataHeaderContentChat.listParticipant.length) {
             dataHeaderContentChat.listParticipant.forEach((element) => {
                 supportHtmlProfile += `<i channel="status.${dataHeaderContentChat.dataChannelId}" class="favorite-conversation ${element.classStatus}"
                     codePartId="${element.codePartId}" code-participant-id="${element.users_id}" aria-hidden="true"></i>`;
 
-                supportHtmlProfile += `<div class="info-group">
-                        <span class="status-name">${element.moodMessageShow}</span>
-                        <span class="status-space">|</span>
-                        <span class="status-other">fsgsgsgs</span>
-                    </div>`;
+                supportHtmlProfile += this.supportHeaderHtmlMoodMessageChat(element, isFriend);
             });
         }
 
@@ -38,7 +54,7 @@ export class ShowContentChat {
 
         if (reqDataContentChat.booleanConversation) {
             if (reqDataContentChat.isTypeSingle) {
-                htmlProfile += this.supportHeaderHtmlContentChat(reqDataContentChat);
+                htmlProfile += this.supportHeaderHtmlContentChat(reqDataContentChat, true);
             } else {
                 htmlProfile += `<i class="favorite-conversation fa fa-plus" aria-hidden="true"></i>
                     <div class="info-group">

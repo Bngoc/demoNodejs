@@ -37,6 +37,7 @@ export class SendChatMessage extends libSupports {
         this.clickAddContact(socket);
         this.clickResultAddContact(socket);
         this.commonGllobalDefault(opt);
+        this.eventChangeStatusUser(socket);
         //add available list contacts
         window.listContacts = opt.listContacts;
     };
@@ -581,6 +582,7 @@ export class SendChatMessage extends libSupports {
             if (reqResultAddContact.url) {
                 let listContact = new ListContacts();
                 self.callDataJS(reqResultAddContact, (resultContact) => {
+                    socket.emit('resultAcceptDeclineContact', resultContact);
                     if (resultContact.option.hasOwnProperty('activeResult')) {
                         window.remainTime = 1;
                         window.valSearchAnonymous = true;
@@ -793,6 +795,38 @@ export class SendChatMessage extends libSupports {
             let listContact = new ListContacts();
             listContact.searchOnContacts(window.listContacts);
         });
+    };
+
+    sendDataBroadCast = function (messageSent) {
+        let searchDomChannel = $('[channel="status.' + messageSent.channelId + '"]');
+        if (searchDomChannel.closest('li').hasClass('active')) {
+            this.htmlContentBoxChat(messageSent);
+            if ($('#boxMsgChat').is(':focus')) {
+                this.scrollEndShowBoxChat(1000);
+                // $('#frameListMsg').trigger('changeBoxMsg');
+                //     $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, 200);
+            } else {
+                $('#newMsgChat').delay(100).css("display", "block");
+            }
+        } else {
+            let badgesNotify = searchDomChannel.closest('.wrap').find('i.badges-notify');
+            if (badgesNotify.length) {
+                badgesNotify.addClass('badges-color').text('211');
+            }
+        }
+    };
+
+    msgContent = function (dataMessage) {
+        if (dataMessage.isLength) {
+            let oldScrollHeight = $("#frameListMsg")[0].scrollHeight;
+            this.htmlContentBoxChat(dataMessage);
+            this.getDefaultHeightMsgBox();
+            if (dataMessage.isLoadTop === false) {
+                this.scrollEndShowBoxChat(0);
+            } else {
+                $('#frameListMsg').animate({scrollTop: ($('#frameListMsg')[0].scrollHeight - oldScrollHeight)}, 100);
+            }
+        }
     };
 
     activeListContact = function (elem, channelId = null) {

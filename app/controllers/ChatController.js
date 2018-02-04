@@ -118,7 +118,7 @@ class ChatController extends BaseController {
                         userCurrentID: userCurrent.attributes.id,
                         statusID: notiContacts.attributes.status,
                         statusName: chatStatus[notiContacts.attributes.status],
-                        listStatus: Object.values(chatStatus).join(' '),
+                        listStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
                         statusSingle: cfgChat.status_single,
                         infoAccount: rsData.infoAccount
                     };
@@ -230,7 +230,7 @@ class ChatController extends BaseController {
                                 }
                                 let optionRender = {
                                     eleSingle: eleSingle,
-                                    strListStatus: Object.values(chatStatus).join(' '),
+                                    strListStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
                                     moodMessageTemp: moodMessageTemp,
                                     tempClassStatus: tempClassStatus,
                                     indexFindUserSingle: indexFindUserSingle,
@@ -265,7 +265,7 @@ class ChatController extends BaseController {
 
                                     let optionRender = {
                                         eleSingle: ele,
-                                        strListStatus: Object.values(chatStatus).join(' '),
+                                        strListStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
                                         moodMessageTemp: tempMoodMessageGroup,
                                         tempClassStatus: tempClassStatusGroup,
                                         indexFindUserSingle: indexFindUser,
@@ -343,8 +343,8 @@ class ChatController extends BaseController {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                            return conversationType[k]
-                        })),
+                        return conversationType[k]
+                    })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -412,13 +412,15 @@ class ChatController extends BaseController {
                     }
 
                     let notiContacts = rsData.infoAccount.relations.useContacts;
+                    let statusID = notiContacts.attributes.status;
                     let requestCurrent = {
                         userCurrentID: userCurrent.attributes.id,
-                        statusID: notiContacts.attributes.status,
-                        statusName: chatStatus[notiContacts.attributes.status],
-                        listStatus: Object.values(chatStatus).join(' '),
+                        statusID: statusID,
+                        statusName: chatStatus[statusID],
+                        listStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
                         statusSingle: cfgChat.status_single,
-                        infoAccount: rsData.infoAccount
+                        infoAccount: rsData.infoAccount,
+                        classCurrentStatus: (cfgChat.status_hidden_name == chatStatus[statusID] ? cfgChat.status_hidden_name_replace : chatStatus[statusID]),
                     };
                     // save session - share socket io
                     req.session.currentStatus = requestCurrent;
@@ -539,7 +541,7 @@ class ChatController extends BaseController {
                                 }
                                 let optionRender = {
                                     eleSingle: eleSingle,
-                                    strListStatus: Object.values(chatStatus).join(' '),
+                                    strListStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
                                     moodMessageTemp: moodMessageTemp,
                                     tempClassStatus: tempClassStatus,
                                     indexFindUserSingle: indexFindUserSingle,
@@ -575,7 +577,7 @@ class ChatController extends BaseController {
 
                                     let optionRender = {
                                         eleSingle: ele,
-                                        strListStatus: Object.values(chatStatus).join(' '),
+                                        strListStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
                                         moodMessageTemp: tempMoodMessageGroup,
                                         tempClassStatus: tempClassStatusGroup,
                                         indexFindUserSingle: indexFindUser,
@@ -615,7 +617,7 @@ class ChatController extends BaseController {
                     showResponseChat.booleanConversation = false;
 
                     let optionRenderNotFriend = {
-                        strListStatus: Object.values(chatStatus).join(' '),
+                        strListStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
                         moodMessageTemp: cfgChat.mood_message_request,
                         tempClassStatus: cfgChat.class_undefined,
                     };
@@ -644,8 +646,8 @@ class ChatController extends BaseController {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                            return conversationType[k]
-                        })),
+                        return conversationType[k]
+                    })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -853,19 +855,34 @@ class ChatController extends BaseController {
                                     responseAddContact.msg = errModel;
                                     return res.status(401).send(responseAddContact);
                                 }
-
-                                responseAddContact.done = true;
-                                responseAddContact.data = {
-                                    dataChannelID: result.get('channel_id'),
-                                    valAuthor: req.body.userRequest,
-                                    dataConversation: result.get('id'),
-                                    userAcceptID: req.user
+                                let reqContact = {
+                                    id: req.user.id,
+                                    columns: ['mood_message', 'is_life', 'path_img', 'status']
                                 };
-                                responseAddContact.option = {
-                                    activeResult: true
-                                };
+                                let contact = new Contacts.class();
+                                contact.getContactColumn(reqContact, (errGetContact, dataContact) => {
+                                    if (errGetContact) {
+                                        responseAddContact.err = "ERR003";
+                                        responseAddContact.msg = errGetContact;
+                                        return res.status(401).send(responseAddContact);
+                                    }
 
-                                return res.status(200).send(responseAddContact);
+                                    responseAddContact.done = true;
+                                    responseAddContact.data = {
+                                        dataChannelID: result.get('channel_id'),
+                                        valAuthor: req.body.userRequest,
+                                        dataConversation: result.get('id'),
+                                        userAcceptID: req.user.id,
+                                    };
+                                    let updateStatusCurrent = chatStatus[dataContact.get('status')];
+                                    responseAddContact.option = {
+                                        activeResult: true,
+                                        moodMessage: dataContact.get('mood_message'),
+                                        classCurrentStatus: (cfgChat.status_hidden_name == updateStatusCurrent) ? cfgChat.status_hidden_name_replace : updateStatusCurrent,
+                                    };
+
+                                    return res.status(200).send(responseAddContact);
+                                });
                             });
                         } else if (req.body.dataActResult == 0) {
                             // decline
@@ -879,7 +896,7 @@ class ChatController extends BaseController {
                                     responseAddContact.done = true;
                                     responseAddContact.data = {
                                         valAuthor: req.body.userRequest,
-                                        userAcceptID: req.user
+                                        userAcceptID: req.user.id
                                     };
                                     responseAddContact.option = {
                                         activeResult: false
@@ -1080,6 +1097,24 @@ class ChatController extends BaseController {
                 }
             });
 
+            socket.on('resultAcceptDeclineContact', function (dataContact) {
+                if (dataContact.hasOwnProperty('data')) {
+                    let responsiveContact = {
+                        listStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
+                        channel_id: dataContact.data.hasOwnProperty('dataChannelID') ? dataContact.data.dataChannelID : null,
+                        mood_message: dataContact.option.hasOwnProperty('moodMessage') ? dataContact.option.moodMessage : '',
+                        moreMoodMessage: {
+                            dataListMoodMessage: [],
+                            moodMessageShow: dataContact.option.hasOwnProperty('moodMessage') ? dataContact.option.moodMessage : ''
+                        },
+                        classCurrentStatus: dataContact.option.hasOwnProperty('classCurrentStatus') ? dataContact.option.classCurrentStatus : '',
+                    };
+                    if (responsiveContact.channel_id) {
+                        socket.broadcast.to(responsiveContact.channel_id).emit('listUserConversation', responsiveContact);
+                    }
+                }
+            });
+
             // chi thang phat ra => socket.emit
             socket.emit('message', {
                 content: 'You are connected server private!',
@@ -1231,8 +1266,10 @@ ChatController.prototype.convertDataListSocket = function (socket, infoConversat
         //     }
         // }
 
+
         socket.users_id = requestOption.userCurrentID;
         infoConversation.forEach(function (element) {
+            // let updateStatusCurrent = chatStatus[element.infoAccountParticipant.relations.useContacts.get('is_life')];
             let conversationClone = {
                 userCurrent: requestOption.userCurrentID,
                 type: element.type,
@@ -1242,10 +1279,12 @@ ChatController.prototype.convertDataListSocket = function (socket, infoConversat
                 statusName: requestOption.statusName,
                 listStatus: requestOption.listStatus,
                 isTypeSingle: element.type == requestOption.statusSingle,
-                classCurrentStatus: requestOption.classCurrentStatus
+                // classCurrentStatus: requestOption.hasOwnProperty('classCurrentStatus') ? requestOption.classCurrentStatus : ''
+                classCurrentStatus: element.count == 1 ? (element.is_accept_single == 1 ? cfgChat.class_undefined : requestOption.hasOwnProperty('classCurrentStatus') ? requestOption.classCurrentStatus : '') : '',
             };
 
             socket.join(element.channel_id);
+
             // C1
             socket.broadcast.to(element.channel_id).emit('listUserConversation', conversationClone);
             // C2
@@ -1289,7 +1328,7 @@ ChatController.prototype.updateUserListSocket = function (socket, dataRequest, c
                             userCurrentID: currentStatus.userCurrentID,
                             statusID: notiContacts.attributes.status,
                             statusName: updateStatusCurrent,
-                            listStatus: Object.values(chatStatus).join(' '),
+                            listStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
                             statusSingle: cfgChat.status_single,
                             classCurrentStatus: (dataRequest.dataUpdate.is_life == 0 || (cfgChat.status_hidden_name == updateStatusCurrent) ? cfgChat.status_hidden_name_replace : updateStatusCurrent),
                             classCurrentStatusPrivate: (cfgChat.status_hidden_name == updateStatusCurrent) ? cfgChat.status_hidden_name_replace : updateStatusCurrent,
@@ -1417,7 +1456,7 @@ ChatController.prototype.supportAddContacts = function (req, res, opt) {
             url: aliasRouter.build('api.chat.content.chat'),
             userName: infoParticipant ? infoParticipant.userName : '',
             dataChannelID: opt.data.dataChannelID,
-            dataOwnerID: req.user,
+            dataOwnerID: req.user.id,
             dataConversation: modelConversation.get('id'),
             valAuthor: opt.data.listPartSingle[0],
             resendRequest: req.body.resendRequest

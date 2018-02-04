@@ -51,6 +51,14 @@ Contact.prototype.updateContact = function (dataRequest, callback) {
         });
 };
 
+Contact.prototype.getContactColumn = function (dataRequest, callback) {
+    Contacts
+        .query((qb) => qb.where('users_id', dataRequest.id))
+        .fetch({colums: dataRequest.columns})
+        .then((dataModel)=> callback(null, dataModel))
+        .catch((ex)=> callbackex);
+}
+
 Contact.prototype.inserts = function (dataRequest, callback) {
     new Contacts(dataRequest).save().then(function (model) {
         result.result = model;

@@ -5,6 +5,7 @@ import {isUndefined} from "util";
 import {libSupports} from "../../libSupports";
 import {isFunction} from "util";
 import {el} from "@angular/platform-browser/testing/src/browser_util";
+import {ShowContentChat} from "./ShowContentChat";
 declare var jQuery: any;
 declare var $: any;
 declare var require: any;
@@ -35,7 +36,9 @@ export class ListContacts extends libSupports {
 
     public actionContact(option) {
         let html = '<div class="clearfix"></div><div class="action-friend" id="action-friend">';
-        html += (option !== isUndefined ? (option === false ? '<button class="btn btn-primary add" title="Add users" disabled>Add</button>' : '<button class="btn btn-primary create" title="Create group" disabled>Create</button>') : '');
+        html += (option !== isUndefined ? (option === false ?
+            '<button class="btn btn-primary add" title="Add users" disabled>Add</button>' :
+            '<button class="btn btn-primary create" title="Create group" disabled>Create</button>') : '');
         html += '<button class="btn btn-primary cancel">Cancel</button></div>';
 
         return html;
@@ -148,11 +151,15 @@ export class ListContacts extends libSupports {
         let valAuthor = element.hasOwnProperty('listContactParticipant') && element.hasOwnProperty('users_id') ? `data-author="${element.users_id}"` : '';
 
         let htmlSingleAll = `<li class="contact">
-            <div class="wrap" data-conversation="${element.idConversation}" data-type="${element.type}" data-channel="${element.channel_id}" data-owner="${element.creator_id}" ${valAuthor}>
-                <span channel="status.${element.channel_id}" class="list-icon-status contact-status ${(element.is_accept_single ? option.cfgChat.cfg_chat.class_undefined : (element.is_life && classStatusPart) ? classStatusPart : "")}"></span>
+            <div class="wrap" data-conversation="${element.idConversation}" data-type="${element.type}" 
+                data-channel="${element.channel_id}" data-owner="${element.creator_id}" ${valAuthor}>
+                <span channel="status.${element.channel_id}" 
+                    class="list-icon-status contact-status ${(element.is_accept_single ? option.cfgChat.cfg_chat.class_undefined : (element.is_life && classStatusPart) ? classStatusPart : "")}"></span>
                 <img src="${(element.path_img ? element.path_img : option.cfgChat.cfg_chat.img_single_user)}" alt=""/>
                 <div class="meta">
-                    <span class="name-notify"><p class="name" data-conversation-name="${element.showUser}">${(element.hasOwnProperty('textSearch') ? element.textSearch : (element.middle_name ? element.middle_name : "&nbsp;"))} </p><i class="badges-notify">132</i></span>
+                    <span class="name-notify"><p class="name" data-conversation-name="${element.showUser}">
+                        ${(element.hasOwnProperty('textSearch') ? element.textSearch : (element.middle_name ? element.middle_name : "&nbsp;"))} </p>
+                        <i class="badges-notify">132</i></span>
                 <p class="preview mood_message">${(element.hasOwnProperty('mood_message') && element.mood_message ? element.mood_message : "")} </p>
                 </div>
                 </div>
@@ -167,7 +174,9 @@ export class ListContacts extends libSupports {
                 <span channel="status.${element.channel_id}" class=""></span>
                 <img src="${(element.path_img_group ? element.path_img_group : option.cfgChat.cfg_chat.img_group_user)}" alt=""/>
                 <div class="meta">
-                    <span class="name-notify"><p class="name" data-conversation-name="${element.title}">${(element.hasOwnProperty('textSearch') ? element.textSearch : element.title)}</p><i class="badges-notify">132</i></span>
+                    <span class="name-notify"><p class="name" data-conversation-name="${element.title}">
+                        ${(element.hasOwnProperty('textSearch') ? element.textSearch : element.title)}</p>
+                        <i class="badges-notify">132</i></span>
                     <p class="preview">${element.count} participants</p>
                 </div>
             </div>
@@ -282,5 +291,19 @@ export class ListContacts extends libSupports {
             }
             $('#searchContacts').attr({disabled: true});
         });
-    }
+    };
+
+    public updateListUserConversation = function (listConversation) {
+        let elemFind = $('[channel="status.' + listConversation.channel_id + '"]');
+        elemFind.removeClass(listConversation.listStatus).addClass(listConversation.classCurrentStatus);
+        //not show profile
+        if (listConversation.hasOwnProperty('mood_message') && listConversation.mood_message) {
+            elemFind.closest('div.wrap').find('.mood_message').text(listConversation.mood_message);
+            $('#resend-contact-request').attr({disabled: true});
+        }
+        if (listConversation.hasOwnProperty('moreMoodMessage') && listConversation.moreMoodMessage) {
+            let showContentChat = new ShowContentChat();
+            elemFind.closest('#extend-participant').find('.info-group').html(showContentChat.supportHeaderHtmlMoodMessageChat(listConversation.moreMoodMessage, true));
+        }
+    };
 }

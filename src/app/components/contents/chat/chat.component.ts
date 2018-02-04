@@ -147,43 +147,22 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     }
 
     sendDataPrivate(socket) {
-        let that = this;
-        socket.on('sendDataPrivate', function (messageReplies) {
-            let sendChatMessage = new SendChatMessage();
-            let tempHtml = sendChatMessage.htmlContentBoxChat(messageReplies);
+        let sendChatMessage = new SendChatMessage();
+        socket.on('sendDataPrivate', (messageReplies) => {
+            sendChatMessage.htmlContentBoxChat(messageReplies);
             sendChatMessage.scrollEndShowBoxChat(1000);
             // $('#frameListMsg').trigger('changeBoxMsg');
         });
     };
 
     sendDataBroadCast(socket) {
-        let that = this;
-        socket.on('sendDataBroadCast', function (messageSent) {
-            let searchDomChannel = $('[channel="status.' + messageSent.channelId + '"]');
-            if (searchDomChannel.closest('li').hasClass('active')) {
-                let sendChatMessage = new SendChatMessage();
-                let tempHtml = sendChatMessage.htmlContentBoxChat(messageSent);
-                if ($('#boxMsgChat').is(':focus')) {
-                    sendChatMessage.scrollEndShowBoxChat(1000);
-                    // $('#frameListMsg').trigger('changeBoxMsg');
-                    //     $("#frameListMsg").animate({scrollTop: $("#frameListMsg")[0].scrollHeight}, 200);
-                } else {
-                    $('#newMsgChat').delay(100).css("display", "block");
-                }
-            } else {
-                let badgesNotify = searchDomChannel.closest('.wrap').find('i.badges-notify');
-                if (badgesNotify.length) {
-                    badgesNotify.addClass('badges-color').text('211');
-                }
-            }
-        });
+        let sendChatMessage = new SendChatMessage();
+        socket.on('sendDataBroadCast', (messageSent) => sendChatMessage.sendDataBroadCast(messageSent));
     };
 
     listUserConversation(socket) {
-        let that = this;
-        socket.on('listUserConversation', function (listConversation) {
-            $('[channel="status.' + listConversation.channel_id + '"]').removeClass(listConversation.listStatus).addClass(listConversation.classCurrentStatus);
-        });
+        let listContact = new ListContacts();
+        socket.on('listUserConversation', (listConversation) => listContact.updateListUserConversation(listConversation));
     };
 
     sendDataTest(socket) {
@@ -195,19 +174,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
     msgContent(socket) {
         var sendChatMessage = new SendChatMessage();
-        socket.on('msgContent', function (dataMessage) {
-            if (dataMessage.isLength) {
-                let oldScrollHeight = $("#frameListMsg")[0].scrollHeight;
-                sendChatMessage.htmlContentBoxChat(dataMessage);
-
-                sendChatMessage.getDefaultHeightMsgBox();
-                if (dataMessage.isLoadTop === false) {
-                    sendChatMessage.scrollEndShowBoxChat(0);
-                } else {
-                    $('#frameListMsg').animate({scrollTop: ($('#frameListMsg')[0].scrollHeight - oldScrollHeight)}, 100);
-                }
-            }
-        });
+        socket.on('msgContent', (dataMessage) => sendChatMessage.msgContent(dataMessage));
     };
 
     ngOnDestroy() {
