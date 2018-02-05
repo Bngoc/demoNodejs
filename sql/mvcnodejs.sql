@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `sender_id` INT NOT NULL,
   `participants_id` tinytext NOT NULL,
   `message_type` ENUM('text', 'image', 'vedio', 'audio') NULL,
-  `message` VARCHAR(255) NULL,
+  `message` text NULL,
   `attachment_thumb_url` VARCHAR(255) NULL,
   `attachment_url` VARCHAR(255) NULL,
   `guid` ENUM('single', 'group') NULL,

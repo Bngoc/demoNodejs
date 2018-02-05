@@ -343,8 +343,8 @@ class ChatController extends BaseController {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                        return conversationType[k]
-                    })),
+                            return conversationType[k]
+                        })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -646,8 +646,8 @@ class ChatController extends BaseController {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                        return conversationType[k]
-                    })),
+                            return conversationType[k]
+                        })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -1086,7 +1086,23 @@ class ChatController extends BaseController {
 
                         let conversation = new Conversation.class();
                         conversation.insertConversation(reqModelInsert, function (err, modelConversation) {
-                            console.log(reqModelInsert);
+                            if (!err) {
+                                let resSocketPrivate = {
+                                    done: true,
+                                    ERR: '',
+                                    data: {
+                                        dataChannelID: modelConversation.get('channel_id'),
+                                        valAuthor: userCurrent.user,
+                                        dataConversation: modelConversation.get('id'),
+                                    },
+                                    option: {
+                                        userNameGroup: modelConversation.get('title'),
+                                        activeResult: true
+                                    }
+                                };
+
+                                socket.emit('resultUpdateActionConversationGroup', resSocketPrivate);
+                            }
                         });
                     }
                 } else if (reqActionConversation.conversationId && reqActionConversation.act === 'update') {
@@ -1112,6 +1128,7 @@ class ChatController extends BaseController {
                     if (responsiveContact.channel_id) {
                         socket.broadcast.to(responsiveContact.channel_id).emit('listUserConversation', responsiveContact);
                     }
+                    // get info participant
                 }
             });
 

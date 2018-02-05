@@ -102,6 +102,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
                     this.sendDataPrivate(socket);
                     this.sendDataBroadCast(socket);
                     this.listUserConversation(socket);
+                    this.createConversationGroup(socket);
                     this.sendDataTest(socket);
                     this.msgContent(socket);
 
@@ -163,6 +164,11 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     listUserConversation(socket) {
         let listContact = new ListContacts();
         socket.on('listUserConversation', (listConversation) => listContact.updateListUserConversation(listConversation));
+    };
+
+    createConversationGroup(socket) {
+        let sendChatMessage = new SendChatMessage();
+        socket.on('resultUpdateActionConversationGroup', (listConversationGroup) => sendChatMessage.createConversationGroup(listConversationGroup, socket));
     };
 
     sendDataTest(socket) {
