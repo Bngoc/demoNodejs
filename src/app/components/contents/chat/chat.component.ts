@@ -4,6 +4,7 @@ declare var require: any;
 declare var $: any;
 declare var window: any;
 declare var jQuery: any;
+import {Router} from '@angular/router';
 import {Component, ViewEncapsulation, OnInit, OnDestroy} from '@angular/core';
 import {ApiServiceChat} from '../../services/api-chat.service'
 import * as io from 'socket.io-client';
@@ -13,7 +14,6 @@ import {ListContacts} from "../../../common/chat/supports/ListContacts";
 import {SendChatMessage} from "../../../common/chat/sokets/SendChatMessage";
 import {LibCommonChat} from "../../../common/chat/supports/LibCommonChat";
 import {isBoolean} from "util";
-import {Router} from '@angular/router';
 
 
 @Component({
@@ -28,12 +28,15 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     error: any;
     resultData: any = {};
     rsData: Subscription;
-    isDataFriend: any = false;
-    isSingle: any = false;
+    // isDataFriend: any = false;
+    // isSingle: any = false;
     remainTimeDefault: number;
     remainTimeSearch: number;
     socket: any;
     messageError: any;
+
+    public openPopup: Function;
+
 
     constructor(private apiServiceChat: ApiServiceChat, private router: Router) {
         super();
@@ -52,11 +55,11 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         ]);
 
         this.appendMyScript([
-            'js/common.js',
-            // "js/support/menu-info-chat.js",
-            // "js/support/libCommonChat.js",
-            // "js/support/listContacts.js",
-            // 'js/socket/client.js',
+            //     // 'js/common.js',
+            //     // "js/support/menu-info-chat.js",
+            //     // "js/support/libCommonChat.js",
+            //     // "js/support/listContacts.js",
+            //     // 'js/socket/client.js',
             'js/socket/chat.js'
         ]);
         let self = this;
@@ -108,6 +111,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
                     //C1 CLICK-STRATUS - bo click in template chat
                     // this.sendChatMessage.eventChangeStatusUser(socket);
+                    this.pickerEmoji();
                 }
             }, err => {
                 this.error = err;
@@ -182,6 +186,21 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         var sendChatMessage = new SendChatMessage();
         socket.on('msgContent', (dataMessage) => sendChatMessage.msgContent(dataMessage));
     };
+
+    pickerEmoji() {
+        this.sendChatMessage.clickShowEmoji();
+    }
+
+    onEnterFunction() {
+
+    }
+
+    bindedVariable() {
+    }
+
+    setPopupAction(fn: any) {
+        this.openPopup = fn;
+    }
 
     ngOnDestroy() {
         this.rsData.unsubscribe();

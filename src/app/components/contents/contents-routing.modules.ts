@@ -21,6 +21,7 @@ import {CanDeactivateGuard} from "../../services/auth/can-deactivate-guard.servi
 import {RoleLoginGuardService} from "../../services/auth/role-login-guard.service";
 import {CustomsHttpClient} from "../../common/CustomsHttpClient";
 import {ApiServiceUser} from "../services/api-user.service";
+import {EmojiPickerModule} from "ng-emoji-picker";
 
 
 const contentsRoutes: Routes = [
@@ -64,6 +65,7 @@ const contentsRoutes: Routes = [
     imports: [
         CommonModule,
         HttpClientModule,
+        EmojiPickerModule,
         RouterModule.forChild(contentsRoutes)
     ],
     exports: [

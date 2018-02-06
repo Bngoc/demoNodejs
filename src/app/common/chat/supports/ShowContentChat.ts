@@ -176,7 +176,7 @@ export class ShowContentChat {
                 </form></li>`;
 
             htmlActionContentChat += `<li class="_13gg">
-                <a class="_6gb _3oxr attachment-cst r_emoji50" id="call-emoji-chat" role="button" title="Choose an emoji"><i class="" aria-hidden="true"></i></a>
+                <a class="_6gb _3oxr attachment-cst r_emoji50" (click)="pickerEmoji()" id="call-emoji-chat" role="button" title="Choose an emoji"><i class="" aria-hidden="true"></i></a>
                 </li>`;
 
             htmlActionContentChat += `<li class="_13gg ">

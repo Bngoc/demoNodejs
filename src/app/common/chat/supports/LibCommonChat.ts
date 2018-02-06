@@ -5,7 +5,7 @@ declare var $: any;
 import {isUndefined} from "util";
 import {libSupports} from "../../libSupports";
 import {ListContacts} from "./ListContacts";
-const emoji = require('node-emoji');
+import {EmojiHtmlChat} from "./EmojiHtmlChat";
 
 export class LibCommonChat extends libSupports {
     public swap(json) {
@@ -15,18 +15,6 @@ export class LibCommonChat extends libSupports {
         }
         return ret;
     };
-
-    public format(code, name) {
-        return '<img alt="' + code + '" src="' + name + '.png" />';
-    };
-
-    onMissing(name) {
-        return name;
-    };
-
-    public convertEmoji(stringMsg, onMissing: any = null, format: any = null) {
-        return stringMsg.length ? emoji.emojify(stringMsg, onMissing, format) : stringMsg;
-    }
 
     public convertHtmlToPlainText(strHtml) {
         let stringHtml = strHtml !== isUndefined ? strHtml : "";
@@ -81,6 +69,7 @@ export class LibCommonChat extends libSupports {
 
     public supportHtmlTextAppend(obj, reqOption) {
         let listClass = '';
+        let emojiHtmlChat = new EmojiHtmlChat();
         if (reqOption.isUserCurrent === false) {
             if (reqOption.isUserFuture === true) {
                 listClass = 'bottom-left';
@@ -106,12 +95,9 @@ export class LibCommonChat extends libSupports {
         let dataTooltipContent = (reqOption.isUserCurrent)
             ? (`data-tooltip-private="1" data-tooltip-position="right" data-hover="tooltip" data-tooltip-content="${this.checkTimeActiveLastWeek(obj.created_at)}"`)
             : "";
-        let planText = this.convertHtmlToPlainText(obj.message);
-        let onMissing = this.convertEmoji(planText, this.onMissing(planText));
-        console.log(onMissing);
-        // let format = this.format(planText);
+
         return `<div ${dataAttr} class="_5wd4 ${(reqOption.isUserCurrent ? "js_hn _1nc6 " : "")} ${(reqOption.isUserFuture ? "bottom-m1" : "")}">
-            <p ${dataTooltipContent} ${classTooltipHover} class="${listClass}">${this.convertEmoji(planText)}</p></div>`;
+            <p ${dataTooltipContent} ${classTooltipHover} class="${listClass}">${emojiHtmlChat.convertEmoji(this.convertHtmlToPlainText(obj.message))}</p></div>`;
     };
 
     public checkTimeActiveLastWeek(lastCreatedAt) {

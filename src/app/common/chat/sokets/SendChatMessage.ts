@@ -39,6 +39,8 @@ export class SendChatMessage extends libSupports {
         this.clickResultAddContact(socket);
         this.commonGllobalDefault(opt);
         this.eventChangeStatusUser(socket);
+
+
         //add available list contacts
         window.listContacts = opt.listContacts;
     };
@@ -114,6 +116,7 @@ export class SendChatMessage extends libSupports {
         var dataValueMsg = $.trim($('#boxChat').val());
         if (dataValueMsg.length) {
             let listContact = new ListContacts();
+            let emojiHtmlChat = new EmojiHtmlChat();
             let messageInput = $('#messageInput');
             let listPart = listContact.getListParticipant();
 
@@ -122,7 +125,7 @@ export class SendChatMessage extends libSupports {
                     dataConversation: messageInput.attr('data-conversation'),
                     dataChannel: messageInput.attr('data-channel'),
                     dataType: messageInput.attr('data-type'),
-                    dataValueMsg: dataValueMsg,
+                    dataValueMsg: emojiHtmlChat.convertEmojiToText(dataValueMsg),
                     listCodePart: listPart.join(',')
                 };
 
@@ -144,7 +147,8 @@ export class SendChatMessage extends libSupports {
         // create trigger keyUpDown after check enter vs (shift + enter) in textarea
         $('body').on('keyUpDown', '#boxChat', function (e) {
             let libCommonChat = new LibCommonChat();
-            $('#boxChat').val(libCommonChat.convertEmoji($('#boxChat').val()));
+            let emojiHtmlChat = new EmojiHtmlChat();
+            $('#boxChat').val(emojiHtmlChat.convertEmoji(libCommonChat.convertHtmlToPlainText($('#boxChat').val())));
             e.stopPropagation();
         });
 
@@ -593,6 +597,12 @@ export class SendChatMessage extends libSupports {
         });
     };
 
+    clickShowEmoji = function () {
+        // $('body').on('click', '#call-emoji-chat', () => {
+        console.log(11111);
+        // });
+    };
+
     eventScrollEndBoxChat = function () {
         //     $('#newMsgChat').delay(10).css("display", "none");
         console.log('-------------------------- lam cai day');
@@ -778,12 +788,12 @@ export class SendChatMessage extends libSupports {
         });
     };
 
-    clickEmojiBoxChat = function () {
-        $('body').on('click', '#call-emoji-chat', function () {
-            let emojiHtmlChat = new EmojiHtmlChat();
-
-        });
-    };
+    // clickEmojiBoxChat = function () {
+    //     $('body').on('click', '#call-emoji-chat', function () {
+    //         let emojiHtmlChat = new EmojiHtmlChat();
+    //
+    //     });
+    // };
 
     sendDataBroadCast = function (messageSent) {
         let searchDomChannel = $('[channel="status.' + messageSent.channelId + '"]');
