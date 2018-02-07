@@ -17,3 +17,9 @@ color: #frame .content .messages ul li.replies p ..
 
 .................................................................
 https://www.npmjs.com/package/node-emoji
+
+
+
+https://github.com/mervick/emojionearea
+https://www.jqueryscript.net/form/jQuery-Emoji-Picker-For-Text-Fields.html
+file:///C:/Users/ngoc.buiquang/Desktop/emojionearea-master/emojionearea-master/demo/index.html

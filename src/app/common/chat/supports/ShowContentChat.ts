@@ -176,7 +176,7 @@ export class ShowContentChat {
                 </form></li>`;
 
             htmlActionContentChat += `<li class="_13gg">
-                <a class="_6gb _3oxr attachment-cst r_emoji50" (click)="pickerEmoji()" id="call-emoji-chat" role="button" title="Choose an emoji"><i class="" aria-hidden="true"></i></a>
+                <a class="_6gb _3oxr attachment-cst r_emoji50" id="click-emoji-chat" role="button" title="Choose an emoji"><i class="" aria-hidden="true"></i></a>
                 </li>`;
 
             htmlActionContentChat += `<li class="_13gg ">
@@ -187,6 +187,7 @@ export class ShowContentChat {
         }
         //-------------------------------
         htmlActionContentChat += '</div></div>';
+        htmlActionContentChat += '<div id="show-emoji-chat"></div>';
         htmlActionContentChat += '<div id="newMsgChat" style="display: none"><div class="bs"><a id="notifyNewsSms" title="news message">news message</a></div></div>';
         htmlActionContentChat += '<div id="create-tooltip" class="cus-tooltip"><div class="uiContextualLayer"><span class="tooltiptext" style="display: none"></span></div></div>';
         htmlActionContentChat += '<div id="list-your-friend"></div>';

@@ -28,12 +28,11 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     error: any;
     resultData: any = {};
     rsData: Subscription;
-    // isDataFriend: any = false;
-    // isSingle: any = false;
     remainTimeDefault: number;
     remainTimeSearch: number;
     socket: any;
     messageError: any;
+    text: string = '';
 
     public openPopup: Function;
 
@@ -51,7 +50,9 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         this.loadCss([
             // 'css/chat/chat.custom.css',
             'css/chat/chat.test.css',
-            "css/fix-bst2-to-bst3-angular5.css"
+            "css/fix-bst2-to-bst3-angular5.css",
+            "css/chat/jquery.emojipicker.css",
+            "css/chat/jquery.emojipicker.tw.css",
         ]);
 
         this.appendMyScript([
@@ -60,7 +61,9 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
             //     // "js/support/libCommonChat.js",
             //     // "js/support/listContacts.js",
             //     // 'js/socket/client.js',
-            'js/socket/chat.js'
+            'js/socket/chat.js',
+            'js/socket/jquery.emojipicker.js',
+            'js/socket/jquery.emojis.js'
         ]);
         let self = this;
         let rsData = this.apiServiceChat
@@ -111,7 +114,6 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
                     //C1 CLICK-STRATUS - bo click in template chat
                     // this.sendChatMessage.eventChangeStatusUser(socket);
-                    this.pickerEmoji();
                 }
             }, err => {
                 this.error = err;
@@ -186,10 +188,6 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
         var sendChatMessage = new SendChatMessage();
         socket.on('msgContent', (dataMessage) => sendChatMessage.msgContent(dataMessage));
     };
-
-    pickerEmoji() {
-        this.sendChatMessage.clickShowEmoji();
-    }
 
     onEnterFunction() {
 

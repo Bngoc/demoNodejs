@@ -66,6 +66,7 @@ export class SendChatMessage extends libSupports {
         menuInfoChat.clickListener(this, socket);
         menuInfoChat.keyupListener();
         menuInfoChat.resizeListener();
+        this.clickShowEmoji();
     };
 
     getDefaultHeightMsgBox = function () {
@@ -598,9 +599,28 @@ export class SendChatMessage extends libSupports {
     };
 
     clickShowEmoji = function () {
-        // $('body').on('click', '#call-emoji-chat', () => {
-        console.log(11111);
-        // });
+        $('body').on('click', '#click-emoji-chat', function () {
+            //     console.log(1111, $(this).pageX, $(this).pageY, $(this).clientX, $(this).clientY);
+            let widthEmoji = 300;
+            let heightEmoji = 200;
+            $('#boxChat').emojiPicker({
+                width: `${widthEmoji}px`,
+                height: `${heightEmoji}px`,
+                button: false,
+                position: 'right',
+                fadeTime: 100,
+                container: '#show-emoji-chat',
+            });
+
+            // var menuInfoChat = new MenuInfoChat();
+            // var rect = menuInfoChat.getPosition('#click-emoji-chat');
+            // console.log(rect);
+
+            let offsetEmoji = $('#click-emoji-chat').offset();
+            //
+            $('.emojiPicker').css({display: "block"});
+            $('#show-emoji-chat').css({position: "absolute", top: offsetEmoji.top, left: offsetEmoji.left})
+        });
     };
 
     eventScrollEndBoxChat = function () {
