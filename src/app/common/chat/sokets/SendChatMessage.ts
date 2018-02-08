@@ -43,6 +43,8 @@ export class SendChatMessage extends libSupports {
 
         //add available list contacts
         window.listContacts = opt.listContacts;
+        window.widthEmoji = 300;
+        window.heightEmoji = 200;
     };
 
     commonGllobalDefault = function (opt) {
@@ -114,6 +116,7 @@ export class SendChatMessage extends libSupports {
     };
 
     sendMsg = function (socket, isDataFriend) {
+        this.eventDisplayEmoji();
         var dataValueMsg = $.trim($('#boxChat').val());
         if (dataValueMsg.length) {
             let listContact = new ListContacts();
@@ -126,7 +129,7 @@ export class SendChatMessage extends libSupports {
                     dataConversation: messageInput.attr('data-conversation'),
                     dataChannel: messageInput.attr('data-channel'),
                     dataType: messageInput.attr('data-type'),
-                    dataValueMsg: emojiHtmlChat.convertEmojiToText(dataValueMsg),
+                    dataValueMsg: emojiHtmlChat.convertEmojiToText(emojiHtmlChat.convertEmoji(dataValueMsg)),
                     listCodePart: listPart.join(',')
                 };
 
@@ -147,6 +150,7 @@ export class SendChatMessage extends libSupports {
         var that = this;
         // create trigger keyUpDown after check enter vs (shift + enter) in textarea
         $('body').on('keyUpDown', '#boxChat', function (e) {
+            that.eventDisplayEmoji();
             let libCommonChat = new LibCommonChat();
             let emojiHtmlChat = new EmojiHtmlChat();
             $('#boxChat').val(emojiHtmlChat.convertEmoji(libCommonChat.convertHtmlToPlainText($('#boxChat').val())));
@@ -466,6 +470,7 @@ export class SendChatMessage extends libSupports {
             this.eventClickSend(socket, isDataFriend);
             this.eventEnterSend(socket, isDataFriend);
             this.runInitMenuInfoChat(socket);
+            this.renderShowEmoji();
         }
         if (resultReadyChat.isSingle !== null) {
             let isSingle = true;
@@ -598,30 +603,56 @@ export class SendChatMessage extends libSupports {
         });
     };
 
+    renderShowEmoji = function () {
+        let self = this;
+        $('#boxChat').emojiPicker({
+            width: `${window.widthEmoji}px`,
+            height: `${window.heightEmoji}px`,
+            button: false,
+            position: 'right',
+            fadeTime: 100,
+            container: '#show-emoji-chat',
+        });
+        $('#show-emoji-chat').css({display: 'none'})
+    };
+
     clickShowEmoji = function () {
+        let self = this;
         $('body').on('click', '#click-emoji-chat', function () {
-            //     console.log(1111, $(this).pageX, $(this).pageY, $(this).clientX, $(this).clientY);
-            let widthEmoji = 300;
-            let heightEmoji = 200;
-            $('#boxChat').emojiPicker({
-                width: `${widthEmoji}px`,
-                height: `${heightEmoji}px`,
-                button: false,
-                position: 'right',
-                fadeTime: 100,
-                container: '#show-emoji-chat',
-            });
-
-            // var menuInfoChat = new MenuInfoChat();
-            // var rect = menuInfoChat.getPosition('#click-emoji-chat');
-            // console.log(rect);
-
-            let offsetEmoji = $('#click-emoji-chat').offset();
-            //
-            $('.emojiPicker').css({display: "block"});
-            $('#show-emoji-chat').css({position: "absolute", top: offsetEmoji.top, left: offsetEmoji.left})
+            // $('#boxChat').emojiPicker({
+            //     width: `${window.widthEmoji}px`,
+            //     height: `${window.heightEmoji}px`,
+            //     button: false,
+            //     position: 'right',
+            //     fadeTime: 100,
+            //     container: '#show-emoji-chat',
+            // });
+            self.eventPositionEmoji();
         });
     };
+
+    eventDisplayEmoji = function () {
+        $('#show-emoji-chat').css({display: "none"});
+    };
+
+    eventPositionEmoji = function (isResize: any = false) {
+        if (isResize && $('#show-emoji-chat').css('display') == 'block' || !isResize && $('#show-emoji-chat').css('display') == 'none') {
+            let offsetEmoji = $('#click-emoji-chat').offset();
+            $('#show-emoji-chat').css({
+                display: 'block',
+                width: window.widthEmoji,
+                height: window.heightEmoji,
+                position: "absolute",
+                // bottom: (offsetEmoji.top - 20),
+                top: (offsetEmoji.top - 2 * window.heightEmoji + 15),
+                left: ($('#frameListMsg').width() - window.widthEmoji + $('#click-emoji-chat').position().left)
+            });
+            $('.emojiPicker').css({display: "block", position: "unset"});
+        } else {
+            this.eventDisplayEmoji();
+        }
+    };
+
 
     eventScrollEndBoxChat = function () {
         //     $('#newMsgChat').delay(10).css("display", "none");

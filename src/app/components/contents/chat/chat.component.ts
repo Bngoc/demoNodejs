@@ -140,6 +140,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
         // scroll box chat content
         this.sendChatMessage.scrollContentChat();
+        this.sendChatMessage.eventPositionEmoji(true);
     };
 
     keys(obj): Array<string> {

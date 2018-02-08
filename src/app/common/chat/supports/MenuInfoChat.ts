@@ -146,7 +146,7 @@ export class MenuInfoChat {
             this.menu.style.top = (this.clickCoordsY - 50) + "px";
         }
         this.menu.style.display = 'block';
-        this.menu.style['z-index'] = 99999;
+        this.menu.style['z-index'] = 990;
     };
 
     public menuItemListener = function (sendChatMessage, socket, link) {

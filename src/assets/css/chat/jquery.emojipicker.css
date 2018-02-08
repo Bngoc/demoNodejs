@@ -39,6 +39,7 @@
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     font-family: Helvetica, Arial, sans-serif;
+    z-index: 999 !important;
 }
 
 .emojiPicker div.emoji {
