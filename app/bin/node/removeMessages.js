@@ -1,6 +1,6 @@
 'use strict';
 
-var CronJob = require('cron').CronJob;
+var CronJobDeleteMessage = require('cron').CronJob;
 const path = require('path');
 
 const CoreHelper = require(path.join(__dirname, './../../../config/CoreHelper.js'));
@@ -12,10 +12,9 @@ const Message = coreHelper.callModule(`${coreHelper.paths.MODELS}Messages.js`);
 
 //s m h d m day
 //0 0 1 */3 * => 3m
-var job = new CronJob({
+var job = new CronJobDeleteMessage({
     cronTime: '* * * * *',
     onTick: function () {
-
 
         let message = new Message.class();
         message.cronDeleteMessage(function (err, modelMessage) {
