@@ -25,7 +25,8 @@ var job = new CronJobCrawler({
                 'User-Agent': '#Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4'
             }
         };
-        var crawler = new Crawler("https://mp3.zing.vn/");
+        // var crawler = new Crawler("https://mp3.zing.vn/");
+        var crawler = new Crawler("http://localhost:1234/chat");
         // crawler.maxDepth = 1;
         crawler.filterByDomain = false;
         // crawler.addFetchCondition(function (queueItem, referrerQueueItem, callback) {
@@ -73,7 +74,7 @@ var job = new CronJobCrawler({
             }
 
             // writeHtml(html);
-            // console.log(responseBuffer.toString("utf8"));
+            console.log(html);
             // console.log('topCollectionHit ==> ', JSON.stringify(topCollectionHit));
             // writeHtml(JSON.stringify(topCollectionHit));
 
@@ -121,15 +122,15 @@ var job = new CronJobCrawler({
 
                     tmpTopCollectionHit.push(objListSong);
                 });
-                writeHtml(JSON.stringify(resp))
                 // writeHtml(JSON.stringify(resp))
-                console.log(JSON.stringify(resp), JSON.stringify(tmpTopCollectionHit));
+                // writeHtml(JSON.stringify(resp))
+                // console.log(JSON.stringify(resp), JSON.stringify(tmpTopCollectionHit));
             }
         });
 
         function writeHtml(string) {
             var fs = require('fs');
-            fs.writeFile(path.join(__dirname, '../../../tmp/htmlReq.txt'), string, function (err) {
+            fs.writeFile(path.join(__dirname, '../../../tmp/reqLocalhost.txt'), string, function (err) {
                 if (err) {
                     return console.log(err);
                 }
