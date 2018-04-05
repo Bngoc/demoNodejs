@@ -31,30 +31,33 @@ class Passport {
         return passport;
     }
 
-    // configPassportFB(coreHelper) {
-    //     var User = coreHelper.callModule(`${coreHelper.paths.MODELS}Users.js`);
-    //     var newUser = new User({});
-    //
-    //     // serialize sessions
-    //     passport.serializeUser(function (user, done) {
-    //         done(null, user.id)
-    //     });
-    //
-    //     // sau khi xac thuc thi kiem tra cac router gui len server
-    //     passport.deserializeUser(function (id, done) {
-    //         newUser.findOne({id: id}, function (err, user) {
-    //             done(err, user)
-    //         })
-    //     });
-    //
-    //     // use these strategies
-    //     passport.use('facebook', new this.configFacebook(coreHelper));
-    //
-    //     return passport;
-    // }
+    configPassportFB(coreHelper) {
+        var User = coreHelper.callModule(`${coreHelper.paths.MODELS}Users.js`);
+        var newUser = new User({});
+
+        // serialize sessions
+        passport.serializeUser(function (user, done) {
+            // done(null, user.id)
+            done(null, 1);
+        });
+
+        // sau khi xac thuc thi kiem tra cac router gui len server
+        passport.deserializeUser(function (id, done) {
+            // newUser.findOne({id: id}, function (err, user) {
+            //     done(err, user)
+            // })
+            done(null, true);
+        });
+
+        // use these strategies
+        passport.use('facebook', new this.configFacebook(coreHelper));
+
+        return passport;
+    }
 
     configFacebook(coreHelper) {
-        var facebookStrategy = new FacebookStrategy(coreHelper.sampleConfig.facebookStrategy,
+        let configAuth = coreHelper.callModule(`${coreHelper.CONFIG}/auth`);
+        var facebookStrategy = new FacebookStrategy(configAuth.facebookAuth,
 
             // facebook will send back the tokens and profile
             function (access_token, refresh_token, profile, done) {

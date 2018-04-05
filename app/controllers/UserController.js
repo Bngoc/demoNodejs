@@ -484,64 +484,74 @@ class UserController {
                 code: '',
                 status: false
             };
-
+            let optionLogin = 'facebook';
             if (req.body.loginId && req.body.pwd) {
-                helper.coreHelper.passport('local').authenticate('local', function (err, user, info) {
-                    if (err) return next(err);
 
-                    let infoPassport = info;
-                    //{"code":null,"error":"","msg":"","result":null}'
-                    if (infoPassport.message) {
-                        let dataPassport = JSON.parse(infoPassport.message);
-                        if (dataPassport.code || dataPassport.result == null) {
-                            responseDataMap.code = dataPassport.code || 'ERR0003';
-                            responseDataMap.msg = 'Account not exits';
-                            res.status(200).send(responseDataMap);
-                        } else {
-                            if (dataPassport.result && user) {
-                                req.logIn(user, function (err) {
-                                    if (err) {
-                                        responseDataMap.code = "ERR0003";
-                                        responseDataMap.msg = 'Login Fail....!';
-                                        res.status(200).send(responseDataMap);
-                                    } else {
-                                        let dataRequest = {
-                                            clause: {users_id: user.id},
-                                            dataUpdate: {is_life: 1},
-                                        };
-                                        let newContacts = new Contacts.class();
-                                        let dataRequestToken = {
-                                            data: {
-                                                users_id: user.id,
-                                            },
-                                            expiresIn: helper.coreHelper.sampleConfig.domain.maxAge
-                                        };
-                                        let token = helper.coreHelper.createSignToken(helper.coreHelper.sampleConfig.APP_SECRET, dataRequestToken);
-                                        newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
-                                            if (errUpdate) next(errUpdate);
+                switch (optionLogin) {
+                    case 'local':
+                        helper.coreHelper.passport('local').authenticate('local', function (err, user, info) {
+                            if (err) return next(err);
 
-                                            req.session.cfg_chat = rsModel.get('cfg_chat');
-                                            responseDataMap.status = true;
-                                            responseDataMap.url = '/chat';
-                                            responseDataMap.msg = 'Login success';
-                                            responseDataMap.token = token;
+                            let infoPassport = info;
+                            //{"code":null,"error":"","msg":"","result":null}'
+                            if (infoPassport.message) {
+                                let dataPassport = JSON.parse(infoPassport.message);
+                                if (dataPassport.code || dataPassport.result == null) {
+                                    responseDataMap.code = dataPassport.code || 'ERR0003';
+                                    responseDataMap.msg = 'Account not exits';
+                                    res.status(200).send(responseDataMap);
+                                } else {
+                                    if (dataPassport.result && user) {
+                                        req.logIn(user, function (err) {
+                                            if (err) {
+                                                responseDataMap.code = "ERR0003";
+                                                responseDataMap.msg = 'Login Fail....!';
+                                                res.status(200).send(responseDataMap);
+                                            } else {
+                                                let dataRequest = {
+                                                    clause: {users_id: user.id},
+                                                    dataUpdate: {is_life: 1},
+                                                };
+                                                let newContacts = new Contacts.class();
+                                                let dataRequestToken = {
+                                                    data: {
+                                                        users_id: user.id,
+                                                    },
+                                                    expiresIn: helper.coreHelper.sampleConfig.domain.maxAge
+                                                };
+                                                let token = helper.coreHelper.createSignToken(helper.coreHelper.sampleConfig.APP_SECRET, dataRequestToken);
+                                                newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
+                                                    if (errUpdate) next(errUpdate);
 
-                                            res.status(200).send(responseDataMap);
+                                                    req.session.cfg_chat = rsModel.get('cfg_chat');
+                                                    responseDataMap.status = true;
+                                                    responseDataMap.url = '/chat';
+                                                    responseDataMap.msg = 'Login success';
+                                                    responseDataMap.token = token;
+
+                                                    res.status(200).send(responseDataMap);
+                                                });
+                                            }
                                         });
+                                    } else {
+                                        responseDataMap.code = "ERR0003";
+                                        responseDataMap.msg = 'Account or password not authentication';
+                                        res.status(200).send(responseDataMap);
                                     }
-                                });
+                                }
                             } else {
-                                responseDataMap.code = "ERR0003";
-                                responseDataMap.msg = 'Account or password not authentication';
+                                responseDataMap.code = "ERR0004";
+                                responseDataMap.msg = 'ERROR: Server Not Response';
                                 res.status(200).send(responseDataMap);
                             }
-                        }
-                    } else {
-                        responseDataMap.code = "ERR0004";
-                        responseDataMap.msg = 'ERROR: Server Not Response';
-                        res.status(200).send(responseDataMap);
-                    }
-                })(req, res, next);
+                        })(req, res, next);
+                        break;
+                    case 'fb':
+                        helper.coreHelper.passport('facebook').authenticate('facebook', function (err, user, info) {
+
+                        })(req, res, next);
+                        break;
+                }
             } else {
                 responseDataMap.code = 'ERR0001';
                 responseDataMap.msg = 'Account is empty';
