@@ -1,7 +1,7 @@
 'use strict';
 
 import {AuthService} from "../../../services/auth/auth.service";
-import {Component, ViewEncapsulation, OnInit} from "@angular/core";
+import {Component, ViewEncapsulation, OnInit, Output, EventEmitter, Input, EventEmitter} from "@angular/core";
 import {Router, NavigationExtras} from "@angular/router";
 import {libSupports} from "./../../../common/libSupports";
 import {HttpClient} from "@angular/common/http";
@@ -19,8 +19,12 @@ declare var window: any;
 export class LoginComponent extends libSupports implements OnInit {
     private urlLogin: any;
 
+    @Input() isLoginChild: any = true;
+    @Output() LoginChangedChild = new EventEmitter();
+
     constructor(private authService: AuthService, private router: Router, private http: HttpClient) {
         super();
+
 
         (function (d, s, id) {
             let js, fjs = d.getElementsByTagName(s)[0];

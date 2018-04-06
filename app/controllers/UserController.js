@@ -484,9 +484,9 @@ class UserController {
                 code: '',
                 status: false
             };
-            let optionLogin = 'facebook';
-            if (req.body.loginId && req.body.pwd) {
 
+            if (req.body.loginId && req.body.pwd && req.body.action) {
+                let optionLogin = req.body.action;
                 switch (optionLogin) {
                     case 'local':
                         helper.coreHelper.passport('local').authenticate('local', function (err, user, info) {

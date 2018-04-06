@@ -37,16 +37,14 @@ class Passport {
 
         // serialize sessions
         passport.serializeUser(function (user, done) {
-            // done(null, user.id)
-            done(null, 1);
+            done(null, user.id);
         });
 
         // sau khi xac thuc thi kiem tra cac router gui len server
         passport.deserializeUser(function (id, done) {
-            // newUser.findOne({id: id}, function (err, user) {
-            //     done(err, user)
-            // })
-            done(null, true);
+            newUser.findOne({id: id}, function (err, user) {
+                done(err, user)
+            })
         });
 
         // use these strategies
