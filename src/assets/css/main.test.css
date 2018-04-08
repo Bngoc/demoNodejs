@@ -871,8 +871,8 @@ a {
     color: #6a737c;
     opacity: 1;
     transition: all .25s ease-in-out;
-    display: -webkit-flex;
-    display: flex;
+    /*display: -webkit-flex;*/
+    /*display: flex;*/
     overflow: hidden;
 }
 

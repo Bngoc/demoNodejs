@@ -12,7 +12,6 @@ export class ApiServiceUser {
     constructor(private httpClient: HttpClient, private customsHttpClient: CustomsHttpClient) {
     }
 
-
     logout() {
         return this.httpClient
             .post('/api/logout', null, {headers: this.customsHttpClient.setHeader()})
