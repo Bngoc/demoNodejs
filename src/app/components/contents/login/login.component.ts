@@ -1,7 +1,7 @@
 'use strict';
 
 import {AuthService} from "../../../services/auth/auth.service";
-import {Component, ViewEncapsulation, OnInit, Output, EventEmitter, Input, EventEmitter} from "@angular/core";
+import {Component, ViewEncapsulation, OnInit, Output, Input, EventEmitter} from "@angular/core";
 import {Router, NavigationExtras} from "@angular/router";
 import {libSupports} from "./../../../common/libSupports";
 import {HttpClient} from "@angular/common/http";

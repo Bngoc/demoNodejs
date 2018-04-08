@@ -1,19 +1,21 @@
+#IDE netbeans specific
+core
+nbproject/*
+!nbproject/project.properties
+!nbproject/project.xm
+
+#IDE phpstorm
+.idea/*
+
+#IDE vs
+.vs
+
 /vendor
 .env
 /node_modules
 
 *.log
 /logs/*
-
-#netbeans specific
-core
-nbproject/*
-!nbproject/project.properties
-!nbproject/project.xm
-
-#phpstorm
-.idea/*
-
 # ------------ end custom -------------
 
 # See http://help.github.com/ignore-files/ for more about ignoring files.
