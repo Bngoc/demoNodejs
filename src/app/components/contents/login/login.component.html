@@ -1,14 +1,14 @@
 <div class="background-blue">
     <div class="login-box">
-        <form id="login-form" name="j_idt9" method="post" enctype="application/x-www-form-urlencoded">
+        <form id="login-form" method="post" enctype="application/x-www-form-urlencoded">
             <input type="hidden" name="_method" value="post"/>
+            <input type="hidden" name="action" value="local" class="width-box80 box"/>
             <p class="title center">ĐĂNG NHẬP</p>
             <p class="input-code">
                 <input type="text" name="loginId" class="width-box80 box" value="bqngoc119"
                        placeholder="Username hoặc Email"/>
             </p>
             <p class="input-code">
-                <input type="hidden" name="action" value="local" class="width-box80 box"/>
                 <input type="password" name="pwd" value="bqngoc119" class="width-box80 box"
                        placeholder="Mật khẩu"/>
             </p>
@@ -45,32 +45,32 @@
 </form>
 
 <script type="text/javascript">
-    $(document).on('click', '#btn-login-form', function () {
-
-        var attrFromLogin = $('#login-form');
-        var dataRequest = {
-            url: attrFromLogin.attr('action'),
-            data: attrFromLogin.serialize()
-        };
-
-        callDataJS(dataRequest, function (result) {
-            if (result) {
-                if (result.validate) {
-                    result.validate.forEach(function (val) {
-                        console.log(val);
-                        $('input[name="' + val.param + '"]').addClass('error');
-                    });
-                }
-
-                if (result.status) {
-                    window.location = result.url;
-                } else {
-                    if (result.msg.length)
-                        $('#message').html(cnMessagesShow([result.msg], 'e'));
-                }
-            }
-        });
-    });
+    //    $(document).on('click', '#btn-login-form', function () {
+    //
+    //        var attrFromLogin = $('#login-form');
+    //        var dataRequest = {
+    //            url: attrFromLogin.attr('action'),
+    //            data: attrFromLogin.serialize()
+    //        };
+    //
+    //        callDataJS(dataRequest, function (result) {
+    //            if (result) {
+    //                if (result.validate) {
+    //                    result.validate.forEach(function (val) {
+    //                        console.log(val);
+    //                        $('input[name="' + val.param + '"]').addClass('error');
+    //                    });
+    //                }
+    //
+    //                if (result.status) {
+    //                    window.location = result.url;
+    //                } else {
+    //                    if (result.msg.length)
+    //                        $('#message').html(cnMessagesShow([result.msg], 'e'));
+    //                }
+    //            }
+    //        });
+    //    });
 
     //------------------------------------------
     /*function resetCaptcha() {

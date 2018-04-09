@@ -598,6 +598,77 @@ class UserController {
             res.status(200).send(['/login']);
         }
     }
+
+    postRegisterAngular(req, res, next) {
+        if (req.xhr) {
+            let responseData = {
+                url: '',
+                validate: [],
+                msg: '',
+                code: '',
+                status: false
+            };
+            req.checkBody('name', 'Name is required').notEmpty();
+            req.checkBody('email', 'Email is required').notEmpty();
+            req.checkBody('email', 'Email not is email ').isEmail();
+            req.checkBody('phone', 'Phone is required').notEmpty();
+            req.checkBody('phone', 'Phone is Nunmber ').isNumeric();
+            req.checkBody('password', 'Password is required').notEmpty();
+            req.checkBody('password', 'The password length must be between 6 and 20.').isLength({min: 6, max: 20});
+            req.checkBody('repassword', 'Re-Password is required').notEmpty();
+            req.checkBody('repassword', 'Password does not match the confirm password ').equals(req.body.password);
+
+            let errors = req.validationErrors();
+            if (errors) {
+                responseData.validate = errors;
+                responseData.code = 'ERR0001';
+                res.status(200).send(responseData);
+            } else {
+                var newUser = new User.class();
+                let cfgChat = helper.coreHelper.callModule(`${helper.coreHelper.paths.CONFIG}cfgChat.js`);
+
+                var dataRequest = {
+                    phone: req.body.phone,
+                    email: req.body.email,
+                    password: req.body.password,
+                    first_name: req.body.name,
+                    last_name: 'xxx-xx',
+                    repassword: req.body.repassword,
+                    cfg_chat: JSON.stringify(cfgChat)
+                };
+
+                newUser.checkUser(dataRequest, function (resultData) {
+                    if (resultData.code) {
+                        responseData.code = resultData.code;
+                        responseData.msg = 'Error: Sql execute select error';
+                        res.status(500).send(responseData);
+                    } else {
+                        var resultSql = resultData.result;
+
+                        if (resultSql > 0) {
+                            responseData.code = 'ERR0002';
+                            responseData.msg = 'Tai khoan da ton tai';
+                            res.status(400).send(responseData);
+                        } else {
+                            newUser.insertUser(dataRequest, function (rsData) {
+                                if (rsData.code) {
+                                    responseData.code = 'ERR0003';
+                                    responseData.msg = 'Error: Sql execute insert error';
+                                } else {
+                                    responseData.status = true;
+                                    responseData.url = 'login'
+                                }
+                                res.status(200).send(responseData);
+                            });
+                        }
+                    }
+                    // res.status(200).send(responseData);
+                });
+            }
+        } else {
+            res.status(500).send('Not use Jquery request to server....!')
+        }
+    }
 }
 
 module.exports = UserController;

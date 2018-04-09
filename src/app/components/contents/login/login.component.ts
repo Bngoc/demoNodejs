@@ -76,14 +76,13 @@ export class LoginComponent extends libSupports implements OnInit {
                 if (result) {
                     if (result.validate) {
                         result.validate.forEach(function (val) {
-                            console.log(val);
+                            // console.log(val);
                             $('input[name="' + val.param + '"]').addClass('error');
                         });
                     }
                     if (result.status) {
                         // AuthToken
                         localStorage.setItem('idToken', result.token);
-
                         let navigationExtras: NavigationExtras = {
                             queryParamsHandling: 'preserve',
                             preserveFragment: true

@@ -79,11 +79,10 @@
 
 <div class="background-blue" cz-shortcut-listen="true">
     <div class="login-box">
-        <form id="register-form" name="j_idt9" method="post" action="/register"
-              enctype="application/x-www-form-urlencoded">
+        <form id="register-form" method="post" enctype="application/x-www-form-urlencoded">
             <input type="hidden" name="_method" value="post">
+            <input type="hidden" name="action" value="local" class="width-box80 box"/>
             <p class="title center">ĐĂNG KÝ TÀI KHOẢN</p>
-
             <p class="input-code">
                 <input type="text" name="name" value="" class="width-box80 box" placeholder="Họ và tên"/>
                 <label class="name-msg"></label>
@@ -112,8 +111,7 @@
             <!--</div>-->
             <!-- } -->
             <p class="input-code">
-                <input type="password" name="password" value="" class="width-box80 box"
-                       placeholder="Mật khẩu">
+                <input type="password" name="password" class="width-box80 box" placeholder="Mật khẩu">
                 <label class="password-msg"></label>
             </p>
             <!-- if (errors.findIndex(x => x.param=="password") !== -1) { -->
@@ -122,8 +120,7 @@
             <!--</div>-->
             <!-- } -->
             <p class="input-code">
-                <input type="password" name="repassword" value=""
-                       class="width-box80 box" placeholder="Nhập lại mật khẩu"/>
+                <input type="password" name="repassword" class="width-box80 box" placeholder="Nhập lại mật khẩu"/>
                 <label class="repassword-msg"></label>
             </p>
             <!-- if (errors.findIndex(x => x.param=="repassword") !== -1) { -->
@@ -134,8 +131,8 @@
             <div class="center">
                 <p class="input-code" id="msg-com-error"></p>
                 <p class="input-code">
-                    <!--<input type="submit" name="" value="ĐĂNG KÝ" style="vertical-align:middle" class="buttonDN">-->
-                    <input type="button" name="" id="btn-register-form" value="ĐĂNG KÝ" class="buttonDN">
+                    <input (click)="clickRegister()" type="button" name="" id="btn-register-form" value="ĐĂNG KÝ"
+                           class="buttonDN">
                 </p>
 
                 <p class="input-code">
@@ -183,32 +180,31 @@
     </div>
 </div>
 
-
 <script type="text/javascript">
-    $(document).on('click', '#btn-register-form', function () {
-        var attrFromLogin = $('#register-form');
-        var dataRequest = {
-            url: attrFromLogin.attr('action'),
-            data: attrFromLogin.serialize()
-        };
-
-        callDataJS(dataRequest, function (result) {
-            if (result) {
-                if (result.validate) {
-                    result.validate.forEach(function (val) {
-                        console.log(val);
-                        $('input[name="' + val.param + '"]').addClass('error');
-                        $('label.' + val.param + '-msg').html(cnMessagesShow([val.msg], 'e'));
-                    });
-                }
-
-                if (result.status) {
-                    window.location = result.url;
-                } else {
-                    $('#msg-com-error').text(result.msg);
-                }
-            }
-        });
-    });
+    //    $(document).on('click', '#btn-register-form', function () {
+    //        var attrFromLogin = $('#register-form');
+    //        var dataRequest = {
+    //            url: attrFromLogin.attr('action'),
+    //            data: attrFromLogin.serialize()
+    //        };
+    //
+    //        callDataJS(dataRequest, function (result) {
+    //            if (result) {
+    //                if (result.validate) {
+    //                    result.validate.forEach(function (val) {
+    //                        console.log(val);
+    //                        $('input[name="' + val.param + '"]').addClass('error');
+    //                        $('label.' + val.param + '-msg').html(cnMessagesShow([val.msg], 'e'));
+    //                    });
+    //                }
+    //
+    //                if (result.status) {
+    //                    window.location = result.url;
+    //                } else {
+    //                    $('#msg-com-error').text(result.msg);
+    //                }
+    //            }
+    //        });
+    //    });
 
 </script>
