@@ -20,17 +20,18 @@
             <!-- warning_msg || 1111111 -->
             <div class="center">
                 <p class="input-code">
-                    <input (click)="clickLogin()" type="button" id="btn-login-form" value="ĐĂNG NHẬP" class="buttonDN"/>
-                    <!--<input type="submit" id="btn-login-form" value="ĐĂNG NHẬP" style="vertical-align:middle" class="buttonDN"/>-->
+                    <input (click)="clickLogin()" type="button" id="btn-login-form" value="ĐĂNG NHẬP"
+                           class="btn btn-primary"/>
                 </p>
                 <p class="color-gray slogan font80 padding margin">hoặc</p>
-                <p class="input-code">
-                    <input type="button" name="j_idt9:j_idt24" value="Đăng nhập qua facebook"
-                           style="vertical-align:middle; margin-top:10px !important;"
-                           class="buttonDN backgroud-fb" (click)="loginFacebook()"/>
-                    <!--onclick="FB.login(function(response) {if (response.status === 'connected') { redirectLoginSucess(); } })"/>-->
-                </p>
-                <p class="padding">
+                <div class="input-code">
+                    <input type="button" value="Đăng nhập qua facebook" class="btn btn btn-info"
+                           (click)="loginFacebook()"/>
+                    <div id="google-login">
+                        <input type="button" name="" value="Đăng nhập qua Google" class="btn btn-info">
+                    </div>
+                </div>
+                <p class="padding mg-top10">
                     <a href="/forgot" class="link">Quên mật khẩu</a> |
                     <a href="/register" class="link">Đăng ký</a>
                 </p><input type="hidden" name="" id="" value="" autocomplete="off"/>
@@ -39,38 +40,7 @@
     </div>
 </div>
 
-<form method="post" action="/facebook/sdk.jsp" id="formHiddenFB" style="display: none">
-    <input type="hidden" name="nameFB"/>
-    <input type="hidden" name="facebookIdFB"/>
-</form>
-
 <script type="text/javascript">
-    //    $(document).on('click', '#btn-login-form', function () {
-    //
-    //        var attrFromLogin = $('#login-form');
-    //        var dataRequest = {
-    //            url: attrFromLogin.attr('action'),
-    //            data: attrFromLogin.serialize()
-    //        };
-    //
-    //        callDataJS(dataRequest, function (result) {
-    //            if (result) {
-    //                if (result.validate) {
-    //                    result.validate.forEach(function (val) {
-    //                        console.log(val);
-    //                        $('input[name="' + val.param + '"]').addClass('error');
-    //                    });
-    //                }
-    //
-    //                if (result.status) {
-    //                    window.location = result.url;
-    //                } else {
-    //                    if (result.msg.length)
-    //                        $('#message').html(cnMessagesShow([result.msg], 'e'));
-    //                }
-    //            }
-    //        });
-    //    });
 
     //------------------------------------------
     /*function resetCaptcha() {

@@ -25,7 +25,6 @@ export class LoginComponent extends libSupports implements OnInit {
     constructor(private authService: AuthService, private router: Router, private http: HttpClient) {
         super();
 
-
         (function (d, s, id) {
             let js, fjs = d.getElementsByTagName(s)[0];
             if (d.getElementById(id)) {
