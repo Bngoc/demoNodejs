@@ -12,7 +12,7 @@ export class RoleLoginGuardService implements CanActivate {
     constructor(private authService: AuthService, private router: Router) {
     }
 
-    private jwtHelper: JwtHelper = new JwtHelper();
+    // private jwtHelper: JwtHelper = new JwtHelper();
 
     canActivate(route: ActivatedRouteSnapshot): boolean {
         const idToken = localStorage.getItem('idToken');

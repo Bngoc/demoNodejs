@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 class AuthenticateToken {
     verifyToken(req, res, next) {
         try {
-            if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+            if (typeof req.headers.authorization !== 'undefined' && req.headers.authorization.split(' ')[0] === 'Bearer') {
                 let token = req.headers.authorization.split(" ")[1];
                 jwt.verify(token, req.secret, (err, decoded) => {
                     if (err) {
@@ -16,6 +16,8 @@ class AuthenticateToken {
                         return next();
                     }
                 });
+            } else {
+                res.sendStatus(401);
             }
         } catch (ex) {
             req.session.destroy();
