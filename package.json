@@ -102,10 +102,10 @@
   },
   "scripts": {
     "ng-serve-target-dev": "ng serve --aot --proxy-config proxy.conf.json",
-    "serve-api-dev": "SET NODE_ENV=dev & supervisor --exec babel-node ./",
+    "serve-api-dev": "SET NODE_ENV=dev& supervisor --exec babel-node ./",
     "start-dev": "concurrently --kill-others \"npm run serve-api-dev\" \"npm run ng-serve-target-dev\"",
     "start": "concurrently --kill-others \"npm run serve-api-dev\" \"npm run ng-serve-target-dev\"",
-    "serve-api": "SET NODE_ENV=production & supervisor --exec babel-node ./",
+    "serve-api": "SET NODE_ENV=production& supervisor --exec babel-node ./",
     "ng-serve-target": "ng serve --prod --proxy-config proxy.conf.json",
     "start-prod": "npm run build & concurrently --kill-others \"npm run serve-api\" \"npm run ng-serve-target\"",
     "ng": "ng",
