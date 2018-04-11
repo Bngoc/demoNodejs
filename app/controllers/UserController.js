@@ -476,7 +476,7 @@ class UserController {
 
     // ---------------------------------------------- angular -----------------------------------------
     postLoginAngular(req, res, next) {
-        // if (req.xhr) {
+        if (req.xhr) {
             var responseDataMap = {
                 url: '',
                 validate: [],
@@ -571,9 +571,9 @@ class UserController {
 
                 res.status(200).send(responseDataMap);
             }
-        // } else {
-        //     res.status(500).send('Not use Jquery request to server....!');
-        // }
+        } else {
+            res.status(500).send('Not use Jquery request to server....!');
+        }
     }
 
     postLogoutAngular(req, res, next) {
