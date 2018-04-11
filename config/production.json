@@ -1,0 +1,39 @@
+{
+  "domain": {
+    "port": 8080,
+    "host": "localhost",
+    "rejectUnauthorized": false,
+    "requestCert": false,
+    "passphrase": "123456",
+    "family": "IPv4",
+    "ssl": false,
+    "secure": false,
+    "changeOrigin": true,
+    "maxAge": 9000
+  },
+  "APP_SECRET": "{mySecretRequired}",
+  "APP_KEY": "express.sid",
+  "APP_ENV": "local",
+  "APP_DEBUG": false,
+  "DB_CONNECTION": "mysql",
+  "DB_HOST": "localhost",
+  "PORT": 3306,
+  "DB_DATABASE": "mvcnodejs",
+  "DB_USERNAME": "root",
+  "DB_PASSWORD": "",
+  "WEB": 1,
+  "facebookStrategy": {
+    "clientID": 1,
+    "clientSecret": 1991,
+    "callbackURL": 11
+  },
+  "mail": {
+    "MAIL_DRIVER": "smtp",
+    "MAIL_HOST": "smtp.gmail.com",
+    "MAIL_PORT": "25",
+    "MAIL_USERNAME": "ngoctbhy@gmail.com",
+    "MAIL_PASSWORD": "4111601501720",
+    "MAIL_ENCRYPTION": "tls",
+    "MAIL_NAME": "admin"
+  }
+}

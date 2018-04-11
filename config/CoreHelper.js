@@ -8,6 +8,7 @@ const sampleRequirePaths = require('./../config/paths.js');
 const paths = new sampleRequirePaths();
 const sampleDB = require(`${paths.CONFIG}/db.json`);
 const sampleConfig = require(`${paths.CONFIG}/config.json`);
+const config = require('config');
 const samplePackage = require(`${paths.ROOT}/package.json`);
 const sampleApp = require(`${paths.CONFIG}/app.js`);
 var setAliasRouter = {};
@@ -21,19 +22,19 @@ function CoreHelper() {
 
     this.paths = paths;
 
-    this.sampleConfig = sampleConfig;
+    this.sampleConfig = config;
 
     this.getConfigInfoDb = function () {
         try {
-            var getNameConnectDb = sampleConfig.DB_CONNECTION ? sampleConfig.DB_CONNECTION : '';
+            var getNameConnectDb = config.get('DB_CONNECTION') ? config.get('DB_CONNECTION') : '';
             var getsampleConfigDB = sampleDB[getNameConnectDb] ? sampleDB[getNameConnectDb] : {};
 
             if (getsampleConfigDB) {
-                getsampleConfigDB.host = sampleConfig.DB_HOST;
-                getsampleConfigDB.port = sampleConfig.PORT;
-                getsampleConfigDB.database = sampleConfig.DB_DATABASE;
-                getsampleConfigDB.user = sampleConfig.DB_USERNAME;
-                getsampleConfigDB.password = sampleConfig.DB_PASSWORD;
+                getsampleConfigDB.host = config.get('DB_HOST');
+                getsampleConfigDB.port = config.get('PORT');
+                getsampleConfigDB.database = config.get('DB_DATABASE');
+                getsampleConfigDB.user = config.get('DB_USERNAME');
+                getsampleConfigDB.password = config.get('DB_PASSWORD');
             }
             return getsampleConfigDB;
         } catch (ex) {
@@ -108,12 +109,15 @@ function CoreHelper() {
     };
 
     this.createFileConfig = function (callback) {
-        let side = (((sampleConfig.domain.ssl === true) ? "https://" : "http://") + `${sampleConfig.domain.host}:${sampleConfig.domain.port}`);
+        console.log('NODE_ENV: ' + config.util.getEnv('NODE_ENV'));
+        console.log('NODE_CONFIG_DIR: ' + config.util.getEnv('NODE_CONFIG_DIR'));
+        console.log(config);
+        let side = (((config.get('domain.ssl') === true) ? "https://" : "http://") + `${config.get('domain.host')}:${config.get('domain.port')}`);
         let apiClient = {
             "/api/*": {
                 "target": side,
-                "secure": sampleConfig.domain.secure,
-                "changeOrigin": sampleConfig.domain.changeOrigin
+                "secure": config.get('domain.secure'),
+                "changeOrigin": config.get('domain.changeOrigin')
             }
         };
         let reqData = {
@@ -139,7 +143,7 @@ class ConnectDB extends CoreHelper {
 
     getConnect() {
         try {
-            const getNameConnectDb = this.sampleConfig.DB_CONNECTION ? this.sampleConfig.DB_CONNECTION : '';
+            const getNameConnectDb = config.get('DB_CONNECTION') ? config.get('DB_CONNECTION') : '';
             if (getNameConnectDb === 'mysql') {
                 return this.mySql();
             } else if (getNameConnectDb === 'pgsql') {
@@ -156,7 +160,7 @@ class ConnectDB extends CoreHelper {
 
     connection(callback) {
         const connection = this.getConnect();
-        const strDB = sampleConfig.DB_CONNECTION ? sampleConfig.DB_CONNECTION : '';
+        const strDB = config.get('DB_CONNECTION') ? config.get('DB_CONNECTION') : '';
         var resultContion = {
             error: '',
             msg: '',
@@ -184,9 +188,9 @@ class ConnectDB extends CoreHelper {
     connectKnex() {
         var _this = this;
         const knex = require('knex')({
-            client: sampleConfig.DB_CONNECTION ? sampleConfig.DB_CONNECTION : '',
+            client: config.get('DB_CONNECTION') ? config.get('DB_CONNECTION') : '',
             connection: _this.getConfigInfoDb(),
-            debug: sampleConfig.APP_DEBUG,
+            debug: config.get('APP_DEBUG'),
             migrations: {
                 directory: __dirname + 'db/migrations'
             },
@@ -206,7 +210,7 @@ class ConnectDB extends CoreHelper {
 
     checkConnect(cb) {
         const connect = this.connectKnex();
-        const strDB = sampleConfig.DB_CONNECTION ? sampleConfig.DB_CONNECTION : '';
+        const strDB = config.get('DB_CONNECTION') ? config.get('DB_CONNECTION') : '';
         var resultContion = {
             error: '',
             msg: '',

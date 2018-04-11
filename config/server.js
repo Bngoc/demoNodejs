@@ -3,13 +3,13 @@
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
-
+const config = require('config');
 
 class Server {
     createServer(app, opt) {
         try {
-            if (opt.config.domain.ssl !== true) {
-                var serverHttp = http.createServer(app).listen(opt.config.domain.port, opt.config.domain.host);
+            if (config.get('domain.ssl') !== true) {
+                var serverHttp = http.createServer(app).listen(config.get('domain.port'), config.get('domain.host'));
                 return serverHttp;
             }
             else {
@@ -17,16 +17,16 @@ class Server {
                     cert: fs.readFileSync(`${opt.paths.CONFIG}/ssl/local.nodejs.vn/server.crt`, 'utf8'),
                     key: fs.readFileSync(`${opt.paths.CONFIG}/ssl/local.nodejs.vn/server.key`, 'utf8'),
                     ca: fs.readFileSync(`${opt.paths.CONFIG}/ssl/local.nodejs.vn/ca.crt`, 'utf8'),
-                    requestCert: opt.config.domain.requestCert,
-                    rejectUnauthorized: opt.config.domain.rejectUnauthorized,
-                    passphrase: opt.config.domain.passphrase,
-                    family: opt.config.domain.family
+                    requestCert: config.get('domain.requestCert'),
+                    rejectUnauthorized: config.get('domain.rejectUnauthorized'),
+                    passphrase: config.get('domain.passphrase'),
+                    family: config.get('domain.family')
                 };
 
                 //run -> chmod 755 generate-certificates.sh in ssl
                 //run -> ./generate-certificates.sh
                 // add cert for browers
-                var serverHttps = https.createServer(httpsOptions, app).listen(opt.config.domain.port, opt.config.domain.host, function (err) {
+                var serverHttps = https.createServer(httpsOptions, app).listen(config.get('domain.port'), config.get('domain.host'), function (err) {
                     console.log("server started at port " + serverHttps.address().address, serverHttps.address().port);
                 }).on('error', (e) => {
                     console.error('Run Server... ', e);

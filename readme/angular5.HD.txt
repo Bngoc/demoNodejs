@@ -1,4 +1,16 @@
 // -----------------------------environments-----------------------------------------
+
+0. config:
+    npm install config
+        1. -> trong thu muc config
+        2. -> mặc định nhận defaul.json
+            (dev.json) || production.json ...
+        3. import và get ...
+            -> config.get (....) https://www.npmjs.com/package/config
+        4. chạy || deploy
+            .)_ export NODE_ENV=production => npm run "start-prod"
+            .)_ export NODE_ENV=dev => npm run "start-dev"
+
 1. npm install -g @angular/cli
 2. ng -v
        npm install -g typescript
