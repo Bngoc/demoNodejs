@@ -111,7 +111,7 @@ function CoreHelper() {
     this.createFileConfig = function (callback) {
         // console.log('NODE_ENV: ' + config.util.getEnv('NODE_ENV'));
         // console.log('NODE_CONFIG_DIR: ' + config.util.getEnv('NODE_CONFIG_DIR'));
-        console.log(config);
+        // console.log(config);
         let side = (((config.get('domain.ssl') === true) ? "https://" : "http://") + `${config.get('domain.host')}:${config.get('domain.port')}`);
         let apiClient = {
             "/api/*": {
