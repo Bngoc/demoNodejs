@@ -1,6 +1,6 @@
 {
   "domain": {
-    "port": 1233,
+    "port": 7233,
     "host": "localhost",
     "rejectUnauthorized": false,
     "requestCert": false,

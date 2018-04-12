@@ -1,6 +1,6 @@
 {
   "domain": {
-    "port": 8080,
+    "port": 9089,
     "host": "localhost",
     "rejectUnauthorized": false,
     "requestCert": false,

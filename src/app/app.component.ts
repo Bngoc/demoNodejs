@@ -1,6 +1,7 @@
 import {Component, ViewEncapsulation, OnInit} from "@angular/core";
 import {libSupports} from "./common/libSupports";
 import {RoutesRecognized, Router} from '@angular/router';
+import {environment} from '../environments/environment';
 declare var jQuery: any;
 declare var $: any;
 
@@ -24,6 +25,9 @@ export class AppComponent extends libSupports implements OnInit {
     }
 
     public ngOnInit() {
+
+        console.log(environment.apiUrl);
+
         this.intiLoadCss();
         this.intiLoadScript();
 

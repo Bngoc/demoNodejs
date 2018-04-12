@@ -101,15 +101,16 @@
     "cheerio": "latest"
   },
   "scripts": {
-    "ng-serve-target-dev": "ng serve --aot --proxy-config proxy.conf.json",
+    "ng-serve-target-dev": "ng serve --dev --aot --proxy-config proxy.conf.json",
     "serve-api-dev": "SET NODE_ENV=dev& supervisor --exec babel-node ./",
-    "start-dev": "concurrently --kill-others \"npm run serve-api-dev\" \"npm run ng-serve-target-dev\"",
+    "start-dev": "npm run \"build-dev\"& concurrently --kill-others \"npm run serve-api-dev\" \"npm run ng-serve-target-dev\"",
     "start": "concurrently --kill-others \"npm run serve-api-dev\" \"npm run ng-serve-target-dev\"",
     "serve-api": "SET NODE_ENV=production& supervisor --exec babel-node ./",
     "ng-serve-target": "ng serve --prod --proxy-config proxy.conf.json",
     "start-prod": "npm run build & concurrently --kill-others \"npm run serve-api\" \"npm run ng-serve-target\"",
     "ng": "ng",
     "build": "ng build --prod",
+    "build-dev": "ng build --dev",
     "ng-serve": "npm run serve",
     "test": "ng test",
     "lint": "ng lint",

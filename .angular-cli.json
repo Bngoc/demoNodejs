@@ -30,7 +30,8 @@
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",
-        "prod": "environments/environment.prod.ts"
+        "prod": "environments/environment.prod.ts",
+        "stag": "environments/environment.stag.ts"
       }
     }
   ],
@@ -63,7 +64,7 @@
     "scriptExt": "js",
     "component": {},
     "serve": {
-      "port": 1234,
+      "port": 9234,
       "host": "localhost"
     }
   }
