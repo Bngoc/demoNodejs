@@ -38,7 +38,7 @@ const conversation = watson.conversation(define.WATSON_CONVERSATION);
 
 class Socket {
 
-    configSocket(express_session, server) {
+    old_configSocket(express_session, server) {
         io = socketio(server);
         io.use(sharedsession(express_session));
         io.on('connection', function (socket) {

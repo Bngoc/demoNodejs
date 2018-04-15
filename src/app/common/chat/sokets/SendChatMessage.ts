@@ -2,6 +2,7 @@
 
 import {ListContacts} from "../supports/ListContacts";
 import {LibCommonChat} from "../supports/LibCommonChat";
+
 declare var jQuery: any;
 declare var $: any;
 declare var require: any;
@@ -37,7 +38,7 @@ export class SendChatMessage extends libSupports {
         this.clickSearchContacts(opt.remainTimeSearch);
         this.clickAddContact(socket, opt.remainTimeSearch);
         this.clickResultAddContact(socket);
-        this.commonGllobalDefault(opt);
+        this.commonGlobalDefault(opt);
         this.eventChangeStatusUser(socket);
 
 
@@ -47,7 +48,7 @@ export class SendChatMessage extends libSupports {
         window.heightEmoji = 200;
     };
 
-    commonGllobalDefault = function (opt) {
+    commonGlobalDefault = function (opt) {
         let resetListContactDefault = {
             url: opt.urlAction.urlListContact,
             data: {
@@ -116,38 +117,41 @@ export class SendChatMessage extends libSupports {
     };
 
     sendMsg = function (socket, isDataFriend) {
-        this.eventDisplayEmoji();
-        var dataValueMsg = $.trim($('#boxChat').val());
-        if (dataValueMsg.length) {
-            let listContact = new ListContacts();
-            let emojiHtmlChat = new EmojiHtmlChat();
-            let messageInput = $('#messageInput');
-            let listPart = listContact.getListParticipant();
+        let self = this;
+        self.delayKeyUp(() => {
+            self.eventDisplayEmoji();
+            let dataValueMsg = $.trim($('#boxChat').val());
+            if (dataValueMsg.length) {
+                let listContact = new ListContacts();
+                let emojiHtmlChat = new EmojiHtmlChat();
+                let messageInput = $('#messageInput');
+                let listPart = listContact.getListParticipant();
 
-            if (isDataFriend === true) {
-                let dataSendChat = {
-                    dataConversation: messageInput.attr('data-conversation'),
-                    dataChannel: messageInput.attr('data-channel'),
-                    dataType: messageInput.attr('data-type'),
-                    dataValueMsg: emojiHtmlChat.convertEmojiToText(emojiHtmlChat.convertEmoji(dataValueMsg)),
-                    listCodePart: listPart.join(',')
-                };
+                if (isDataFriend === true) {
+                    let dataSendChat = {
+                        dataConversation: messageInput.attr('data-conversation'),
+                        dataChannel: messageInput.attr('data-channel'),
+                        dataType: messageInput.attr('data-type'),
+                        dataValueMsg: emojiHtmlChat.convertEmojiToText(emojiHtmlChat.convertEmoji(dataValueMsg)),
+                        listCodePart: listPart.join(',')
+                    };
 
-                socket.emit('sendDataMsg', dataSendChat);
-                this.diffHeightMsg();
+                    socket.emit('sendDataMsg', dataSendChat);
+                    self.diffHeightMsg();
+                }
             }
-        }
+        }, 300);
     };
 
     eventClickSend = function (socket, isDataFriend) {
-        var that = this;
+        let that = this;
         $('body').on('click', '#sendMessageChat', function () {
             that.sendMsg(socket, isDataFriend);
         });
     };
 
     eventEnterSend = function (socket, isDataFriend) {
-        var that = this;
+        let that = this;
         // create trigger keyUpDown after check enter vs (shift + enter) in textarea
         $('body').on('keyUpDown', '#boxChat', function (e) {
             that.eventDisplayEmoji();
@@ -946,7 +950,7 @@ export class SendChatMessage extends libSupports {
     };
 
     scrollContentChat = function () {
-        $('#content-chat').css({"width": ($('#frame').width() - $('#sidepanel').width() )});
+        $('#content-chat').css({"width": ($('#frame').width() - $('#sidepanel').width())});
     }
 }
 

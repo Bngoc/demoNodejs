@@ -56,10 +56,11 @@ function CoreHelper() {
     };
 
     this.runSocket = function (runServer) {
-        var socket = this.callModule(`${paths.MODULE}/express.js`, true);
-        let io = socket.configSocket(runServer, app, this);
-        var chatController = this.callModule(`${paths.CONTROLLERS}ChatController.js`, true);
-        chatController.socketConnection(io);
+        let socket = this.callModule(`${paths.MODULE}/express.js`, true);
+        socket.configSocket(runServer, app, this, (io, socketAntiSpam) => {
+            let chatController = this.callModule(`${paths.CONTROLLERS}ChatController.js`, true);
+            chatController.socketConnection(io, socketAntiSpam);
+        });
     };
 
     this.runExpress = function () {

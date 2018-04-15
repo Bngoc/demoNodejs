@@ -343,8 +343,8 @@ class ChatController extends BaseController {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                            return conversationType[k]
-                        })),
+                        return conversationType[k]
+                    })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -600,7 +600,7 @@ class ChatController extends BaseController {
                         res.status(200).send(showResponseChat);
                     });
                 });
-            } else if ((req.body.dataConversation === "" || req.body.dataConversation === 'null' || req.body.dataConversation == null )
+            } else if ((req.body.dataConversation === "" || req.body.dataConversation === 'null' || req.body.dataConversation == null)
                 && parseInt(req.body.valAuthor) && userCurrent) {
                 // NOT FRIEND AND NOT REQUEST
                 let user = new User.class();
@@ -646,8 +646,8 @@ class ChatController extends BaseController {
                 let requestConversation = {
                     userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                            return conversationType[k]
-                        })),
+                        return conversationType[k]
+                    })),
                     isAuthenticatesSingle: isAuthenticatesSingle
                 };
                 let user = new User.class();
@@ -923,7 +923,7 @@ class ChatController extends BaseController {
         }
     }
 
-    socketConnection(io) {
+    socketConnection(io, socketAntiSpam) {
         io.on('connection', function (socket) {
             let chatController = new ChatController();
             let newContacts = new Contacts.class();
@@ -955,7 +955,6 @@ class ChatController extends BaseController {
                     chatController.updateSessionByName(socket, 'isLife', true);
                 }
             }
-
             socket.on('msgContentChat', function (reqData) {
                 let conversationId = reqData.data.dataConversation ? parseInt(reqData.data.dataConversation) : null;
                 let page = reqData.data.page !== undefined ? parseInt(reqData.data.page) : 1;
@@ -984,12 +983,12 @@ class ChatController extends BaseController {
                                 });
                                 let isScrollTop = reqData.data.isScrollTop !== undefined ? reqData.data.isScrollTop : false;
                                 if (isScrollTop === false) modelMsgArray.reverse();
-                                let resModelMessage = chatController.convertListMessage(modelMsgArray, reqOption);
-
-                                // resModelMessage.isScrollTop = isScrollTop;
-                                resModelMessage.isLoadTop = reqData.data.isScrollTop !== undefined ? true : false;
-                                resModelMessage.channelId = reqData.data.dataChannelID;
-                                socket.emit('msgContent', resModelMessage);
+                                chatController.convertListMessage(modelMsgArray, reqOption, (resModelMessage) => {
+                                    // resModelMessage.isScrollTop = isScrollTop;
+                                    resModelMessage.isLoadTop = reqData.data.isScrollTop !== undefined ? true : false;
+                                    resModelMessage.channelId = reqData.data.dataChannelID;
+                                    socket.emit('msgContent', resModelMessage);
+                                });
                             });
                         }
                     });
@@ -1003,6 +1002,8 @@ class ChatController extends BaseController {
             });
 
             socket.on('sendDataMsg', function (dataSendChat) {
+                socketAntiSpam.addSpam(socket);
+
                 if (dataSendChat && userCurrent) {
                     let message = new Messages.class();
                     dataSendChat.channelId = dataSendChat.dataChannel;
@@ -1019,15 +1020,15 @@ class ChatController extends BaseController {
                     message.insert(reqDataInsert, function (err, modelMsg) {
                         if (err) return 1;
 
-                        process.nextTick(function () {
+                        // process.nextTick(function () {
                             let reqOption = {
                                 userCurrent: userCurrent
                             };
                             let modelMsgArray = [];
                             modelMsgArray.push(modelMsg);
-                            let resModelMessage = chatController.convertListMessage(modelMsgArray, reqOption);
-                            resModelMessage.isLoadTop = dataSendChat.isScrollTop !== undefined ? true : false;
+                        chatController.convertListMessage(modelMsgArray, reqOption, (resModelMessage) => {
 
+                            resModelMessage.isLoadTop = dataSendChat.isScrollTop !== undefined ? true : false;
                             socket.emit('sendDataPrivate', resModelMessage);
 
                             if (dataSendChat.dataChannel) {
@@ -1037,13 +1038,14 @@ class ChatController extends BaseController {
                                 socket.broadcast.to(dataSendChat.dataChannel).emit('sendDataBroadCast', resModelMessage);
                             }
                         });
+                        // });
                     });
                 }
             });
 
             socket.on('updateUser', function (reqData) {
                 if (userCurrent && currentStatus) {
-                    var dataRequest = {
+                    let dataRequest = {
                         clause: {users_id: userCurrent.user},
                         dataUpdate: {
                             status: parseInt(reqData.data.status)
@@ -1173,6 +1175,43 @@ class ChatController extends BaseController {
                 console.log(`disconnect ----------------------------------------  ${socket.id}`);
                 socket.emit('messageDisconnect', {content: 'bye bye!', importance: null, 'socketID': socket.id});
             });
+        });
+
+        socketAntiSpam.event.on('authenticate', socket => {
+            console.log(socket.ip);
+        });
+
+        socketAntiSpam.event.on('kick', (socket, data) => {
+            // We have the socket var that was kicked
+
+            // The second parameter is a object that was binded to the socket with some extra information
+            // It's how socket-anti-spam keeps track of sockets and their states
+            console.log(socket.ip);
+        });
+
+        socketAntiSpam.event.on('ban', (socket, data) => {
+            // We have the socket var that was banned
+
+            // The second parameter is a object that was binded to the socket with some extra information
+            // It's how socket-anti-spam keeps track of sockets and their states
+            console.log(data);
+
+            if (socketAntiSpam.options.kickTimesBeforeBan <= data.kickCount) {
+                io.sockets.emit('messageDataSpam', data);
+            }
+        });
+
+        socketAntiSpam.event.on('spamscore', (socket, data) => {
+            // We have the socket var that received a new spamscore update
+            // The second parameter is a object that was binded to the socket with some extra information
+            // It's how socket-anti-spam keeps track of sockets and their states
+
+            // If you want the spamscore you can get it via:
+
+            console.log(data.score);
+            if (socketAntiSpam.options.kickThreshold <= data.score) {
+                io.sockets.emit('messageDataSpam', data);
+            }
         });
     }
 }
@@ -1409,7 +1448,7 @@ ChatController.prototype.queueUpdateContact = function (socket, dataRequest, cur
     // }, updateLastMinute);
 };
 
-ChatController.prototype.convertListMessage = function (modelArrayMessage, reqOption) {
+ChatController.prototype.convertListMessage = function (modelArrayMessage, reqOption, callback) {
     let resModelMessage = {};
     let lengthModel = modelArrayMessage.length;
     resModelMessage.isLength = lengthModel;
@@ -1425,28 +1464,32 @@ ChatController.prototype.convertListMessage = function (modelArrayMessage, reqOp
         let listMsgTemp = [];
 
         modelArrayMessage.forEach(function (element, index) {
-            let isUserFuture = ((index + 1) >= lengthModel) ? false : (modelArrayMessage[(index + 1)].attributes.sender_id === element.attributes.sender_id);
+            if (element) {
+                let isUserFuture = ((index + 1) >= lengthModel) ? false : (modelArrayMessage[(index + 1)].attributes.sender_id === element.attributes.sender_id);
 
-            if (isUserFuture === false) {
-                listMsgTemp.push(element.attributes);
+                if (isUserFuture === false) {
+                    listMsgTemp.push(element.attributes);
 
-                listMessage.data = listMsgTemp;
-                listMessage.contactMessage = element.relations.contactMessage.toJSON();
-                listMessage.isSingle = element.attributes.is_single_group == 0;
-                listMessage.isUserCurrent = (element.attributes.sender_id == reqOption.userCurrent.user);
-                resultListMessage.push(listMessage);
-                listMsgTemp = [];
-                listMessage = {};
+                    listMessage.data = listMsgTemp;
+                    listMessage.contactMessage = element.relations.contactMessage.toJSON();
+                    listMessage.isSingle = element.attributes.is_single_group == 0;
+                    listMessage.isUserCurrent = (element.attributes.sender_id == reqOption.userCurrent.user);
+                    resultListMessage.push(listMessage);
+                    listMsgTemp = [];
+                    listMessage = {};
 
-            } else {
-                listMsgTemp.push(element.attributes);
+                } else {
+                    listMsgTemp.push(element.attributes);
+                }
             }
         });
         resModelMessage.listMsg = resultListMessage;
     } else {
 
     }
-    return resModelMessage;
+
+    // return resModelMessage;
+    callback(resModelMessage);
 };
 
 ChatController.prototype.supportConfigChat = function (jsonConfigChat) {

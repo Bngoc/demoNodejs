@@ -5,6 +5,7 @@ const mainAng = require("./../../../proxy.conf.json");
 const pjson = require('./../../../package.json');
 const bundles = require('./../../../bundles.angular.json');
 import {isUndefined} from "util";
+
 declare var $: any;
 
 export abstract class libSupports {
@@ -89,10 +90,10 @@ export abstract class libSupports {
         }
 
         strTime += ', ' + objDate.toLocaleString('en-US', {
-                hour: 'numeric',
-                minute: 'numeric',
-                hour12: true
-            });
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
 
         return strTime;
     }
@@ -249,4 +250,12 @@ export abstract class libSupports {
 
         return dataResult
     }
+
+    public delayKeyUp = function () {
+        let timer = 0;
+        return function (callback, ms) {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        };
+    }();
 }

@@ -1,0 +1,6 @@
+1. npm update -g
+2. npm install
+        :=> err
+            -> npm cache verify
+        -> ng -version (1.6.3 cli)
+            npm install -g @angular/cli@1.6.3 @angular-devkit/core

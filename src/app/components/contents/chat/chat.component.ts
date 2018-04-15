@@ -43,7 +43,6 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-
         this.remainTimeDefault = (0.3 * 60 * 1000);
         this.remainTimeSearch = (1 * 60 * 1000);
         this.sendChatMessage = new SendChatMessage();
@@ -111,6 +110,7 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
                     this.createConversationGroup(socket);
                     this.sendDataTest(socket);
                     this.msgContent(socket);
+                    this.eventSocketAntiSpam();
 
                     //C1 CLICK-STRATUS - bo click in template chat
                     // this.sendChatMessage.eventChangeStatusUser(socket);
@@ -160,6 +160,12 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
             sendChatMessage.htmlContentBoxChat(messageReplies);
             sendChatMessage.scrollEndShowBoxChat(1000);
             // $('#frameListMsg').trigger('changeBoxMsg');
+        });
+    };
+
+    eventSocketAntiSpam() {
+        this.socket.on('messageDataSpam', dataSpam => {
+            console.log('messageDataSpam => ', dataSpam);
         });
     };
 

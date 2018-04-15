@@ -19,6 +19,9 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const sharedSession = require("express-socket.io-session");
 const socketIo = require('socket.io');
+const SocketAntiSpam = require('socket-anti-spam');
+const redis = require('redis');
+const client = redis.createClient();
 const sessionStore = new session.MemoryStore();
 // use hander log
 const env = process.env.NODE_ENV || 'development';
@@ -73,7 +76,7 @@ class Express {
         app.use(methodOverride(function (req, res) {
             if (req.body && typeof req.body === 'object' && '_method' in req.body) {
                 // look in urlencoded POST bodies and delete it
-                var method = req.body._method;
+                let method = req.body._method;
                 delete req.body._method;
                 return method
             }
@@ -86,11 +89,19 @@ class Express {
         app.use(favicon(coreHelper.paths.IMAGES + 'favicon.ico'));
     };
 
-    configSocket(server, app, coreHelper) {
-        let io = socketIo(server);
-        io.use(sharedSession(this.configSession(app, coreHelper)), {autoSave: true});
+    configSocket(server, app, coreHelper, callback) {
+        let ioSocket = socketIo(server);
+        ioSocket.use(sharedSession(this.configSession(app, coreHelper)), {autoSave: true});
+        const socketAntiSpam = new SocketAntiSpam({
+            banTime: 1,         // Ban time in minutes
+            kickThreshold: 10,          // User gets kicked after this many spam score
+            kickTimesBeforeBan: 2,          // User gets banned after this many kicks
+            banning: true,       // Uses temp IP banning after kickTimesBeforeBan
+            io: ioSocket,  // Bind the socket.io variable
+            // redis:              client,      // Redis client if you are sharing multiple servers
+        });
 
-        return io;
+        callback(ioSocket, socketAntiSpam);
     }
 
     //https secure: true,

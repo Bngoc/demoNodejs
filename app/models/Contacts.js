@@ -56,7 +56,7 @@ Contact.prototype.getContactColumn = function (dataRequest, callback) {
         .query((qb) => qb.where('users_id', dataRequest.id))
         .fetch({colums: dataRequest.columns})
         .then((dataModel)=> callback(null, dataModel))
-        .catch((ex)=> callbackex);
+        .catch((ex) => callback(ex));
 }
 
 Contact.prototype.inserts = function (dataRequest, callback) {

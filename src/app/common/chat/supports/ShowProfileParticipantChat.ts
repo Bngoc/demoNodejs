@@ -25,11 +25,8 @@ export class ShowProfileParticipantChat {
             + '<div class="info-profile">'
             + '<ul class="data-show-label">';
 
-        if (dataParticipants.isTypeSingle === true) {
-            htmlContentProfie += this.htmlSingle(dataParticipants);
-        } else {
-            htmlContentProfie += this.htmlGroup(dataParticipants);
-        }
+        htmlContentProfie += dataParticipants.isTypeSingle === true
+            ? this.htmlSingle(dataParticipants) : this.htmlGroup(dataParticipants);
 
         htmlContentProfie += '</ul>';
         htmlContentProfie += '</div></div>';
