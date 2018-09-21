@@ -397,10 +397,13 @@ class ChatController extends BaseController {
         try {
             var showResponse = {};
             const aliasRouter = helper.coreHelper.aliasRouter();
-            let userCurrent = req.user;
+            let userCurrent = 12;
+            // let userCurrent = req.user;
+
             if (userCurrent) {
                 let requestSql = {
-                    userCurrentID: userCurrent.attributes.id,
+                    userCurrentID: 12,
+                    // userCurrentID: userCurrent.attributes.id,
                     conversationType: Object.keys(conversationType).map(function (k) {
                         return conversationType[k]
                     })
@@ -414,7 +417,8 @@ class ChatController extends BaseController {
                     let notiContacts = rsData.infoAccount.relations.useContacts;
                     let statusID = notiContacts.attributes.status;
                     let requestCurrent = {
-                        userCurrentID: userCurrent.attributes.id,
+                        userCurrentID: 12,
+                        // userCurrentID: userCurrent.attributes.id,
                         statusID: statusID,
                         statusName: chatStatus[statusID],
                         listStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
@@ -461,7 +465,8 @@ class ChatController extends BaseController {
 
     postApiContentChat(req, res) {
         var showResponseChat = {};
-        let userCurrent = req.user;
+        let userCurrent = 12;
+        // let userCurrent = req.user;
         req.session.dataChannelID = null;
         try {
             const aliasRouter = helper.coreHelper.aliasRouter();
@@ -475,14 +480,16 @@ class ChatController extends BaseController {
             showResponseChat.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN + FIX_HEIGHT_BOX_CHAT_BST3;
             showResponseChat.page = 1;
             showResponseChat.userName = req.body.userName;
-            showResponseChat.hexCodeId = userCurrent.attributes.id ? 'hex-' + userCurrent.attributes.id : null;
+            showResponseChat.hexCodeId = 12 ? 'hex-' + 12 : null;
+            // showResponseChat.hexCodeId = userCurrent.attributes.id ? 'hex-' + userCurrent.attributes.id : null;
             // let chatController = new ChatController();
 
             if (parseInt(req.body.dataConversation) && userCurrent) {
                 let conversation = new Conversation.class();
                 let optionRequest = {
                     id: parseInt(req.body.dataConversation),
-                    userCurrentID: userCurrent.attributes.id,
+                    userCurrentID: 12,
+                    // userCurrentID: userCurrent.attributes.id,
                     userModel: User.model,
                     statusSingle: cfgChat.status_single
                 };
@@ -511,7 +518,8 @@ class ChatController extends BaseController {
                             showResponseChat.dataType = elem.type;
                             showResponseChat.dataChannelId = elem.channel_id;
                             showResponseChat.dataOwnerId = elem.creator_id;
-                            showResponseChat.isCurrentOwnerId = elem.creator_id == userCurrent.attributes.id;
+                            showResponseChat.isCurrentOwnerId = elem.creator_id == 12;
+                            // showResponseChat.isCurrentOwnerId = elem.creator_id == userCurrent.attributes.id;
                             showResponseChat.dataConversation = elem.idConversation;
                             showResponseChat.countParticipants = elem.count;
                             showResponseChat.isTypeSingle = showResponseChat.dataType == cfgChat.status_single;
@@ -640,11 +648,13 @@ class ChatController extends BaseController {
     postApiListContact(req, res) {
         var showResponseChat = {data: [], option: {}, done: false, err: '', msg: ''};
         try {
-            if (req.user) {
+            if (12) {
+            // if (req.user) {
                 const aliasRouter = helper.coreHelper.aliasRouter();
                 let isAuthenticatesSingle = req.body.isAuthenticatesSingle === 'true';
                 let requestConversation = {
-                    userCurrentID: req.user.attributes.id,
+                    userCurrentID: 12,
+                    // userCurrentID: req.user.attributes.id,
                     conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
                         return conversationType[k]
                     })),
@@ -930,6 +940,9 @@ class ChatController extends BaseController {
             let newUser = new User.class();
 
             let userCurrent = chatController.getSessionByName(socket, 'passport');
+
+            console.log('ddddddddddddddddddddddddddd', userCurrent, socket.handshake)
+
             let cfgChatUser = chatController.supportConfigChat(chatController.getSessionByName(socket, 'cfg_chat'));
             chatController.setSessionByName(socket, 'isActiveCurrent', userCurrent.user ? userCurrent.user : null);
             socket.isActiveLoadPageCurrent = userCurrent.user ? userCurrent.user : null;

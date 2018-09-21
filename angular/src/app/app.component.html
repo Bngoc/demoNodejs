@@ -1,0 +1,38 @@
+<div id="notify-container"></div>
+<div id="custom-header"></div>
+
+<app-header *ngIf="!isPageLogin"></app-header>
+
+<div class="container _full">
+  <div id="content" class="snippet-hidden">
+    <div class="inner-content">
+      <app-nav *ngIf="!isPageLogin"></app-nav>
+      <app-contents (LoginChanged)="LoginChangedHandler($event)"></app-contents>
+
+      <!--<div id="question-header">-->
+      <!--&lt;!&ndash;- (typeof header !== 'undefined') ? header : '' &ndash;&gt;-->
+      <!--</div>-->
+
+      <!--<div id="&lt;!&ndash;- (typeof isNotIncludeSidebar === 'undefined') ? 'mainbar' : ''  &ndash;&gt;" role="main"-->
+      <!--aria-label="question and answers">-->
+      <!--&lt;!&ndash;<app-contents></app-contents>&ndash;&gt;-->
+      <!--&lt;!&ndash;- body &ndash;&gt;-->
+      <!--&lt;!&ndash; (typeof content !== 'undefined') ? content : '' &ndash;&gt;-->
+      <!--</div>-->
+      <!--&lt;!&ndash; if (typeof isNotIncludeSidebar === 'undefined') { &ndash;&gt;-->
+      <!--<div id="sidebar" class="show-votes" role="complementary" aria-label="sidebar">-->
+      <!--<app-sidebar></app-sidebar>-->
+      <!--</div>-->
+      <!--&lt;!&ndash; } &ndash;&gt;-->
+      <!--<div id="feed-link">-->
+      <!--&lt;!&ndash;- (typeof header !== 'undefined') ? feedBack : '' &ndash;&gt;-->
+      <!--</div>-->
+      <!--</div>-->
+
+    </div>
+  </div>
+</div>
+<footer id="footer" *ngIf="!isPageLogin" class="s-footer js-footer" role="contentinfo">
+  <app-footer></app-footer>
+</footer>
+<router-outlet></router-outlet>

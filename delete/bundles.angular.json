@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "main": [
+      "<meta name=\"twitter:app:BBBBBBBBBBB\" content=\"US\">",
+      "<meta name=\"twitter:app:BBBBBBBBBB\" content=\"US\">"
+    ],
+    "admin_main": [
+      "<meta name=\"twitter:app:country\" content=\"US\">",
+      "<meta name=\"twitter:app:country\" content=\"US\">"
+    ]
+  },
+  "styles": {
+    "main": {
+      "files": [
+        "css/style.css",
+        "css/flexslider.css",
+        "css/jquery.fancybox.css",
+        "css/cloud-zoom.css",
+        "css/common.style.css",
+        "css/select2.css"
+      ]
+    },
+    "admin_main": {
+      "files": [
+        "css/reset/reset.css",
+        "css/font-awesome/css/font-awesome.min.css",
+        "css/admin/bower_components/metisMenu/dist/metisMenu.min.css",
+        "css/admin/bower_components/font-awesome/css/font-awesome.min.css",
+        "css/admin/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css",
+        "css/admin/bower_components/datatables-responsive/css/dataTables.responsive.css",
+        "css/admin/dist/css/sb-admin-2.css",
+        "css/rawcss.css",
+        "css/select2.css"
+      ]
+    }
+  },
+  "scripts": {
+    "main": {
+      "files": {
+        "head": [
+          "js/common.js",
+          "js/select2.js"
+        ],
+        "body": [
+          "js/bootstrap.js",
+          "js/respond.min.js",
+          "js/bootstrap-tooltip.js",
+          "js/jquery.flexslider.js",
+          "js/jquery.tweet.js",
+          "js/cloud-zoom.1.0.2.js",
+          "js/jquery.validate.js",
+          "js/jquery.carouFredSel-6.1.0-packed.js",
+          "js/jquery.mousewheel.min.js",
+          "js/jquery.touchSwipe.min.js",
+          "js/jquery.ba-throttle-debounce.min.js"
+        ]
+      }
+    },
+    "admin_main": {
+      "files": {
+        "head": [
+          "js/jquery-3.2.1.min.js",
+          "js/bootstrap.js",
+          "js/respond.min.js",
+          "js/application.js",
+          "js/common.js",
+          "js/select2.js"
+        ],
+        "body": [
+          "js/bootstrap.js",
+          "js/respond.min.js",
+          "js/application.js",
+          "js/bootstrap-tooltip.js",
+          "js/jquery.fancybox.js",
+          "js/jquery.flexslider.js",
+          "js/jquery.tweet.js",
+          "js/cloud-zoom.1.0.2.js",
+          "js/jquery.validate.js",
+          "js/jquery.carouFredSel-6.1.0-packed.js",
+          "js/jquery.mousewheel.min.js",
+          "js/jquery.touchSwipe.min.js",
+          "js/jquery.ba-throttle-debounce.min.js"
+        ]
+      }
+    }
+  }
+}

@@ -25,6 +25,8 @@ const client = redis.createClient();
 const sessionStore = new session.MemoryStore();
 // use hander log
 const env = process.env.NODE_ENV || 'development';
+// Cors
+const cors = require('cors');
 
 
 class Express {
@@ -54,12 +56,6 @@ class Express {
         app.use(methodOverride('X-HTTP-Method-Override'));
 
         app.set('secretNode', coreHelper.app.secret);
-        // app.use(cookieParser('secret'));
-        // app.use(this.configSession());
-        // app.use(passport.initialize());
-        // app.use(passport.session());
-        // app.use(flash());
-
         this.configSession(app, coreHelper);
 
         //Global vars
@@ -72,6 +68,13 @@ class Express {
 
             next();
         });
+        // app.use(cors());
+        app.use(cors({
+            origin: '*',
+            credentials: false,
+            methods: 'GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS',
+            allowedHeaders: 'Content-Type,Authorization,Accept,Origin,Access-Control-Allow-Origin'
+        }));
 
         app.use(methodOverride(function (req, res) {
             if (req.body && typeof req.body === 'object' && '_method' in req.body) {
@@ -92,15 +95,18 @@ class Express {
     configSocket(server, app, coreHelper, callback) {
         let ioSocket = socketIo(server);
         ioSocket.use(sharedSession(this.configSession(app, coreHelper)), {autoSave: true});
+
         const socketAntiSpam = new SocketAntiSpam({
-            banTime: 1,         // Ban time in minutes
-            kickThreshold: 10,          // User gets kicked after this many spam score
+            banTime: 1,                     // Ban time in minutes
+            kickThreshold: 10,              // User gets kicked after this many spam score
             kickTimesBeforeBan: 2,          // User gets banned after this many kicks
-            banning: true,       // Uses temp IP banning after kickTimesBeforeBan
-            io: ioSocket,  // Bind the socket.io variable
-            // redis:              client,      // Redis client if you are sharing multiple servers
+            banning: true,                  // Uses temp IP banning after kickTimesBeforeBan
+            io: ioSocket,                   // Bind the socket.io variable
+            // redis: client                // Redis client if you are sharing multiple servers
         });
 
+        ioSocket.set('origins', ':');
+        ioSocket.set('transports', ['websocket', 'flashsocket', 'htmlfile', 'xhr-polling', 'jsonp-polling']);
         callback(ioSocket, socketAntiSpam);
     }
 

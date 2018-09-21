@@ -11,8 +11,7 @@ const sampleConfig = require(`${paths.CONFIG}/config.json`);
 const config = require('config');
 const samplePackage = require(`${paths.ROOT}/package.json`);
 const sampleApp = require(`${paths.CONFIG}/app.js`);
-var setAliasRouter = {};
-
+let setAliasRouter = {};
 
 function CoreHelper() {
 
@@ -110,9 +109,6 @@ function CoreHelper() {
     };
 
     this.createFileConfig = function (callback) {
-        // console.log('NODE_ENV: ' + config.util.getEnv('NODE_ENV'));
-        // console.log('NODE_CONFIG_DIR: ' + config.util.getEnv('NODE_CONFIG_DIR'));
-        // console.log(config);
         let side = (((config.get('domain.ssl') === true) ? "https://" : "http://") + `${config.get('domain.host')}:${config.get('domain.port')}`);
         let apiClient = {
             "/api/*": {
@@ -121,8 +117,9 @@ function CoreHelper() {
                 "changeOrigin": config.get('domain.changeOrigin')
             }
         };
+
         let reqData = {
-            path: `${paths.ROOT}/proxy.conf.json`,
+            path: `${paths.ROOT}/angular/proxy.conf.json`,
             fileContent: JSON.stringify(apiClient)
         };
 
@@ -230,7 +227,6 @@ class ConnectDB extends CoreHelper {
         });
     }
 }
-
 
 module.exports = CoreHelper;
 module.exports = ConnectDB;

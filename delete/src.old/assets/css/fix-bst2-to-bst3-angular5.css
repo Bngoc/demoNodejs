@@ -1,0 +1,27 @@
+.container {
+    margin-top: 60px;
+}
+
+#frame #sidepanel #box-search-contacts input {
+    width: 100% !important;
+}
+
+#frame #sidepanel #profile .wrap img {
+    width: 60px;
+}
+
+#frame .content .message-input .wrap .box_msg {
+    width: calc(100% - 15px) !important;
+}
+
+.btn-controler-act ul._552n li label {
+    max-width: unset !important;
+}
+
+.search-contacts .search-single {
+    width: 100%;
+}
+
+.box-action-friend {
+    width: 100%;
+}

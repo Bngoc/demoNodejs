@@ -1,0 +1,108 @@
+
+.logo-login {
+    padding: 5px 0 25px;
+    max-width: 121px;
+}
+
+.logo-login img {
+    width: 100%;
+}
+
+.slogan {
+    font-family: fslogan;
+    /*font-size: 130%;*/
+    color: #829db3;
+}
+
+.login-box {
+    background-color: gainsboro;;
+    max-width: 100%;
+    padding: 20px 10px 25px;
+    margin: 0px 5px 0px 5px;
+}
+
+.title {
+    font-family: fsemibold;
+    font-size: 150%;
+    color: #303030;
+}
+
+.center {
+    text-align: center;
+}
+
+.color-gray {
+    color: #333;
+}
+
+.padding {
+    padding: 1px 0;
+}
+
+.margin {
+    margin: 1px 0;
+}
+
+.font80 {
+    font-size: 80%;
+}
+
+.input-code {
+    width: 100%;
+}
+
+.mg-top10 {
+    margin-top: 10px;
+}
+
+.width-box80 {
+    background-color: #fff;
+    font-size: 90%;
+    width: calc(100% - 20px);
+}
+
+.box {
+    border: 1px solid #a4a4a4;
+    padding: 10px;
+    margin: 5px 0 0 10px;
+    text-align: left;
+}
+
+.footer {
+    font-family: fregular;
+    font-size: 80%;
+    color: #ccc;
+    padding: 20px 5px 30px 5px;
+}
+
+.login-box form p:first-of-type {
+    margin-bottom: 15px;
+}
+
+.login-box .msg-noti {
+    text-align: left;
+    margin: 0 auto;
+    display: block;
+    clear: both;
+    padding: 0px 0px 4px 0px;
+}
+
+.position {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.login-box-social {
+    display: -webkit-box;
+}
+
+#fb-login {
+    float: left;
+    padding-left: 10px;
+}
+
+#google-login {
+    float: right;
+    padding-right: 10px;
+}

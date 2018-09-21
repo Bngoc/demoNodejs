@@ -1,5 +1,4 @@
 'use strict';
-
 var CoreHelper = require('./config/CoreHelper.js');
 var callCoreHelper = new CoreHelper();
 
@@ -18,10 +17,3 @@ callCoreHelper.createFileConfig(function (err, done) {
         callCoreHelper.runSocket(runServer);
     }
 });
-
-// const sampleConfig = require(`${paths.CONFIG}/config.json`);
-// const sampleConfigRoutes = require(`${paths.APP}/routers.js`);
-// const sampleConfigServer = require(`${paths.CONFIG}/server.js`);
-// const sampleConfigRoutes = require(`${paths.APP}/routers.js`);
-
-// var configServer = sampleConfigServer(samplePaths);

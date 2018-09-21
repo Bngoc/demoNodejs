@@ -1,0 +1,8 @@
+.background-blue {
+    margin: 0 auto;
+    max-width: 420px;
+}
+
+#login-form label, #register-form label {
+    display: block;
+}

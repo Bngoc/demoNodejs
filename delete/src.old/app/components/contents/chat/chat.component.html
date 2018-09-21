@@ -1,0 +1,81 @@
+<div *ngIf="messageError">{{messageError}}</div>
+<!--<div class="inner-content">-->
+<div id="question-header">
+    <!--&lt;!&ndash;- (typeof header !== 'undefined') ? header : '' &ndash;&gt;-->
+</div>
+
+<div id="frame" (window:resize)="onResize()">
+    <div id="sidepanel">
+        <div id="profile">
+            <div class="wrap">
+                <div id="accCurrent" class="aboutCurrent">
+                    <span class="btn-status-use {{resultData.classStatusCurrent}}" id="user-status-current"
+                          title="Change status"></span>
+                    <img id="profile-img" [attr.user-code-id]="resultData.userID"
+                         src="{{resultData.pathImgCurrent ? resultData.pathImgCurrent : ''}}"
+                         class="{{resultData.classStatusCurrent}}" alt="your profile" title="your profile">
+                </div>
+                <div class="info-current">
+                    <p class="user-name-chat">{{resultData.userName}}</p>
+                    <span class="mood-msg-current">{{resultData.moodMessage}}</span>
+                </div>
+                <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
+                <div id="status-options">
+                    <ul>
+                        <li *ngFor="let items of (resultData.listStatus | cutsKeys)" id="status-{{items.value}}"
+                            (click)="ngClickChangeStatusUser($event, items.key)"
+                            [attr.status]="items.value" [attr.data-value]="items.key"
+                            class="channel-status{{items.value == resultData.status ? ' active': ''}}">
+                            <span class="status-circle"></span>
+                            <p>{{items.value}}</p></li>
+                    </ul>
+                </div>
+                <div id="expanded">
+                    <label for="fa-facebook"><i class="fa fa-facebook fa-fw" aria-hidden="true"></i></label>
+                    <input id="fa-facebook" name="twitter" type="text" value="mikeross">
+                    <label for="fa-twitter"><i class="fa fa-twitter fa-fw" aria-hidden="true"></i></label>
+                    <input id="fa-twitter" name="twitter" type="text" value="ross81">
+                    <label for="fa-instagram"><i class="fa fa-instagram fa-fw" aria-hidden="true"></i></label>
+                    <input id="fa-instagram" name="twitter" type="text" value="mike.ross">
+                </div>
+            </div>
+        </div>
+        <div id="box-search-contacts" [attr.data-url]="resultData.urlListContact">
+            <label for="search-contact"><i class="fa fa-search" aria-hidden="true"></i></label>
+            <input id="search-contact" type="text" maxlength="40" placeholder="Search contacts...">
+        </div>
+        <div id="contacts" [attr.data-url]="resultData.urlChangeContent">
+            <ul id="contacts-your"></ul>
+        </div>
+        <div id="bottom-bar">
+            <button id="addcontact"><i class="fa fa-user-plus fa-fw" aria-hidden="true"></i>
+                <span>Add contact</span>
+            </button>
+            <button id="settings"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Settings</span></button>
+        </div>
+    </div>
+
+    <div class="content" id="content-chat"></div>
+</div>
+
+<nav id="context-menu" class="context-menu" style="display: none">
+    <ul class="context-menu__items">
+        <li class="context-menu__item">
+            <a href="#" class="context-menu__link" data-action="view"><i class="fa fa-eye"></i>Show profile</a>
+        </li>
+        <li class="context-menu__item">
+            <a href="#" class="context-menu__link" data-action="edit"><i class="fa fa-edit"></i> Edit Task</a>
+        </li>
+        <li class="context-menu__item">
+            <a href="#" class="context-menu__link" data-action="delete"><i class="fa fa-times"></i> Delete Task</a>
+        </li>
+    </ul>
+</nav>
+
+<div class="modal fade" id="myModalParticipant">
+    <div id="modal-box-profile" class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-show-info" id="html-profile-participants"></div>
+        </div>
+    </div>
+</div>

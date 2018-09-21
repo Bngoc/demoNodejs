@@ -1,0 +1,569 @@
+input {
+    margin: 0;
+}
+
+#frame .content .message-input .wrap ._552n li .ms_img input {
+    margin: 0;
+    height: auto;
+    line-height: inherit;
+    display: none;
+}
+
+.wrap ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.wrap ul._552n li {
+    position: absolute;
+    right: 0;
+    top: 10px;
+}
+
+.wrap ._552n {
+    bottom: 14px;
+    position: initial;
+    right: 0;
+}
+
+._vzk {
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+}
+
+#frame .content .message-input .wrap .attachment-cst:hover {
+    opacity: 1;
+}
+
+#frame .content .message-input .wrap .attachment-cst {
+    opacity: .5;
+    cursor: pointer;
+    float: right;
+    margin-top: 10px;
+    position: absolute;
+    color: white;
+}
+
+._6gs {
+    background-image: url(../../images/H2yAaG5kbRf.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: -17px -611px;
+}
+
+._6ge {
+    background-image: url(../../images/H2yAaG5kbRf.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: -68px -611px;
+}
+
+.hidden_elem {
+    display: none !important;
+}
+
+._3oxr {
+    background-image: url(../../images/H2yAaG5kbRf.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: 0 -611px;
+}
+
+._6gb {
+    display: block;
+    height: 16px;
+    position: relative;
+    transition: opacity .2s;
+    width: 16px;
+
+}
+
+._6gg {
+    background-image: url(../../images/H2yAaG5kbRf.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: -51px -611px;
+}
+
+.r_emoji50 {
+    right: 50px;
+}
+
+.r_img70 {
+    right: 70px;
+}
+
+.r_file90 {
+    right: 90px;
+}
+
+.r_bt25 {
+    right: 25px;
+}
+
+#newMsgChat {
+    position: absolute;
+    color: beige;
+    -moz-animation-delay: 3.5s;
+    -webkit-animation-delay: 3.5s;
+    -o-animation-delay: 3.5s;
+    animation-delay: 3.5s;
+    -prefix-animation: slide 1s ease 3.5s forwards;
+    transition: height 600ms ease 0ms;
+}
+
+#newMsgChat .bs:hover {
+    transition: 0.1s;
+    background: #8888f7;
+}
+
+#newMsgChat .bs {
+    background: blue;
+    padding: 5px 10px;
+    border-radius: 5px;
+    line-height: 23px;
+    text-align: center;
+    margin: auto;
+}
+
+#sendMessageChat {
+    margin-left: 9px;
+}
+
+#boxMsgChat li:last-child {
+    margin-bottom: 5px;
+}
+
+#newMsgChat #notifyNewsSms {
+    color: wheat;
+    font-size: small;
+    text-decoration: none;
+}
+
+.scrollbar {
+    float: left;
+    width: 100%;
+    background: #FFFFFF;
+}
+
+.btn-controler-act {
+    position: unset;
+    right: 0;
+    bottom: 0;
+    cursor: default;
+    display: block;
+}
+
+#status-options .change-status p:first-letter {
+    text-transform: capitalize;
+}
+
+/* ----- S - tootip ---- */
+.uiContextualLayer {
+    position: absolute;
+}
+
+._-kb div {
+    font-family: inherit;
+}
+
+.uiTooltipX {
+    max-width: 334px;
+    word-wrap: break-word;
+    position: relative;
+    zoom: 1;
+}
+
+.uiContextualLayerLeft > .uiTooltipX {
+    margin-right: 1px;
+    padding-right: 4px;
+}
+
+.uiTooltipX .tooltipContent {
+    background-color: #282828;
+    border-radius: 2px;
+    color: #fff;
+    font-size: 12px;
+    line-height: 16px;
+    padding: 6px 8px;
+    text-align: left;
+}
+
+.fbNub._50mz .tooltipText {
+    line-height: 1.5;
+}
+
+.uiTooltipX .tooltipText span {
+    zoom: 1;
+}
+
+.hidden_elem {
+    /*display: none !important; */
+}
+
+/* ----- E - tootip ---- */
+
+._31o4 {
+    position: relative;
+}
+
+._4tdt {
+    align-items: flex-end;
+    display: flex;
+    margin: 10px 9px 10px 8px;
+    position: relative;
+}
+
+._4tdt ._ua2 {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+}
+
+._4tdw {
+    display: block;
+    margin: 0 7px 0 0;
+    width: 33px;
+}
+
+._5wd4 {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    line-height: 1.28;
+    padding: 0 0 1px 0;
+    text-align: initial;
+}
+
+._1nc6 {
+    flex-direction: row-reverse;
+}
+
+._4tdt ._4tdx {
+    color: #90949c;
+    display: block;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    line-height: 1.28;
+    margin-bottom: 1px;
+    margin-left: 16px;
+    max-width: 201px;
+    min-height: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*-------------------------------S Box Show information--------------------------------*/
+#modal-box-profile .modal-show-info {
+    display: block;
+    position: relative;
+    border: 1px solid #dddddd;
+    background: #ebf3f7;
+    padding: 10px;
+    border-radius: 7px;
+}
+
+#modal-box-profile .show-avatar {
+    opacity: 1;
+    width: 30%;
+    float: left;
+    display: inline-block;
+}
+
+#modal-box-profile .show-avatar .img-avatar {
+    display: inline-grid;
+    margin-bottom: 5px;
+}
+
+#modal-box-profile .show-avatar .img-avatar .b-img {
+    width: 100%;
+    display: block;
+    border-width: 3px;
+    border-style: dotted solid double dashed;
+}
+
+#modal-box-profile .show-avatar .img-avatar .img-av {
+    width: 180px;
+    height: 180px;
+    padding: 10px 10px 5px 5px;
+    background-size: cover;
+    background-position: center center;
+}
+
+#modal-box-profile .show-avatar .img-avatar .avatar-group {
+    clear: both;
+    text-decoration: none;
+    text-align: center;
+    color: dimgrey;
+    font-size: medium;
+}
+
+#modal-box-profile .box-show-info {
+    float: left;
+    margin-left: 25px;
+    width: calc(69% - 25px);
+
+}
+
+#modal-box-profile .info-profile {
+    padding-left: 25px;
+}
+
+#modal-box-profile .info-profile .data-show-label {
+    list-style: none;
+    padding: 1px 2px;
+}
+
+#modal-box-profile .data-show-label .title-name {
+    font-size: inherit;
+    font-weight: bold;
+    font-size: 16px;
+    text-transform: lowercase;
+}
+
+#modal-box-profile .data-show-label .title-name:first-letter {
+    text-transform: uppercase;
+}
+
+#modal-box-profile .act-box {
+    display: block;
+    clear: both;
+    text-align: right;
+}
+
+#cancel-box {
+    clear: both;
+}
+
+#modal-box-profile .modal-footer {
+    padding: 7px 15px 5px 15px;
+}
+
+#modal-box-profile hr {
+    margin: 2px;
+    height: 1px;
+    background: #123455;
+}
+
+/*-------------------------------E Box Show information--------------------------------*/
+
+/*-------------------------------S Emoji --------------------------------*/
+
+.emoji-mart, .emoji-mart * {
+    box-sizing: border-box;
+    line-height: 1.15;
+}
+
+.emoji-mart {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+    font-size: 16px;
+    display: inline-block;
+    color: #222427;
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.emoji-mart {
+    text-align: left;
+}
+
+.emoji-mart-bar {
+    border: 0 solid #d9d9d9;
+}
+
+.emoji-mart-bar:first-child {
+    border-bottom-width: 1px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.emoji-mart-anchors {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 6px;
+    color: #858585;
+    line-height: 0;
+}
+
+.emoji-mart-anchor {
+    position: relative;
+    display: block;
+    flex: 1 1 auto;
+    text-align: center;
+    padding: 12px 4px;
+    overflow: hidden;
+    transition: color .1s ease-out;
+}
+
+.emoji-mart-anchors svg {
+    fill: currentColor;
+    max-height: 18px;
+}
+
+.emoji-mart-anchor-bar {
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #464646;
+}
+
+.emoji-mart-anchor-selected .emoji-mart-anchor-bar {
+    bottom: 0;
+}
+
+.emoji-mart-search {
+    margin-top: 6px;
+    padding: 0 6px;
+}
+
+.emoji-mart-search input {
+    font-size: 16px;
+    display: block;
+    width: 100%;
+    padding: .2em .6em;
+    border-radius: 25px;
+    border: 1px solid #d9d9d9;
+    outline: 0;
+}
+
+.emoji-mart-no-results {
+    font-size: 14px;
+    text-align: center;
+    padding-top: 70px;
+    color: #858585;
+}
+
+.emoji-mart-scroll {
+    overflow-y: scroll;
+    height: 200px;
+    padding: 0 6px 6px 6px;
+    will-change: transform;
+}
+
+.emoji-mart-category-label {
+    z-index: 2;
+    position: relative;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+}
+
+.emoji-mart-category-label span {
+    display: block;
+    width: 100%;
+    font-weight: 500;
+    padding: 5px 6px;
+    background-color: #fff;
+    background-color: rgba(255, 255, 255, .95);
+}
+
+.emoji-mart-emoji {
+    position: relative;
+    display: inline-block;
+    font-size: 0;
+}
+
+.emoji-mart .emoji-mart-emoji {
+    padding: 6px;
+}
+
+.emoji-mart-bar {
+    border: 0 solid #d9d9d9;
+}
+
+.emoji-mart-bar:last-child {
+    border-top-width: 1px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.emoji-mart-preview {
+    position: relative;
+    height: 70px;
+}
+
+.emoji-mart-preview-emoji, .emoji-mart-preview-data, .emoji-mart-preview-skins {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.emoji-mart-preview-emoji {
+    left: 12px;
+}
+
+.emoji-mart-emoji {
+    position: relative;
+    display: inline-block;
+    font-size: 0;
+}
+
+.emoji-mart .emoji-mart-emoji {
+    padding: 3px;
+}
+
+.emoji-mart-preview-emoji, .emoji-mart-preview-data, .emoji-mart-preview-skins {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.emoji-mart-preview-data {
+    left: 68px;
+    right: 12px;
+    word-break: break-all;
+}
+
+.emoji-mart-preview-name {
+    font-size: 14px;
+}
+
+.emoji-mart-preview-shortname {
+    font-size: 12px;
+    color: #888;
+}
+
+/*-------------------------------S shortcut --------------------------------*/
+
+.mr-block {
+    margin-top: 20px;
+}
+
+.mr-t20 {
+    margin-top: 20px;
+}
+
+.mr-r20 {
+    margin-right: 20px;
+}
+
+.mr-b20 {
+    margin-bottom: 20px;
+}
+
+.mr-l20 {
+    margin-left: 20px;
+}
+
+.pd-t20 {
+    padding-top: 20px;
+}
+
+.pd-r20 {
+    padding-right: 20px;
+}
+
+.pd-b20 {
+    padding-bottom: 20px;
+}
+
+.pd-l20 {
+    padding-left: 20px;
+}
