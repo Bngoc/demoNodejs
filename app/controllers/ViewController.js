@@ -6,11 +6,12 @@ var path = require('path'),
 const CoreHelper = require(path.join(__dirname, '/../../config/CoreHelper.js'));
 const coreHelper = new CoreHelper();
 const bundles = require(`${coreHelper.paths.ROOT}bundles.json`);
+const config = require('config');
 
 
 function ViewController() {
     this.getVersion = coreHelper.package.version;
-    this.title = "Welcome to " + coreHelper.sampleConfig.domain.host;
+    this.title = "Welcome to " + config.domain.host;
 
     this.metaCommonNotEdit = ' ';
     this.metaInclude = ' ';
@@ -63,7 +64,7 @@ ViewController.prototype.footer = function (sampleHtmlMaster = 'sss') {
 class View extends ViewController {
     constructor() {
         super();
-        var isWeb = coreHelper.sampleConfig.WEB ? 'main' : 'admin_main';
+        var isWeb = config.WEB ? 'main' : 'admin_main';
 
         this.metaCommonNotEdit = this.readFileInclude(bundles.meta[isWeb], 'o');
         this.cssCommonNotEdit = this.readFileInclude(bundles.styles[isWeb].files, 'c');

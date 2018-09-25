@@ -3,6 +3,7 @@
 const MySQL = require("mysql");
 const pg = require('pg');
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const app = express();
 const sampleRequirePaths = require('./../config/paths.js');
 const paths = new sampleRequirePaths();
@@ -21,7 +22,7 @@ function CoreHelper() {
 
     this.paths = paths;
 
-    this.sampleConfig = config;
+    // this.config = config;
 
     this.getConfigInfoDb = function () {
         try {
@@ -88,7 +89,7 @@ function CoreHelper() {
 
     this.runServer = function () {
         var server = this.callModule(`${paths.CONFIG}/server.js`, true);
-        var createServer = server.createServer(app, {paths: paths, config: sampleConfig});
+        var createServer = server.createServer(app, {paths: paths, config: config});
         return createServer;
     };
 
@@ -133,6 +134,25 @@ function CoreHelper() {
             console.log(`The file ${reqData.path} was saved!`);
             callback(null, true);
         });
+    }
+
+    this.verifyTokenAndDecode = function (authorization, callback) {
+        try {
+            let token = authorization.split(" ");
+            if (typeof authorization !== 'undefined' && token[0] === 'Bearer') {
+                jwt.verify(token[1], config.APP_SECRET, (err, decoded) => {
+                    if (err) {
+                        callback(err)
+                    } else {
+                        callback(null, decoded)
+                    }
+                });
+            } else {
+                callback(true)
+            }
+        } catch (ex) {
+            callback(ex)
+        }
     }
 }
 

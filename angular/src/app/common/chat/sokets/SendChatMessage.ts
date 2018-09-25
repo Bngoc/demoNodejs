@@ -7,6 +7,7 @@ import {ShowContentChat} from "../supports/ShowContentChat";
 import {ShowProfileParticipantChat} from "../supports/ShowProfileParticipantChat";
 import {MenuInfoChat} from "../supports/MenuInfoChat";
 import {EmojiHtmlChat} from "../supports/EmojiHtmlChat";
+import {AuthService} from "../../../services/auth/auth.service";
 
 declare var jQuery: any;
 declare var $: any;
@@ -495,7 +496,8 @@ export class SendChatMessage extends libSupports {
                 dataOwnerID: request.hasOwnProperty('dataOwnerID') && request.dataOwnerID ? request.dataOwnerID : null,
                 dataConversation: request.hasOwnProperty('dataConversation') && request.dataConversation ? request.dataConversation : null,
                 valAuthor: request.hasOwnProperty('valAuthor') && request.valAuthor ? request.valAuthor : null,
-                _method: 'POST'
+                _method: 'POST',
+                currentUserID: AuthService.decodeToken()['wft90'].users_id
             }
         };
 

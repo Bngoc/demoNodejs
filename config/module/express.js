@@ -27,7 +27,9 @@ const sessionStore = new session.MemoryStore();
 const env = process.env.NODE_ENV || 'development';
 // Cors
 const cors = require('cors');
-
+const connectRedis = require('connect-redis')(session);
+const config = require('config');
+const jwt = require('jsonwebtoken');
 
 class Express {
 
@@ -42,12 +44,14 @@ class Express {
         app.set("layout extractStyles", false);
         app.set("layout extractMetas", true);
         app.set("layout extractTitles", true);
-        app.set('port', coreHelper.sampleConfig.domain.port);
+        app.set('port', config.domain.port);
         app.set('view options', {layout: 'layouts/master'});
         // app.set('path_model', paths.models);
         app.use(expressLayouts);
 
         app.use(logger('dev'));
+
+        // Cookies.
         app.use(bodyParser.urlencoded({extended: true}));
         app.use(bodyParser.json());
         app.use(bodyParser.text({type: 'text/html'}));
@@ -68,7 +72,7 @@ class Express {
 
             next();
         });
-        // app.use(cors());
+
         app.use(cors({
             origin: '*',
             credentials: false,
@@ -102,30 +106,58 @@ class Express {
             kickTimesBeforeBan: 2,          // User gets banned after this many kicks
             banning: true,                  // Uses temp IP banning after kickTimesBeforeBan
             io: ioSocket,                   // Bind the socket.io variable
-            // redis: client                // Redis client if you are sharing multiple servers
+            //redis: client                // Redis client if you are sharing multiple servers
         });
 
-        ioSocket.set('origins', ':');
-        ioSocket.set('transports', ['websocket', 'flashsocket', 'htmlfile', 'xhr-polling', 'jsonp-polling']);
+        ioSocket.set('origins', '*:*');
+        ioSocket.use(function (socket, next) {
+            if (socket.handshake.query && socket.handshake.query.token) {
+                jwt.verify(socket.handshake.query.token, config.APP_SECRET, function (err, decoded) {
+                    if (err) return next(new Error('Authentication error'));
+                    socket.socketUserID = (decoded.wft90 && decoded.wft90.users_id) ? decoded.wft90.users_id : null;
+                    socket.decodeToken = decoded;
+                    next();
+                });
+            } else {
+                next(new Error('Authentication error'));
+            }
+        });
+
         callback(ioSocket, socketAntiSpam);
     }
 
     //https secure: true,
-    configSession(app, coreHelper) {
+    configSession(app, isSocket = false) {
+        const dbSession = new connectRedis({
+            client: client,
+            host: config.domain.host,
+            port: config.domain.port,
+            prefix: config.domain.prefix,
+            disableTTL: true
+        });
+
+        // Session.
         let sessionConfig = session({
-            secret: coreHelper.sampleConfig.APP_SECRET,
-            name: coreHelper.sampleConfig.APP_KEY,
-            store: sessionStore,
+            secret: config.APP_SECRET,
+            name: config.APP_KEY,
+            store: dbSession,
+            // store: sessionStore,
             saveUninitialized: true,
             resave: false,
             cookie: {
-                secure: coreHelper.sampleConfig.domain.ssl,
+                secure: config.domain.ssl,
                 httpOnly: true,
-                maxAge: coreHelper.sampleConfig.domain.maxAge * 1000,
+                maxAge: config.domain.maxAge * 1000,
             }
         });
-        app.use(cookieParser(coreHelper.sampleConfig.APP_SECRET));
+
+        if (isSocket) {
+
+        }
+        app.use(cookieParser(config.APP_SECRET));
         app.use(sessionConfig);
+
+        // Passport.
         app.use(passport.initialize());
         app.use(passport.session());
         app.use(flash());

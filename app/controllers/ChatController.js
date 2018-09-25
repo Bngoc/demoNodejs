@@ -77,7 +77,8 @@ const messageType = helper.coreHelper.app.messageType;
 const conversationType = helper.coreHelper.app.participants;
 const cfgChat = helper.coreHelper.app.cfg_chat;
 const typeMsgSwapKeyValue = libFunction.swap(messageType);
-
+const redis = require("redis");
+const redisClient = redis.createClient({detect_buffers: true});
 
 class ChatController extends BaseController {
 
@@ -397,65 +398,79 @@ class ChatController extends BaseController {
         try {
             var showResponse = {};
             const aliasRouter = helper.coreHelper.aliasRouter();
-            let userCurrent = 12;
-            // let userCurrent = req.user;
 
-            if (userCurrent) {
-                let requestSql = {
-                    userCurrentID: 12,
-                    // userCurrentID: userCurrent.attributes.id,
-                    conversationType: Object.keys(conversationType).map(function (k) {
-                        return conversationType[k]
-                    })
-                };
-                var newUser = new User.class({});
-                newUser.findByIdChat(requestSql, function (err, rsData) {
-                    if (err) {
-                        res.sendStatus(403);
-                    }
+            helper.coreHelper.verifyTokenAndDecode((req.headers.authorization || ''), (errToken, userCurrent) => {
+                if (!errToken) {
+                    // let userCurrent = 12;
+                    // let userCurrent = req.user;
+                    // console.log('req.user', userCurrent.wft90['users_id'], req.headers.authorization);
 
-                    let notiContacts = rsData.infoAccount.relations.useContacts;
-                    let statusID = notiContacts.attributes.status;
-                    let requestCurrent = {
-                        userCurrentID: 12,
+                    let requestSql = {
+                        userCurrentID: userCurrent.wft90['users_id'],
                         // userCurrentID: userCurrent.attributes.id,
-                        statusID: statusID,
-                        statusName: chatStatus[statusID],
-                        listStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
-                        statusSingle: cfgChat.status_single,
-                        infoAccount: rsData.infoAccount,
-                        classCurrentStatus: (cfgChat.status_hidden_name == chatStatus[statusID] ? cfgChat.status_hidden_name_replace : chatStatus[statusID]),
+                        conversationType: Object.keys(conversationType).map(function (k) {
+                            return conversationType[k]
+                        })
                     };
-                    // save session - share socket io
-                    req.session.currentStatus = requestCurrent;
-                    req.session.isLife = notiContacts ? (notiContacts.attributes.is_life == 1) : false;
-                    req.session.infoParticipant = rsData.infoParticipant;
+                    var newUser = new User.class({});
+                    newUser.findByIdChat(requestSql, function (err, rsData) {
+                        if (err) {
+                            res.sendStatus(403);
+                        }
 
-                    let statusUser = chatStatus[notiContacts.attributes.status];
-                    showResponse.userName = notiContacts ? notiContacts.attributes.middle_name : '';
-                    showResponse.classStatusCurrent = (statusUser != cfgChat.status_hidden_name) ? statusUser : cfgChat.status_hidden_name_replace;
-                    showResponse.moodMessage = notiContacts ? notiContacts.attributes.mood_message : '';
-                    showResponse.userID = notiContacts ? notiContacts.attributes.id : '';
-                    showResponse.status = notiContacts ? statusUser : '';
-                    showResponse.listStatus = chatStatus;
-                    showResponse.urlChangeContent = aliasRouter.build('api.chat.content.chat');
-                    showResponse.urlListContact = aliasRouter.build('api.chat.list.contact');
-                    showResponse.pathImgCurrent = notiContacts.get('path_img') ? notiContacts.get('path_img') : cfgChat.img_single_user;
+                        let notiContacts = rsData.infoAccount.relations.useContacts;
+                        let statusID = notiContacts.attributes.status;
+                        let requestCurrent = {
+                            userCurrentID: userCurrent.wft90['users_id'],
+                            // userCurrentID: userCurrent.attributes.id,
+                            statusID: statusID,
+                            statusName: chatStatus[statusID],
+                            listStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
+                            statusSingle: cfgChat.status_single,
+                            infoAccount: rsData.infoAccount,
+                            classCurrentStatus: (cfgChat.status_hidden_name == chatStatus[statusID] ? cfgChat.status_hidden_name_replace : chatStatus[statusID]),
+                        };
 
-                    let option = {
-                        isSearch: false,
-                        valSearch: null,
-                        cfg_chat: helper.coreHelper.app
-                    };
-                    showResponse.dataContactList = JSON.stringify(libFunction.renderContactListAll(rsData.infoParticipant, option), true);
-                    supportApiIndexChat.data = showResponse;
-                    res.status(200).send(supportApiIndexChat);
-                });
-            } else {
-                supportApiIndexChat.err = 'ERR0001';
-                supportApiIndexChat.msg = 'Need login before use chat';
-                res.status(400).send(supportApiIndexChat);
-            }
+                        // console.log(req.session, 'req.session')
+                        // save session - share socket io by Redis
+                        // redisClient.set("authorizationToken", (req.headers.authorization || ''));
+
+                        // redisClient.set("foo_rand000000000000", "OK");
+                        redisClient.set("currentStatus", JSON.stringify(requestCurrent));
+                        redisClient.set("isLife", (notiContacts ? (notiContacts.attributes.is_life == 1) : false));
+                        redisClient.set("infoParticipant", JSON.stringify(rsData.infoParticipant));
+
+                        // save session - share socket io by Cookie
+                        req.session.currentStatus = requestCurrent;
+                        req.session.isLife = notiContacts ? (notiContacts.attributes.is_life == 1) : false;
+                        req.session.infoParticipant = rsData.infoParticipant;
+
+                        let statusUser = chatStatus[notiContacts.attributes.status];
+                        showResponse.userName = notiContacts ? notiContacts.attributes.middle_name : '';
+                        showResponse.classStatusCurrent = (statusUser != cfgChat.status_hidden_name) ? statusUser : cfgChat.status_hidden_name_replace;
+                        showResponse.moodMessage = notiContacts ? notiContacts.attributes.mood_message : '';
+                        showResponse.userID = notiContacts ? notiContacts.attributes.id : '';
+                        showResponse.status = notiContacts ? statusUser : '';
+                        showResponse.listStatus = chatStatus;
+                        showResponse.urlChangeContent = aliasRouter.build('api.chat.content.chat');
+                        showResponse.urlListContact = aliasRouter.build('api.chat.list.contact');
+                        showResponse.pathImgCurrent = notiContacts.get('path_img') ? notiContacts.get('path_img') : cfgChat.img_single_user;
+
+                        let option = {
+                            isSearch: false,
+                            valSearch: null,
+                            cfg_chat: helper.coreHelper.app
+                        };
+                        showResponse.dataContactList = JSON.stringify(libFunction.renderContactListAll(rsData.infoParticipant, option), true);
+                        supportApiIndexChat.data = showResponse;
+                        res.status(200).send(supportApiIndexChat);
+                    });
+                } else {
+                    supportApiIndexChat.err = 'ERR0001';
+                    supportApiIndexChat.msg = 'Need login before use chat';
+                    res.status(400).send(supportApiIndexChat);
+                }
+            });
         } catch (ex) {
             supportApiIndexChat.err = 'ERR0010';
             supportApiIndexChat.msg = ex;
@@ -465,7 +480,8 @@ class ChatController extends BaseController {
 
     postApiContentChat(req, res) {
         var showResponseChat = {};
-        let userCurrent = 12;
+        // let userCurrent = 12;
+
         // let userCurrent = req.user;
         req.session.dataChannelID = null;
         try {
@@ -474,173 +490,177 @@ class ChatController extends BaseController {
                 actionAddContact: aliasRouter.build('api.chat.add.contacts'),
                 actionAcceptContact: aliasRouter.build('api.chat.accept.contacts')
             };
+            helper.coreHelper.verifyTokenAndDecode((req.headers.authorization || ''), (errToken, userCurrent) => {
+                if (errToken) return;
 
-            showResponseChat.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX + FIX_HEIGHT_BOX_CHAT_BST3;
-            showResponseChat.maxHeightInputBoxChat = HEIGHT_INPUT_BOX_MAX + FIX_HEIGHT_BOX_CHAT_BST3;
-            showResponseChat.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN + FIX_HEIGHT_BOX_CHAT_BST3;
-            showResponseChat.page = 1;
-            showResponseChat.userName = req.body.userName;
-            showResponseChat.hexCodeId = 12 ? 'hex-' + 12 : null;
-            // showResponseChat.hexCodeId = userCurrent.attributes.id ? 'hex-' + userCurrent.attributes.id : null;
-            // let chatController = new ChatController();
+                showResponseChat.maxHeightBoxChat = HEIGHT_BOX_CHAT_MAX + FIX_HEIGHT_BOX_CHAT_BST3;
+                showResponseChat.maxHeightInputBoxChat = HEIGHT_INPUT_BOX_MAX + FIX_HEIGHT_BOX_CHAT_BST3;
+                showResponseChat.minHeightBoxChat = HEIGHT_BOX_CHAT_MIN + FIX_HEIGHT_BOX_CHAT_BST3;
+                showResponseChat.page = 1;
+                showResponseChat.userName = req.body.userName;
+                showResponseChat.hexCodeId = userCurrent.wft90['users_id'] ? 'hex-' + userCurrent.wft90['users_id'] : null;
+                // showResponseChat.hexCodeId = userCurrent.attributes.id ? 'hex-' + userCurrent.attributes.id : null;
+                // let chatController = new ChatController();
 
-            if (parseInt(req.body.dataConversation) && userCurrent) {
-                let conversation = new Conversation.class();
-                let optionRequest = {
-                    id: parseInt(req.body.dataConversation),
-                    userCurrentID: 12,
-                    // userCurrentID: userCurrent.attributes.id,
-                    userModel: User.model,
-                    statusSingle: cfgChat.status_single
-                };
+                if (parseInt(req.body.dataConversation) && userCurrent) {
+                    let conversation = new Conversation.class();
+                    let optionRequest = {
+                        id: parseInt(req.body.dataConversation),
+                        userCurrentID: userCurrent.wft90['users_id'],
+                        // userCurrentID: userCurrent.attributes.id,
+                        userModel: User.model,
+                        statusSingle: cfgChat.status_single
+                    };
 
-                conversation.conversationsListSingleUser(optionRequest, function (errPart, modelListUser) {
-                    if (errPart) {
-                        res.sendStatus(403);
-                    }
-
-                    let listUserParticipant = modelListUser.map(function (listUser) {
-                        return {
-                            codePartId: listUser.get('id'),
-                            usersId: listUser.get('users_id'),
-                            is_accept_single: listUser.get('is_accept_single'),
-                            is_accept_group: listUser.get('is_accept_group'),
-                            channelId: listUser.relations.parConversation.get('channel_id'),
-                            conversationID: listUser.get('conversation_id')
-                        };
-                    });
-
-                    conversation.conversationsListUser(optionRequest, function (err, infoConversation) {
-                        if (err) {
+                    conversation.conversationsListSingleUser(optionRequest, function (errPart, modelListUser) {
+                        if (errPart) {
                             res.sendStatus(403);
                         }
-                        infoConversation.forEach(function (elem) {
-                            showResponseChat.dataType = elem.type;
-                            showResponseChat.dataChannelId = elem.channel_id;
-                            showResponseChat.dataOwnerId = elem.creator_id;
-                            showResponseChat.isCurrentOwnerId = elem.creator_id == 12;
-                            // showResponseChat.isCurrentOwnerId = elem.creator_id == userCurrent.attributes.id;
-                            showResponseChat.dataConversation = elem.idConversation;
-                            showResponseChat.countParticipants = elem.count;
-                            showResponseChat.isTypeSingle = showResponseChat.dataType == cfgChat.status_single;
-                            showResponseChat.is_accept = elem.is_accept_single;
-                            showResponseChat.hiddenStatusName = cfgChat.status_hidden_name;
-                            showResponseChat.replaceStatusName = cfgChat.status_hidden_name_replace;
 
-                            let urlImagesAvatar = "";
-                            let listParticipant = [];
-                            if (showResponseChat.isTypeSingle) {
-                                let eleSingle = elem.infoParticipant;
-                                let useContactsSingle = eleSingle.relations.useContacts;
-                                let indexFindUserSingle = listUserParticipant.findIndex(x => x.usersId == useContactsSingle.get('users_id'));
-                                let moodMessageTemp = "";
-                                let tempClassStatus = "";
-                                let tempChatStatusName = chatStatus[useContactsSingle.get('status')];
-                                if (elem.is_accept_single) {
-                                    moodMessageTemp = showResponseChat.isCurrentOwnerId ? cfgChat.mood_message_request : cfgChat.mood_message_responsive;
-                                    tempClassStatus = cfgChat.class_undefined;
-                                } else {
-                                    if (useContactsSingle.get('mood_message')) {
-                                        moodMessageTemp = useContactsSingle.get('mood_message');
-                                    } else {
-                                        moodMessageTemp = (tempChatStatusName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusName;
-                                    }
-                                    tempClassStatus = (tempChatStatusName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusName;
-                                }
-                                let optionRender = {
-                                    eleSingle: eleSingle,
-                                    strListStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
-                                    moodMessageTemp: moodMessageTemp,
-                                    tempClassStatus: tempClassStatus,
-                                    indexFindUserSingle: indexFindUserSingle,
-                                    tempChatStatusName: tempChatStatusName
-                                };
-                                let tempPartSingle = libFunction.renderDataContentChat(useContactsSingle, optionRender, listUserParticipant);
-
-                                showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
-                                listParticipant.push(tempPartSingle);
-                                urlImagesAvatar = useContactsSingle.get('path_img') ? useContactsSingle.get('path_img') : cfgChat.img_single_user;
-                                tempPartSingle.urlImagesAvatarSingle = urlImagesAvatar;
-                            } else {
-                                elem.infoParticipant.forEach(function (ele) {
-                                    let relationsUseContacts = ele.relations.useContacts;
-                                    let indexFindUser = listUserParticipant.findIndex(x => x.usersId == relationsUseContacts.get('users_id'));
-                                    let booleanFindUser = (indexFindUser !== -1);
-                                    let tempChatStatusGroupName = chatStatus[relationsUseContacts.get('status')];
-                                    let tempClassStatusGroup = "";
-                                    let tempMoodMessageGroup = "";
-                                    let isFriendCurrent = booleanFindUser ? (listUserParticipant[indexFindUser].is_accept_single != 1) : false;
-
-                                    if (booleanFindUser) {
-                                        if (relationsUseContacts.get('mood_message')) {
-                                            tempMoodMessageGroup = relationsUseContacts.get('mood_message');
-                                        } else {
-                                            tempMoodMessageGroup = (tempChatStatusGroupName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusGroupName;
-                                        }
-                                        tempClassStatusGroup = isFriendCurrent ? ((tempChatStatusGroupName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusGroupName) : cfgChat.class_undefined;
-                                    } else {
-                                        tempMoodMessageGroup = showResponseChat.isCurrentOwnerId ? cfgChat.mood_message_request : cfgChat.mood_message_responsive;
-                                        tempClassStatusGroup = cfgChat.class_undefined;
-                                    }
-
-                                    let optionRender = {
-                                        eleSingle: ele,
-                                        strListStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
-                                        moodMessageTemp: tempMoodMessageGroup,
-                                        tempClassStatus: tempClassStatusGroup,
-                                        indexFindUserSingle: indexFindUser,
-                                        tempChatStatusName: tempChatStatusGroupName
-                                    };
-                                    let tempPartGroup = libFunction.renderDataContentChat(relationsUseContacts, optionRender, listUserParticipant);
-                                    tempPartGroup.urlImagesAvatarSingle = relationsUseContacts.get('path_img') ? relationsUseContacts.get('path_img') : cfgChat.img_single_user;
-                                    listParticipant.push(tempPartGroup);
-                                    urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : cfgChat.img_group_user;
-                                });
-
-                                showResponseChat.isFriendCurrentSingle = true;
-                            }
-
-                            showResponseChat.listParticipant = listParticipant;
-                            showResponseChat.urlImagesAvatar = urlImagesAvatar;
-                            showResponseChat.booleanConversation = true;
+                        let listUserParticipant = modelListUser.map(function (listUser) {
+                            return {
+                                codePartId: listUser.get('id'),
+                                usersId: listUser.get('users_id'),
+                                is_accept_single: listUser.get('is_accept_single'),
+                                is_accept_group: listUser.get('is_accept_group'),
+                                channelId: listUser.relations.parConversation.get('channel_id'),
+                                conversationID: listUser.get('conversation_id')
+                            };
                         });
 
-                        res.status(200).send(showResponseChat);
+                        conversation.conversationsListUser(optionRequest, function (err, infoConversation) {
+                            if (err) {
+                                res.sendStatus(403);
+                            }
+                            infoConversation.forEach(function (elem) {
+                                showResponseChat.dataType = elem.type;
+                                showResponseChat.dataChannelId = elem.channel_id;
+                                showResponseChat.dataOwnerId = elem.creator_id;
+                                showResponseChat.isCurrentOwnerId = elem.creator_id == userCurrent.wft90['users_id'];
+                                // showResponseChat.isCurrentOwnerId = elem.creator_id == userCurrent.attributes.id;
+                                showResponseChat.dataConversation = elem.idConversation;
+                                showResponseChat.countParticipants = elem.count;
+                                showResponseChat.isTypeSingle = showResponseChat.dataType == cfgChat.status_single;
+                                showResponseChat.is_accept = elem.is_accept_single;
+                                showResponseChat.hiddenStatusName = cfgChat.status_hidden_name;
+                                showResponseChat.replaceStatusName = cfgChat.status_hidden_name_replace;
+
+                                let urlImagesAvatar = "";
+                                let listParticipant = [];
+                                if (showResponseChat.isTypeSingle) {
+                                    let eleSingle = elem.infoParticipant;
+                                    let useContactsSingle = eleSingle.relations.useContacts;
+                                    let indexFindUserSingle = listUserParticipant.findIndex(x => x.usersId == useContactsSingle.get('users_id'));
+                                    let moodMessageTemp = "";
+                                    let tempClassStatus = "";
+                                    let tempChatStatusName = chatStatus[useContactsSingle.get('status')];
+                                    if (elem.is_accept_single) {
+                                        moodMessageTemp = showResponseChat.isCurrentOwnerId ? cfgChat.mood_message_request : cfgChat.mood_message_responsive;
+                                        tempClassStatus = cfgChat.class_undefined;
+                                    } else {
+                                        if (useContactsSingle.get('mood_message')) {
+                                            moodMessageTemp = useContactsSingle.get('mood_message');
+                                        } else {
+                                            moodMessageTemp = (tempChatStatusName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusName;
+                                        }
+                                        tempClassStatus = (tempChatStatusName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusName;
+                                    }
+                                    let optionRender = {
+                                        eleSingle: eleSingle,
+                                        strListStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
+                                        moodMessageTemp: moodMessageTemp,
+                                        tempClassStatus: tempClassStatus,
+                                        indexFindUserSingle: indexFindUserSingle,
+                                        tempChatStatusName: tempChatStatusName
+                                    };
+                                    let tempPartSingle = libFunction.renderDataContentChat(useContactsSingle, optionRender, listUserParticipant);
+
+                                    showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
+                                    listParticipant.push(tempPartSingle);
+                                    urlImagesAvatar = useContactsSingle.get('path_img') ? useContactsSingle.get('path_img') : cfgChat.img_single_user;
+                                    tempPartSingle.urlImagesAvatarSingle = urlImagesAvatar;
+                                } else {
+                                    elem.infoParticipant.forEach(function (ele) {
+                                        let relationsUseContacts = ele.relations.useContacts;
+                                        let indexFindUser = listUserParticipant.findIndex(x => x.usersId == relationsUseContacts.get('users_id'));
+                                        let booleanFindUser = (indexFindUser !== -1);
+                                        let tempChatStatusGroupName = chatStatus[relationsUseContacts.get('status')];
+                                        let tempClassStatusGroup = "";
+                                        let tempMoodMessageGroup = "";
+                                        let isFriendCurrent = booleanFindUser ? (listUserParticipant[indexFindUser].is_accept_single != 1) : false;
+
+                                        if (booleanFindUser) {
+                                            if (relationsUseContacts.get('mood_message')) {
+                                                tempMoodMessageGroup = relationsUseContacts.get('mood_message');
+                                            } else {
+                                                tempMoodMessageGroup = (tempChatStatusGroupName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusGroupName;
+                                            }
+                                            tempClassStatusGroup = isFriendCurrent ? ((tempChatStatusGroupName == cfgChat.status_hidden_name) ? cfgChat.status_hidden_name_replace : tempChatStatusGroupName) : cfgChat.class_undefined;
+                                        } else {
+                                            tempMoodMessageGroup = showResponseChat.isCurrentOwnerId ? cfgChat.mood_message_request : cfgChat.mood_message_responsive;
+                                            tempClassStatusGroup = cfgChat.class_undefined;
+                                        }
+
+                                        let optionRender = {
+                                            eleSingle: ele,
+                                            strListStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
+                                            moodMessageTemp: tempMoodMessageGroup,
+                                            tempClassStatus: tempClassStatusGroup,
+                                            indexFindUserSingle: indexFindUser,
+                                            tempChatStatusName: tempChatStatusGroupName
+                                        };
+                                        let tempPartGroup = libFunction.renderDataContentChat(relationsUseContacts, optionRender, listUserParticipant);
+                                        tempPartGroup.urlImagesAvatarSingle = relationsUseContacts.get('path_img') ? relationsUseContacts.get('path_img') : cfgChat.img_single_user;
+                                        listParticipant.push(tempPartGroup);
+                                        urlImagesAvatar = relationsUseContacts.get('path_img_group') ? relationsUseContacts.get('path_img_group') : cfgChat.img_group_user;
+                                    });
+
+                                    showResponseChat.isFriendCurrentSingle = true;
+                                }
+
+                                showResponseChat.listParticipant = listParticipant;
+                                showResponseChat.urlImagesAvatar = urlImagesAvatar;
+                                showResponseChat.booleanConversation = true;
+                            });
+
+                            res.status(200).send(showResponseChat);
+                        });
                     });
-                });
-            } else if ((req.body.dataConversation === "" || req.body.dataConversation === 'null' || req.body.dataConversation == null)
-                && parseInt(req.body.valAuthor) && userCurrent) {
-                // NOT FRIEND AND NOT REQUEST
-                let user = new User.class();
-                user.findUserFullById(parseInt(req.body.valAuthor), function (err, modelUser) {
-                    if (err) {
-                        return res.sendStatus(403);
-                    }
-                    let listParticipant = [];
-                    let useContacts = modelUser.relations.useContacts;
-                    showResponseChat.classStatus = cfgChat.class_undefined;
-                    showResponseChat.moodMessageShow = cfgChat.mood_message_request;
-                    showResponseChat.urlImagesAvatar = useContacts.get('path_img') ? useContacts.get('path_img') : cfgChat.img_single_user;
-                    showResponseChat.isFriendCurrentSingle = false;
-                    showResponseChat.booleanConversation = false;
+                } else if ((req.body.dataConversation === "" || req.body.dataConversation === 'null' || req.body.dataConversation == null)
+                    && parseInt(req.body.valAuthor) && userCurrent) {
+                    // NOT FRIEND AND NOT REQUEST
+                    let user = new User.class();
+                    user.findUserFullById(parseInt(req.body.valAuthor), function (err, modelUser) {
+                        if (err) {
+                            return res.sendStatus(403);
+                        }
+                        let listParticipant = [];
+                        let useContacts = modelUser.relations.useContacts;
+                        showResponseChat.classStatus = cfgChat.class_undefined;
+                        showResponseChat.moodMessageShow = cfgChat.mood_message_request;
+                        showResponseChat.urlImagesAvatar = useContacts.get('path_img') ? useContacts.get('path_img') : cfgChat.img_single_user;
+                        showResponseChat.isFriendCurrentSingle = false;
+                        showResponseChat.booleanConversation = false;
 
-                    let optionRenderNotFriend = {
-                        strListStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
-                        moodMessageTemp: cfgChat.mood_message_request,
-                        tempClassStatus: cfgChat.class_undefined,
-                    };
-                    let tempPartSingle = libFunction.renderDataContentChat(useContacts, optionRenderNotFriend);
-                    tempPartSingle.urlImagesAvatarSingle = showResponseChat.urlImagesAvatar;
-                    listParticipant.push(tempPartSingle);
+                        let optionRenderNotFriend = {
+                            strListStatus: libFunction.joinListClassChat(chatStatus, [cfgChat.class_undefined]),
+                            moodMessageTemp: cfgChat.mood_message_request,
+                            tempClassStatus: cfgChat.class_undefined,
+                        };
+                        let tempPartSingle = libFunction.renderDataContentChat(useContacts, optionRenderNotFriend);
+                        tempPartSingle.urlImagesAvatarSingle = showResponseChat.urlImagesAvatar;
+                        listParticipant.push(tempPartSingle);
 
-                    showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
-                    showResponseChat.listParticipant = listParticipant;
-                    return res.status(200).send(showResponseChat);
-                });
-            } else {
-                return res.status(403).send('ERR');
-            }
-        } catch (ex) {
+                        showResponseChat.isFriendCurrentSingle = tempPartSingle.isFriendCurrent;
+                        showResponseChat.listParticipant = listParticipant;
+                        return res.status(200).send(showResponseChat);
+                    });
+                } else {
+                    return res.status(403).send('ERR');
+                }
+            });
+        }
+        catch (ex) {
             return res.status(403).send('ERR');
         }
     }
@@ -648,66 +668,69 @@ class ChatController extends BaseController {
     postApiListContact(req, res) {
         var showResponseChat = {data: [], option: {}, done: false, err: '', msg: ''};
         try {
-            if (12) {
-            // if (req.user) {
-                const aliasRouter = helper.coreHelper.aliasRouter();
-                let isAuthenticatesSingle = req.body.isAuthenticatesSingle === 'true';
-                let requestConversation = {
-                    userCurrentID: 12,
-                    // userCurrentID: req.user.attributes.id,
-                    conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
-                        return conversationType[k]
-                    })),
-                    isAuthenticatesSingle: isAuthenticatesSingle
-                };
-                let user = new User.class();
-                user.findByIdChat(requestConversation, function (errConversation, modelConversation) {
-                    if (errConversation) {
-                        return res.status(500).send(errConversation)
-                    } else {
-                        let tempModelConversation = modelConversation.infoParticipant;
-                        showResponseChat.option.dataUrlSearchAll = aliasRouter.build('api.chat.list.search.contacts.all');
-                        if (isAuthenticatesSingle === false) {
-                            let option = {
-                                isSearch: req.body.isSearch !== undefined ? req.body.isSearch === 'true' : false,
-                                valSearch: req.body.valSearch !== undefined ? req.body.valSearch : null,
-                                cfg_chat: helper.coreHelper.app
-                            };
-
-                            showResponseChat.data = libFunction.renderContactListAll(tempModelConversation, option);
-                            showResponseChat.done = true;
-                            showResponseChat.msg = 'success';
-
-                            return res.status(200).send(showResponseChat);
+            helper.coreHelper.verifyTokenAndDecode((req.headers.authorization || ''), (errToken, userCurrent) => {
+                if (!errToken) {
+                    // if (12) {
+                    // if (req.user) {
+                    const aliasRouter = helper.coreHelper.aliasRouter();
+                    let isAuthenticatesSingle = req.body.isAuthenticatesSingle === 'true';
+                    let requestConversation = {
+                        userCurrentID: userCurrent.wft90['users_id'],
+                        // userCurrentID: req.user.attributes.id,
+                        conversationType: (isAuthenticatesSingle ? [conversationType[0]] : Object.keys(conversationType).map(function (k) {
+                            return conversationType[k]
+                        })),
+                        isAuthenticatesSingle: isAuthenticatesSingle
+                    };
+                    let user = new User.class();
+                    user.findByIdChat(requestConversation, function (errConversation, modelConversation) {
+                        if (errConversation) {
+                            return res.status(500).send(errConversation)
                         } else {
-                            showResponseChat.option.isConversationSingle = isAuthenticatesSingle ? req.body.dataType === conversationType[0] : null;
+                            let tempModelConversation = modelConversation.infoParticipant;
+                            showResponseChat.option.dataUrlSearchAll = aliasRouter.build('api.chat.list.search.contacts.all');
+                            if (isAuthenticatesSingle === false) {
+                                let option = {
+                                    isSearch: req.body.isSearch !== undefined ? req.body.isSearch === 'true' : false,
+                                    valSearch: req.body.valSearch !== undefined ? req.body.valSearch : null,
+                                    cfg_chat: helper.coreHelper.app
+                                };
 
-                            let option = {single: conversationType[0], cfg_chat: helper.coreHelper.app};
-                            let dataResult = libFunction.getListContactSingle(tempModelConversation, option);
-                            dataResult.sort(function (a, b) {
-                                return a.created_at - b.created_at;
-                            });
+                                showResponseChat.data = libFunction.renderContactListAll(tempModelConversation, option);
+                                showResponseChat.done = true;
+                                showResponseChat.msg = 'success';
 
-                            showResponseChat.data = dataResult;
-                            showResponseChat.done = true;
-                            showResponseChat.msg = 'success';
+                                return res.status(200).send(showResponseChat);
+                            } else {
+                                showResponseChat.option.isConversationSingle = isAuthenticatesSingle ? req.body.dataType === conversationType[0] : null;
 
-                            return res.status(200).send(showResponseChat);
+                                let option = {single: conversationType[0], cfg_chat: helper.coreHelper.app};
+                                let dataResult = libFunction.getListContactSingle(tempModelConversation, option);
+                                dataResult.sort(function (a, b) {
+                                    return a.created_at - b.created_at;
+                                });
+
+                                showResponseChat.data = dataResult;
+                                showResponseChat.done = true;
+                                showResponseChat.msg = 'success';
+
+                                return res.status(200).send(showResponseChat);
+                            }
                         }
-                    }
-                });
-            } else {
-                showResponseChat.err = 'ERR0002';
-                showResponseChat.done = 'Failed';
-                showResponseChat.msg = 'ERR0003';
-                return res.status(401).send(showResponseChat)
-            }
+                    });
+                } else {
+                    showResponseChat.err = 'ERR0002';
+                    showResponseChat.done = 'Failed';
+                    showResponseChat.msg = 'ERR0003';
+                    return res.status(401).send(showResponseChat)
+                }
+            });
         } catch (ex) {
             return res.status(500).send(ex)
         }
     }
 
-    // search all all list contact single
+// search all all list contact single
     postApiListSearchContactAll(req, res) {
         let responseListSearchContact = {data: [], option: {}, done: false, err: '', msg: ''};
         try {
@@ -940,37 +963,90 @@ class ChatController extends BaseController {
             let newUser = new User.class();
 
             let userCurrent = chatController.getSessionByName(socket, 'passport');
+            // let userCurrent = socket.socketUserID ? {user: socket.socketUserID} : {};
 
-            console.log('ddddddddddddddddddddddddddd', userCurrent, socket.handshake)
+            // redisClient.get("cfg_chat", function (err, reply) {
+            //     console.log(err, reply);
+            // });
 
-            let cfgChatUser = chatController.supportConfigChat(chatController.getSessionByName(socket, 'cfg_chat'));
-            chatController.setSessionByName(socket, 'isActiveCurrent', userCurrent.user ? userCurrent.user : null);
-            socket.isActiveLoadPageCurrent = userCurrent.user ? userCurrent.user : null;
+            // console.log('ddddddddddddddddddddddddddd', JSON.stringify(socket.adapter.rooms), socket.socketUserID);
+            console.log('ddddddddddddddddddddddddddd', socket.decodeToken.wft90.model);
 
-            let currentStatus = chatController.getSessionByName(socket, 'currentStatus');
-            let infoParticipant = chatController.getSessionByName(socket, 'infoParticipant');
-            if (currentStatus && infoParticipant) {
-                let reqListRooms = infoParticipant.map(function (getRoomId) {
-                    return getRoomId.channel_id;
-                });
-                chatController.setSessionByName(socket, 'listRooms', reqListRooms);
-                chatController.convertDataListSocket(socket, infoParticipant, currentStatus);
-                chatController.deleteSessionByName(socket, 'infoParticipant');
+            // redisClient.get("authorizationToken", function (err, reply) {
+            //     console.log(err, reply, reply.toString()); // Will print `OK`
+            // });
 
-                if (!chatController.getSessionByName(socket, 'isLife')) {
-                    var dataRequest = {
-                        clause: {users_id: socket.users_id},
-                        dataUpdate: {
-                            is_life: 1
-                        },
-                    };
-                    chatController.queueUpdateContact(socket, dataRequest, currentStatus);
-                    chatController.updateSessionByName(socket, 'isLife', true);
+
+            // setInterval(() => {
+            //     console.log('fgfggfgf', socket.adapter.rooms);
+            // }, 1000);
+
+            redisClient.get("currentStatus", function (err, reply) {
+                if (err) return;
+
+                let currentStatus = JSON.parse(reply);
+                if (socket.socketUserID != currentStatus.userCurrentID)
+                    return;
+
+                socket.adapter.rooms[socket.id].userCurrentID = currentStatus.userCurrentID;
+                socket.adapter.rooms[socket.id].currentStatus = currentStatus;
+
+                // socket.adapter.rooms[socket.id].cfg_chat = JSON.parse(currentStatus.cfg_chat);
+                // console.log('ddddddddddddddddddddddddddd', JSON.stringify(socket.adapter.rooms), currentStatus);
+
+                // console.log(err, JSON.parse(reply)); // Will print `OK`
+
+                let userCurrentFrist = {user: socket.socketUserID};
+                console.log(' let gsd', currentStatus);
+
+
+                let cfgChatUser = chatController.supportConfigChat(chatController.getSessionByName(socket, 'cfg_chat'));
+
+                chatController.setSessionByName(socket, 'isActiveCurrent', userCurrentFrist.user ? userCurrentFrist.user : null);
+                socket.isActiveLoadPageCurrent = userCurrentFrist.user ? userCurrentFrist.user : null;
+
+                // let currentStatus = chatController.getSessionByName(socket, 'currentStatus');
+                let infoParticipant = chatController.getSessionByName(socket, 'infoParticipant');
+
+                if (currentStatus && infoParticipant) {
+                    let reqListRooms = infoParticipant.map(function (getRoomId) {
+                        return getRoomId.channel_id;
+                    });
+                    chatController.setSessionByName(socket, 'listRooms', reqListRooms);
+                    chatController.convertDataListSocket(socket, infoParticipant, currentStatus);
+                    chatController.deleteSessionByName(socket, 'infoParticipant');
+
+                    if (!chatController.getSessionByName(socket, 'isLife')) {
+                        var dataRequest = {
+                            clause: {users_id: socket.socketUserID},
+                            dataUpdate: {
+                                is_life: 1
+                            },
+                        };
+                        chatController.queueUpdateContact(socket, dataRequest, currentStatus);
+                        chatController.updateSessionByName(socket, 'isLife', true);
+                    }
                 }
-            }
+            });
+
+            // setInterval(() => {
+            //     console.log('fgfggfgf', socket.socketUserID);
+            //         console.log('fgfggfgf', JSON.stringify(socket.adapter.rooms));
+            // }, 1000);
+
             socket.on('msgContentChat', function (reqData) {
                 let conversationId = reqData.data.dataConversation ? parseInt(reqData.data.dataConversation) : null;
                 let page = reqData.data.page !== undefined ? parseInt(reqData.data.page) : 1;
+                // var userCurrent = reqData.data.currentUserID;
+                var userCurrent = {user: socket.adapter.rooms[socket.id].userCurrentID};
+                // var userCurrent = {user: socket.socketUserID};
+                var currentStatus = socket.adapter.rooms[socket.id] && socket.adapter.rooms[socket.id].currentStatus
+                    ? socket.adapter.rooms[socket.id].currentStatus :
+                    null;
+                // var cfgChatUser = socket.decodeToken.wft90.cfg_chat;
+                var cfgChatUser = JSON.parse(currentStatus.infoAccount.useContacts.cfg_chat);
+
+                console.log(JSON.stringify(socket.adapter.rooms), userCurrent, conversationId, currentStatus, 'userCurrent');
 
                 if (conversationId && userCurrent) {
                     let message = new Messages.class();
@@ -982,11 +1058,11 @@ class ChatController extends BaseController {
                         sort: 'DESC'
 
                     };
-
                     message.getMessageConversation(requestMessage, function (errMessage, modelMessage) {
                         if (errMessage) {
-                            return 1;
+                            return;
                         } else {
+
                             process.nextTick(function () {
                                 let reqOption = {
                                     userCurrent: userCurrent
@@ -994,18 +1070,21 @@ class ChatController extends BaseController {
                                 let modelMsgArray = modelMessage.models.map(function (eleModel) {
                                     return eleModel;
                                 });
+
                                 let isScrollTop = reqData.data.isScrollTop !== undefined ? reqData.data.isScrollTop : false;
                                 if (isScrollTop === false) modelMsgArray.reverse();
                                 chatController.convertListMessage(modelMsgArray, reqOption, (resModelMessage) => {
                                     // resModelMessage.isScrollTop = isScrollTop;
                                     resModelMessage.isLoadTop = reqData.data.isScrollTop !== undefined ? true : false;
                                     resModelMessage.channelId = reqData.data.dataChannelID;
+
                                     socket.emit('msgContent', resModelMessage);
                                 });
                             });
                         }
                     });
                 } else {
+
                     let resModelMessageNull = {};
                     resModelMessageNull.isLoadTop = reqData.data.isScrollTop !== undefined ? true : false;
                     resModelMessageNull.channelId = reqData.data.dataChannelID;
@@ -1016,6 +1095,7 @@ class ChatController extends BaseController {
 
             socket.on('sendDataMsg', function (dataSendChat) {
                 socketAntiSpam.addSpam(socket);
+                var userCurrent = {user: socket.adapter.rooms[socket.id].userCurrentID};
 
                 if (dataSendChat && userCurrent) {
                     let message = new Messages.class();
@@ -1034,11 +1114,11 @@ class ChatController extends BaseController {
                         if (err) return 1;
 
                         // process.nextTick(function () {
-                            let reqOption = {
-                                userCurrent: userCurrent
-                            };
-                            let modelMsgArray = [];
-                            modelMsgArray.push(modelMsg);
+                        let reqOption = {
+                            userCurrent: userCurrent
+                        };
+                        let modelMsgArray = [];
+                        modelMsgArray.push(modelMsg);
                         chatController.convertListMessage(modelMsgArray, reqOption, (resModelMessage) => {
 
                             resModelMessage.isLoadTop = dataSendChat.isScrollTop !== undefined ? true : false;
@@ -1057,6 +1137,11 @@ class ChatController extends BaseController {
             });
 
             socket.on('updateUser', function (reqData) {
+                var userCurrent = {user: socket.socketUserID};
+                var currentStatus = socket.adapter.rooms[socket.id] && socket.adapter.rooms[socket.id].currentStatus
+                    ? socket.adapter.rooms[socket.id].currentStatus
+                    : null;
+
                 if (userCurrent && currentStatus) {
                     let dataRequest = {
                         clause: {users_id: userCurrent.user},
@@ -1070,6 +1155,8 @@ class ChatController extends BaseController {
             });
 
             socket.on('updateActionConversationGroup', function (reqActionConversation) {
+                var userCurrent = {user: socket.adapter.rooms[socket.id].userCurrentID};
+
                 if (reqActionConversation.isSingle === true && reqActionConversation.act === 'add') {
                     // create conversaton
                     //user part - use current - list author
@@ -1169,8 +1256,12 @@ class ChatController extends BaseController {
 
             //disconnect socket by id
             socket.on('disconnect', function () {
+                console.log(socket.adapter.rooms, socket.id)
+                // var userCurrent = socket.adapter.rooms[socket.id].hasOwnProperty('userCurrentID')
+                //     ? {user: socket.adapter.rooms[socket.id].userCurrentID}
+                //     : {};
                 if (socket.isActiveCurrent == null) {
-                    if (userCurrent) {
+                    if (userCurrent !== undefined) {
 
                         var dataRequest = {
                             clause: {users_id: socket.users_id},

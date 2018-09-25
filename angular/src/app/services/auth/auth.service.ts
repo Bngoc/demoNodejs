@@ -38,4 +38,8 @@ export class AuthService {
     static getToken() {
         return localStorage.getItem('idToken');
     }
+
+    static decodeToken() {
+        return helper.decodeToken(this.getToken());
+    }
 }

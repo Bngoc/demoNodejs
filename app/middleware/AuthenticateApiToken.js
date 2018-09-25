@@ -9,8 +9,8 @@ class AuthenticateToken {
                 let token = req.headers.authorization.split(" ")[1];
                 jwt.verify(token, req.secret, (err, decoded) => {
                     if (err) {
-            //             req.session.destroy();
-            //             req.logOut();
+                        // req.session.destroy();
+                        // req.logOut();
                         res.status(401).send({url: '/login'});
                     } else {
                         return next();

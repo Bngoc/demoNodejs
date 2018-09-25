@@ -2,12 +2,13 @@
 
 class AuthenticateAngular {
     isAuthenticated(req, res, next) {
+        // console.log('req.body', req)
         // if (req.isAuthenticated())
             return next();
 
-        req.session.destroy();
-        req.logOut();
-        res.status(401).send({url: '/login'});
+        // req.session.destroy();
+        // req.logOut();
+        // res.status(401).send({url: '/login'});
     }
 
     authenticatedRegister(req, res, next) {

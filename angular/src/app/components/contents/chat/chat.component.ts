@@ -1,5 +1,7 @@
 'use strict';
 
+import {AuthService} from "../../../services/auth/auth.service";
+
 declare var require: any;
 declare var $: any;
 declare var window: any;
@@ -72,9 +74,9 @@ export class ChatComponent extends libSupports implements OnInit, OnDestroy {
 
                     let listContact = new ListContacts();
                     listContact.showContactListAll(resultListContacts);
-                    let socket = io(this.url);
+                    let socket = io(this.url, {query: {token: AuthService.getToken()}});
 
-                    console.log( 'socket', socket)
+                    console.log('socket', socket)
                     this.socket = socket;
 
                     window.dataGlobal = {

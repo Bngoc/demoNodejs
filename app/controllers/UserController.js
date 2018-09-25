@@ -5,11 +5,14 @@ const flash = require('connect-flash');
 
 const ViewController = require('./ViewController.js');
 const helper = new ViewController();
+const config = require('config');
 
 var User = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Users.js`);
 var Contacts = helper.coreHelper.callModule(`${helper.coreHelper.paths.MODELS}Contacts.js`);
-var HomeController = helper.coreHelper.callModule(`${helper.coreHelper.paths.CONTROLLERS}HomeController.js`);
+// var HomeController = helper.coreHelper.callModule(`${helper.coreHelper.paths.CONTROLLERS}HomeController.js`);
 
+const redis = require("redis");
+const redisClient = redis.createClient({detect_buffers: true});
 
 class UserController {
     constructor() {
@@ -477,100 +480,107 @@ class UserController {
     // ---------------------------------------------- angular -----------------------------------------
     postLoginAngular(req, res, next) {
         // if (req.xhr) {
-            var responseDataMap = {
-                url: '',
-                validate: [],
-                msg: '',
-                code: '',
-                status: false
-            };
+        var responseDataMap = {
+            url: '',
+            validate: [],
+            msg: '',
+            code: '',
+            status: false
+        };
 
-            if (req.body.loginId && req.body.pwd && req.body.action) {
-                let optionLogin = req.body.action;
-                switch (optionLogin) {
-                    case 'local':
-                        helper.coreHelper.passport('local').authenticate('local', function (err, user, info) {
-                            if (err) return next(err);
+        if (req.body.loginId && req.body.pwd && req.body.action) {
+            let optionLogin = req.body.action;
+            switch (optionLogin) {
+                case 'local':
+                    helper.coreHelper.passport('local').authenticate('local', function (err, user, info) {
+                        if (err) return next(err);
 
-                            let infoPassport = info;
-                            //{"code":null,"error":"","msg":"","result":null}'
-                            if (infoPassport.message) {
-                                let dataPassport = JSON.parse(infoPassport.message);
-                                if (dataPassport.code || dataPassport.result == null) {
-                                    responseDataMap.code = dataPassport.code || 'ERR0003';
-                                    responseDataMap.msg = 'Account not exits';
-                                    res.status(200).send(responseDataMap);
-                                } else {
-                                    if (dataPassport.result && user) {
-                                        req.logIn(user, function (err) {
-                                            if (err) {
-                                                responseDataMap.code = "ERR0003";
-                                                responseDataMap.msg = 'Login Fail....!';
-                                                res.status(200).send(responseDataMap);
-                                            } else {
-                                                let dataRequest = {
-                                                    clause: {users_id: user.id},
-                                                    dataUpdate: {is_life: 1},
-                                                };
-                                                let newContacts = new Contacts.class();
+                        let infoPassport = info;
+                        //{"code":null,"error":"","msg":"","result":null}'
+                        if (infoPassport.message) {
+                            let dataPassport = JSON.parse(infoPassport.message);
+                            if (dataPassport.code || dataPassport.result == null) {
+                                responseDataMap.code = dataPassport.code || 'ERR0003';
+                                responseDataMap.msg = 'Account not exits';
+                                res.status(200).send(responseDataMap);
+                            } else {
+                                if (dataPassport.result && user) {
+                                    req.logIn(user, function (err) {
+                                        if (err) {
+                                            responseDataMap.code = "ERR0003";
+                                            responseDataMap.msg = 'Login Fail....!';
+                                            res.status(200).send(responseDataMap);
+                                        } else {
+                                            let dataRequest = {
+                                                clause: {users_id: user.id},
+                                                dataUpdate: {is_life: 1},
+                                            };
+                                            let newContacts = new Contacts.class();
+
+
+                                            newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
+                                                if (errUpdate) next(errUpdate);
+
                                                 let dataRequestToken = {
                                                     data: {
                                                         users_id: user.id,
+                                                        cfg_chat: JSON.parse(rsModel.get('cfg_chat')),
+                                                        // model: rsModel
                                                     },
-                                                    expiresIn: helper.coreHelper.sampleConfig.domain.maxAge
+                                                    expiresIn: config.domain.maxAge
                                                 };
-                                                let token = helper.coreHelper.createSignToken(helper.coreHelper.sampleConfig.APP_SECRET, dataRequestToken);
-                                                newContacts.updateContact(dataRequest, function (errUpdate, rsModel) {
-                                                    if (errUpdate) next(errUpdate);
+                                                let token = helper.coreHelper.createSignToken(config.APP_SECRET, dataRequestToken);
 
-                                                    req.session.cfg_chat = rsModel.get('cfg_chat');
-                                                    responseDataMap.status = true;
-                                                    responseDataMap.url = '/chat';
-                                                    responseDataMap.msg = 'Login success';
-                                                    responseDataMap.token = token;
+                                                req.session.cfg_chat = rsModel.get('cfg_chat');
+                                                redisClient.set("cfg_chat", JSON.stringify(rsModel.get('cfg_chat')));
 
-                                                    res.status(200).send(responseDataMap);
-                                                });
-                                            }
-                                        });
-                                    } else {
-                                        responseDataMap.code = "ERR0003";
-                                        responseDataMap.msg = 'Account or password not authentication';
-                                        res.status(200).send(responseDataMap);
-                                    }
+                                                responseDataMap.status = true;
+                                                responseDataMap.url = '/chat';
+                                                responseDataMap.msg = 'Login success';
+                                                responseDataMap.token = token;
+
+                                                res.status(200).send(responseDataMap);
+                                            });
+                                        }
+                                    });
+                                } else {
+                                    responseDataMap.code = "ERR0003";
+                                    responseDataMap.msg = 'Account or password not authentication';
+                                    res.status(200).send(responseDataMap);
                                 }
-                            } else {
-                                responseDataMap.code = "ERR0004";
-                                responseDataMap.msg = 'ERROR: Server Not Response';
-                                res.status(200).send(responseDataMap);
                             }
-                        })(req, res, next);
-                        break;
-                    case 'fb':
-                        helper.coreHelper.passport('facebook').authenticate('facebook', function (err, user, info) {
+                        } else {
+                            responseDataMap.code = "ERR0004";
+                            responseDataMap.msg = 'ERROR: Server Not Response';
+                            res.status(200).send(responseDataMap);
+                        }
+                    })(req, res, next);
+                    break;
+                case 'fb':
+                    helper.coreHelper.passport('facebook').authenticate('facebook', function (err, user, info) {
 
-                        })(req, res, next);
-                        break;
-                }
-            } else {
-                responseDataMap.code = 'ERR0001';
-                responseDataMap.msg = 'Account is empty';
-                var validateMsg = [];
-                if (req.body.loginId == '' && req.body.pwd) {
-                    validateMsg.push({param: 'loginId', msg: 'Account is required'})
-                }
-                else if (req.body.loginId && req.body.pwd == '') {
-                    validateMsg.push({param: 'pwd', smg: 'Password is required'})
-                } else {
-                    validateMsg.push(
-                        {param: 'loginId', msg: 'Account is required'},
-                        {param: 'pwd', msg: 'Password is required'}
-                    );
-                }
-                responseDataMap.validate = validateMsg;
-
-                res.status(200).send(responseDataMap);
+                    })(req, res, next);
+                    break;
             }
+        } else {
+            responseDataMap.code = 'ERR0001';
+            responseDataMap.msg = 'Account is empty';
+            var validateMsg = [];
+            if (req.body.loginId == '' && req.body.pwd) {
+                validateMsg.push({param: 'loginId', msg: 'Account is required'})
+            }
+            else if (req.body.loginId && req.body.pwd == '') {
+                validateMsg.push({param: 'pwd', smg: 'Password is required'})
+            } else {
+                validateMsg.push(
+                    {param: 'loginId', msg: 'Account is required'},
+                    {param: 'pwd', msg: 'Password is required'}
+                );
+            }
+            responseDataMap.validate = validateMsg;
+
+            res.status(200).send(responseDataMap);
+        }
         // } else {
         //     res.status(500).send('Not use Jquery request to server....!');
         // }
